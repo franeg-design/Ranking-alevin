@@ -1,6 +1,8 @@
-const CACHE = "ranking-v1";
+// Estrategia "network-first": intenta red y guarda copia; si no hay conexión, usa caché.
+// Así las actualizaciones (datos y app) llegan siempre; y sigue funcionando sin conexión.
+const CACHE = "ranking-v2";
 const SHELL = [
-  "./", "./index.html", "./manifest.json",
+  "./", "./index.html", "./manifest.json", "./data.csv",
   "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"
 ];
 
@@ -16,17 +18,12 @@ self.addEventListener("activate", e => {
 });
 
 self.addEventListener("fetch", e => {
-  const url = new URL(e.request.url);
-  // Los datos siempre de la red primero (para ver actualizaciones), con caché de reserva sin conexión.
-  if (url.pathname.endsWith("data.csv")) {
-    e.respondWith(
-      fetch(e.request).then(r => {
-        const cp = r.clone();
-        caches.open(CACHE).then(c => c.put(e.request, cp));
-        return r;
-      }).catch(() => caches.match(e.request))
-    );
-    return;
-  }
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+  if (e.request.method !== "GET") return;
+  e.respondWith(
+    fetch(e.request).then(r => {
+      const cp = r.clone();
+      caches.open(CACHE).then(c => c.put(e.request, cp)).catch(() => {});
+      return r;
+    }).catch(() => caches.match(e.request).then(r => r || caches.match("./index.html")))
+  );
 });

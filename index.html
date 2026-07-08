@@ -665,6 +665,8 @@ function render(){
   }).join("");
   view.innerHTML=`<div class="chips">${chips}</div><div class="list">${rows}</div>`;
   view.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{activePrueba=c.dataset.p;render();});
+  const chipsEl=view.querySelector(".chips"), onChip=chipsEl&&chipsEl.querySelector(".chip.on");
+  if(chipsEl&&onChip){const cr=chipsEl.getBoundingClientRect(),ar=onChip.getBoundingClientRect();chipsEl.scrollLeft+=(ar.left-cr.left)-(chipsEl.clientWidth-onChip.clientWidth)/2;}
 }
 
 async function boot(){try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const r=parseCSV(await res.text());if(r.length){RECORDS=r;render();return;}}}catch(e){}RECORDS=parseCSV(SAMPLE_CSV);render();}
