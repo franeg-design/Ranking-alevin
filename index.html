@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Ranking Alevín Femenino</title>
-<meta name="description" content="Mejores marcas por prueba — Alevín Femenino, Álava." />
+<meta name="description" content="Mejores marcas, FINA y mínimas — Alevín Femenino, Álava." />
 <meta name="theme-color" content="#0e7c93" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -14,78 +14,85 @@
 <link rel="icon" type="image/png" href="./icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
-:root{
-  --bg:#eef6f8; --surface:#fff; --ink:#0b2a3a; --muted:#5c7c8a;
-  --brand:#0e7c93; --brand-deep:#0b3d5c; --line:#d8e8ee; --chip:#e7f1f4;
-  --gold:#e0ad3f; --silver:#a9b6bf; --bronze:#c07f43; --good:#0f9d6b; --warn:#b26a00;
-}
+:root{--bg:#eef6f8;--surface:#fff;--ink:#0b2a3a;--muted:#5c7c8a;--brand:#0e7c93;--brand-deep:#0b3d5c;
+--line:#d8e8ee;--chip:#e7f1f4;--gold:#e0ad3f;--silver:#a9b6bf;--bronze:#c07f43;--good:#0f9d6b;--warn:#8a97a2;--amber:#b26a00;}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
 .mono{font-family:'Space Mono',ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
-.shell{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg)}
-.head{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:calc(22px + env(safe-area-inset-top)) 20px 18px;position:relative;overflow:hidden}
+.shell{max-width:540px;margin:0 auto;min-height:100vh;background:var(--bg)}
+.head{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:calc(20px + env(safe-area-inset-top)) 20px 16px;position:relative;overflow:hidden}
 .glow{position:absolute;right:-40px;top:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%)}
 .kicker{display:flex;align-items:center;gap:7px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.86;font-weight:600}
-.title{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:26px;line-height:1.06;margin:8px 0 2px;letter-spacing:-.01em}
-.sub{font-size:13px;opacity:.9}
-.updated{margin-top:12px;font-size:11.5px;opacity:.82}
-.lane{display:flex;gap:7px;margin-top:16px}
+.title{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:24px;line-height:1.06;margin:8px 0 2px;letter-spacing:-.01em}
+.sub{font-size:12.5px;opacity:.9}
+.updated{margin-top:10px;font-size:11px;opacity:.82}
+.lane{display:flex;gap:7px;margin-top:14px}
 .lane span{height:6px;flex:1;border-radius:6px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.85) 0 8px,rgba(255,255,255,.25) 8px 16px)}
-.body{padding:16px 16px 40px}
+.body{padding:14px 14px 40px}
 .searchwrap{position:relative;margin-bottom:12px}
-.search{width:100%;padding:13px 40px 13px 42px;border:1px solid var(--line);border-radius:14px;background:var(--surface);font-size:15px;color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s}
+.search{width:100%;padding:12px 40px 12px 42px;border:1px solid var(--line);border-radius:14px;background:var(--surface);font-size:15px;color:var(--ink);outline:none}
 .search:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(14,124,147,.14)}
 .search::placeholder{color:#9fb6bf}
 .searchIc{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--brand);font-size:17px}
-.clear{position:absolute;right:9px;top:50%;transform:translateY(-50%);border:none;background:var(--chip);color:var(--muted);border-radius:8px;padding:5px 8px;cursor:pointer;font-size:13px;line-height:1}
-.seglab{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:2px 2px 6px}
+.clear{position:absolute;right:9px;top:50%;transform:translateY(-50%);border:none;background:var(--chip);color:var(--muted);border-radius:8px;padding:5px 8px;cursor:pointer;font-size:13px}
+.tabs{display:flex;gap:6px;background:var(--chip);padding:4px;border-radius:13px;margin-bottom:10px}
+.tabs button{flex:1;border:none;background:none;padding:9px 4px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .12s}
+.tabs button.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.09)}
 .seg{display:flex;gap:6px;background:var(--chip);padding:4px;border-radius:12px;margin-bottom:8px}
-.seg button{flex:1;border:none;background:none;padding:9px 6px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .12s}
+.seg button{flex:1;border:none;background:none;padding:7px 6px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
 .seg button.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.leg{font-size:11px;color:var(--muted);margin:0 2px 14px;line-height:1.4}
-.leg b{color:var(--good)} .leg i{color:var(--warn);font-style:normal}
+.leg{font-size:11px;color:var(--muted);margin:0 2px 12px;line-height:1.45}
+.leg b{color:var(--good)} .leg i{color:var(--amber);font-style:normal}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:4px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
-.chip{white-space:nowrap;border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:8px 14px;border-radius:999px;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .13s}
+.chip{white-space:nowrap;border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:8px 13px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer}
 .chip.on{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(14,124,147,.28)}
-.list{display:flex;flex-direction:column;gap:9px}
-.row{display:flex;align-items:flex-start;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px 13px;border-left:4px solid transparent}
-.rk{min-width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:var(--chip);color:var(--muted);margin-top:1px}
-.name{font-weight:600;font-size:14.5px;line-height:1.22}
-.club{font-size:12px;color:var(--muted);margin-top:2px}
-.time{margin-left:auto;text-align:right;padding-left:8px;flex-shrink:0}
-.time b{font-size:17px;font-weight:700;letter-spacing:-.01em}
-.imp{display:inline-block;margin-top:3px;font-size:11px;font-weight:700;color:var(--good);background:rgba(15,157,107,.1);border-radius:6px;padding:2px 6px}
-.gap{display:inline-block;margin-top:4px;font-size:11px;font-weight:700;border-radius:6px;padding:2px 6px}
-.gap.ok{color:var(--good);background:rgba(15,157,107,.1)}
-.gap.no{color:var(--warn);background:rgba(178,106,0,.1)}
-.gap.na{color:var(--muted);background:var(--chip)}
-.profile{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:12px}
-.pTop{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:16px}
-.pName{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;line-height:1.15}
-.pClub{opacity:.9;font-size:13px;margin-top:3px}
-.pRow{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-top:1px solid var(--line)}
-.prueba{font-weight:600;font-size:14px}
-.puesto{font-size:11.5px;color:var(--muted);margin-top:2px}
-.badge{margin-left:auto;text-align:right;flex-shrink:0}
-.badge b{font-size:16px;font-weight:700}
-.empty{text-align:center;color:var(--muted);padding:34px 16px;font-size:14px}
+.list{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:flex-start;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;border-left:4px solid transparent}
+.rkwrap{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:32px}
+.rk{min-width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;background:var(--chip);color:var(--muted)}
+.pos{font-size:14px;font-weight:800;line-height:1;margin-top:1px}
+.pos.new{font-size:9px;font-weight:700}
+.pos.up{color:var(--good)} .pos.down{color:var(--warn)} .pos.eq{color:#b9c9d0} .pos.new{color:var(--brand)}
+.mid{flex:1;min-width:0}
+.name{font-weight:600;font-size:14px;line-height:1.22}
+.club{font-size:11.5px;color:var(--muted);margin-top:2px}
+.right{margin-left:auto;text-align:right;flex-shrink:0;padding-left:6px}
+.time{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.tag{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:700;border-radius:6px;padding:2px 6px}
+.tag.fina{color:var(--brand);background:rgba(14,124,147,.09)}
+.tag.up{color:var(--good);background:rgba(15,157,107,.1)}
+.tag.down{color:var(--warn);background:rgba(138,151,162,.14)}
+.tag.ok{color:#0f9d6b;background:rgba(15,157,107,.13)}
+.tag.no{color:#c0392b;background:rgba(192,57,43,.12)}
+.tag.na{color:var(--muted);background:var(--chip)}
+.pchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.pc{font-size:10px;font-weight:600;color:var(--brand-deep);background:var(--chip);border-radius:5px;padding:2px 5px}
+.big{font-size:19px;font-weight:800;color:var(--brand-deep);letter-spacing:-.02em}
+.empty{text-align:center;color:var(--muted);padding:30px 16px;font-size:14px}
 .empty b{color:var(--ink)}
-.admin{margin-top:26px;border:1px dashed var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
-.adminHead{width:100%;display:flex;align-items:center;gap:9px;padding:14px 16px;background:none;border:none;cursor:pointer;font-size:14px;font-weight:600;color:var(--ink)}
+.profile{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:12px}
+.pTop{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:15px}
+.pName{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;line-height:1.15}
+.pClub{opacity:.9;font-size:12.5px;margin-top:3px}
+.pRow{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;border-top:1px solid var(--line)}
+.prueba{font-weight:600;font-size:13.5px}
+.puesto{font-size:11px;color:var(--muted);margin-top:2px}
+.admin{margin-top:24px;border:1px dashed var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
+.adminHead{width:100%;display:flex;align-items:center;gap:9px;padding:13px 15px;background:none;border:none;cursor:pointer;font-size:14px;font-weight:600;color:var(--ink)}
 .adminHead .chev{margin-left:auto;transition:transform .2s}
 .adminHead.open .chev{transform:rotate(180deg)}
-.adminBody{padding:2px 16px 18px;display:none}
+.adminBody{padding:2px 15px 16px;display:none}
 .adminBody.open{display:block}
-.note{display:flex;gap:9px;font-size:12.5px;color:var(--muted);line-height:1.45;background:var(--chip);border-radius:11px;padding:11px 12px;margin-bottom:14px}
+.note{display:flex;gap:9px;font-size:12px;color:var(--muted);line-height:1.45;background:var(--chip);border-radius:11px;padding:10px 11px;margin-bottom:12px}
 .btnrow{display:flex;flex-wrap:wrap;gap:9px}
-.btn{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;border-radius:11px;padding:10px 14px;cursor:pointer;border:1px solid var(--brand);background:var(--brand);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;border-radius:11px;padding:9px 13px;cursor:pointer;border:1px solid var(--brand);background:var(--brand);color:#fff}
 .btn.ghost{background:var(--surface);color:var(--brand)}
-.hint{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5}
-.foot{text-align:center;font-size:11px;color:var(--muted);margin-top:22px;line-height:1.5;padding-bottom:env(safe-area-inset-bottom)}
+.hint{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5}
+.foot{text-align:center;font-size:11px;color:var(--muted);margin-top:20px;line-height:1.5;padding-bottom:env(safe-area-inset-bottom)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -106,587 +113,651 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
       <button class="clear" id="clear" style="display:none" aria-label="Borrar">✕</button>
     </div>
 
-    <div class="seglab">Categoría</div>
+    <div class="tabs" id="tabs">
+      <button data-v="marcas" class="on">Marcas</button>
+      <button data-v="minimas">Mínimas</button>
+      <button data-v="topfina">Top FINA</button>
+    </div>
+
     <div class="seg" id="segYear">
       <button data-y="all" class="on">Alevín</button>
       <button data-y="2013">2013</button>
       <button data-y="2014">2014</button>
     </div>
 
-    <div class="seglab">Mínima de referencia</div>
-    <div class="seg" id="seg">
-      <button data-r="eh" class="on">Euskal Herria</button>
-      <button data-r="esp">España (P25)</button>
+    <div class="seg" id="segFina" style="display:none">
+      <button data-n="3" class="on">3 mejores</button>
+      <button data-n="6">6 mejores</button>
+      <button data-n="9">9 mejores</button>
     </div>
-    <div class="leg" id="leg"></div>
 
+    <div class="leg" id="leg"></div>
     <div id="view"></div>
 
     <section class="admin">
       <button class="adminHead" id="adminHead">⬆️ Herramientas (solo para ti)<span class="chev">▾</span></button>
       <div class="adminBody" id="adminBody">
-        <div class="note">ℹ️ En la app publicada, los datos viven en <b>data.csv</b> junto a la página. Al reemplazarlo, el ranking se actualiza para todas las familias. Aquí puedes descargar la plantilla y previsualizar un CSV.</div>
+        <div class="note">ℹ️ Los datos viven en <b>data.csv</b> junto a la página. Al reemplazarlo, todo se actualiza para las familias. Los puntos FINA y el cambio de puesto se calculan solos.</div>
         <div class="btnrow">
           <button class="btn ghost" id="dlTemplate">⬇︎ Plantilla CSV</button>
           <button class="btn" id="upBtn">⬆︎ Previsualizar un CSV</button>
           <input type="file" id="file" accept=".csv" style="display:none" />
         </div>
         <div class="hint" id="upMsg"></div>
-        <div class="hint">Columnas: <span class="mono">Prueba, Nadadora, Año, Club, Tiempo, Fecha, Competicion, PuntosFINA</span>. <b>Año</b> (2013/2014) es necesario para las mínimas. Tiempo: <span class="mono">1:05.40</span> o <span class="mono">30.12</span>. Fecha: <span class="mono">2026-06-14</span>.</div>
+        <div class="hint">Columnas: <span class="mono">Prueba, Nadadora, Año, Club, Tiempo, Fecha, Competicion</span>. <b>Año</b> (2013/2014) y <b>Fecha</b> (AAAA-MM-DD) son necesarios. Guarda el histórico (una fila por marca): así salen la evolución y el cambio de puesto.</div>
       </div>
     </section>
 
-    <div class="foot" id="foot">Federación Alavesa de Natación · Clubes: Menditxo, Judizmendi, Urgain, Laudio, Zadorra</div>
+    <div class="foot" id="foot">Federación Alavesa de Natación · FINA: World Aquatics SCM 2025</div>
   </main>
 </div>
 
 <script>
 const PRUEBA_ORDER=["50 Libre","100 Libre","200 Libre","400 Libre","800 Libre","50 Espalda","100 Espalda","200 Espalda","50 Braza","100 Braza","200 Braza","50 Mariposa","100 Mariposa","200 Mariposa","100 Estilos","200 Estilos","400 Estilos"];
-
-// Mínimas Campeonato de España Alevín — Tabla "B" (piscina 25 m), femenino, por año
-const MIN_ESP={
- "50 Libre":{"2013":"28.35","2014":"29.85"},"100 Libre":{"2013":"1:02.15","2014":"1:05.70"},
- "200 Libre":{"2013":"2:17.65","2014":"2:24.50"},"400 Libre":{"2013":"4:48.00","2014":"5:04.35"},
- "800 Libre":{"2013":"9:58.35","2014":"10:37.50"},
- "50 Espalda":{"2013":"31.90","2014":"34.35"},"100 Espalda":{"2013":"1:09.35","2014":"1:13.30"},
- "200 Espalda":{"2013":"2:30.65","2014":"2:40.90"},
- "50 Braza":{"2013":"36.25","2014":"38.35"},"100 Braza":{"2013":"1:19.70","2014":"1:24.35"},
- "200 Braza":{"2013":"2:51.50","2014":"3:01.20"},
- "50 Mariposa":{"2013":"31.15","2014":"33.20"},"100 Mariposa":{"2013":"1:08.80","2014":"1:13.10"},
- "200 Mariposa":{"2013":"2:38.20","2014":"2:49.45"},
- "200 Estilos":{"2013":"2:33.35","2014":"2:42.05"},"400 Estilos":{"2013":"5:26.75","2014":"5:46.15"}
-};
-// Mínimas Euskal Herria P25 (piscina 25 m), femenino alevín, por año
-const MIN_EH={
- "50 Libre":{"2013":"32.71","2014":"34.49"},"100 Libre":{"2013":"1:12.00","2014":"1:15.92"},
- "200 Libre":{"2013":"2:38.05","2014":"2:46.65"},"400 Libre":{"2013":"5:29.89","2014":"5:47.86"},
- "800 Libre":{"2013":"11:24.03","2014":"12:01.28"},
- "50 Espalda":{"2013":"39.28","2014":"42.12"},"100 Espalda":{"2013":"1:24.10","2014":"1:30.17"},
- "200 Espalda":{"2013":"3:03.77","2014":"3:17.04"},
- "50 Braza":{"2013":"42.86","2014":"45.65"},"100 Braza":{"2013":"1:34.21","2014":"1:40.35"},
- "200 Braza":{"2013":"3:20.18","2014":"3:33.21"},
- "50 Mariposa":{"2013":"37.51","2014":"40.28"},"100 Mariposa":{"2013":"1:22.59","2014":"1:28.68"},
- "200 Mariposa":{"2013":"3:06.95","2014":"3:20.74"},
- "200 Estilos":{"2013":"3:05.92","2014":"3:18.52"},"400 Estilos":{"2013":"6:30.51","2014":"6:56.98"}
-};
-
+// Tiempos base FINA — World Aquatics SCM 2025 (25 m), femenino (segundos)
+const BASE={"50 Libre":22.83,"100 Libre":50.25,"200 Libre":110.31,"400 Libre":230.25,"800 Libre":477.42,"50 Espalda":25.23,"100 Espalda":54.02,"200 Espalda":118.04,"50 Braza":28.37,"100 Braza":62.36,"200 Braza":132.50,"50 Mariposa":23.94,"100 Mariposa":52.71,"200 Mariposa":119.32,"100 Estilos":55.11,"200 Estilos":121.63,"400 Estilos":255.48};
+const MIN_ESP={"50 Libre":{"2013":"28.35","2014":"29.85"},"100 Libre":{"2013":"1:02.15","2014":"1:05.70"},"200 Libre":{"2013":"2:17.65","2014":"2:24.50"},"400 Libre":{"2013":"4:48.00","2014":"5:04.35"},"800 Libre":{"2013":"9:58.35","2014":"10:37.50"},"50 Espalda":{"2013":"31.90","2014":"34.35"},"100 Espalda":{"2013":"1:09.35","2014":"1:13.30"},"200 Espalda":{"2013":"2:30.65","2014":"2:40.90"},"50 Braza":{"2013":"36.25","2014":"38.35"},"100 Braza":{"2013":"1:19.70","2014":"1:24.35"},"200 Braza":{"2013":"2:51.50","2014":"3:01.20"},"50 Mariposa":{"2013":"31.15","2014":"33.20"},"100 Mariposa":{"2013":"1:08.80","2014":"1:13.10"},"200 Mariposa":{"2013":"2:38.20","2014":"2:49.45"},"200 Estilos":{"2013":"2:33.35","2014":"2:42.05"},"400 Estilos":{"2013":"5:26.75","2014":"5:46.15"}};
+const MIN_EH={"50 Libre":{"2013":"32.71","2014":"34.49"},"100 Libre":{"2013":"1:12.00","2014":"1:15.92"},"200 Libre":{"2013":"2:38.05","2014":"2:46.65"},"400 Libre":{"2013":"5:29.89","2014":"5:47.86"},"800 Libre":{"2013":"11:24.03","2014":"12:01.28"},"50 Espalda":{"2013":"39.28","2014":"42.12"},"100 Espalda":{"2013":"1:24.10","2014":"1:30.17"},"200 Espalda":{"2013":"3:03.77","2014":"3:17.04"},"50 Braza":{"2013":"42.86","2014":"45.65"},"100 Braza":{"2013":"1:34.21","2014":"1:40.35"},"200 Braza":{"2013":"3:20.18","2014":"3:33.21"},"50 Mariposa":{"2013":"37.51","2014":"40.28"},"100 Mariposa":{"2013":"1:22.59","2014":"1:28.68"},"200 Mariposa":{"2013":"3:06.95","2014":"3:20.74"},"200 Estilos":{"2013":"3:05.92","2014":"3:18.52"},"400 Estilos":{"2013":"6:30.51","2014":"6:56.98"}};
 const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,PuntosFINA
-50 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,31.54,2026-07-06,Ranking 2025/26,
-50 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,31.56,2026-07-06,Ranking 2025/26,
-50 Libre,"DAQUANNO, Gaia",2014,CN Menditxo,32.13,2026-07-06,Ranking 2025/26,
-50 Libre,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,32.16,2026-07-06,Ranking 2025/26,
-50 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,32.90,2026-07-06,Ranking 2025/26,
-50 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,33.17,2026-07-06,Ranking 2025/26,
-50 Libre,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,33.95,2026-07-06,Ranking 2025/26,
-50 Libre,"HIJONA SANCHEZ, June",2014,CN Judizmendi,34.45,2026-07-06,Ranking 2025/26,
-50 Libre,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,34.61,2026-07-06,Ranking 2025/26,
-50 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,34.67,2026-07-06,Ranking 2025/26,
-50 Libre,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,34.76,2026-07-06,Ranking 2025/26,
-50 Libre,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,35.56,2026-07-06,Ranking 2025/26,
-50 Libre,"PRIETO BOTO, Olatz",2014,CN Menditxo,35.68,2026-07-06,Ranking 2025/26,
-50 Libre,"DIAZ CEBALLOS, Laida",2013,CN Urgain,36.05,2026-07-06,Ranking 2025/26,
-50 Libre,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,36.06,2026-07-06,Ranking 2025/26,
-50 Libre,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,36.11,2026-07-06,Ranking 2025/26,
-50 Libre,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,36.12,2026-07-06,Ranking 2025/26,
-50 Libre,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,36.90,2026-07-06,Ranking 2025/26,
-50 Libre,"SANTOS GARCIA, Uxue",2014,CN Menditxo,37.19,2026-07-06,Ranking 2025/26,
-50 Libre,"VICENTE ESPINOSA, Noa",2013,CN Urgain,37.30,2026-07-06,Ranking 2025/26,
-50 Libre,"MARCO GARCIA, June",2014,CN Menditxo,37.53,2026-07-06,Ranking 2025/26,
-50 Libre,"FERNANDEZ P. DE NANCLARES, N.",2013,CN Menditxo,37.85,2026-07-06,Ranking 2025/26,
-50 Libre,"DIEZ ORTIZ DE ORRUÑO, Olaia",2014,CN Urgain,37.91,2026-07-06,Ranking 2025/26,
-50 Libre,"MUGICA DOLK, Greta",2014,CN Judizmendi,38.14,2026-07-06,Ranking 2025/26,
-50 Libre,"MONTES LOPEZ, Ane",2013,CN Urgain,38.33,2026-07-06,Ranking 2025/26,
-50 Libre,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,39.19,2026-07-06,Ranking 2025/26,
-50 Libre,"ARAUJO CAMPO, Iraide",2014,CI Laudio,39.19,2026-07-06,Ranking 2025/26,
-50 Libre,"BASTON VARELA, Carla",2014,CN Menditxo,39.47,2026-07-06,Ranking 2025/26,
-50 Libre,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,39.60,2026-07-06,Ranking 2025/26,
-50 Libre,"GARCIA BARCINA, Iraia",2014,CI Laudio,39.63,2026-07-06,Ranking 2025/26,
-50 Libre,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,41.01,2026-07-06,Ranking 2025/26,
-50 Libre,"GASTON SOUTO, Nekane",2014,CI Laudio,41.09,2026-07-06,Ranking 2025/26,
-50 Libre,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,41.16,2026-07-06,Ranking 2025/26,
-50 Libre,"SANZ BASAGUREN, June",2014,CN Judizmendi,41.28,2026-07-06,Ranking 2025/26,
-50 Libre,"PEÑA BIDONDO, Haizea",2014,CN Urgain,41.54,2026-07-06,Ranking 2025/26,
-50 Libre,"BUSTINZA ABAD, Lur",2014,CN Judizmendi,42.03,2026-07-06,Ranking 2025/26,
-50 Libre,"ALONSO VAZ, Himilce",2013,CI Laudio,43.60,2026-07-06,Ranking 2025/26,
-50 Libre,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,48.40,2026-07-06,Ranking 2025/26,
-50 Libre,"FIGUEROA TERCILLA, Lucia",2014,CI Laudio,48.74,2026-07-06,Ranking 2025/26,
-50 Libre,"GUTIERREZ GUINEA, Irune",2014,CN Zadorra,56.65,2026-07-06,Ranking 2025/26,
-100 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,1:08.97,2026-07-06,Ranking 2025/26,
-100 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,1:09.83,2026-07-06,Ranking 2025/26,
-100 Libre,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,1:10.92,2026-07-06,Ranking 2025/26,
-100 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,1:12.75,2026-07-06,Ranking 2025/26,
-100 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,1:13.16,2026-07-06,Ranking 2025/26,
-100 Libre,"DAQUANNO, Gaia",2014,CN Menditxo,1:13.60,2026-07-06,Ranking 2025/26,
-100 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,1:14.54,2026-07-06,Ranking 2025/26,
-100 Libre,"HERRERO ALONSO, Miren",2013,CN Judizmendi,1:16.10,2026-07-06,Ranking 2025/26,
-100 Libre,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,1:16.37,2026-07-06,Ranking 2025/26,
-100 Libre,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,1:16.78,2026-07-06,Ranking 2025/26,
-100 Libre,"HIJONA SANCHEZ, June",2014,CN Judizmendi,1:18.22,2026-07-06,Ranking 2025/26,
-100 Libre,"PRIETO BOTO, Olatz",2014,CN Menditxo,1:19.55,2026-07-06,Ranking 2025/26,
-100 Libre,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,1:20.87,2026-07-06,Ranking 2025/26,
-100 Libre,"SANTOS GARCIA, Uxue",2014,CN Menditxo,1:21.33,2026-07-06,Ranking 2025/26,
-100 Libre,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,1:21.60,2026-07-06,Ranking 2025/26,
-100 Libre,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,1:21.96,2026-07-06,Ranking 2025/26,
-100 Libre,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,1:22.30,2026-07-06,Ranking 2025/26,
-100 Libre,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,1:22.39,2026-07-06,Ranking 2025/26,
-100 Libre,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,1:22.97,2026-07-06,Ranking 2025/26,
-100 Libre,"MARCO GARCIA, June",2014,CN Menditxo,1:23.38,2026-07-06,Ranking 2025/26,
-100 Libre,"DIAZ CEBALLOS, Laida",2013,CN Urgain,1:25.40,2026-07-06,Ranking 2025/26,
-100 Libre,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,1:26.13,2026-07-06,Ranking 2025/26,
-100 Libre,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,1:26.46,2026-07-06,Ranking 2025/26,
-100 Libre,"GARCIA BARCINA, Iraia",2014,CI Laudio,1:26.48,2026-07-06,Ranking 2025/26,
-100 Libre,"VICENTE ESPINOSA, Noa",2013,CN Urgain,1:26.75,2026-07-06,Ranking 2025/26,
-100 Libre,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,1:26.94,2026-07-06,Ranking 2025/26,
-100 Libre,"DIEZ ORTIZ DE ORRUÑO, Olaia",2014,CN Urgain,1:27.93,2026-07-06,Ranking 2025/26,
-100 Libre,"MUGICA DOLK, Greta",2014,CN Judizmendi,1:28.50,2026-07-06,Ranking 2025/26,
-100 Libre,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,1:29.05,2026-07-06,Ranking 2025/26,
-100 Libre,"BASTON VARELA, Carla",2014,CN Menditxo,1:29.16,2026-07-06,Ranking 2025/26,
-100 Libre,"MONTES LOPEZ, Ane",2013,CN Urgain,1:30.57,2026-07-06,Ranking 2025/26,
-100 Libre,"ARAUJO CAMPO, Iraide",2014,CI Laudio,1:31.46,2026-07-06,Ranking 2025/26,
-100 Libre,"GASTON SOUTO, Nekane",2014,CI Laudio,1:34.35,2026-07-06,Ranking 2025/26,
-100 Libre,"SANZ BASAGUREN, June",2014,CN Judizmendi,1:37.13,2026-07-06,Ranking 2025/26,
-100 Libre,"BUSTINZA ABAD, Lur",2014,CN Judizmendi,1:37.60,2026-07-06,Ranking 2025/26,
-100 Libre,"IBISATE GONZALEZ, Udane",2014,CN Judizmendi,1:37.80,2026-07-06,Ranking 2025/26,
-100 Libre,"ALONSO VAZ, Himilce",2013,CI Laudio,1:40.75,2026-07-06,Ranking 2025/26,
-100 Libre,"FUENTE COLINO, Jone",2014,CN Zadorra,1:47.33,2026-07-06,Ranking 2025/26,
-100 Libre,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,1:54.82,2026-07-06,Ranking 2025/26,
-200 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,2:30.87,2026-07-06,Ranking 2025/26,
-200 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,2:34.34,2026-07-06,Ranking 2025/26,
-200 Libre,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,2:34.96,2026-07-06,Ranking 2025/26,
-200 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,2:42.31,2026-07-06,Ranking 2025/26,
-200 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,2:42.78,2026-07-06,Ranking 2025/26,
-200 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,2:45.09,2026-07-06,Ranking 2025/26,
-200 Libre,"HERRERO ALONSO, Miren",2013,CN Judizmendi,2:45.96,2026-07-06,Ranking 2025/26,
-200 Libre,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,2:47.44,2026-07-06,Ranking 2025/26,
-200 Libre,"DAQUANNO, Gaia",2014,CN Menditxo,2:47.98,2026-07-06,Ranking 2025/26,
-200 Libre,"SANTOS GARCIA, Uxue",2014,CN Menditxo,2:51.07,2026-07-06,Ranking 2025/26,
-200 Libre,"HIJONA SANCHEZ, June",2014,CN Judizmendi,2:54.90,2026-07-06,Ranking 2025/26,
-200 Libre,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,2:58.17,2026-07-06,Ranking 2025/26,
-200 Libre,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,2:58.50,2026-07-06,Ranking 2025/26,
-200 Libre,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,3:03.59,2026-07-06,Ranking 2025/26,
-200 Libre,"PRIETO BOTO, Olatz",2014,CN Menditxo,3:03.72,2026-07-06,Ranking 2025/26,
-200 Libre,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,3:09.49,2026-07-06,Ranking 2025/26,
-200 Libre,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,3:11.54,2026-07-06,Ranking 2025/26,
-200 Libre,"MARCO GARCIA, June",2014,CN Menditxo,3:13.34,2026-07-06,Ranking 2025/26,
-200 Libre,"GARCIA BARCINA, Iraia",2014,CI Laudio,3:15.72,2026-07-06,Ranking 2025/26,
-200 Libre,"BASTON VARELA, Carla",2014,CN Menditxo,3:23.84,2026-07-06,Ranking 2025/26,
-200 Libre,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,3:24.83,2026-07-06,Ranking 2025/26,
-200 Libre,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,3:25.70,2026-07-06,Ranking 2025/26,
-200 Libre,"ARAUJO CAMPO, Iraide",2014,CI Laudio,3:26.62,2026-07-06,Ranking 2025/26,
-200 Libre,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,3:27.22,2026-07-06,Ranking 2025/26,
-200 Libre,"EL KAISSOUMI JAIFAR, A.",2013,CN Menditxo,3:33.76,2026-07-06,Ranking 2025/26,
-200 Libre,"GASTON SOUTO, Nekane",2014,CI Laudio,3:42.50,2026-07-06,Ranking 2025/26,
-200 Libre,"ALONSO VAZ, Himilce",2013,CI Laudio,3:47.53,2026-07-06,Ranking 2025/26,
-200 Libre,"IBISATE GONZALEZ, Udane",2014,CN Judizmendi,3:57.24,2026-07-06,Ranking 2025/26,
-200 Libre,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,4:39.25,2026-07-06,Ranking 2025/26,
-400 Libre,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,5:31.11,2026-07-06,Ranking 2025/26,
-400 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,5:31.79,2026-07-06,Ranking 2025/26,
-400 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,5:36.78,2026-07-06,Ranking 2025/26,
-400 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,5:38.02,2026-07-06,Ranking 2025/26,
-400 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,5:52.17,2026-07-06,Ranking 2025/26,
-400 Libre,"DAQUANNO, Gaia",2014,CN Menditxo,5:54.17,2026-07-06,Ranking 2025/26,
-400 Libre,"HERRERO ALONSO, Miren",2013,CN Judizmendi,5:54.78,2026-07-06,Ranking 2025/26,
-400 Libre,"SANTOS GARCIA, Uxue",2014,CN Menditxo,6:11.28,2026-07-06,Ranking 2025/26,
-400 Libre,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,6:14.09,2026-07-06,Ranking 2025/26,
-400 Libre,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,6:21.89,2026-07-06,Ranking 2025/26,
-400 Libre,"FERNANDEZ P. DE NANCLARES, N.",2013,CN Menditxo,6:25.62,2026-07-06,Ranking 2025/26,
-400 Libre,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,6:31.62,2026-07-06,Ranking 2025/26,
-400 Libre,"HIJONA SANCHEZ, June",2014,CN Judizmendi,6:32.95,2026-07-06,Ranking 2025/26,
-400 Libre,"PRIETO BOTO, Olatz",2014,CN Menditxo,6:35.32,2026-07-06,Ranking 2025/26,
-400 Libre,"MARCO GARCIA, June",2014,CN Menditxo,6:41.72,2026-07-06,Ranking 2025/26,
-400 Libre,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,6:58.18,2026-07-06,Ranking 2025/26,
-400 Libre,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,6:58.30,2026-07-06,Ranking 2025/26,
-400 Libre,"MONTES LOPEZ, Ane",2013,CN Urgain,7:02.76,2026-07-06,Ranking 2025/26,
-400 Libre,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,7:20.03,2026-07-06,Ranking 2025/26,
-400 Libre,"VICENTE ESPINOSA, Noa",2013,CN Urgain,7:20.81,2026-07-06,Ranking 2025/26,
-400 Libre,"ARAUJO CAMPO, Iraide",2014,CI Laudio,7:22.33,2026-07-06,Ranking 2025/26,
-400 Libre,"GARCIA BARCINA, Iraia",2014,CI Laudio,7:27.15,2026-07-06,Ranking 2025/26,
-400 Libre,"ALONSO VAZ, Himilce",2013,CI Laudio,8:14.78,2026-07-06,Ranking 2025/26,
-200 Libre,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,2:55.72,2026-07-06,Ranking 2025/26,
-200 Libre,"MUGICA DOLK, Greta",2014,CN Judizmendi,3:34.02,2026-07-06,Ranking 2025/26,
-400 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,5:45.29,2026-07-06,Ranking 2025/26,
-400 Libre,"BASTON VARELA, Carla",2014,CN Menditxo,7:03.18,2026-07-06,Ranking 2025/26,
-800 Libre,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,11:22.09,2026-07-06,Ranking 2025/26,
-800 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,11:33.30,2026-07-06,Ranking 2025/26,
-800 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,11:38.45,2026-07-06,Ranking 2025/26,
-800 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,11:43.90,2026-07-06,Ranking 2025/26,
-800 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,11:53.04,2026-07-06,Ranking 2025/26,
-800 Libre,"DAQUANNO, Gaia",2014,CN Menditxo,12:08.15,2026-07-06,Ranking 2025/26,
-800 Libre,"SANTOS GARCIA, Uxue",2014,CN Menditxo,12:15.35,2026-07-06,Ranking 2025/26,
-800 Libre,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,12:23.74,2026-07-06,Ranking 2025/26,
-800 Libre,"HERRERO ALONSO, Miren",2013,CN Judizmendi,12:24.50,2026-07-06,Ranking 2025/26,
-800 Libre,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,12:26.45,2026-07-06,Ranking 2025/26,
-800 Libre,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,13:07.64,2026-07-06,Ranking 2025/26,
-800 Libre,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,14:05.05,2026-07-06,Ranking 2025/26,
-800 Libre,"VICENTE ESPINOSA, Noa",2013,CN Urgain,14:39.20,2026-07-06,Ranking 2025/26,
-800 Libre,"MONTES LOPEZ, Ane",2013,CN Urgain,14:43.36,2026-07-06,Ranking 2025/26,
-50 Espalda,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,37.25,2026-07-06,Ranking 2025/26,
-50 Espalda,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,37.87,2026-07-06,Ranking 2025/26,
-50 Espalda,"DAQUANNO, Gaia",2014,CN Menditxo,39.01,2026-07-06,Ranking 2025/26,
-50 Espalda,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,39.54,2026-07-06,Ranking 2025/26,
-50 Espalda,"EGUIDON VARGAS, Maren",2013,CN Menditxo,39.81,2026-07-06,Ranking 2025/26,
-50 Espalda,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,40.35,2026-07-06,Ranking 2025/26,
-50 Espalda,"HERRERO ALONSO, Miren",2013,CN Judizmendi,40.59,2026-07-06,Ranking 2025/26,
-50 Espalda,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,41.15,2026-07-06,Ranking 2025/26,
-50 Espalda,"SANTOS GARCIA, Uxue",2014,CN Menditxo,41.24,2026-07-06,Ranking 2025/26,
-50 Espalda,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,41.84,2026-07-06,Ranking 2025/26,
-50 Espalda,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,41.94,2026-07-06,Ranking 2025/26,
-50 Espalda,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,42.77,2026-07-06,Ranking 2025/26,
-50 Espalda,"PRIETO BOTO, Olatz",2014,CN Menditxo,43.33,2026-07-06,Ranking 2025/26,
-50 Espalda,"MARCO GARCIA, June",2014,CN Menditxo,43.91,2026-07-06,Ranking 2025/26,
-50 Espalda,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,44.30,2026-07-06,Ranking 2025/26,
-50 Espalda,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,44.35,2026-07-06,Ranking 2025/26,
-50 Espalda,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,44.41,2026-07-06,Ranking 2025/26,
-50 Espalda,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,44.75,2026-07-06,Ranking 2025/26,
-50 Espalda,"GARCIA BARCINA, Iraia",2014,CI Laudio,44.96,2026-07-06,Ranking 2025/26,
-50 Espalda,"DIAZ CEBALLOS, Laida",2013,CN Urgain,45.46,2026-07-06,Ranking 2025/26,
-50 Espalda,"HIJONA SANCHEZ, June",2014,CN Judizmendi,45.63,2026-07-06,Ranking 2025/26,
-50 Espalda,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,46.69,2026-07-06,Ranking 2025/26,
-50 Espalda,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,46.93,2026-07-06,Ranking 2025/26,
-50 Espalda,"ARAUJO CAMPO, Iraide",2014,CI Laudio,47.37,2026-07-06,Ranking 2025/26,
-50 Espalda,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,47.46,2026-07-06,Ranking 2025/26,
-50 Espalda,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,47.54,2026-07-06,Ranking 2025/26,
-50 Espalda,"GASTON SOUTO, Nekane",2014,CI Laudio,48.47,2026-07-06,Ranking 2025/26,
-50 Espalda,"ALONSO VAZ, Himilce",2013,CI Laudio,50.65,2026-07-06,Ranking 2025/26,
-50 Espalda,"BASTON VARELA, Carla",2014,CN Menditxo,51.33,2026-07-06,Ranking 2025/26,
-50 Espalda,"IBISATE GONZALEZ, Udane",2014,CN Judizmendi,52.80,2026-07-06,Ranking 2025/26,
-50 Espalda,"SANZ BASAGUREN, June",2014,CN Judizmendi,54.07,2026-07-06,Ranking 2025/26,
-50 Espalda,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,55.79,2026-07-06,Ranking 2025/26,
-50 Espalda,"FUENTE COLINO, Jone",2014,CN Zadorra,57.93,2026-07-06,Ranking 2025/26,
-800 Libre,"DIAZ CEBALLOS, Laida",2013,CN Urgain,13:54.78,2026-07-06,Ranking 2025/26,
-50 Espalda,"FREIRE MARTIN, Haizea",2013,CN Menditxo,40.11,2026-07-06,Ranking 2025/26,
-50 Espalda,"MUGICA DOLK, Greta",2014,CN Judizmendi,45.28,2026-07-06,Ranking 2025/26,
-50 Espalda,"FIGUEROA TERCILLA, Lucia",2014,CI Laudio,59.13,2026-07-06,Ranking 2025/26,
-100 Espalda,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,1:22.10,2026-07-06,Ranking 2025/26,
-100 Espalda,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,1:22.92,2026-07-06,Ranking 2025/26,
-100 Espalda,"DAQUANNO, Gaia",2014,CN Menditxo,1:23.27,2026-07-06,Ranking 2025/26,
-100 Espalda,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,1:26.59,2026-07-06,Ranking 2025/26,
-100 Espalda,"SANTOS GARCIA, Uxue",2014,CN Menditxo,1:26.82,2026-07-06,Ranking 2025/26,
-100 Espalda,"PRIETO BOTO, Olatz",2014,CN Menditxo,1:27.55,2026-07-06,Ranking 2025/26,
-100 Espalda,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,1:27.92,2026-07-06,Ranking 2025/26,
-100 Espalda,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,1:28.37,2026-07-06,Ranking 2025/26,
-100 Espalda,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,1:28.38,2026-07-06,Ranking 2025/26,
-100 Espalda,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,1:29.94,2026-07-06,Ranking 2025/26,
-100 Espalda,"MARCO GARCIA, June",2014,CN Menditxo,1:30.54,2026-07-06,Ranking 2025/26,
-100 Espalda,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,1:33.36,2026-07-06,Ranking 2025/26,
-100 Espalda,"HIJONA SANCHEZ, June",2014,CN Judizmendi,1:34.13,2026-07-06,Ranking 2025/26,
-100 Espalda,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,1:35.07,2026-07-06,Ranking 2025/26,
-100 Espalda,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,1:36.28,2026-07-06,Ranking 2025/26,
-100 Espalda,"ARAUJO CAMPO, Iraide",2014,CI Laudio,1:39.16,2026-07-06,Ranking 2025/26,
-100 Espalda,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,1:39.30,2026-07-06,Ranking 2025/26,
-100 Espalda,"MUGICA DOLK, Greta",2014,CN Judizmendi,1:39.32,2026-07-06,Ranking 2025/26,
-100 Espalda,"GARCIA BARCINA, Iraia",2014,CI Laudio,1:39.93,2026-07-06,Ranking 2025/26,
-100 Espalda,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,1:42.98,2026-07-06,Ranking 2025/26,
-100 Espalda,"MONTES LOPEZ, Ane",2013,CN Urgain,1:44.84,2026-07-06,Ranking 2025/26,
-100 Espalda,"IBISATE GONZALEZ, Udane",2014,CN Judizmendi,1:48.71,2026-07-06,Ranking 2025/26,
-100 Espalda,"ALONSO VAZ, Himilce",2013,CI Laudio,1:52.73,2026-07-06,Ranking 2025/26,
-100 Espalda,"GASTON SOUTO, Nekane",2014,CI Laudio,1:53.09,2026-07-06,Ranking 2025/26,
-100 Espalda,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,2:05.52,2026-07-06,Ranking 2025/26,
-200 Espalda,"DAQUANNO, Gaia",2014,CN Menditxo,2:58.14,2026-07-06,Ranking 2025/26,
-200 Espalda,"EGUIDON VARGAS, Maren",2013,CN Menditxo,3:00.37,2026-07-06,Ranking 2025/26,
-200 Espalda,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,3:08.29,2026-07-06,Ranking 2025/26,
-200 Espalda,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,3:08.51,2026-07-06,Ranking 2025/26,
-200 Espalda,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,3:09.18,2026-07-06,Ranking 2025/26,
-200 Espalda,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,3:10.38,2026-07-06,Ranking 2025/26,
-200 Espalda,"PRIETO BOTO, Olatz",2014,CN Menditxo,3:10.70,2026-07-06,Ranking 2025/26,
-200 Espalda,"MARCO GARCIA, June",2014,CN Menditxo,3:10.87,2026-07-06,Ranking 2025/26,
-200 Espalda,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,3:10.93,2026-07-06,Ranking 2025/26,
-200 Espalda,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,3:16.06,2026-07-06,Ranking 2025/26,
-200 Espalda,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,3:23.72,2026-07-06,Ranking 2025/26,
-200 Espalda,"HIJONA SANCHEZ, June",2014,CN Judizmendi,3:28.72,2026-07-06,Ranking 2025/26,
-200 Espalda,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,3:34.58,2026-07-06,Ranking 2025/26,
-200 Espalda,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,3:37.89,2026-07-06,Ranking 2025/26,
-200 Espalda,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,3:38.05,2026-07-06,Ranking 2025/26,
-200 Espalda,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,3:41.69,2026-07-06,Ranking 2025/26,
-200 Espalda,"BASTON VARELA, Carla",2014,CN Menditxo,3:48.69,2026-07-06,Ranking 2025/26,
-200 Espalda,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,3:49.08,2026-07-06,Ranking 2025/26,
-200 Espalda,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,3:49.68,2026-07-06,Ranking 2025/26,
-200 Espalda,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,3:50.38,2026-07-06,Ranking 2025/26,
-200 Espalda,"EL KAISSOUMI JAIFAR, A.",2013,CN Menditxo,4:10.60,2026-07-06,Ranking 2025/26,
-100 Espalda,"HERRERO ALONSO, Miren",2013,CN Judizmendi,1:30.69,2026-07-06,Ranking 2025/26,
-200 Espalda,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,3:13.31,2026-07-06,Ranking 2025/26,
-50 Braza,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,38.07,2026-07-06,Ranking 2025/26,
-50 Braza,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,41.41,2026-07-06,Ranking 2025/26,
-50 Braza,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,42.38,2026-07-06,Ranking 2025/26,
-50 Braza,"DAQUANNO, Gaia",2014,CN Menditxo,44.02,2026-07-06,Ranking 2025/26,
-50 Braza,"HIJONA SANCHEZ, June",2014,CN Judizmendi,44.10,2026-07-06,Ranking 2025/26,
-50 Braza,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,44.15,2026-07-06,Ranking 2025/26,
-50 Braza,"EGUIDON VARGAS, Maren",2013,CN Menditxo,44.16,2026-07-06,Ranking 2025/26,
-50 Braza,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,45.62,2026-07-06,Ranking 2025/26,
-50 Braza,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,45.66,2026-07-06,Ranking 2025/26,
-50 Braza,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,45.94,2026-07-06,Ranking 2025/26,
-50 Braza,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,46.12,2026-07-06,Ranking 2025/26,
-50 Braza,"PRIETO BOTO, Olatz",2014,CN Menditxo,48.06,2026-07-06,Ranking 2025/26,
-50 Braza,"FERNANDEZ P. DE NANCLARES, N.",2013,CN Menditxo,48.43,2026-07-06,Ranking 2025/26,
-50 Braza,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,48.50,2026-07-06,Ranking 2025/26,
-50 Braza,"VICENTE ESPINOSA, Noa",2013,CN Urgain,48.70,2026-07-06,Ranking 2025/26,
-50 Braza,"MUGICA DOLK, Greta",2014,CN Judizmendi,49.91,2026-07-06,Ranking 2025/26,
-50 Braza,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,49.98,2026-07-06,Ranking 2025/26,
-50 Braza,"DIAZ CEBALLOS, Laida",2013,CN Urgain,49.99,2026-07-06,Ranking 2025/26,
-50 Braza,"FREIRE MARTIN, Haizea",2013,CN Menditxo,50.00,2026-07-06,Ranking 2025/26,
-50 Braza,"GARCIA BARCINA, Iraia",2014,CI Laudio,50.11,2026-07-06,Ranking 2025/26,
-50 Braza,"BUSTINZA ABAD, Lur",2014,CN Judizmendi,50.29,2026-07-06,Ranking 2025/26,
-50 Braza,"BASTON VARELA, Carla",2014,CN Menditxo,51.08,2026-07-06,Ranking 2025/26,
-50 Braza,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,51.53,2026-07-06,Ranking 2025/26,
-50 Braza,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,51.60,2026-07-06,Ranking 2025/26,
-50 Braza,"MARCO GARCIA, June",2014,CN Menditxo,52.54,2026-07-06,Ranking 2025/26,
-50 Braza,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,53.58,2026-07-06,Ranking 2025/26,
-50 Braza,"SANZ BASAGUREN, June",2014,CN Judizmendi,54.16,2026-07-06,Ranking 2025/26,
-50 Braza,"ARAUJO CAMPO, Iraide",2014,CI Laudio,1:01.05,2026-07-06,Ranking 2025/26,
-50 Braza,"FIGUEROA TERCILLA, Lucia",2014,CI Laudio,1:03.05,2026-07-06,Ranking 2025/26,
-50 Braza,"FUENTE COLINO, Jone",2014,CN Zadorra,1:03.45,2026-07-06,Ranking 2025/26,
-50 Braza,"PEÑA BIDONDO, Haizea",2014,CN Urgain,1:08.56,2026-07-06,Ranking 2025/26,
-50 Braza,"SANTOS GARCIA, Uxue",2014,CN Menditxo,46.21,2026-07-06,Ranking 2025/26,
-50 Braza,"GASTON SOUTO, Nekane",2014,CI Laudio,52.57,2026-07-06,Ranking 2025/26,
-100 Braza,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,1:24.10,2026-07-06,Ranking 2025/26,
-100 Braza,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,1:35.57,2026-07-06,Ranking 2025/26,
-100 Braza,"HIJONA SANCHEZ, June",2014,CN Judizmendi,1:37.18,2026-07-06,Ranking 2025/26,
-100 Braza,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,1:37.36,2026-07-06,Ranking 2025/26,
-100 Braza,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,1:38.09,2026-07-06,Ranking 2025/26,
-100 Braza,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,1:39.11,2026-07-06,Ranking 2025/26,
-100 Braza,"DAQUANNO, Gaia",2014,CN Menditxo,1:40.03,2026-07-06,Ranking 2025/26,
-100 Braza,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,1:40.40,2026-07-06,Ranking 2025/26,
-100 Braza,"PRIETO BOTO, Olatz",2014,CN Menditxo,1:41.53,2026-07-06,Ranking 2025/26,
-100 Braza,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,1:43.12,2026-07-06,Ranking 2025/26,
-100 Braza,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,1:43.35,2026-07-06,Ranking 2025/26,
-100 Braza,"APIÑANIZ ARRIZABALAGA, Jimena",2013,CN Urgain,1:44.76,2026-07-06,Ranking 2025/26,
-100 Braza,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,1:46.84,2026-07-06,Ranking 2025/26,
-100 Braza,"DIAZ CEBALLOS, Laida",2013,CN Urgain,1:47.24,2026-07-06,Ranking 2025/26,
-100 Braza,"BASTON VARELA, Carla",2014,CN Menditxo,1:47.46,2026-07-06,Ranking 2025/26,
-100 Braza,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,1:48.12,2026-07-06,Ranking 2025/26,
-100 Braza,"GARCIA BARCINA, Iraia",2014,CI Laudio,1:50.57,2026-07-06,Ranking 2025/26,
-100 Braza,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,1:51.46,2026-07-06,Ranking 2025/26,
-100 Braza,"BUSTINZA ABAD, Lur",2014,CN Judizmendi,1:51.71,2026-07-06,Ranking 2025/26,
-100 Braza,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,1:52.84,2026-07-06,Ranking 2025/26,
-100 Braza,"SANZ BASAGUREN, June",2014,CN Judizmendi,1:53.23,2026-07-06,Ranking 2025/26,
-100 Braza,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,1:56.90,2026-07-06,Ranking 2025/26,
-100 Braza,"GASTON SOUTO, Nekane",2014,CI Laudio,1:58.55,2026-07-06,Ranking 2025/26,
-100 Braza,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,2:00.53,2026-07-06,Ranking 2025/26,
-100 Braza,"IBISATE GONZALEZ, Udane",2014,CN Judizmendi,2:05.41,2026-07-06,Ranking 2025/26,
-100 Braza,"PEÑA BIDONDO, Haizea",2014,CN Urgain,2:28.17,2026-07-06,Ranking 2025/26,
-100 Braza,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,2:47.55,2026-07-06,Ranking 2025/26,
-200 Braza,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,2:59.96,2026-07-06,Ranking 2025/26,
-200 Braza,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,3:17.49,2026-07-06,Ranking 2025/26,
-200 Braza,"EGUIDON VARGAS, Maren",2013,CN Menditxo,3:27.78,2026-07-06,Ranking 2025/26,
-200 Braza,"HIJONA SANCHEZ, June",2014,CN Judizmendi,3:28.31,2026-07-06,Ranking 2025/26,
-200 Braza,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,3:31.67,2026-07-06,Ranking 2025/26,
-200 Braza,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,3:31.93,2026-07-06,Ranking 2025/26,
-200 Braza,"FREIRE MARTIN, Haizea",2013,CN Menditxo,3:32.96,2026-07-06,Ranking 2025/26,
-200 Braza,"SANTOS GARCIA, Uxue",2014,CN Menditxo,3:35.31,2026-07-06,Ranking 2025/26,
-200 Braza,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,3:38.68,2026-07-06,Ranking 2025/26,
-200 Braza,"PRIETO BOTO, Olatz",2014,CN Menditxo,3:39.00,2026-07-06,Ranking 2025/26,
-200 Braza,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,3:42.54,2026-07-06,Ranking 2025/26,
-200 Braza,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,3:47.43,2026-07-06,Ranking 2025/26,
-200 Braza,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,3:50.37,2026-07-06,Ranking 2025/26,
-200 Braza,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,3:51.11,2026-07-06,Ranking 2025/26,
-200 Braza,"BASTON VARELA, Carla",2014,CN Menditxo,4:02.25,2026-07-06,Ranking 2025/26,
-200 Braza,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,4:05.93,2026-07-06,Ranking 2025/26,
-200 Braza,"GASTON SOUTO, Nekane",2014,CI Laudio,4:14.53,2026-07-06,Ranking 2025/26,
-200 Braza,"VICENTE ESPINOSA, Noa",2013,CN Urgain,4:19.53,2026-07-06,Ranking 2025/26,
-200 Braza,"ARAUJO CAMPO, Iraide",2014,CI Laudio,4:24.79,2026-07-06,Ranking 2025/26,
-100 Braza,"MUGICA DOLK, Greta",2014,CN Judizmendi,1:43.45,2026-07-06,Ranking 2025/26,
-100 Braza,"MONTES LOPEZ, Ane",2013,CN Urgain,2:08.57,2026-07-06,Ranking 2025/26,
-200 Braza,"DAQUANNO, Gaia",2014,CN Menditxo,3:32.95,2026-07-06,Ranking 2025/26,
-50 Mariposa,"EGUIDON VARGAS, Maren",2013,CN Menditxo,32.91,2026-07-06,Ranking 2025/26,
-50 Mariposa,"SANTOS GARCIA, Uxue",2014,CN Menditxo,34.10,2026-07-06,Ranking 2025/26,
-50 Mariposa,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,34.45,2026-07-06,Ranking 2025/26,
-50 Mariposa,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,36.18,2026-07-06,Ranking 2025/26,
-50 Mariposa,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,38.90,2026-07-06,Ranking 2025/26,
-50 Mariposa,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,38.93,2026-07-06,Ranking 2025/26,
-50 Mariposa,"HERRERO ALONSO, Miren",2013,CN Judizmendi,39.41,2026-07-06,Ranking 2025/26,
-50 Mariposa,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,40.21,2026-07-06,Ranking 2025/26,
-50 Mariposa,"HIJONA SANCHEZ, June",2014,CN Judizmendi,42.36,2026-07-06,Ranking 2025/26,
-50 Mariposa,"FREIRE MARTIN, Haizea",2013,CN Menditxo,42.91,2026-07-06,Ranking 2025/26,
-50 Mariposa,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,43.58,2026-07-06,Ranking 2025/26,
-50 Mariposa,"DAQUANNO, Gaia",2014,CN Menditxo,44.43,2026-07-06,Ranking 2025/26,
-50 Mariposa,"BASTON VARELA, Carla",2014,CN Menditxo,44.46,2026-07-06,Ranking 2025/26,
-50 Mariposa,"VICENTE ESPINOSA, Noa",2013,CN Urgain,44.64,2026-07-06,Ranking 2025/26,
-50 Mariposa,"MUGICA DOLK, Greta",2014,CN Judizmendi,45.41,2026-07-06,Ranking 2025/26,
-50 Mariposa,"DIEZ ORTIZ DE ORRUÑO, Olaia",2014,CN Urgain,45.57,2026-07-06,Ranking 2025/26,
-50 Mariposa,"FERNANDEZ P. DE NANCLARES, N.",2013,CN Menditxo,45.78,2026-07-06,Ranking 2025/26,
-50 Mariposa,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,46.25,2026-07-06,Ranking 2025/26,
-50 Mariposa,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,46.38,2026-07-06,Ranking 2025/26,
-50 Mariposa,"MARCO GARCIA, June",2014,CN Menditxo,46.82,2026-07-06,Ranking 2025/26,
-50 Mariposa,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,47.36,2026-07-06,Ranking 2025/26,
-50 Mariposa,"PRIETO BOTO, Olatz",2014,CN Menditxo,47.61,2026-07-06,Ranking 2025/26,
-50 Mariposa,"MONTES LOPEZ, Ane",2013,CN Urgain,50.21,2026-07-06,Ranking 2025/26,
-50 Mariposa,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,51.62,2026-07-06,Ranking 2025/26,
-50 Mariposa,"GARCIA BARCINA, Iraia",2014,CI Laudio,51.67,2026-07-06,Ranking 2025/26,
-50 Mariposa,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,52.77,2026-07-06,Ranking 2025/26,
-50 Mariposa,"ARAUJO CAMPO, Iraide",2014,CI Laudio,52.92,2026-07-06,Ranking 2025/26,
-50 Mariposa,"SANZ BASAGUREN, June",2014,CN Judizmendi,54.93,2026-07-06,Ranking 2025/26,
-50 Mariposa,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,55.95,2026-07-06,Ranking 2025/26,
-50 Mariposa,"GASTON SOUTO, Nekane",2014,CI Laudio,56.77,2026-07-06,Ranking 2025/26,
-100 Mariposa,"EGUIDON VARGAS, Maren",2013,CN Menditxo,1:19.03,2026-07-06,Ranking 2025/26,
-100 Mariposa,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,1:24.14,2026-07-06,Ranking 2025/26,
-100 Mariposa,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,1:25.01,2026-07-06,Ranking 2025/26,
-100 Mariposa,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,1:30.06,2026-07-06,Ranking 2025/26,
-100 Mariposa,"SANTOS GARCIA, Uxue",2014,CN Menditxo,1:30.16,2026-07-06,Ranking 2025/26,
-100 Mariposa,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,1:37.52,2026-07-06,Ranking 2025/26,
-100 Mariposa,"HIJONA SANCHEZ, June",2014,CN Judizmendi,1:38.98,2026-07-06,Ranking 2025/26,
-100 Mariposa,"HERRERO ALONSO, Miren",2013,CN Judizmendi,1:42.67,2026-07-06,Ranking 2025/26,
-100 Mariposa,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,1:49.77,2026-07-06,Ranking 2025/26,
-100 Mariposa,"MUGICA DOLK, Greta",2014,CN Judizmendi,1:50.02,2026-07-06,Ranking 2025/26,
-100 Mariposa,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,1:50.11,2026-07-06,Ranking 2025/26,
-100 Mariposa,"SANZ BASAGUREN, June",2014,CN Judizmendi,1:52.10,2026-07-06,Ranking 2025/26,
-100 Mariposa,"GARCIA BARCINA, Iraia",2014,CI Laudio,1:52.27,2026-07-06,Ranking 2025/26,
-100 Mariposa,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,1:52.44,2026-07-06,Ranking 2025/26,
-100 Mariposa,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,1:54.69,2026-07-06,Ranking 2025/26,
-100 Mariposa,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,1:55.55,2026-07-06,Ranking 2025/26,
-100 Mariposa,"PRIETO BOTO, Olatz",2014,CN Menditxo,1:55.58,2026-07-06,Ranking 2025/26,
-100 Mariposa,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,2:07.69,2026-07-06,Ranking 2025/26,
-100 Mariposa,"GASTON SOUTO, Nekane",2014,CI Laudio,2:09.52,2026-07-06,Ranking 2025/26,
-100 Mariposa,"ARAUJO CAMPO, Iraide",2014,CI Laudio,2:09.80,2026-07-06,Ranking 2025/26,
-100 Mariposa,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,2:22.24,2026-07-06,Ranking 2025/26,
-50 Mariposa,"APIÑANIZ ARRIZABALAGA, Jimena",2013,CN Urgain,44.29,2026-07-06,Ranking 2025/26,
-50 Mariposa,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,52.43,2026-07-06,Ranking 2025/26,
-100 Mariposa,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,1:27.49,2026-07-06,Ranking 2025/26,
-100 Mariposa,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,1:56.35,2026-07-06,Ranking 2025/26,
-200 Mariposa,"EGUIDON VARGAS, Maren",2013,CN Menditxo,3:04.73,2026-07-06,Ranking 2025/26,
-200 Mariposa,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,3:24.83,2026-07-06,Ranking 2025/26,
-200 Mariposa,"SANTOS GARCIA, Uxue",2014,CN Menditxo,3:27.35,2026-07-06,Ranking 2025/26,
-200 Mariposa,"FREIRE MARTIN, Haizea",2013,CN Menditxo,3:36.39,2026-07-06,Ranking 2025/26,
-200 Mariposa,"MARCO GARCIA, June",2014,CN Menditxo,3:36.93,2026-07-06,Ranking 2025/26,
-200 Mariposa,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,3:44.81,2026-07-06,Ranking 2025/26,
-200 Mariposa,"DAQUANNO, Gaia",2014,CN Menditxo,3:46.44,2026-07-06,Ranking 2025/26,
-200 Mariposa,"PRIETO BOTO, Olatz",2014,CN Menditxo,3:58.02,2026-07-06,Ranking 2025/26,
-100 Estilos,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,1:22.48,2026-07-06,Ranking 2025/26,
-100 Estilos,"EGUIDON VARGAS, Maren",2013,CN Menditxo,1:22.80,2026-07-06,Ranking 2025/26,
-100 Estilos,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,1:27.46,2026-07-06,Ranking 2025/26,
-100 Estilos,"HERRERO ALONSO, Miren",2013,CN Judizmendi,1:27.67,2026-07-06,Ranking 2025/26,
-100 Estilos,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,1:32.07,2026-07-06,Ranking 2025/26,
-100 Estilos,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,1:33.66,2026-07-06,Ranking 2025/26,
-100 Estilos,"FREIRE MARTIN, Haizea",2013,CN Menditxo,1:34.18,2026-07-06,Ranking 2025/26,
-100 Estilos,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,1:36.06,2026-07-06,Ranking 2025/26,
-100 Estilos,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,1:36.37,2026-07-06,Ranking 2025/26,
-100 Estilos,"GARCIA BARCINA, Iraia",2014,CI Laudio,1:36.78,2026-07-06,Ranking 2025/26,
-100 Estilos,"MUGICA DOLK, Greta",2014,CN Judizmendi,1:37.86,2026-07-06,Ranking 2025/26,
-100 Estilos,"VICENTE ESPINOSA, Noa",2013,CN Urgain,1:39.46,2026-07-06,Ranking 2025/26,
-100 Estilos,"ARAUJO CAMPO, Iraide",2014,CI Laudio,1:46.90,2026-07-06,Ranking 2025/26,
-100 Estilos,"MONTES LOPEZ, Ane",2013,CN Urgain,1:55.62,2026-07-06,Ranking 2025/26,
-100 Estilos,"GASTON SOUTO, Nekane",2014,CI Laudio,1:59.46,2026-07-06,Ranking 2025/26,
-100 Estilos,"ALONSO VAZ, Himilce",2013,CI Laudio,2:01.18,2026-07-06,Ranking 2025/26,
-200 Estilos,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,2:59.34,2026-07-06,Ranking 2025/26,
-200 Estilos,"EGUIDON VARGAS, Maren",2013,CN Menditxo,3:00.32,2026-07-06,Ranking 2025/26,
-200 Estilos,"SANTOS GARCIA, Uxue",2014,CN Menditxo,3:02.13,2026-07-06,Ranking 2025/26,
-200 Estilos,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,3:03.44,2026-07-06,Ranking 2025/26,
-200 Estilos,"DAQUANNO, Gaia",2014,CN Menditxo,3:06.96,2026-07-06,Ranking 2025/26,
-200 Estilos,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,3:12.33,2026-07-06,Ranking 2025/26,
-200 Estilos,"MARCO GARCIA, June",2014,CN Menditxo,3:13.12,2026-07-06,Ranking 2025/26,
-200 Estilos,"HIJONA SANCHEZ, June",2014,CN Judizmendi,3:13.69,2026-07-06,Ranking 2025/26,
-200 Estilos,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,3:17.10,2026-07-06,Ranking 2025/26,
-200 Estilos,"HERRERO ALONSO, Miren",2013,CN Judizmendi,3:19.53,2026-07-06,Ranking 2025/26,
-200 Estilos,"PRIETO BOTO, Olatz",2014,CN Menditxo,3:19.58,2026-07-06,Ranking 2025/26,
-200 Estilos,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,3:21.65,2026-07-06,Ranking 2025/26,
-200 Estilos,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,3:30.26,2026-07-06,Ranking 2025/26,
-200 Estilos,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,3:31.44,2026-07-06,Ranking 2025/26,
-200 Estilos,"SANZ BASAGUREN, June",2014,CN Judizmendi,3:35.62,2026-07-06,Ranking 2025/26,
-200 Estilos,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,3:37.56,2026-07-06,Ranking 2025/26,
-200 Estilos,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,3:38.03,2026-07-06,Ranking 2025/26,
-200 Estilos,"GARCIA BARCINA, Iraia",2014,CI Laudio,3:47.49,2026-07-06,Ranking 2025/26,
-200 Estilos,"GASTON SOUTO, Nekane",2014,CI Laudio,4:20.93,2026-07-06,Ranking 2025/26,
-100 Estilos,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,1:44.38,2026-07-06,Ranking 2025/26,
-200 Estilos,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,3:05.26,2026-07-06,Ranking 2025/26,
-200 Estilos,"ARAUJO CAMPO, Iraide",2014,CI Laudio,3:49.54,2026-07-06,Ranking 2025/26,
-400 Estilos,"FREIRE MARTIN, Haizea",2013,CN Menditxo,6:22.41,2026-07-06,Ranking 2025/26,
-400 Estilos,"EGUIDON VARGAS, Maren",2013,CN Menditxo,6:23.55,2026-07-06,Ranking 2025/26,
-400 Estilos,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,6:26.50,2026-07-06,Ranking 2025/26,
-400 Estilos,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,6:26.52,2026-07-06,Ranking 2025/26,
-400 Estilos,"SANTOS GARCIA, Uxue",2014,CN Menditxo,6:26.89,2026-07-06,Ranking 2025/26,
-400 Estilos,"DAQUANNO, Gaia",2014,CN Menditxo,6:31.37,2026-07-06,Ranking 2025/26,
-400 Estilos,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,6:33.76,2026-07-06,Ranking 2025/26,
-400 Estilos,"MARCO GARCIA, June",2014,CN Menditxo,6:50.67,2026-07-06,Ranking 2025/26,
-400 Estilos,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,6:55.70,2026-07-06,Ranking 2025/26,
-400 Estilos,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,7:11.71,2026-07-06,Ranking 2025/26,
-400 Estilos,"HIJONA SANCHEZ, June",2014,CN Judizmendi,7:14.97,2026-07-06,Ranking 2025/26,
-400 Estilos,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,8:03.11,2026-07-06,Ranking 2025/26,
-400 Estilos,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,7:34.70,2026-07-06,Ranking 2025/26,
+50 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,31.54,2026-06-14,Ranking 2025/26,
+50 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,31.56,2026-06-14,Ranking 2025/26,
+50 Libre,"DAQUANNO, Gaia",2014,CN Menditxo,32.13,2026-06-14,Ranking 2025/26,
+50 Libre,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,32.16,2026-06-14,Ranking 2025/26,
+50 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,32.90,2026-06-14,Ranking 2025/26,
+50 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,33.17,2026-06-14,Ranking 2025/26,
+50 Libre,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,33.95,2026-06-14,Ranking 2025/26,
+50 Libre,"HIJONA SANCHEZ, June",2014,CN Judizmendi,34.45,2026-06-14,Ranking 2025/26,
+50 Libre,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,34.61,2026-06-14,Ranking 2025/26,
+50 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,34.67,2026-06-14,Ranking 2025/26,
+50 Libre,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,34.76,2026-06-14,Ranking 2025/26,
+50 Libre,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,35.56,2026-06-14,Ranking 2025/26,
+50 Libre,"PRIETO BOTO, Olatz",2014,CN Menditxo,35.68,2026-06-14,Ranking 2025/26,
+50 Libre,"DIAZ CEBALLOS, Laida",2013,CN Urgain,36.05,2026-06-14,Ranking 2025/26,
+50 Libre,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,36.06,2026-06-14,Ranking 2025/26,
+50 Libre,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,36.11,2026-06-14,Ranking 2025/26,
+50 Libre,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,36.12,2026-06-14,Ranking 2025/26,
+50 Libre,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,36.90,2026-06-14,Ranking 2025/26,
+50 Libre,"SANTOS GARCIA, Uxue",2014,CN Menditxo,37.19,2026-06-14,Ranking 2025/26,
+50 Libre,"VICENTE ESPINOSA, Noa",2013,CN Urgain,37.30,2026-06-14,Ranking 2025/26,
+50 Libre,"MARCO GARCIA, June",2014,CN Menditxo,37.53,2026-06-14,Ranking 2025/26,
+50 Libre,"FERNANDEZ P. DE NANCLARES, N.",2013,CN Menditxo,37.85,2026-06-14,Ranking 2025/26,
+50 Libre,"DIEZ ORTIZ DE ORRUÑO, Olaia",2014,CN Urgain,37.91,2026-06-14,Ranking 2025/26,
+50 Libre,"MUGICA DOLK, Greta",2014,CN Judizmendi,38.14,2026-06-14,Ranking 2025/26,
+50 Libre,"MONTES LOPEZ, Ane",2013,CN Urgain,38.33,2026-06-14,Ranking 2025/26,
+50 Libre,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,39.19,2026-06-14,Ranking 2025/26,
+50 Libre,"ARAUJO CAMPO, Iraide",2014,CI Laudio,39.19,2026-06-14,Ranking 2025/26,
+50 Libre,"BASTON VARELA, Carla",2014,CN Menditxo,39.47,2026-06-14,Ranking 2025/26,
+50 Libre,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,39.60,2026-06-14,Ranking 2025/26,
+50 Libre,"GARCIA BARCINA, Iraia",2014,CI Laudio,39.63,2026-06-14,Ranking 2025/26,
+50 Libre,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,41.01,2026-06-14,Ranking 2025/26,
+50 Libre,"GASTON SOUTO, Nekane",2014,CI Laudio,41.09,2026-06-14,Ranking 2025/26,
+50 Libre,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,41.16,2026-06-14,Ranking 2025/26,
+50 Libre,"SANZ BASAGUREN, June",2014,CN Judizmendi,41.28,2026-06-14,Ranking 2025/26,
+50 Libre,"PEÑA BIDONDO, Haizea",2014,CN Urgain,41.54,2026-06-14,Ranking 2025/26,
+50 Libre,"BUSTINZA ABAD, Lur",2014,CN Judizmendi,42.03,2026-06-14,Ranking 2025/26,
+50 Libre,"ALONSO VAZ, Himilce",2013,CI Laudio,43.60,2026-06-14,Ranking 2025/26,
+50 Libre,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,48.40,2026-06-14,Ranking 2025/26,
+50 Libre,"FIGUEROA TERCILLA, Lucia",2014,CI Laudio,48.74,2026-06-14,Ranking 2025/26,
+50 Libre,"GUTIERREZ GUINEA, Irune",2014,CN Zadorra,56.65,2026-06-14,Ranking 2025/26,
+100 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,1:08.97,2026-06-14,Ranking 2025/26,
+100 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,1:09.83,2026-06-14,Ranking 2025/26,
+100 Libre,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,1:10.92,2026-06-14,Ranking 2025/26,
+100 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,1:12.75,2026-06-14,Ranking 2025/26,
+100 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,1:13.16,2026-06-14,Ranking 2025/26,
+100 Libre,"DAQUANNO, Gaia",2014,CN Menditxo,1:13.60,2026-06-14,Ranking 2025/26,
+100 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,1:14.54,2026-06-14,Ranking 2025/26,
+100 Libre,"HERRERO ALONSO, Miren",2013,CN Judizmendi,1:16.10,2026-06-14,Ranking 2025/26,
+100 Libre,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,1:16.37,2026-06-14,Ranking 2025/26,
+100 Libre,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,1:16.78,2026-06-14,Ranking 2025/26,
+100 Libre,"HIJONA SANCHEZ, June",2014,CN Judizmendi,1:18.22,2026-06-14,Ranking 2025/26,
+100 Libre,"PRIETO BOTO, Olatz",2014,CN Menditxo,1:19.55,2026-06-14,Ranking 2025/26,
+100 Libre,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,1:20.87,2026-06-14,Ranking 2025/26,
+100 Libre,"SANTOS GARCIA, Uxue",2014,CN Menditxo,1:21.33,2026-06-14,Ranking 2025/26,
+100 Libre,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,1:21.60,2026-06-14,Ranking 2025/26,
+100 Libre,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,1:21.96,2026-06-14,Ranking 2025/26,
+100 Libre,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,1:22.30,2026-06-14,Ranking 2025/26,
+100 Libre,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,1:22.39,2026-06-14,Ranking 2025/26,
+100 Libre,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,1:22.97,2026-06-14,Ranking 2025/26,
+100 Libre,"MARCO GARCIA, June",2014,CN Menditxo,1:23.38,2026-06-14,Ranking 2025/26,
+100 Libre,"DIAZ CEBALLOS, Laida",2013,CN Urgain,1:25.40,2026-06-14,Ranking 2025/26,
+100 Libre,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,1:26.13,2026-06-14,Ranking 2025/26,
+100 Libre,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,1:26.46,2026-06-14,Ranking 2025/26,
+100 Libre,"GARCIA BARCINA, Iraia",2014,CI Laudio,1:26.48,2026-06-14,Ranking 2025/26,
+100 Libre,"VICENTE ESPINOSA, Noa",2013,CN Urgain,1:26.75,2026-06-14,Ranking 2025/26,
+100 Libre,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,1:26.94,2026-06-14,Ranking 2025/26,
+100 Libre,"DIEZ ORTIZ DE ORRUÑO, Olaia",2014,CN Urgain,1:27.93,2026-06-14,Ranking 2025/26,
+100 Libre,"MUGICA DOLK, Greta",2014,CN Judizmendi,1:28.50,2026-06-14,Ranking 2025/26,
+100 Libre,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,1:29.05,2026-06-14,Ranking 2025/26,
+100 Libre,"BASTON VARELA, Carla",2014,CN Menditxo,1:29.16,2026-06-14,Ranking 2025/26,
+100 Libre,"MONTES LOPEZ, Ane",2013,CN Urgain,1:30.57,2026-06-14,Ranking 2025/26,
+100 Libre,"ARAUJO CAMPO, Iraide",2014,CI Laudio,1:31.46,2026-06-14,Ranking 2025/26,
+100 Libre,"GASTON SOUTO, Nekane",2014,CI Laudio,1:34.35,2026-06-14,Ranking 2025/26,
+100 Libre,"SANZ BASAGUREN, June",2014,CN Judizmendi,1:37.13,2026-06-14,Ranking 2025/26,
+100 Libre,"BUSTINZA ABAD, Lur",2014,CN Judizmendi,1:37.60,2026-06-14,Ranking 2025/26,
+100 Libre,"IBISATE GONZALEZ, Udane",2014,CN Judizmendi,1:37.80,2026-06-14,Ranking 2025/26,
+100 Libre,"ALONSO VAZ, Himilce",2013,CI Laudio,1:40.75,2026-06-14,Ranking 2025/26,
+100 Libre,"FUENTE COLINO, Jone",2014,CN Zadorra,1:47.33,2026-06-14,Ranking 2025/26,
+100 Libre,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,1:54.82,2026-06-14,Ranking 2025/26,
+200 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,2:30.87,2026-06-14,Ranking 2025/26,
+200 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,2:34.34,2026-06-14,Ranking 2025/26,
+200 Libre,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,2:34.96,2026-06-14,Ranking 2025/26,
+200 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,2:42.31,2026-06-14,Ranking 2025/26,
+200 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,2:42.78,2026-06-14,Ranking 2025/26,
+200 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,2:45.09,2026-06-14,Ranking 2025/26,
+200 Libre,"HERRERO ALONSO, Miren",2013,CN Judizmendi,2:45.96,2026-06-14,Ranking 2025/26,
+200 Libre,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,2:47.44,2026-06-14,Ranking 2025/26,
+200 Libre,"DAQUANNO, Gaia",2014,CN Menditxo,2:47.98,2026-06-14,Ranking 2025/26,
+200 Libre,"SANTOS GARCIA, Uxue",2014,CN Menditxo,2:51.07,2026-06-14,Ranking 2025/26,
+200 Libre,"HIJONA SANCHEZ, June",2014,CN Judizmendi,2:54.90,2026-06-14,Ranking 2025/26,
+200 Libre,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,2:58.17,2026-06-14,Ranking 2025/26,
+200 Libre,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,2:58.50,2026-06-14,Ranking 2025/26,
+200 Libre,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,3:03.59,2026-06-14,Ranking 2025/26,
+200 Libre,"PRIETO BOTO, Olatz",2014,CN Menditxo,3:03.72,2026-06-14,Ranking 2025/26,
+200 Libre,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,3:09.49,2026-06-14,Ranking 2025/26,
+200 Libre,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,3:11.54,2026-06-14,Ranking 2025/26,
+200 Libre,"MARCO GARCIA, June",2014,CN Menditxo,3:13.34,2026-06-14,Ranking 2025/26,
+200 Libre,"GARCIA BARCINA, Iraia",2014,CI Laudio,3:15.72,2026-06-14,Ranking 2025/26,
+200 Libre,"BASTON VARELA, Carla",2014,CN Menditxo,3:23.84,2026-06-14,Ranking 2025/26,
+200 Libre,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,3:24.83,2026-06-14,Ranking 2025/26,
+200 Libre,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,3:25.70,2026-06-14,Ranking 2025/26,
+200 Libre,"ARAUJO CAMPO, Iraide",2014,CI Laudio,3:26.62,2026-06-14,Ranking 2025/26,
+200 Libre,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,3:27.22,2026-06-14,Ranking 2025/26,
+200 Libre,"EL KAISSOUMI JAIFAR, A.",2013,CN Menditxo,3:33.76,2026-06-14,Ranking 2025/26,
+200 Libre,"GASTON SOUTO, Nekane",2014,CI Laudio,3:42.50,2026-06-14,Ranking 2025/26,
+200 Libre,"ALONSO VAZ, Himilce",2013,CI Laudio,3:47.53,2026-06-14,Ranking 2025/26,
+200 Libre,"IBISATE GONZALEZ, Udane",2014,CN Judizmendi,3:57.24,2026-06-14,Ranking 2025/26,
+200 Libre,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,4:39.25,2026-06-14,Ranking 2025/26,
+400 Libre,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,5:31.11,2026-06-14,Ranking 2025/26,
+400 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,5:31.79,2026-06-14,Ranking 2025/26,
+400 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,5:36.78,2026-06-14,Ranking 2025/26,
+400 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,5:38.02,2026-06-14,Ranking 2025/26,
+400 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,5:52.17,2026-06-14,Ranking 2025/26,
+400 Libre,"DAQUANNO, Gaia",2014,CN Menditxo,5:54.17,2026-06-14,Ranking 2025/26,
+400 Libre,"HERRERO ALONSO, Miren",2013,CN Judizmendi,5:54.78,2026-06-14,Ranking 2025/26,
+400 Libre,"SANTOS GARCIA, Uxue",2014,CN Menditxo,6:11.28,2026-06-14,Ranking 2025/26,
+400 Libre,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,6:14.09,2026-06-14,Ranking 2025/26,
+400 Libre,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,6:21.89,2026-06-14,Ranking 2025/26,
+400 Libre,"FERNANDEZ P. DE NANCLARES, N.",2013,CN Menditxo,6:25.62,2026-06-14,Ranking 2025/26,
+400 Libre,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,6:31.62,2026-06-14,Ranking 2025/26,
+400 Libre,"HIJONA SANCHEZ, June",2014,CN Judizmendi,6:32.95,2026-06-14,Ranking 2025/26,
+400 Libre,"PRIETO BOTO, Olatz",2014,CN Menditxo,6:35.32,2026-06-14,Ranking 2025/26,
+400 Libre,"MARCO GARCIA, June",2014,CN Menditxo,6:41.72,2026-06-14,Ranking 2025/26,
+400 Libre,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,6:58.18,2026-06-14,Ranking 2025/26,
+400 Libre,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,6:58.30,2026-06-14,Ranking 2025/26,
+400 Libre,"MONTES LOPEZ, Ane",2013,CN Urgain,7:02.76,2026-06-14,Ranking 2025/26,
+400 Libre,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,7:20.03,2026-06-14,Ranking 2025/26,
+400 Libre,"VICENTE ESPINOSA, Noa",2013,CN Urgain,7:20.81,2026-06-14,Ranking 2025/26,
+400 Libre,"ARAUJO CAMPO, Iraide",2014,CI Laudio,7:22.33,2026-06-14,Ranking 2025/26,
+400 Libre,"GARCIA BARCINA, Iraia",2014,CI Laudio,7:27.15,2026-06-14,Ranking 2025/26,
+400 Libre,"ALONSO VAZ, Himilce",2013,CI Laudio,8:14.78,2026-06-14,Ranking 2025/26,
+200 Libre,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,2:55.72,2026-06-14,Ranking 2025/26,
+200 Libre,"MUGICA DOLK, Greta",2014,CN Judizmendi,3:34.02,2026-06-14,Ranking 2025/26,
+400 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,5:45.29,2026-06-14,Ranking 2025/26,
+400 Libre,"BASTON VARELA, Carla",2014,CN Menditxo,7:03.18,2026-06-14,Ranking 2025/26,
+800 Libre,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,11:22.09,2026-06-14,Ranking 2025/26,
+800 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,11:33.30,2026-06-14,Ranking 2025/26,
+800 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,11:38.45,2026-06-14,Ranking 2025/26,
+800 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,11:43.90,2026-06-14,Ranking 2025/26,
+800 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,11:53.04,2026-06-14,Ranking 2025/26,
+800 Libre,"DAQUANNO, Gaia",2014,CN Menditxo,12:08.15,2026-06-14,Ranking 2025/26,
+800 Libre,"SANTOS GARCIA, Uxue",2014,CN Menditxo,12:15.35,2026-06-14,Ranking 2025/26,
+800 Libre,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,12:23.74,2026-06-14,Ranking 2025/26,
+800 Libre,"HERRERO ALONSO, Miren",2013,CN Judizmendi,12:24.50,2026-06-14,Ranking 2025/26,
+800 Libre,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,12:26.45,2026-06-14,Ranking 2025/26,
+800 Libre,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,13:07.64,2026-06-14,Ranking 2025/26,
+800 Libre,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,14:05.05,2026-06-14,Ranking 2025/26,
+800 Libre,"VICENTE ESPINOSA, Noa",2013,CN Urgain,14:39.20,2026-06-14,Ranking 2025/26,
+800 Libre,"MONTES LOPEZ, Ane",2013,CN Urgain,14:43.36,2026-06-14,Ranking 2025/26,
+50 Espalda,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,37.25,2026-06-14,Ranking 2025/26,
+50 Espalda,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,37.87,2026-06-14,Ranking 2025/26,
+50 Espalda,"DAQUANNO, Gaia",2014,CN Menditxo,39.01,2026-06-14,Ranking 2025/26,
+50 Espalda,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,39.54,2026-06-14,Ranking 2025/26,
+50 Espalda,"EGUIDON VARGAS, Maren",2013,CN Menditxo,39.81,2026-06-14,Ranking 2025/26,
+50 Espalda,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,40.35,2026-06-14,Ranking 2025/26,
+50 Espalda,"HERRERO ALONSO, Miren",2013,CN Judizmendi,40.59,2026-06-14,Ranking 2025/26,
+50 Espalda,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,41.15,2026-06-14,Ranking 2025/26,
+50 Espalda,"SANTOS GARCIA, Uxue",2014,CN Menditxo,41.24,2026-06-14,Ranking 2025/26,
+50 Espalda,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,41.84,2026-06-14,Ranking 2025/26,
+50 Espalda,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,41.94,2026-06-14,Ranking 2025/26,
+50 Espalda,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,42.77,2026-06-14,Ranking 2025/26,
+50 Espalda,"PRIETO BOTO, Olatz",2014,CN Menditxo,43.33,2026-06-14,Ranking 2025/26,
+50 Espalda,"MARCO GARCIA, June",2014,CN Menditxo,43.91,2026-06-14,Ranking 2025/26,
+50 Espalda,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,44.30,2026-06-14,Ranking 2025/26,
+50 Espalda,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,44.35,2026-06-14,Ranking 2025/26,
+50 Espalda,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,44.41,2026-06-14,Ranking 2025/26,
+50 Espalda,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,44.75,2026-06-14,Ranking 2025/26,
+50 Espalda,"GARCIA BARCINA, Iraia",2014,CI Laudio,44.96,2026-06-14,Ranking 2025/26,
+50 Espalda,"DIAZ CEBALLOS, Laida",2013,CN Urgain,45.46,2026-06-14,Ranking 2025/26,
+50 Espalda,"HIJONA SANCHEZ, June",2014,CN Judizmendi,45.63,2026-06-14,Ranking 2025/26,
+50 Espalda,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,46.69,2026-06-14,Ranking 2025/26,
+50 Espalda,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,46.93,2026-06-14,Ranking 2025/26,
+50 Espalda,"ARAUJO CAMPO, Iraide",2014,CI Laudio,47.37,2026-06-14,Ranking 2025/26,
+50 Espalda,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,47.46,2026-06-14,Ranking 2025/26,
+50 Espalda,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,47.54,2026-06-14,Ranking 2025/26,
+50 Espalda,"GASTON SOUTO, Nekane",2014,CI Laudio,48.47,2026-06-14,Ranking 2025/26,
+50 Espalda,"ALONSO VAZ, Himilce",2013,CI Laudio,50.65,2026-06-14,Ranking 2025/26,
+50 Espalda,"BASTON VARELA, Carla",2014,CN Menditxo,51.33,2026-06-14,Ranking 2025/26,
+50 Espalda,"IBISATE GONZALEZ, Udane",2014,CN Judizmendi,52.80,2026-06-14,Ranking 2025/26,
+50 Espalda,"SANZ BASAGUREN, June",2014,CN Judizmendi,54.07,2026-06-14,Ranking 2025/26,
+50 Espalda,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,55.79,2026-06-14,Ranking 2025/26,
+50 Espalda,"FUENTE COLINO, Jone",2014,CN Zadorra,57.93,2026-06-14,Ranking 2025/26,
+800 Libre,"DIAZ CEBALLOS, Laida",2013,CN Urgain,13:54.78,2026-06-14,Ranking 2025/26,
+50 Espalda,"FREIRE MARTIN, Haizea",2013,CN Menditxo,40.11,2026-06-14,Ranking 2025/26,
+50 Espalda,"MUGICA DOLK, Greta",2014,CN Judizmendi,45.28,2026-06-14,Ranking 2025/26,
+50 Espalda,"FIGUEROA TERCILLA, Lucia",2014,CI Laudio,59.13,2026-06-14,Ranking 2025/26,
+100 Espalda,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,1:22.10,2026-06-14,Ranking 2025/26,
+100 Espalda,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,1:22.92,2026-06-14,Ranking 2025/26,
+100 Espalda,"DAQUANNO, Gaia",2014,CN Menditxo,1:23.27,2026-06-14,Ranking 2025/26,
+100 Espalda,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,1:26.59,2026-06-14,Ranking 2025/26,
+100 Espalda,"SANTOS GARCIA, Uxue",2014,CN Menditxo,1:26.82,2026-06-14,Ranking 2025/26,
+100 Espalda,"PRIETO BOTO, Olatz",2014,CN Menditxo,1:27.55,2026-06-14,Ranking 2025/26,
+100 Espalda,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,1:27.92,2026-06-14,Ranking 2025/26,
+100 Espalda,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,1:28.37,2026-06-14,Ranking 2025/26,
+100 Espalda,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,1:28.38,2026-06-14,Ranking 2025/26,
+100 Espalda,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,1:29.94,2026-06-14,Ranking 2025/26,
+100 Espalda,"MARCO GARCIA, June",2014,CN Menditxo,1:30.54,2026-06-14,Ranking 2025/26,
+100 Espalda,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,1:33.36,2026-06-14,Ranking 2025/26,
+100 Espalda,"HIJONA SANCHEZ, June",2014,CN Judizmendi,1:34.13,2026-06-14,Ranking 2025/26,
+100 Espalda,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,1:35.07,2026-06-14,Ranking 2025/26,
+100 Espalda,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,1:36.28,2026-06-14,Ranking 2025/26,
+100 Espalda,"ARAUJO CAMPO, Iraide",2014,CI Laudio,1:39.16,2026-06-14,Ranking 2025/26,
+100 Espalda,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,1:39.30,2026-06-14,Ranking 2025/26,
+100 Espalda,"MUGICA DOLK, Greta",2014,CN Judizmendi,1:39.32,2026-06-14,Ranking 2025/26,
+100 Espalda,"GARCIA BARCINA, Iraia",2014,CI Laudio,1:39.93,2026-06-14,Ranking 2025/26,
+100 Espalda,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,1:42.98,2026-06-14,Ranking 2025/26,
+100 Espalda,"MONTES LOPEZ, Ane",2013,CN Urgain,1:44.84,2026-06-14,Ranking 2025/26,
+100 Espalda,"IBISATE GONZALEZ, Udane",2014,CN Judizmendi,1:48.71,2026-06-14,Ranking 2025/26,
+100 Espalda,"ALONSO VAZ, Himilce",2013,CI Laudio,1:52.73,2026-06-14,Ranking 2025/26,
+100 Espalda,"GASTON SOUTO, Nekane",2014,CI Laudio,1:53.09,2026-06-14,Ranking 2025/26,
+100 Espalda,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,2:05.52,2026-06-14,Ranking 2025/26,
+200 Espalda,"DAQUANNO, Gaia",2014,CN Menditxo,2:58.14,2026-06-14,Ranking 2025/26,
+200 Espalda,"EGUIDON VARGAS, Maren",2013,CN Menditxo,3:00.37,2026-06-14,Ranking 2025/26,
+200 Espalda,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,3:08.29,2026-06-14,Ranking 2025/26,
+200 Espalda,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,3:08.51,2026-06-14,Ranking 2025/26,
+200 Espalda,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,3:09.18,2026-06-14,Ranking 2025/26,
+200 Espalda,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,3:10.38,2026-06-14,Ranking 2025/26,
+200 Espalda,"PRIETO BOTO, Olatz",2014,CN Menditxo,3:10.70,2026-06-14,Ranking 2025/26,
+200 Espalda,"MARCO GARCIA, June",2014,CN Menditxo,3:10.87,2026-06-14,Ranking 2025/26,
+200 Espalda,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,3:10.93,2026-06-14,Ranking 2025/26,
+200 Espalda,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,3:16.06,2026-06-14,Ranking 2025/26,
+200 Espalda,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,3:23.72,2026-06-14,Ranking 2025/26,
+200 Espalda,"HIJONA SANCHEZ, June",2014,CN Judizmendi,3:28.72,2026-06-14,Ranking 2025/26,
+200 Espalda,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,3:34.58,2026-06-14,Ranking 2025/26,
+200 Espalda,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,3:37.89,2026-06-14,Ranking 2025/26,
+200 Espalda,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,3:38.05,2026-06-14,Ranking 2025/26,
+200 Espalda,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,3:41.69,2026-06-14,Ranking 2025/26,
+200 Espalda,"BASTON VARELA, Carla",2014,CN Menditxo,3:48.69,2026-06-14,Ranking 2025/26,
+200 Espalda,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,3:49.08,2026-06-14,Ranking 2025/26,
+200 Espalda,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,3:49.68,2026-06-14,Ranking 2025/26,
+200 Espalda,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,3:50.38,2026-06-14,Ranking 2025/26,
+200 Espalda,"EL KAISSOUMI JAIFAR, A.",2013,CN Menditxo,4:10.60,2026-06-14,Ranking 2025/26,
+100 Espalda,"HERRERO ALONSO, Miren",2013,CN Judizmendi,1:30.69,2026-06-14,Ranking 2025/26,
+200 Espalda,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,3:13.31,2026-06-14,Ranking 2025/26,
+50 Braza,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,38.07,2026-06-14,Ranking 2025/26,
+50 Braza,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,41.41,2026-06-14,Ranking 2025/26,
+50 Braza,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,42.38,2026-06-14,Ranking 2025/26,
+50 Braza,"DAQUANNO, Gaia",2014,CN Menditxo,44.02,2026-06-14,Ranking 2025/26,
+50 Braza,"HIJONA SANCHEZ, June",2014,CN Judizmendi,44.10,2026-06-14,Ranking 2025/26,
+50 Braza,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,44.15,2026-06-14,Ranking 2025/26,
+50 Braza,"EGUIDON VARGAS, Maren",2013,CN Menditxo,44.16,2026-06-14,Ranking 2025/26,
+50 Braza,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,45.62,2026-06-14,Ranking 2025/26,
+50 Braza,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,45.66,2026-06-14,Ranking 2025/26,
+50 Braza,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,45.94,2026-06-14,Ranking 2025/26,
+50 Braza,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,46.12,2026-06-14,Ranking 2025/26,
+50 Braza,"PRIETO BOTO, Olatz",2014,CN Menditxo,48.06,2026-06-14,Ranking 2025/26,
+50 Braza,"FERNANDEZ P. DE NANCLARES, N.",2013,CN Menditxo,48.43,2026-06-14,Ranking 2025/26,
+50 Braza,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,48.50,2026-06-14,Ranking 2025/26,
+50 Braza,"VICENTE ESPINOSA, Noa",2013,CN Urgain,48.70,2026-06-14,Ranking 2025/26,
+50 Braza,"MUGICA DOLK, Greta",2014,CN Judizmendi,49.91,2026-06-14,Ranking 2025/26,
+50 Braza,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,49.98,2026-06-14,Ranking 2025/26,
+50 Braza,"DIAZ CEBALLOS, Laida",2013,CN Urgain,49.99,2026-06-14,Ranking 2025/26,
+50 Braza,"FREIRE MARTIN, Haizea",2013,CN Menditxo,50.00,2026-06-14,Ranking 2025/26,
+50 Braza,"GARCIA BARCINA, Iraia",2014,CI Laudio,50.11,2026-06-14,Ranking 2025/26,
+50 Braza,"BUSTINZA ABAD, Lur",2014,CN Judizmendi,50.29,2026-06-14,Ranking 2025/26,
+50 Braza,"BASTON VARELA, Carla",2014,CN Menditxo,51.08,2026-06-14,Ranking 2025/26,
+50 Braza,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,51.53,2026-06-14,Ranking 2025/26,
+50 Braza,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,51.60,2026-06-14,Ranking 2025/26,
+50 Braza,"MARCO GARCIA, June",2014,CN Menditxo,52.54,2026-06-14,Ranking 2025/26,
+50 Braza,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,53.58,2026-06-14,Ranking 2025/26,
+50 Braza,"SANZ BASAGUREN, June",2014,CN Judizmendi,54.16,2026-06-14,Ranking 2025/26,
+50 Braza,"ARAUJO CAMPO, Iraide",2014,CI Laudio,1:01.05,2026-06-14,Ranking 2025/26,
+50 Braza,"FIGUEROA TERCILLA, Lucia",2014,CI Laudio,1:03.05,2026-06-14,Ranking 2025/26,
+50 Braza,"FUENTE COLINO, Jone",2014,CN Zadorra,1:03.45,2026-06-14,Ranking 2025/26,
+50 Braza,"PEÑA BIDONDO, Haizea",2014,CN Urgain,1:08.56,2026-06-14,Ranking 2025/26,
+50 Braza,"SANTOS GARCIA, Uxue",2014,CN Menditxo,46.21,2026-06-14,Ranking 2025/26,
+50 Braza,"GASTON SOUTO, Nekane",2014,CI Laudio,52.57,2026-06-14,Ranking 2025/26,
+100 Braza,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,1:24.10,2026-06-14,Ranking 2025/26,
+100 Braza,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,1:35.57,2026-06-14,Ranking 2025/26,
+100 Braza,"HIJONA SANCHEZ, June",2014,CN Judizmendi,1:37.18,2026-06-14,Ranking 2025/26,
+100 Braza,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,1:37.36,2026-06-14,Ranking 2025/26,
+100 Braza,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,1:38.09,2026-06-14,Ranking 2025/26,
+100 Braza,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,1:39.11,2026-06-14,Ranking 2025/26,
+100 Braza,"DAQUANNO, Gaia",2014,CN Menditxo,1:40.03,2026-06-14,Ranking 2025/26,
+100 Braza,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,1:40.40,2026-06-14,Ranking 2025/26,
+100 Braza,"PRIETO BOTO, Olatz",2014,CN Menditxo,1:41.53,2026-06-14,Ranking 2025/26,
+100 Braza,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,1:43.12,2026-06-14,Ranking 2025/26,
+100 Braza,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,1:43.35,2026-06-14,Ranking 2025/26,
+100 Braza,"APIÑANIZ ARRIZABALAGA, Jimena",2013,CN Urgain,1:44.76,2026-06-14,Ranking 2025/26,
+100 Braza,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,1:46.84,2026-06-14,Ranking 2025/26,
+100 Braza,"DIAZ CEBALLOS, Laida",2013,CN Urgain,1:47.24,2026-06-14,Ranking 2025/26,
+100 Braza,"BASTON VARELA, Carla",2014,CN Menditxo,1:47.46,2026-06-14,Ranking 2025/26,
+100 Braza,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,1:48.12,2026-06-14,Ranking 2025/26,
+100 Braza,"GARCIA BARCINA, Iraia",2014,CI Laudio,1:50.57,2026-06-14,Ranking 2025/26,
+100 Braza,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,1:51.46,2026-06-14,Ranking 2025/26,
+100 Braza,"BUSTINZA ABAD, Lur",2014,CN Judizmendi,1:51.71,2026-06-14,Ranking 2025/26,
+100 Braza,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,1:52.84,2026-06-14,Ranking 2025/26,
+100 Braza,"SANZ BASAGUREN, June",2014,CN Judizmendi,1:53.23,2026-06-14,Ranking 2025/26,
+100 Braza,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,1:56.90,2026-06-14,Ranking 2025/26,
+100 Braza,"GASTON SOUTO, Nekane",2014,CI Laudio,1:58.55,2026-06-14,Ranking 2025/26,
+100 Braza,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,2:00.53,2026-06-14,Ranking 2025/26,
+100 Braza,"IBISATE GONZALEZ, Udane",2014,CN Judizmendi,2:05.41,2026-06-14,Ranking 2025/26,
+100 Braza,"PEÑA BIDONDO, Haizea",2014,CN Urgain,2:28.17,2026-06-14,Ranking 2025/26,
+100 Braza,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,2:47.55,2026-06-14,Ranking 2025/26,
+200 Braza,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,2:59.96,2026-06-14,Ranking 2025/26,
+200 Braza,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,3:17.49,2026-06-14,Ranking 2025/26,
+200 Braza,"EGUIDON VARGAS, Maren",2013,CN Menditxo,3:27.78,2026-06-14,Ranking 2025/26,
+200 Braza,"HIJONA SANCHEZ, June",2014,CN Judizmendi,3:28.31,2026-06-14,Ranking 2025/26,
+200 Braza,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,3:31.67,2026-06-14,Ranking 2025/26,
+200 Braza,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,3:31.93,2026-06-14,Ranking 2025/26,
+200 Braza,"FREIRE MARTIN, Haizea",2013,CN Menditxo,3:32.96,2026-06-14,Ranking 2025/26,
+200 Braza,"SANTOS GARCIA, Uxue",2014,CN Menditxo,3:35.31,2026-06-14,Ranking 2025/26,
+200 Braza,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,3:38.68,2026-06-14,Ranking 2025/26,
+200 Braza,"PRIETO BOTO, Olatz",2014,CN Menditxo,3:39.00,2026-06-14,Ranking 2025/26,
+200 Braza,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,3:42.54,2026-06-14,Ranking 2025/26,
+200 Braza,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,3:47.43,2026-06-14,Ranking 2025/26,
+200 Braza,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,3:50.37,2026-06-14,Ranking 2025/26,
+200 Braza,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,3:51.11,2026-06-14,Ranking 2025/26,
+200 Braza,"BASTON VARELA, Carla",2014,CN Menditxo,4:02.25,2026-06-14,Ranking 2025/26,
+200 Braza,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,4:05.93,2026-06-14,Ranking 2025/26,
+200 Braza,"GASTON SOUTO, Nekane",2014,CI Laudio,4:14.53,2026-06-14,Ranking 2025/26,
+200 Braza,"VICENTE ESPINOSA, Noa",2013,CN Urgain,4:19.53,2026-06-14,Ranking 2025/26,
+200 Braza,"ARAUJO CAMPO, Iraide",2014,CI Laudio,4:24.79,2026-06-14,Ranking 2025/26,
+100 Braza,"MUGICA DOLK, Greta",2014,CN Judizmendi,1:43.45,2026-06-14,Ranking 2025/26,
+100 Braza,"MONTES LOPEZ, Ane",2013,CN Urgain,2:08.57,2026-06-14,Ranking 2025/26,
+200 Braza,"DAQUANNO, Gaia",2014,CN Menditxo,3:32.95,2026-06-14,Ranking 2025/26,
+50 Mariposa,"EGUIDON VARGAS, Maren",2013,CN Menditxo,32.91,2026-06-14,Ranking 2025/26,
+50 Mariposa,"SANTOS GARCIA, Uxue",2014,CN Menditxo,34.10,2026-06-14,Ranking 2025/26,
+50 Mariposa,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,34.45,2026-06-14,Ranking 2025/26,
+50 Mariposa,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,36.18,2026-06-14,Ranking 2025/26,
+50 Mariposa,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,38.90,2026-06-14,Ranking 2025/26,
+50 Mariposa,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,38.93,2026-06-14,Ranking 2025/26,
+50 Mariposa,"HERRERO ALONSO, Miren",2013,CN Judizmendi,39.41,2026-06-14,Ranking 2025/26,
+50 Mariposa,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,40.21,2026-06-14,Ranking 2025/26,
+50 Mariposa,"HIJONA SANCHEZ, June",2014,CN Judizmendi,42.36,2026-06-14,Ranking 2025/26,
+50 Mariposa,"FREIRE MARTIN, Haizea",2013,CN Menditxo,42.91,2026-06-14,Ranking 2025/26,
+50 Mariposa,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,43.58,2026-06-14,Ranking 2025/26,
+50 Mariposa,"DAQUANNO, Gaia",2014,CN Menditxo,44.43,2026-06-14,Ranking 2025/26,
+50 Mariposa,"BASTON VARELA, Carla",2014,CN Menditxo,44.46,2026-06-14,Ranking 2025/26,
+50 Mariposa,"VICENTE ESPINOSA, Noa",2013,CN Urgain,44.64,2026-06-14,Ranking 2025/26,
+50 Mariposa,"MUGICA DOLK, Greta",2014,CN Judizmendi,45.41,2026-06-14,Ranking 2025/26,
+50 Mariposa,"DIEZ ORTIZ DE ORRUÑO, Olaia",2014,CN Urgain,45.57,2026-06-14,Ranking 2025/26,
+50 Mariposa,"FERNANDEZ P. DE NANCLARES, N.",2013,CN Menditxo,45.78,2026-06-14,Ranking 2025/26,
+50 Mariposa,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,46.25,2026-06-14,Ranking 2025/26,
+50 Mariposa,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,46.38,2026-06-14,Ranking 2025/26,
+50 Mariposa,"MARCO GARCIA, June",2014,CN Menditxo,46.82,2026-06-14,Ranking 2025/26,
+50 Mariposa,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,47.36,2026-06-14,Ranking 2025/26,
+50 Mariposa,"PRIETO BOTO, Olatz",2014,CN Menditxo,47.61,2026-06-14,Ranking 2025/26,
+50 Mariposa,"MONTES LOPEZ, Ane",2013,CN Urgain,50.21,2026-06-14,Ranking 2025/26,
+50 Mariposa,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,51.62,2026-06-14,Ranking 2025/26,
+50 Mariposa,"GARCIA BARCINA, Iraia",2014,CI Laudio,51.67,2026-06-14,Ranking 2025/26,
+50 Mariposa,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,52.77,2026-06-14,Ranking 2025/26,
+50 Mariposa,"ARAUJO CAMPO, Iraide",2014,CI Laudio,52.92,2026-06-14,Ranking 2025/26,
+50 Mariposa,"SANZ BASAGUREN, June",2014,CN Judizmendi,54.93,2026-06-14,Ranking 2025/26,
+50 Mariposa,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,55.95,2026-06-14,Ranking 2025/26,
+50 Mariposa,"GASTON SOUTO, Nekane",2014,CI Laudio,56.77,2026-06-14,Ranking 2025/26,
+100 Mariposa,"EGUIDON VARGAS, Maren",2013,CN Menditxo,1:19.03,2026-06-14,Ranking 2025/26,
+100 Mariposa,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,1:24.14,2026-06-14,Ranking 2025/26,
+100 Mariposa,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,1:25.01,2026-06-14,Ranking 2025/26,
+100 Mariposa,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,1:30.06,2026-06-14,Ranking 2025/26,
+100 Mariposa,"SANTOS GARCIA, Uxue",2014,CN Menditxo,1:30.16,2026-06-14,Ranking 2025/26,
+100 Mariposa,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,1:37.52,2026-06-14,Ranking 2025/26,
+100 Mariposa,"HIJONA SANCHEZ, June",2014,CN Judizmendi,1:38.98,2026-06-14,Ranking 2025/26,
+100 Mariposa,"HERRERO ALONSO, Miren",2013,CN Judizmendi,1:42.67,2026-06-14,Ranking 2025/26,
+100 Mariposa,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,1:49.77,2026-06-14,Ranking 2025/26,
+100 Mariposa,"MUGICA DOLK, Greta",2014,CN Judizmendi,1:50.02,2026-06-14,Ranking 2025/26,
+100 Mariposa,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,1:50.11,2026-06-14,Ranking 2025/26,
+100 Mariposa,"SANZ BASAGUREN, June",2014,CN Judizmendi,1:52.10,2026-06-14,Ranking 2025/26,
+100 Mariposa,"GARCIA BARCINA, Iraia",2014,CI Laudio,1:52.27,2026-06-14,Ranking 2025/26,
+100 Mariposa,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,1:52.44,2026-06-14,Ranking 2025/26,
+100 Mariposa,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,1:54.69,2026-06-14,Ranking 2025/26,
+100 Mariposa,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,1:55.55,2026-06-14,Ranking 2025/26,
+100 Mariposa,"PRIETO BOTO, Olatz",2014,CN Menditxo,1:55.58,2026-06-14,Ranking 2025/26,
+100 Mariposa,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,2:07.69,2026-06-14,Ranking 2025/26,
+100 Mariposa,"GASTON SOUTO, Nekane",2014,CI Laudio,2:09.52,2026-06-14,Ranking 2025/26,
+100 Mariposa,"ARAUJO CAMPO, Iraide",2014,CI Laudio,2:09.80,2026-06-14,Ranking 2025/26,
+100 Mariposa,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,2:22.24,2026-06-14,Ranking 2025/26,
+50 Mariposa,"APIÑANIZ ARRIZABALAGA, Jimena",2013,CN Urgain,44.29,2026-06-14,Ranking 2025/26,
+50 Mariposa,"FERNANDEZ MOREIRA, Haizea",2014,CN Menditxo,52.43,2026-06-14,Ranking 2025/26,
+100 Mariposa,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,1:27.49,2026-06-14,Ranking 2025/26,
+100 Mariposa,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,1:56.35,2026-06-14,Ranking 2025/26,
+200 Mariposa,"EGUIDON VARGAS, Maren",2013,CN Menditxo,3:04.73,2026-06-14,Ranking 2025/26,
+200 Mariposa,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,3:24.83,2026-06-14,Ranking 2025/26,
+200 Mariposa,"SANTOS GARCIA, Uxue",2014,CN Menditxo,3:27.35,2026-06-14,Ranking 2025/26,
+200 Mariposa,"FREIRE MARTIN, Haizea",2013,CN Menditxo,3:36.39,2026-06-14,Ranking 2025/26,
+200 Mariposa,"MARCO GARCIA, June",2014,CN Menditxo,3:36.93,2026-06-14,Ranking 2025/26,
+200 Mariposa,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,3:44.81,2026-06-14,Ranking 2025/26,
+200 Mariposa,"DAQUANNO, Gaia",2014,CN Menditxo,3:46.44,2026-06-14,Ranking 2025/26,
+200 Mariposa,"PRIETO BOTO, Olatz",2014,CN Menditxo,3:58.02,2026-06-14,Ranking 2025/26,
+100 Estilos,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,1:22.48,2026-06-14,Ranking 2025/26,
+100 Estilos,"EGUIDON VARGAS, Maren",2013,CN Menditxo,1:22.80,2026-06-14,Ranking 2025/26,
+100 Estilos,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,1:27.46,2026-06-14,Ranking 2025/26,
+100 Estilos,"HERRERO ALONSO, Miren",2013,CN Judizmendi,1:27.67,2026-06-14,Ranking 2025/26,
+100 Estilos,"GOMEZ ARTOLA, Ilargi",2013,CN Urgain,1:32.07,2026-06-14,Ranking 2025/26,
+100 Estilos,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,1:33.66,2026-06-14,Ranking 2025/26,
+100 Estilos,"FREIRE MARTIN, Haizea",2013,CN Menditxo,1:34.18,2026-06-14,Ranking 2025/26,
+100 Estilos,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,1:36.06,2026-06-14,Ranking 2025/26,
+100 Estilos,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,1:36.37,2026-06-14,Ranking 2025/26,
+100 Estilos,"GARCIA BARCINA, Iraia",2014,CI Laudio,1:36.78,2026-06-14,Ranking 2025/26,
+100 Estilos,"MUGICA DOLK, Greta",2014,CN Judizmendi,1:37.86,2026-06-14,Ranking 2025/26,
+100 Estilos,"VICENTE ESPINOSA, Noa",2013,CN Urgain,1:39.46,2026-06-14,Ranking 2025/26,
+100 Estilos,"ARAUJO CAMPO, Iraide",2014,CI Laudio,1:46.90,2026-06-14,Ranking 2025/26,
+100 Estilos,"MONTES LOPEZ, Ane",2013,CN Urgain,1:55.62,2026-06-14,Ranking 2025/26,
+100 Estilos,"GASTON SOUTO, Nekane",2014,CI Laudio,1:59.46,2026-06-14,Ranking 2025/26,
+100 Estilos,"ALONSO VAZ, Himilce",2013,CI Laudio,2:01.18,2026-06-14,Ranking 2025/26,
+200 Estilos,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,2:59.34,2026-06-14,Ranking 2025/26,
+200 Estilos,"EGUIDON VARGAS, Maren",2013,CN Menditxo,3:00.32,2026-06-14,Ranking 2025/26,
+200 Estilos,"SANTOS GARCIA, Uxue",2014,CN Menditxo,3:02.13,2026-06-14,Ranking 2025/26,
+200 Estilos,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,3:03.44,2026-06-14,Ranking 2025/26,
+200 Estilos,"DAQUANNO, Gaia",2014,CN Menditxo,3:06.96,2026-06-14,Ranking 2025/26,
+200 Estilos,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,3:12.33,2026-06-14,Ranking 2025/26,
+200 Estilos,"MARCO GARCIA, June",2014,CN Menditxo,3:13.12,2026-06-14,Ranking 2025/26,
+200 Estilos,"HIJONA SANCHEZ, June",2014,CN Judizmendi,3:13.69,2026-06-14,Ranking 2025/26,
+200 Estilos,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,3:17.10,2026-06-14,Ranking 2025/26,
+200 Estilos,"HERRERO ALONSO, Miren",2013,CN Judizmendi,3:19.53,2026-06-14,Ranking 2025/26,
+200 Estilos,"PRIETO BOTO, Olatz",2014,CN Menditxo,3:19.58,2026-06-14,Ranking 2025/26,
+200 Estilos,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,3:21.65,2026-06-14,Ranking 2025/26,
+200 Estilos,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,3:30.26,2026-06-14,Ranking 2025/26,
+200 Estilos,"IBARRONDO ARRONIZ, Jone",2013,CN Judizmendi,3:31.44,2026-06-14,Ranking 2025/26,
+200 Estilos,"SANZ BASAGUREN, June",2014,CN Judizmendi,3:35.62,2026-06-14,Ranking 2025/26,
+200 Estilos,"MARTINEZ DE ANTOÑANA VILLASANTE, Iraia",2014,CN Judizmendi,3:37.56,2026-06-14,Ranking 2025/26,
+200 Estilos,"CARPIO RODRIGUEZ, Ane",2014,CN Judizmendi,3:38.03,2026-06-14,Ranking 2025/26,
+200 Estilos,"GARCIA BARCINA, Iraia",2014,CI Laudio,3:47.49,2026-06-14,Ranking 2025/26,
+200 Estilos,"GASTON SOUTO, Nekane",2014,CI Laudio,4:20.93,2026-06-14,Ranking 2025/26,
+100 Estilos,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,1:44.38,2026-06-14,Ranking 2025/26,
+200 Estilos,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,3:05.26,2026-06-14,Ranking 2025/26,
+200 Estilos,"ARAUJO CAMPO, Iraide",2014,CI Laudio,3:49.54,2026-06-14,Ranking 2025/26,
+400 Estilos,"FREIRE MARTIN, Haizea",2013,CN Menditxo,6:22.41,2026-06-14,Ranking 2025/26,
+400 Estilos,"EGUIDON VARGAS, Maren",2013,CN Menditxo,6:23.55,2026-06-14,Ranking 2025/26,
+400 Estilos,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,6:26.50,2026-06-14,Ranking 2025/26,
+400 Estilos,"GONZALEZ SAENZ DE OLAZAGOITIA, Candela",2013,CN Judizmendi,6:26.52,2026-06-14,Ranking 2025/26,
+400 Estilos,"SANTOS GARCIA, Uxue",2014,CN Menditxo,6:26.89,2026-06-14,Ranking 2025/26,
+400 Estilos,"DAQUANNO, Gaia",2014,CN Menditxo,6:31.37,2026-06-14,Ranking 2025/26,
+400 Estilos,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,6:33.76,2026-06-14,Ranking 2025/26,
+400 Estilos,"MARCO GARCIA, June",2014,CN Menditxo,6:50.67,2026-06-14,Ranking 2025/26,
+400 Estilos,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,6:55.70,2026-06-14,Ranking 2025/26,
+400 Estilos,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,7:11.71,2026-06-14,Ranking 2025/26,
+400 Estilos,"HIJONA SANCHEZ, June",2014,CN Judizmendi,7:14.97,2026-06-14,Ranking 2025/26,
+400 Estilos,"BALSATEGUI SANCHEZ, Maialen",2013,CN Menditxo,8:03.11,2026-06-14,Ranking 2025/26,
+400 Estilos,"MENDIBE SAN JUAN, Maider",2014,CN Menditxo,7:34.70,2026-06-14,Ranking 2025/26,
+200 Braza,"HIJONA SANCHEZ, June",2014,CN Judizmendi,3:23.95,2026-06-21,Cto Euskal Herria,
+200 Braza,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,3:30.75,2026-06-21,Cto Euskal Herria,
+200 Braza,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,3:30.89,2026-06-21,Cto Euskal Herria,
+200 Braza,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,2:59.92,2026-06-21,Cto Euskal Herria,
+200 Braza,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,3:24.82,2026-06-21,Cto Euskal Herria,
+50 Espalda,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,40.49,2026-06-21,Cto Euskal Herria,
+50 Espalda,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,41.14,2026-06-21,Cto Euskal Herria,
+100 Mariposa,"SANTOS GARCIA, Uxue",2014,CN Menditxo,1:26.47,2026-06-21,Cto Euskal Herria,
+100 Mariposa,"EGUIDON VARGAS, Maren",2013,CN Menditxo,1:16.94,2026-06-21,Cto Euskal Herria,
+400 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,5:31.04,2026-06-21,Cto Euskal Herria,
+400 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,5:37.45,2026-06-21,Cto Euskal Herria,
+200 Espalda,"DAQUANNO, Gaia",2014,CN Menditxo,2:57.63,2026-06-21,Cto Euskal Herria,
+200 Espalda,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,3:06.12,2026-06-21,Cto Euskal Herria,
+200 Espalda,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,3:08.66,2026-06-21,Cto Euskal Herria,
+100 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,1:13.02,2026-06-21,Cto Euskal Herria,
+100 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,1:08.04,2026-06-21,Cto Euskal Herria,
+100 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,1:13.56,2026-06-21,Cto Euskal Herria,
+200 Estilos,"SANTOS GARCIA, Uxue",2014,CN Menditxo,3:03.71,2026-06-21,Cto Euskal Herria,
+200 Estilos,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,3:08.98,2026-06-21,Cto Euskal Herria,
+200 Estilos,"DAQUANNO, Gaia",2014,CN Menditxo,3:10.45,2026-06-21,Cto Euskal Herria,
+200 Estilos,"MARCO GARCIA, June",2014,CN Menditxo,3:13.43,2026-06-21,Cto Euskal Herria,
+200 Estilos,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,3:04.82,2026-06-21,Cto Euskal Herria,
+50 Braza,"HIJONA SANCHEZ, June",2014,CN Judizmendi,42.63,2026-06-21,Cto Euskal Herria,
+50 Braza,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,45.10,2026-06-21,Cto Euskal Herria,
+50 Braza,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,45.73,2026-06-21,Cto Euskal Herria,
+50 Braza,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,38.27,2026-06-21,Cto Euskal Herria,
+50 Braza,"PADILLA MOLDON, Maialen",2013,CN Judizmendi,42.57,2026-06-21,Cto Euskal Herria,
+50 Braza,"GRISALEÑA SAN JOSE, Olaia",2013,CN Menditxo,46.96,2026-06-21,Cto Euskal Herria,
+200 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,2:39.58,2026-06-21,Cto Euskal Herria,
+200 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,2:32.06,2026-06-21,Cto Euskal Herria,
+200 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,2:38.38,2026-06-21,Cto Euskal Herria,
+100 Espalda,"DAQUANNO, Gaia",2014,CN Menditxo,1:24.74,2026-06-21,Cto Euskal Herria,
+100 Espalda,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,1:28.04,2026-06-21,Cto Euskal Herria,
+100 Espalda,"MARCO GARCIA, June",2014,CN Menditxo,1:29.94,2026-06-21,Cto Euskal Herria,
+400 Estilos,"SANTOS GARCIA, Uxue",2014,CN Menditxo,6:22.24,2026-06-21,Cto Euskal Herria,
+400 Estilos,"MARCO GARCIA, June",2014,CN Menditxo,6:38.61,2026-06-21,Cto Euskal Herria,
+400 Estilos,"FREIRE MARTIN, Haizea",2013,CN Menditxo,6:23.73,2026-06-21,Cto Euskal Herria,
+50 Mariposa,"SANTOS GARCIA, Uxue",2014,CN Menditxo,35.24,2026-06-21,Cto Euskal Herria,
+50 Mariposa,"EGUILUZ MANERO, Malen",2014,CN Judizmendi,37.82,2026-06-21,Cto Euskal Herria,
+50 Mariposa,"EGUIDON VARGAS, Maren",2013,CN Menditxo,32.63,2026-06-21,Cto Euskal Herria,
+200 Mariposa,"EGUIDON VARGAS, Maren",2013,CN Menditxo,3:04.41,2026-06-21,Cto Euskal Herria,
+100 Braza,"HIJONA SANCHEZ, June",2014,CN Judizmendi,1:32.43,2026-06-21,Cto Euskal Herria,
+100 Braza,"ARETXEDERRETA PALACIOS, Eider",2014,CN Menditxo,1:36.78,2026-06-21,Cto Euskal Herria,
+100 Braza,"RODRIGUEZ ZUBIAURRE, Ayla",2014,CN Judizmendi,1:40.17,2026-06-21,Cto Euskal Herria,
+100 Braza,"DAQUANNO, Gaia",2014,CN Menditxo,1:40.43,2026-06-21,Cto Euskal Herria,
+100 Braza,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,1:41.95,2026-06-21,Cto Euskal Herria,
+100 Braza,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,1:22.61,2026-06-21,Cto Euskal Herria,
+50 Libre,"ALVAREZ SERRANO, Iraia",2014,CN Judizmendi,34.14,2026-06-21,Cto Euskal Herria,
+50 Libre,"EGUIGUREN SANCHEZ, Carla",2014,CN Menditxo,34.59,2026-06-21,Cto Euskal Herria,
+50 Libre,"HIJONA SANCHEZ, June",2014,CN Judizmendi,36.40,2026-06-21,Cto Euskal Herria,
+50 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,33.38,2026-06-21,Cto Euskal Herria,
+800 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,11:15.22,2026-06-21,Cto Euskal Herria,
 `;
-const TEMPLATE="Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,PuntosFINA\n50 Libre,\"ARAICO QUINTANA, Sara\",2013,CN Judizmendi,31.54,2026-06-14,Cto Álava Verano,\n100 Libre,\"EGUIDON VARGAS, Maren\",2013,CN Menditxo,1:08.97,2026-06-14,Cto Álava Verano,\n";
+const TEMPLATE="Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion\n50 Libre,\"ARAICO QUINTANA, Sara\",2013,CN Judizmendi,31.54,2026-06-21,Cto Euskal Herria\n";
 
-let RECORDS=[], refChamp="eh", yearFilter="all", query="", activePrueba="";
+let RECORDS=[], BEFORE=[], MAXFECHA="", view="marcas", yearFilter="all", finaN=3, query="", activePrueba="";
 const el=id=>document.getElementById(id);
-function pool(){return yearFilter==="all"?RECORDS:RECORDS.filter(r=>r.anio===yearFilter);}
 
-function splitLine(line){const out=[];let cur="",q=false;for(let i=0;i<line.length;i++){const c=line[i];if(q){if(c==='"'){if(line[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=c;}else{if(c==='"')q=true;else if(c===","){out.push(cur);cur="";}else cur+=c;}}out.push(cur);return out;}
-function parseCSV(text){const lines=text.replace(/\r/g,"").split("\n").filter(l=>l.trim().length);if(!lines.length)return[];const H=splitLine(lines[0]).map(h=>h.trim());const rows=[];for(let i=1;i<lines.length;i++){const c=splitLine(lines[i]);const o={};H.forEach((h,idx)=>o[h]=(c[idx]??"").trim());const r={prueba:o.Prueba||o.prueba||"",nadadora:o.Nadadora||o.nadadora||"",anio:o.Año||o["Año"]||o.anio||"",club:o.Club||o.club||"",tiempo:o.Tiempo||o.tiempo||"",fecha:o.Fecha||o.fecha||"",competi:o.Competicion||o["Competición"]||o.competicion||"",fina:Number(o.PuntosFINA||o.FINA||0)||0};if(r.prueba&&r.nadadora&&r.tiempo)rows.push(r);}return rows;}
-function toCs(t){if(!t)return Infinity;const s=String(t).trim().replace(",",".");const p=s.split(":");let sec=p.length===2?parseInt(p[0],10)*60+parseFloat(p[1]):parseFloat(p[0]);return isNaN(sec)?Infinity:Math.round(sec*100);}
-function fmtClock(cs){if(cs<6000)return(cs/100).toFixed(2);let sec=Math.floor(cs/100),c=cs%100,m=Math.floor(sec/60),ss=sec%60;return m+":"+String(ss).padStart(2,"0")+"."+String(c).padStart(2,"0");}
-
-function pbFor(nadadora,prueba){const sw=pool().filter(r=>r.nadadora===nadadora&&r.prueba===prueba);if(!sw.length)return null;let best=sw[0];for(const s of sw)if(toCs(s.tiempo)<toCs(best.tiempo))best=s;const bestCs=toCs(best.tiempo);const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);const before=sw.filter(s=>s.fecha<latest);const prev=before.length?Math.min(...before.map(s=>toCs(s.tiempo))):null;const lb=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));const isNew=prev!==null&&lb<prev&&lb===bestCs;return{nadadora,club:best.club,anio:best.anio,prueba,tiempo:best.tiempo,cs:bestCs,fina:best.fina,isNewPB:isNew,mejoraCs:isNew?prev-lb:0};}
-function rankingFor(prueba){const names=[...new Set(pool().filter(r=>r.prueba===prueba).map(r=>r.nadadora))];return names.map(n=>pbFor(n,prueba)).filter(Boolean).sort((a,b)=>a.cs-b.cs).map((r,i,a)=>({...r,rank:i+1,total:a.length}));}
-function pruebasPresent(){const set=new Set(pool().map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
-function lastUpdated(){if(!RECORDS.length)return"—";const mx=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0].fecha);const d=new Date(mx+"T00:00:00");return isNaN(d)?mx:d.toLocaleDateString("es-ES",{day:"numeric",month:"short",year:"numeric"});}
-
-function gapChip(rec){
-  if(refChamp==="none")return"";
-  const champ=refChamp==="esp"?MIN_ESP:MIN_EH, lab=refChamp==="esp"?"ESP":"EH";
-  const m=champ[rec.prueba]&&champ[rec.prueba][rec.anio];
-  if(!m)return`<div class="gap na">${lab} sin mínima</div>`;
-  const d=toCs(rec.tiempo)-toCs(m);
-  if(d<=0)return`<div class="gap ok">${lab} −${fmtClock(Math.abs(d))} ✓</div>`;
-  return`<div class="gap no">${lab} +${fmtClock(d)}</div>`;
-}
-function medal(rank){if(rank===1)return{rail:"var(--gold)",bg:"var(--gold)",ink:"#3b2a06"};if(rank===2)return{rail:"var(--silver)",bg:"var(--silver)",ink:"#20262b"};if(rank===3)return{rail:"var(--bronze)",bg:"var(--bronze)",ink:"#2e1808"};return{rail:"transparent",bg:"var(--chip)",ink:"var(--muted)"};}
+function splitLine(line){const o=[];let c="",q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){c+='"';i++;}else q=false;}else c+=ch;}else{if(ch==='"')q=true;else if(ch===","){o.push(c);c="";}else c+=ch;}}o.push(c);return o;}
+function parseCSV(t){const L=t.replace(/\r/g,"").split("\n").filter(x=>x.trim());if(!L.length)return[];const H=splitLine(L[0]).map(h=>h.trim());const out=[];for(let i=1;i<L.length;i++){const c=splitLine(L[i]);const o={};H.forEach((h,k)=>o[h]=(c[k]??"").trim());const r={prueba:o.Prueba||"",nadadora:o.Nadadora||"",anio:o["Año"]||o.Anio||"",club:o.Club||"",tiempo:o.Tiempo||"",fecha:o.Fecha||"",competi:o.Competicion||o["Competición"]||""};if(r.prueba&&r.nadadora&&r.tiempo)out.push(r);}return out;}
+function toCs(t){if(!t)return Infinity;const s=String(t).trim().replace(",",".");const p=s.split(":");let sec;if(p.length===3)sec=(+p[0])*3600+(+p[1])*60+parseFloat(p[2]);else if(p.length===2)sec=(+p[0])*60+parseFloat(p[1]);else sec=parseFloat(p[0]);return isNaN(sec)?Infinity:Math.round(sec*100);}
+function fmtClock(cs){if(cs<6000)return(cs/100).toFixed(2);let s=Math.floor(cs/100),c=cs%100,m=Math.floor(s/60),ss=s%60;return m+":"+String(ss).padStart(2,"0")+"."+String(c).padStart(2,"0");}
+function fina(pr,cs){const b=BASE[pr];if(!b||!isFinite(cs)||cs<=0)return 0;return Math.floor(1000*Math.pow(b/(cs/100),3));}
+function fmtDate(f){const p=f.split("-");if(p.length<3)return f;const mes=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][(+p[1])-1];return (+p[2])+" "+mes;}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
-function renderLegend(){
-  if(refChamp==="none"){el("leg").innerHTML="";return;}
-  const nm=refChamp==="esp"?"Cto. de España (mínimas P25)":"Euskal Herria (mínimas P25)";
-  el("leg").innerHTML=`${nm}: <b>− ya conseguida</b> · <i>+ lo que falta por bajar</i> (según año de nacimiento).`;
-}
+function poolRecs(recs){return yearFilter==="all"?recs:recs.filter(r=>r.anio===yearFilter);}
+function bestOf(recs,name,prueba){let b=null,bc=Infinity;for(const r of recs){if(r.nadadora===name&&r.prueba===prueba){const c=toCs(r.tiempo);if(c<bc){bc=c;b=r;}}}return b;}
+function rankTime(recs,prueba){const rr=poolRecs(recs).filter(r=>r.prueba===prueba);const names=[...new Set(rr.map(r=>r.nadadora))];const arr=names.map(n=>{const b=bestOf(rr,n,prueba);return{name:n,prueba:prueba,club:b.club,anio:b.anio,cs:toCs(b.tiempo),tiempo:b.tiempo};});arr.sort((a,b)=>a.cs-b.cs);arr.forEach((x,i)=>x.rank=i+1);return arr;}
+function rankMap(arr){const m={};arr.forEach(x=>m[x.name]=x.rank);return m;}
+
+function evolution(name,prueba){const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===prueba);if(!sw.length)return null;const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);const before=sw.filter(s=>s.fecha<latest);if(!before.length)return null;const prev=Math.min(...before.map(s=>toCs(s.tiempo)));const lat=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));if(lat<prev)return{dir:"up",d:prev-lat,date:latest};if(lat>prev)return{dir:"down",d:lat-prev,date:latest};return null;}
+
+function abbrev(p){const sp=p.split(" ");const st={"Libre":"L","Espalda":"E","Braza":"B","Mariposa":"M","Estilos":"EI"}[sp[1]]||sp[1];return sp[0]+" "+st;}
+function finaClass(recs,N){const names=[...new Set(recs.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of recs){if(r.nadadora!==n)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba])byP[r.prueba]=c;}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p]),p:p})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(list.length<N)return;const top=list.slice(0,N);const sum=top.reduce((a,b)=>a+b.f,0);const rec=recs.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:top.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum);arr.forEach((x,i)=>x.rank=i+1);return arr;}
+
+function posTag(cur,prevMap){if(!(cur.name in prevMap))return '<div class="pos new">nuevo</div>';const d=prevMap[cur.name]-cur.rank;if(d>0)return `<div class="pos up">↑${d}</div>`;if(d<0)return `<div class="pos down">↓${-d}</div>`;return '<div class="pos eq">=</div>';}
+function medal(rank){if(rank===1)return{rail:"var(--gold)",bg:"var(--gold)",ink:"#3b2a06"};if(rank===2)return{rail:"var(--silver)",bg:"var(--silver)",ink:"#20262b"};if(rank===3)return{rail:"var(--bronze)",bg:"var(--bronze)",ink:"#2e1808"};return{rail:"transparent",bg:"var(--chip)",ink:"var(--muted)"};}
+function gapTag(rec,tbl,lab){const black='<b style="color:#0b2a3a;font-weight:700">'+lab+'</b>';const m=tbl[rec.prueba]&&tbl[rec.prueba][rec.anio];if(!m)return`<span class="tag na">${black} —</span>`;const dd=toCs(rec.tiempo)-toCs(m);if(dd<=0)return`<span class="tag ok">${black} −${fmtClock(Math.abs(dd))} ✓</span>`;return`<span class="tag no">${black} +${fmtClock(dd)}</span>`;}
+function starPre(ev){return (ev&&ev.dir==="up")?"⭐ ":"";}
+function deltaTag(ev){if(!ev)return"";if(ev.dir==="up")return`<span class="tag up">−${fmtClock(ev.d)} · ${fmtDate(ev.date)}</span>`;return`<span class="tag down">+${fmtClock(ev.d)} · ${fmtDate(ev.date)}</span>`;}
+
+function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
+function lastUpdated(){if(!RECORDS.length)return"—";return fmtDate(MAXFECHA)+" 2026";}
 
 function render(){
   el("updated").textContent="Actualizado: "+lastUpdated();
-  renderLegend();
+  el("tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===view));
+  const perPrueba=(view==="marcas"||view==="minimas");
+  el("segYear").style.display=perPrueba?"flex":"none";
+  el("segFina").style.display=view==="topfina"?"flex":"none";
+  const q=query.trim().toLowerCase();
+  el("clear").style.display=query?"block":"none";
+
+  // legend
+  const legs={marcas:"Mejor marca, puntos <b style='color:var(--brand)'>FINA</b> y evolución: <b>⭐ − mejora</b> / <i>+ empeora</i> respecto a su récord. ↑/↓ = cambio de puesto.",
+    minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
+    topfina:"Suma de los <b style='color:var(--brand)'>"+finaN+" mejores FINA</b> de cada nadadora (años mezclados). Solo aparecen las que tienen "+finaN+" pruebas. ↑/↓ = cambio de puesto tras la última competición."};
+  el("leg").innerHTML=legs[view];
+
+  const vw=el("view");
+  if(q){renderProfile(vw,q);return;}
+  if(view==="topfina"){renderClass(vw,finaN);return;}
+
+  // per-prueba (marcas / minimas)
   const present=pruebasPresent();
   if(present.length&&!present.includes(activePrueba))activePrueba=present[0];
-  const view=el("view");const q=query.trim().toLowerCase();
-  el("clear").style.display=query?"block":"none";
-  if(q){
-    const names=[...new Set(pool().map(r=>r.nadadora))].filter(n=>n.toLowerCase().includes(q));
-    if(!names.length){view.innerHTML=`<div class="empty">Sin resultados para <b>“${esc(query)}”</b>.</div>`;return;}
-    view.innerHTML=names.slice(0,25).map(name=>{
-      const rec0=pool().find(r=>r.nadadora===name);
-      const rows=present.map(p=>{const rk=rankingFor(p);const me=rk.find(r=>r.nadadora===name);if(!me)return"";
-        const imp=me.isNewPB?`<span class="imp">▼ ${fmtClock(me.mejoraCs)} ✓</span>`:"";
-        return`<div class="pRow"><div><div class="prueba">${esc(p)}</div><div class="puesto">Puesto ${me.rank} de ${me.total}</div></div><div class="badge"><b class="mono">${esc(me.tiempo)}</b><div>${gapChip(me)}</div>${imp?`<div>${imp}</div>`:""}</div></div>`;
-      }).join("");
-      return`<div class="profile"><div class="pTop"><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club)} · ${esc(rec0.anio)}</div></div>${rows}</div>`;
-    }).join("");
-    return;
-  }
   const chips=present.map(p=>`<button class="chip ${p===activePrueba?"on":""}" data-p="${esc(p)}">${esc(p)}</button>`).join("");
-  const rk=rankingFor(activePrueba);
-  const rows=rk.map(r=>{const m=medal(r.rank);
-    const imp=r.isNewPB?`<div class="imp">▼ ${fmtClock(r.mejoraCs)}</div>`:"";
-    const fina=r.fina?`<div class="gap na">${r.fina} FINA</div>`:"";
-    return`<div class="row" style="border-left-color:${m.rail}"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div><div><div class="name">${esc(r.nadadora)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div></div><div class="time"><b class="mono">${esc(r.tiempo)}</b><div>${gapChip(r)}</div>${imp}${fina}</div></div>`;
+  const rk=rankTime(RECORDS,activePrueba);
+  const prev=rankMap(rankTime(BEFORE,activePrueba));
+  const rows=rk.map(r=>{
+    const m=medal(r.rank);
+    let right;
+    if(view==="marcas"){
+      const f=fina(r.prueba,r.cs);const ev=evolution(r.name,r.prueba);const dt=deltaTag(ev);
+      right=`<div class="time mono">${starPre(ev)}${esc(r.tiempo)}</div><div><span class="tag fina">${f} FINA</span></div>${dt?("<div>"+dt+"</div>"):""}`;
+    }else{
+      right=`<div class="time mono">${esc(r.tiempo)}</div><div>${gapTag(r,MIN_ESP,"ESP")}</div><div>${gapTag(r,MIN_EH,"EH")}</div>`;
+    }
+    return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div></div><div class="right">${right}</div></div>`;
   }).join("");
-  view.innerHTML=`<div class="chips">${chips}</div><div class="list">${rows}</div>`;
-  view.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{activePrueba=c.dataset.p;render();});
-  const chipsEl=view.querySelector(".chips"), onChip=chipsEl&&chipsEl.querySelector(".chip.on");
-  if(chipsEl&&onChip){const cr=chipsEl.getBoundingClientRect(),ar=onChip.getBoundingClientRect();chipsEl.scrollLeft+=(ar.left-cr.left)-(chipsEl.clientWidth-onChip.clientWidth)/2;}
+  vw.innerHTML=`<div class="chips">${chips}</div><div class="list">${rows}</div>`;
+  const ce=vw.querySelector(".chips"),on=ce&&ce.querySelector(".chip.on");
+  if(ce&&on){const cr=ce.getBoundingClientRect(),ar=on.getBoundingClientRect();ce.scrollLeft+=(ar.left-cr.left)-(ce.clientWidth-on.clientWidth)/2;}
+  vw.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{activePrueba=c.dataset.p;render();});
 }
 
-async function boot(){try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const r=parseCSV(await res.text());if(r.length){RECORDS=r;render();return;}}}catch(e){}RECORDS=parseCSV(SAMPLE_CSV);render();}
+function renderClass(vw,N){
+  const cur=finaClass(RECORDS,N);
+  const prev=rankMap(finaClass(BEFORE,N));
+  if(!cur.length){vw.innerHTML=`<div class="empty">Aún no hay nadadoras con <b>${N} pruebas</b>.</div>`;return;}
+  const rows=cur.map(r=>{const m=medal(r.rank);
+    const chips=(N<9)?`<div class="pchips">${r.pruebas.map(p=>`<span class="pc">${esc(p)}</span>`).join("")}</div>`:"";
+    const rightExtra=(N===9)?`<div class="tag fina">9 mejores</div>`:"";
+    return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${chips}</div><div class="right"><div class="big">${r.sum}</div>${rightExtra}</div></div>`;
+  }).join("");
+  vw.innerHTML=`<div class="list">${rows}</div>`;
+}
+
+function renderProfile(vw,q){
+  const names=[...new Set(RECORDS.map(r=>r.nadadora))].filter(n=>n.toLowerCase().includes(q));
+  if(!names.length){vw.innerHTML=`<div class="empty">Sin resultados para <b>“${esc(query)}”</b>.</div>`;return;}
+  vw.innerHTML=names.slice(0,20).map(name=>{
+    const rec0=RECORDS.find(r=>r.nadadora===name);
+    const rows=PRUEBA_ORDER.map(p=>{const b=bestOf(RECORDS,name,p);if(!b)return"";const cs=toCs(b.tiempo);const rk=rankTime(RECORDS,p).find(x=>x.name===name);const ev=evolution(name,p);
+      const dt=deltaTag(ev);return `<div class="pRow"><div class="mid"><div class="prueba">${esc(p)}</div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${fina(p,cs)} FINA</div></div><div class="right"><div class="time mono">${starPre(ev)}${esc(b.tiempo)}</div>${dt?("<div>"+dt+"</div>"):""}</div></div>`;
+    }).join("");
+    return `<div class="profile"><div class="pTop"><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club)} · ${esc(rec0.anio)}</div></div>${rows}</div>`;
+  }).join("");
+}
+
+async function boot(){let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
+  RECORDS=parseCSV(txt);
+  MAXFECHA=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");
+  BEFORE=RECORDS.filter(r=>r.fecha<MAXFECHA);
+  render();}
 
 el("search").addEventListener("input",e=>{query=e.target.value;render();});
 el("clear").addEventListener("click",()=>{query="";el("search").value="";render();});
-el("seg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;refChamp=b.dataset.r;el("seg").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
+el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;render();});
 el("segYear").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;yearFilter=b.dataset.y;el("segYear").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
+el("segFina").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;finaN=+b.dataset.n;el("segFina").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("adminHead").addEventListener("click",()=>{el("adminHead").classList.toggle("open");el("adminBody").classList.toggle("open");});
 el("dlTemplate").addEventListener("click",()=>{const bl=new Blob([TEMPLATE],{type:"text/csv;charset=utf-8;"});const a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="plantilla-ranking.csv";a.click();URL.revokeObjectURL(a.href);});
 el("upBtn").addEventListener("click",()=>el("file").click());
-el("file").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const r=parseCSV(String(rd.result));if(!r.length){el("upMsg").textContent="No se han encontrado filas válidas.";el("upMsg").style.color="#c0392b";return;}RECORDS=r;query="";el("search").value="";render();el("upMsg").textContent="Vista previa cargada: "+r.length+" marcas.";el("upMsg").style.color="var(--brand)";};rd.readAsText(f,"utf-8");e.target.value="";});
+el("file").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const r=parseCSV(String(rd.result));if(!r.length){el("upMsg").textContent="No se han encontrado filas válidas.";el("upMsg").style.color="#c0392b";return;}RECORDS=r;MAXFECHA=RECORDS.reduce((m,x)=>x.fecha>m?x.fecha:m,RECORDS[0].fecha);BEFORE=RECORDS.filter(x=>x.fecha<MAXFECHA);query="";el("search").value="";render();el("upMsg").textContent="Vista previa: "+r.length+" marcas.";el("upMsg").style.color="var(--brand)";};rd.readAsText(f,"utf-8");e.target.value="";});
 
 boot();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}
 </script>
-
-<!-- Analítica de tráfico (Cloudflare Web Analytics, sin cookies).
-     Pega tu token real donde pone TU_TOKEN_CLOUDFLARE (ver README). Sin token, no hace nada. -->
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
-        data-cf-beacon='{"token": "TU_TOKEN_CLOUDFLARE"}'></script>
 </body>
 </html>
