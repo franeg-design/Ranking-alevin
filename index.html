@@ -662,7 +662,7 @@ function rankMap(arr){const m={};arr.forEach(x=>m[x.name]=x.rank);return m;}
 
 function evolution(name,prueba){const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===prueba);if(!sw.length)return null;const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);const before=sw.filter(s=>s.fecha<latest);if(!before.length)return null;const prev=Math.min(...before.map(s=>toCs(s.tiempo)));const lat=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));if(lat<prev)return{dir:"up",d:prev-lat,date:latest};if(lat>prev)return{dir:"down",d:lat-prev,date:latest};return null;}
 
-function abbrev(p){const sp=p.split(" ");const st={"Libre":"L","Espalda":"E","Braza":"B","Mariposa":"M","Estilos":"EI"}[sp[1]]||sp[1];return sp[0]+" "+st;}
+function abbrev(p){const sp=p.split(" ");const st={"Libre":"L","Espalda":"E","Braza":"B","Mariposa":"M","Estilos":"Est"}[sp[1]]||sp[1];return sp[0]+" "+st;}
 function finaClass(recs,N){const names=[...new Set(recs.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of recs){if(r.nadadora!==n)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba])byP[r.prueba]=c;}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p]),p:p})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(list.length<N)return;const top=list.slice(0,N);const sum=top.reduce((a,b)=>a+b.f,0);const rec=recs.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:top.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum);arr.forEach((x,i)=>x.rank=i+1);return arr;}
 
 function posTag(cur,prevMap){if(!(cur.name in prevMap))return '<div class="pos new">nuevo</div>';const d=prevMap[cur.name]-cur.rank;if(d>0)return `<div class="pos up">↑${d}</div>`;if(d<0)return `<div class="pos down">↓${-d}</div>`;return '<div class="pos eq">=</div>';}
@@ -721,9 +721,8 @@ function renderClass(vw,N){
   const prev=rankMap(finaClass(BEFORE,N));
   if(!cur.length){vw.innerHTML=`<div class="empty">Aún no hay nadadoras con <b>${N} pruebas</b>.</div>`;return;}
   const rows=cur.map(r=>{const m=medal(r.rank);
-    const chips=(N<9)?`<div class="pchips">${r.pruebas.map(p=>`<span class="pc">${esc(p)}</span>`).join("")}</div>`:"";
-    const rightExtra=(N===9)?`<div class="tag fina">9 mejores</div>`:"";
-    return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${chips}</div><div class="right"><div class="big">${r.sum}</div>${rightExtra}</div></div>`;
+    const chips=`<div class="pchips">${r.pruebas.map(p=>`<span class="pc">${esc(p)}</span>`).join("")}</div>`;
+    return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${chips}</div><div class="right"><div class="big">${r.sum}</div></div></div>`;
   }).join("");
   vw.innerHTML=`<div class="list">${rows}</div>`;
 }
