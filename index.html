@@ -62,6 +62,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .club{font-size:11.5px;color:var(--muted);margin-top:2px}
 .right{margin-left:auto;text-align:right;flex-shrink:0;padding-left:6px}
 .time{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.tdate{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:var(--muted);margin-right:5px;letter-spacing:0}
 .tag{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:700;border-radius:6px;padding:2px 6px}
 .tag.fina{color:var(--brand);background:rgba(14,124,147,.09)}
 .tag.up{color:var(--good);background:rgba(15,157,107,.1)}
@@ -645,7 +646,7 @@ const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,PuntosFINA
 `;
 const TEMPLATE="Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion\n50 Libre,\"ARAICO QUINTANA, Sara\",2013,CN Judizmendi,31.54,2026-06-21,Cto Euskal Herria\n";
 
-let RECORDS=[], BEFORE=[], MAXFECHA="", view="marcas", yearFilter="all", finaN=3, query="", activePrueba="";
+let RECORDS=[], BEFORE=[], MAXFECHA="", MINFECHA="", view="marcas", yearFilter="all", finaN=3, query="", activePrueba="";
 const el=id=>document.getElementById(id);
 
 function splitLine(line){const o=[];let c="",q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){c+='"';i++;}else q=false;}else c+=ch;}else{if(ch==='"')q=true;else if(ch===","){o.push(c);c="";}else c+=ch;}}o.push(c);return o;}
@@ -653,12 +654,12 @@ function parseCSV(t){const L=t.replace(/\r/g,"").split("\n").filter(x=>x.trim())
 function toCs(t){if(!t)return Infinity;const s=String(t).trim().replace(",",".");const p=s.split(":");let sec;if(p.length===3)sec=(+p[0])*3600+(+p[1])*60+parseFloat(p[2]);else if(p.length===2)sec=(+p[0])*60+parseFloat(p[1]);else sec=parseFloat(p[0]);return isNaN(sec)?Infinity:Math.round(sec*100);}
 function fmtClock(cs){if(cs<6000)return(cs/100).toFixed(2);let s=Math.floor(cs/100),c=cs%100,m=Math.floor(s/60),ss=s%60;return m+":"+String(ss).padStart(2,"0")+"."+String(c).padStart(2,"0");}
 function fina(pr,cs){const b=BASE[pr];if(!b||!isFinite(cs)||cs<=0)return 0;return Math.floor(1000*Math.pow(b/(cs/100),3));}
-function fmtDate(f){const p=f.split("-");if(p.length<3)return f;const mes=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][(+p[1])-1];return (+p[2])+" "+mes;}
+function fmtDate(f){const p=f.split("-");if(p.length<3)return f;const mes=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][(+p[1])-1];return (+p[2])+" "+mes+" "+p[0].slice(2);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 
 function poolRecs(recs){return yearFilter==="all"?recs:recs.filter(r=>r.anio===yearFilter);}
 function bestOf(recs,name,prueba){let b=null,bc=Infinity;for(const r of recs){if(r.nadadora===name&&r.prueba===prueba){const c=toCs(r.tiempo);if(c<bc){bc=c;b=r;}}}return b;}
-function rankTime(recs,prueba){const rr=poolRecs(recs).filter(r=>r.prueba===prueba);const names=[...new Set(rr.map(r=>r.nadadora))];const arr=names.map(n=>{const b=bestOf(rr,n,prueba);return{name:n,prueba:prueba,club:b.club,anio:b.anio,cs:toCs(b.tiempo),tiempo:b.tiempo};});arr.sort((a,b)=>a.cs-b.cs);arr.forEach((x,i)=>x.rank=i+1);return arr;}
+function rankTime(recs,prueba){const rr=poolRecs(recs).filter(r=>r.prueba===prueba);const names=[...new Set(rr.map(r=>r.nadadora))];const arr=names.map(n=>{const b=bestOf(rr,n,prueba);return{name:n,prueba:prueba,club:b.club,anio:b.anio,cs:toCs(b.tiempo),tiempo:b.tiempo,fecha:b.fecha};});arr.sort((a,b)=>a.cs-b.cs);arr.forEach((x,i)=>x.rank=i+1);return arr;}
 function rankMap(arr){const m={};arr.forEach(x=>m[x.name]=x.rank);return m;}
 
 function evolution(name,prueba){const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===prueba);if(!sw.length)return null;const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);const before=sw.filter(s=>s.fecha<latest);if(!before.length)return null;const prev=Math.min(...before.map(s=>toCs(s.tiempo)));const lat=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));if(lat<prev)return{dir:"up",d:prev-lat,date:latest};if(lat>prev)return{dir:"down",d:lat-prev,date:latest};return null;}
@@ -673,7 +674,7 @@ function starPre(ev){return (ev&&ev.dir==="up")?"⭐ ":"";}
 function deltaTag(ev){if(!ev)return"";if(ev.dir==="up")return`<span class="tag up">−${fmtClock(ev.d)} · ${fmtDate(ev.date)}</span>`;return`<span class="tag down">+${fmtClock(ev.d)} · ${fmtDate(ev.date)}</span>`;}
 
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
-function lastUpdated(){if(!RECORDS.length)return"—";return fmtDate(MAXFECHA)+" 2026";}
+function lastUpdated(){if(!RECORDS.length)return"—";return fmtDate(MAXFECHA);}
 
 function render(){
   el("updated").textContent="Actualizado: "+lastUpdated();
@@ -706,7 +707,8 @@ function render(){
     let right;
     if(view==="marcas"){
       const f=fina(r.prueba,r.cs);const ev=evolution(r.name,r.prueba);const dt=deltaTag(ev);
-      right=`<div class="time mono">${starPre(ev)}${esc(r.tiempo)}</div><div><span class="tag fina">${f} FINA</span></div>${dt?("<div>"+dt+"</div>"):""}`;
+      const dstr=(r.fecha>MINFECHA)?`<span class="tdate">${fmtDate(r.fecha)}</span>`:"";
+      right=`<div class="time mono">${starPre(ev)}${dstr}${esc(r.tiempo)}</div><div><span class="tag fina">${f} FINA</span></div>${dt?("<div>"+dt+"</div>"):""}`;
     }else{
       right=`<div class="time mono">${esc(r.tiempo)}</div><div>${gapTag(r,MIN_ESP,"ESP")}</div><div>${gapTag(r,MIN_EH,"EH")}</div>`;
     }
@@ -735,7 +737,7 @@ function renderProfile(vw,q){
   vw.innerHTML=names.slice(0,20).map(name=>{
     const rec0=RECORDS.find(r=>r.nadadora===name);
     const rows=PRUEBA_ORDER.map(p=>{const b=bestOf(RECORDS,name,p);if(!b)return"";const cs=toCs(b.tiempo);const rk=rankTime(RECORDS,p).find(x=>x.name===name);const ev=evolution(name,p);
-      const dt=deltaTag(ev);return `<div class="pRow"><div class="mid"><div class="prueba">${esc(p)}</div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${fina(p,cs)} FINA</div><div class="pmin">${gapTag(b,MIN_ESP,"ESP")}${gapTag(b,MIN_EH,"EH")}</div></div><div class="right"><div class="time mono">${starPre(ev)}${esc(b.tiempo)}</div>${dt?("<div>"+dt+"</div>"):""}</div></div>`;
+      const dt=deltaTag(ev);const dstr=(b.fecha>MINFECHA)?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";return `<div class="pRow"><div class="mid"><div class="prueba">${esc(p)}</div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${fina(p,cs)} FINA</div><div class="pmin">${gapTag(b,MIN_ESP,"ESP")}${gapTag(b,MIN_EH,"EH")}</div></div><div class="right"><div class="time mono">${starPre(ev)}${dstr}${esc(b.tiempo)}</div>${dt?("<div>"+dt+"</div>"):""}</div></div>`;
     }).join("");
     return `<div class="profile"><div class="pTop"><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club)} · ${esc(rec0.anio)}</div></div>${rows}</div>`;
   }).join("");
@@ -744,6 +746,7 @@ function renderProfile(vw,q){
 async function boot(){let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
   RECORDS=parseCSV(txt);
   MAXFECHA=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");
+  MINFECHA=RECORDS.reduce((m,r)=>r.fecha<m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");
   BEFORE=RECORDS.filter(r=>r.fecha<MAXFECHA);
   render();}
 
@@ -755,7 +758,7 @@ el("segFina").addEventListener("click",e=>{const b=e.target.closest("button");if
 el("adminHead").addEventListener("click",()=>{el("adminHead").classList.toggle("open");el("adminBody").classList.toggle("open");});
 el("dlTemplate").addEventListener("click",()=>{const bl=new Blob([TEMPLATE],{type:"text/csv;charset=utf-8;"});const a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="plantilla-ranking.csv";a.click();URL.revokeObjectURL(a.href);});
 el("upBtn").addEventListener("click",()=>el("file").click());
-el("file").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const r=parseCSV(String(rd.result));if(!r.length){el("upMsg").textContent="No se han encontrado filas válidas.";el("upMsg").style.color="#c0392b";return;}RECORDS=r;MAXFECHA=RECORDS.reduce((m,x)=>x.fecha>m?x.fecha:m,RECORDS[0].fecha);BEFORE=RECORDS.filter(x=>x.fecha<MAXFECHA);query="";el("search").value="";render();el("upMsg").textContent="Vista previa: "+r.length+" marcas.";el("upMsg").style.color="var(--brand)";};rd.readAsText(f,"utf-8");e.target.value="";});
+el("file").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const r=parseCSV(String(rd.result));if(!r.length){el("upMsg").textContent="No se han encontrado filas válidas.";el("upMsg").style.color="#c0392b";return;}RECORDS=r;MAXFECHA=RECORDS.reduce((m,x)=>x.fecha>m?x.fecha:m,RECORDS[0].fecha);MINFECHA=RECORDS.reduce((m,x)=>x.fecha<m?x.fecha:m,RECORDS[0].fecha);BEFORE=RECORDS.filter(x=>x.fecha<MAXFECHA);query="";el("search").value="";render();el("upMsg").textContent="Vista previa: "+r.length+" marcas.";el("upMsg").style.color="var(--brand)";};rd.readAsText(f,"utf-8");e.target.value="";});
 
 boot();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}
