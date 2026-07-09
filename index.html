@@ -81,6 +81,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .pRow{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;border-top:1px solid var(--line)}
 .prueba{font-weight:600;font-size:13.5px}
 .puesto{font-size:11px;color:var(--muted);margin-top:2px}
+.pmin{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
 .admin{margin-top:24px;border:1px dashed var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
 .adminHead{width:100%;display:flex;align-items:center;gap:9px;padding:13px 15px;background:none;border:none;cursor:pointer;font-size:14px;font-weight:600;color:var(--ink)}
 .adminHead .chev{margin-left:auto;transition:transform .2s}
@@ -734,7 +735,7 @@ function renderProfile(vw,q){
   vw.innerHTML=names.slice(0,20).map(name=>{
     const rec0=RECORDS.find(r=>r.nadadora===name);
     const rows=PRUEBA_ORDER.map(p=>{const b=bestOf(RECORDS,name,p);if(!b)return"";const cs=toCs(b.tiempo);const rk=rankTime(RECORDS,p).find(x=>x.name===name);const ev=evolution(name,p);
-      const dt=deltaTag(ev);return `<div class="pRow"><div class="mid"><div class="prueba">${esc(p)}</div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${fina(p,cs)} FINA</div></div><div class="right"><div class="time mono">${starPre(ev)}${esc(b.tiempo)}</div>${dt?("<div>"+dt+"</div>"):""}</div></div>`;
+      const dt=deltaTag(ev);return `<div class="pRow"><div class="mid"><div class="prueba">${esc(p)}</div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${fina(p,cs)} FINA</div><div class="pmin">${gapTag(b,MIN_ESP,"ESP")}${gapTag(b,MIN_EH,"EH")}</div></div><div class="right"><div class="time mono">${starPre(ev)}${esc(b.tiempo)}</div>${dt?("<div>"+dt+"</div>"):""}</div></div>`;
     }).join("");
     return `<div class="profile"><div class="pTop"><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club)} · ${esc(rec0.anio)}</div></div>${rows}</div>`;
   }).join("");
