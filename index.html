@@ -663,7 +663,7 @@ function rankMap(arr){const m={};arr.forEach(x=>m[x.name]=x.rank);return m;}
 function evolution(name,prueba){const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===prueba);if(!sw.length)return null;const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);const before=sw.filter(s=>s.fecha<latest);if(!before.length)return null;const prev=Math.min(...before.map(s=>toCs(s.tiempo)));const lat=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));if(lat<prev)return{dir:"up",d:prev-lat,date:latest};if(lat>prev)return{dir:"down",d:lat-prev,date:latest};return null;}
 
 function abbrev(p){const sp=p.split(" ");const st={"Libre":"L","Espalda":"E","Braza":"B","Mariposa":"M","Estilos":"Est"}[sp[1]]||sp[1];return sp[0]+" "+st;}
-function finaClass(recs,N){const names=[...new Set(recs.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of recs){if(r.nadadora!==n)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba])byP[r.prueba]=c;}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p]),p:p})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(list.length<N)return;const top=list.slice(0,N);const sum=top.reduce((a,b)=>a+b.f,0);const rec=recs.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:top.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum);arr.forEach((x,i)=>x.rank=i+1);return arr;}
+function finaClass(recs,N){const R=poolRecs(recs);const names=[...new Set(R.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of R){if(r.nadadora!==n)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba])byP[r.prueba]=c;}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p]),p:p})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(list.length<N)return;const top=list.slice(0,N);const sum=top.reduce((a,b)=>a+b.f,0);const rec=R.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:top.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum);arr.forEach((x,i)=>x.rank=i+1);return arr;}
 
 function posTag(cur,prevMap){if(!(cur.name in prevMap))return '<div class="pos new">nuevo</div>';const d=prevMap[cur.name]-cur.rank;if(d>0)return `<div class="pos up">↑${d}</div>`;if(d<0)return `<div class="pos down">↓${-d}</div>`;return '<div class="pos eq">=</div>';}
 function medal(rank){if(rank===1)return{rail:"var(--gold)",bg:"var(--gold)",ink:"#3b2a06"};if(rank===2)return{rail:"var(--silver)",bg:"var(--silver)",ink:"#20262b"};if(rank===3)return{rail:"var(--bronze)",bg:"var(--bronze)",ink:"#2e1808"};return{rail:"transparent",bg:"var(--chip)",ink:"var(--muted)"};}
@@ -678,15 +678,16 @@ function render(){
   el("updated").textContent="Actualizado: "+lastUpdated();
   el("tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===view));
   const perPrueba=(view==="marcas"||view==="minimas");
-  el("segYear").style.display=perPrueba?"flex":"none";
+  el("segYear").style.display=(perPrueba||view==="topfina")?"flex":"none";
   el("segFina").style.display=view==="topfina"?"flex":"none";
   const q=query.trim().toLowerCase();
   el("clear").style.display=query?"block":"none";
 
   // legend
+  const catTxt=yearFilter==="all"?"Alevín, años 2013 y 2014 juntos":("solo nadadoras "+yearFilter);
   const legs={marcas:"Mejor marca, puntos <b style='color:var(--brand)'>FINA</b> y evolución: <b>⭐ − mejora</b> / <i>+ empeora</i> respecto a su récord. ↑/↓ = cambio de puesto.",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
-    topfina:"Suma de los <b style='color:var(--brand)'>"+finaN+" mejores FINA</b> de cada nadadora (años mezclados). Solo aparecen las que tienen "+finaN+" pruebas. ↑/↓ = cambio de puesto tras la última competición."};
+    topfina:"Suma de los <b style='color:var(--brand)'>"+finaN+" mejores FINA</b> ("+catTxt+"). Solo aparecen las que tienen "+finaN+" pruebas. El FINA no pondera por edad. ↑/↓ = cambio de puesto."};
   el("leg").innerHTML=legs[view];
 
   const vw=el("view");
