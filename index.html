@@ -662,7 +662,7 @@ function bestOf(recs,name,prueba){let b=null,bc=Infinity;for(const r of recs){if
 function rankTime(recs,prueba){const rr=poolRecs(recs).filter(r=>r.prueba===prueba);const names=[...new Set(rr.map(r=>r.nadadora))];const arr=names.map(n=>{const b=bestOf(rr,n,prueba);return{name:n,prueba:prueba,club:b.club,anio:b.anio,cs:toCs(b.tiempo),tiempo:b.tiempo,fecha:b.fecha};});arr.sort((a,b)=>a.cs-b.cs);arr.forEach((x,i)=>x.rank=i+1);return arr;}
 function rankMap(arr){const m={};arr.forEach(x=>m[x.name]=x.rank);return m;}
 
-function evolution(name,prueba){const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===prueba);if(!sw.length)return null;const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);const before=sw.filter(s=>s.fecha<latest);if(!before.length)return null;const prev=Math.min(...before.map(s=>toCs(s.tiempo)));const lat=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));if(lat<prev)return{dir:"up",d:prev-lat,date:latest};if(lat>prev)return{dir:"down",d:lat-prev,date:latest};return null;}
+function evolution(name,prueba){const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===prueba);if(!sw.length)return null;const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);if(latest<MAXFECHA)return null;const before=sw.filter(s=>s.fecha<latest);if(!before.length)return null;const prev=Math.min(...before.map(s=>toCs(s.tiempo)));const lat=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));if(lat<prev)return{dir:"up",d:prev-lat,date:latest};if(lat>prev)return{dir:"down",d:lat-prev,date:latest};return null;}
 
 function abbrev(p){const sp=p.split(" ");const st={"Libre":"L","Espalda":"E","Braza":"B","Mariposa":"M","Estilos":"Est"}[sp[1]]||sp[1];return sp[0]+" "+st;}
 function finaClass(recs,N){const R=poolRecs(recs);const names=[...new Set(R.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of R){if(r.nadadora!==n)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba])byP[r.prueba]=c;}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p]),p:p})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(list.length<N)return;const top=list.slice(0,N);const sum=top.reduce((a,b)=>a+b.f,0);const rec=R.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:top.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum);arr.forEach((x,i)=>x.rank=i+1);return arr;}
@@ -687,7 +687,7 @@ function render(){
 
   // legend
   const catTxt=yearFilter==="all"?"Alevín, años 2013 y 2014 juntos":("solo nadadoras "+yearFilter);
-  const legs={marcas:"Mejor marca, puntos <b style='color:var(--brand)'>FINA</b> y evolución: <b>⭐ − mejora</b> / <i>+ empeora</i> respecto a su récord. ↑/↓ = cambio de puesto.",
+  const legs={marcas:"Mejor marca personal y puntos <span style='color:var(--brand)'>FINA</span>.<br><span style='font-weight:700'>Último campeonato:</span> ⭐ nuevo récord y diferencia con su marca anterior (<b>− mejora</b> / <span style='color:var(--warn)'>+ empeora</span>). ↑/↓ = cambio de puesto.",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
     topfina:"Suma de los <b style='color:var(--brand)'>"+finaN+" mejores FINA</b> ("+catTxt+"). Solo aparecen las que tienen "+finaN+" pruebas. El FINA no pondera por edad. ↑/↓ = cambio de puesto."};
   el("leg").innerHTML=legs[view];
