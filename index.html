@@ -687,7 +687,7 @@ function render(){
 
   // legend
   const catTxt=yearFilter==="all"?"Alevín, años 2013 y 2014 juntos":("solo nadadoras "+yearFilter);
-  const legs={marcas:"Mejor marca personal y puntos <span style='color:var(--brand)'>FINA</span>.<br><span style='font-weight:700'>Último campeonato:</span> ⭐ nuevo récord y diferencia con su marca anterior (<b>− mejora</b> / <span style='color:var(--warn)'>+ empeora</span>). ↑/↓ = cambio de puesto.",
+  const legs={marcas:"Mejor marca personal (MMP) y puntuación <span style='color:var(--brand)'>FINA</span>.<br><span style='font-weight:700'>Último campeonato</span> — ⭐ nueva MMP · (<span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span>) respecto a su MMP anterior · ↑ ↓ = variación de puesto.",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
     topfina:"Suma de los <b style='color:var(--brand)'>"+finaN+" mejores FINA</b> ("+catTxt+"). Solo aparecen las que tienen "+finaN+" pruebas. El FINA no pondera por edad. ↑/↓ = cambio de puesto."};
   el("leg").innerHTML=legs[view];
