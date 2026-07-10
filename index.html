@@ -656,6 +656,7 @@ function fmtClock(cs){if(cs<6000)return(cs/100).toFixed(2);let s=Math.floor(cs/1
 function fina(pr,cs){const b=BASE[pr];if(!b||!isFinite(cs)||cs<=0)return 0;return Math.floor(1000*Math.pow(b/(cs/100),3));}
 function fmtDate(f){const p=f.split("-");if(p.length<3)return f;const mes=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][(+p[1])-1];return (+p[2])+" "+mes+" "+p[0].slice(2);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function normName(s){return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/,/g," ").replace(/\s+/g," ").trim();}
 
 function poolRecs(recs){return yearFilter==="all"?recs:recs.filter(r=>r.anio===yearFilter);}
 function bestOf(recs,name,prueba){let b=null,bc=Infinity;for(const r of recs){if(r.nadadora===name&&r.prueba===prueba){const c=toCs(r.tiempo);if(c<bc){bc=c;b=r;}}}return b;}
@@ -731,7 +732,8 @@ function renderClass(vw,N){
 }
 
 function renderProfile(vw,q){
-  const names=[...new Set(RECORDS.map(r=>r.nadadora))].filter(n=>n.toLowerCase().includes(q));
+  const qtok=normName(query).split(" ").filter(Boolean);
+  const names=[...new Set(RECORDS.map(r=>r.nadadora))].filter(n=>{const hay=normName(n);return qtok.every(t=>hay.includes(t));});
   if(!names.length){vw.innerHTML=`<div class="empty">Sin resultados para <b>“${esc(query)}”</b>.</div>`;return;}
   vw.innerHTML=names.slice(0,20).map(name=>{
     const rec0=RECORDS.find(r=>r.nadadora===name);
