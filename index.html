@@ -120,7 +120,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
   <header class="head">
     <div class="glow"></div>
     <div class="kicker">🌊 Natación · Álava</div>
-    <h1 class="title">Ranking Alevín Femenino</h1>
+    <h1 class="title" id="h1t">Ranking Alevín Femenino</h1>
     <div class="sub">Temporada 2025 / 26 · Piscina 25 m</div>
     <div class="lane"><span></span><span></span><span></span><span></span></div>
   </header>
@@ -136,6 +136,11 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
       <button data-v="marcas" class="on">Marcas (MMP)</button>
       <button data-v="minimas">Mínimas</button>
       <button data-v="topfina">Top FINA</button>
+    </div>
+
+    <div class="seg" id="segSex">
+      <button data-s="F" class="on">Femenino</button>
+      <button data-s="M">Masculino</button>
     </div>
 
     <div class="seg" id="segYear">
@@ -165,7 +170,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
           <input type="file" id="file" accept=".csv" style="display:none" />
         </div>
         <div class="hint" id="upMsg"></div>
-        <div class="hint">Columnas: <span class="mono">Prueba, Nadadora, Año, Club, Tiempo, Fecha, Competicion</span>. <b>Año</b> (2013/2014) y <b>Fecha</b> (AAAA-MM-DD) son necesarios. Guarda el histórico (una fila por marca): así salen la evolución y el cambio de puesto.</div>
+        <div class="hint">Columnas: <span class="mono">Prueba, Nadadora, Año, Club, Tiempo, Fecha, Competicion, Sexo</span>. <b>Año</b> (2013/2014), <b>Fecha</b> (AAAA-MM-DD) y <b>Sexo</b> (F/M; si falta se asume F) son necesarios. Guarda el histórico (una fila por marca): así salen la evolución y el cambio de puesto.</div>
       </div>
     </section>
 
@@ -176,9 +181,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 <script>
 const PRUEBA_ORDER=["50 Libre","100 Libre","200 Libre","400 Libre","800 Libre","50 Espalda","100 Espalda","200 Espalda","50 Braza","100 Braza","200 Braza","50 Mariposa","100 Mariposa","200 Mariposa","100 Estilos","200 Estilos","400 Estilos"];
 // Tiempos base FINA — World Aquatics SCM 2025 (25 m), femenino (segundos)
-const BASE={"50 Libre":22.83,"100 Libre":50.25,"200 Libre":110.31,"400 Libre":230.25,"800 Libre":477.42,"50 Espalda":25.23,"100 Espalda":54.02,"200 Espalda":118.04,"50 Braza":28.37,"100 Braza":62.36,"200 Braza":132.50,"50 Mariposa":23.94,"100 Mariposa":52.71,"200 Mariposa":119.32,"100 Estilos":55.11,"200 Estilos":121.63,"400 Estilos":255.48};
-const MIN_ESP={"50 Libre":{"2013":"28.35","2014":"29.85"},"100 Libre":{"2013":"1:02.15","2014":"1:05.70"},"200 Libre":{"2013":"2:17.65","2014":"2:24.50"},"400 Libre":{"2013":"4:48.00","2014":"5:04.35"},"800 Libre":{"2013":"9:58.35","2014":"10:37.50"},"50 Espalda":{"2013":"31.90","2014":"34.35"},"100 Espalda":{"2013":"1:09.35","2014":"1:13.30"},"200 Espalda":{"2013":"2:30.65","2014":"2:40.90"},"50 Braza":{"2013":"36.25","2014":"38.35"},"100 Braza":{"2013":"1:19.70","2014":"1:24.35"},"200 Braza":{"2013":"2:51.50","2014":"3:01.20"},"50 Mariposa":{"2013":"31.15","2014":"33.20"},"100 Mariposa":{"2013":"1:08.80","2014":"1:13.10"},"200 Mariposa":{"2013":"2:38.20","2014":"2:49.45"},"200 Estilos":{"2013":"2:33.35","2014":"2:42.05"},"400 Estilos":{"2013":"5:26.75","2014":"5:46.15"}};
-const MIN_EH={"50 Libre":{"2013":"32.71","2014":"34.49"},"100 Libre":{"2013":"1:12.00","2014":"1:15.92"},"200 Libre":{"2013":"2:38.05","2014":"2:46.65"},"400 Libre":{"2013":"5:29.89","2014":"5:47.86"},"800 Libre":{"2013":"11:24.03","2014":"12:01.28"},"50 Espalda":{"2013":"39.28","2014":"42.12"},"100 Espalda":{"2013":"1:24.10","2014":"1:30.17"},"200 Espalda":{"2013":"3:03.77","2014":"3:17.04"},"50 Braza":{"2013":"42.86","2014":"45.65"},"100 Braza":{"2013":"1:34.21","2014":"1:40.35"},"200 Braza":{"2013":"3:20.18","2014":"3:33.21"},"50 Mariposa":{"2013":"37.51","2014":"40.28"},"100 Mariposa":{"2013":"1:22.59","2014":"1:28.68"},"200 Mariposa":{"2013":"3:06.95","2014":"3:20.74"},"200 Estilos":{"2013":"3:05.92","2014":"3:18.52"},"400 Estilos":{"2013":"6:30.51","2014":"6:56.98"}};
+const BASE={F:{"50 Libre":22.83,"100 Libre":50.25,"200 Libre":110.31,"400 Libre":230.25,"800 Libre":477.42,"50 Espalda":25.23,"100 Espalda":54.02,"200 Espalda":118.04,"50 Braza":28.37,"100 Braza":62.36,"200 Braza":132.50,"50 Mariposa":23.94,"100 Mariposa":52.71,"200 Mariposa":119.32,"100 Estilos":55.11,"200 Estilos":121.63,"400 Estilos":255.48},M:{"50 Libre":19.90,"100 Libre":44.84,"200 Libre":98.61,"400 Libre":212.25,"800 Libre":440.46,"50 Espalda":22.11,"100 Espalda":48.33,"200 Espalda":105.63,"50 Braza":24.95,"100 Braza":55.28,"200 Braza":120.16,"50 Mariposa":21.32,"100 Mariposa":47.71,"200 Mariposa":106.85,"100 Estilos":49.28,"200 Estilos":108.88,"400 Estilos":234.81}};
+const MIN_ESP={F:{"50 Libre":{"2013":"28.35","2014":"29.85"},"100 Libre":{"2013":"1:02.15","2014":"1:05.70"},"200 Libre":{"2013":"2:17.65","2014":"2:24.50"},"400 Libre":{"2013":"4:48.00","2014":"5:04.35"},"800 Libre":{"2013":"9:58.35","2014":"10:37.50"},"50 Espalda":{"2013":"31.90","2014":"34.35"},"100 Espalda":{"2013":"1:09.35","2014":"1:13.30"},"200 Espalda":{"2013":"2:30.65","2014":"2:40.90"},"50 Braza":{"2013":"36.25","2014":"38.35"},"100 Braza":{"2013":"1:19.70","2014":"1:24.35"},"200 Braza":{"2013":"2:51.50","2014":"3:01.20"},"50 Mariposa":{"2013":"31.15","2014":"33.20"},"100 Mariposa":{"2013":"1:08.80","2014":"1:13.10"},"200 Mariposa":{"2013":"2:38.20","2014":"2:49.45"},"200 Estilos":{"2013":"2:33.35","2014":"2:42.05"},"400 Estilos":{"2013":"5:26.75","2014":"5:46.15"}},M:{}};
+const MIN_EH={F:{"50 Libre":{"2013":"32.71","2014":"34.49"},"100 Libre":{"2013":"1:12.00","2014":"1:15.92"},"200 Libre":{"2013":"2:38.05","2014":"2:46.65"},"400 Libre":{"2013":"5:29.89","2014":"5:47.86"},"800 Libre":{"2013":"11:24.03","2014":"12:01.28"},"50 Espalda":{"2013":"39.28","2014":"42.12"},"100 Espalda":{"2013":"1:24.10","2014":"1:30.17"},"200 Espalda":{"2013":"3:03.77","2014":"3:17.04"},"50 Braza":{"2013":"42.86","2014":"45.65"},"100 Braza":{"2013":"1:34.21","2014":"1:40.35"},"200 Braza":{"2013":"3:20.18","2014":"3:33.21"},"50 Mariposa":{"2013":"37.51","2014":"40.28"},"100 Mariposa":{"2013":"1:22.59","2014":"1:28.68"},"200 Mariposa":{"2013":"3:06.95","2014":"3:20.74"},"200 Estilos":{"2013":"3:05.92","2014":"3:18.52"},"400 Estilos":{"2013":"6:30.51","2014":"6:56.98"}},M:{"50 Libre":{"2013":"30.98","2014":"33.22"},"100 Libre":{"2013":"1:09.81","2014":"1:14.85"},"200 Libre":{"2013":"2:33.52","2014":"2:44.60"},"400 Libre":{"2013":"5:30.44","2014":"5:54.30"},"800 Libre":{"2013":"11:25.74","2014":"12:15.24"},"50 Espalda":{"2013":"37.81","2014":"41.61"},"100 Espalda":{"2013":"1:22.64","2014":"1:30.96"},"200 Espalda":{"2013":"3:00.62","2014":"3:18.80"},"50 Braza":{"2013":"40.15","2014":"43.40"},"100 Braza":{"2013":"1:28.95","2014":"1:36.16"},"200 Braza":{"2013":"3:13.36","2014":"3:29.01"},"50 Mariposa":{"2013":"36.46","2014":"40.13"},"100 Mariposa":{"2013":"1:21.58","2014":"1:29.79"},"200 Mariposa":{"2013":"3:02.71","2014":"3:21.10"},"200 Estilos":{"2013":"2:57.71","2014":"3:12.84"},"400 Estilos":{"2013":"6:23.24","2014":"6:55.87"}}};
 const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,PuntosFINA
 50 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,31.54,2026-06-14,Ranking 2025/26,
 50 Libre,"EGUIDON VARGAS, Maren",2013,CN Menditxo,31.56,2026-06-14,Ranking 2025/26,
@@ -663,16 +668,16 @@ const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,PuntosFINA
 50 Libre,"FREIRE MARTIN, Haizea",2013,CN Menditxo,33.38,2026-06-21,Cto Euskal Herria,
 800 Libre,"CASTRESANA LIÑÁN, Martina",2013,CN Judizmendi,11:15.22,2026-06-21,Cto Euskal Herria,
 `;
-const TEMPLATE="Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion\n50 Libre,\"ARAICO QUINTANA, Sara\",2013,CN Judizmendi,31.54,2026-06-21,Cto Euskal Herria\n";
+const TEMPLATE="Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo\n50 Libre,\"ARAICO QUINTANA, Sara\",2013,CN Judizmendi,31.54,2026-06-21,Cto Euskal Herria,F\n50 Espalda,\"FERNANDEZ GARCIA, Martin\",2013,CN Judizmendi,35.10,2026-06-21,Cto Euskal Herria,M\n";
 
-let RECORDS=[], BEFORE=[], MAXFECHA="", MINFECHA="", view="marcas", yearFilter="all", clubFilter="all", finaN=3, legOpen=false, query="", activePrueba="";
+let ALLRECS=[], RECORDS=[], BEFORE=[], MAXFECHA="", MINFECHA="", sexFilter="F", view="marcas", yearFilter="all", clubFilter="all", finaN=3, legOpen=false, query="", activePrueba="";
 const el=id=>document.getElementById(id);
 
 function splitLine(line){const o=[];let c="",q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){c+='"';i++;}else q=false;}else c+=ch;}else{if(ch==='"')q=true;else if(ch===","){o.push(c);c="";}else c+=ch;}}o.push(c);return o;}
-function parseCSV(t){const L=t.replace(/\r/g,"").split("\n").filter(x=>x.trim());if(!L.length)return[];const H=splitLine(L[0]).map(h=>h.trim());const out=[];for(let i=1;i<L.length;i++){const c=splitLine(L[i]);const o={};H.forEach((h,k)=>o[h]=(c[k]??"").trim());const r={prueba:o.Prueba||"",nadadora:o.Nadadora||"",anio:o["Año"]||o.Anio||"",club:o.Club||"",tiempo:o.Tiempo||"",fecha:o.Fecha||"",competi:o.Competicion||o["Competición"]||""};if(r.prueba&&r.nadadora&&r.tiempo)out.push(r);}return out;}
+function parseCSV(t){const L=t.replace(/\r/g,"").split("\n").filter(x=>x.trim());if(!L.length)return[];const H=splitLine(L[0]).map(h=>h.trim());const out=[];for(let i=1;i<L.length;i++){const c=splitLine(L[i]);const o={};H.forEach((h,k)=>o[h]=(c[k]??"").trim());const r={prueba:o.Prueba||"",nadadora:o.Nadadora||"",anio:o["Año"]||o.Anio||"",club:o.Club||"",tiempo:o.Tiempo||"",fecha:o.Fecha||"",competi:o.Competicion||o["Competición"]||"",sexo:(String(o.Sexo||o.SEXO||"F").trim().toUpperCase()==="M"?"M":"F")};if(r.prueba&&r.nadadora&&r.tiempo)out.push(r);}return out;}
 function toCs(t){if(!t)return Infinity;const s=String(t).trim().replace(",",".");const p=s.split(":");let sec;if(p.length===3)sec=(+p[0])*3600+(+p[1])*60+parseFloat(p[2]);else if(p.length===2)sec=(+p[0])*60+parseFloat(p[1]);else sec=parseFloat(p[0]);return isNaN(sec)?Infinity:Math.round(sec*100);}
 function fmtClock(cs){if(cs<6000)return(cs/100).toFixed(2);let s=Math.floor(cs/100),c=cs%100,m=Math.floor(s/60),ss=s%60;return m+":"+String(ss).padStart(2,"0")+"."+String(c).padStart(2,"0");}
-function fina(pr,cs){const b=BASE[pr];if(!b||!isFinite(cs)||cs<=0)return 0;return Math.floor(1000*Math.pow(b/(cs/100),3));}
+function fina(pr,cs){const b=(BASE[sexFilter]||BASE.F)[pr];if(!b||!isFinite(cs)||cs<=0)return 0;return Math.floor(1000*Math.pow(b/(cs/100),3));}
 function fmtDate(f){const p=f.split("-");if(p.length<3)return f;const mes=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][(+p[1])-1];return (+p[2])+" "+mes+" "+p[0].slice(2);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function normName(s){return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/,/g," ").replace(/\s+/g," ").trim();}
@@ -707,15 +712,15 @@ function renderSummary(){
   latest.forEach(r=>{const cs=toCs(r.tiempo),f=fina(r.prueba,cs),k=r.nadadora+"|"+r.prueba,prev=pb[k];
     if(best===null||f>best.f)best={f:f,name:r.nadadora,prueba:r.prueba,tiempo:r.tiempo};
     if(prev!==undefined&&cs<prev){mejoras++;const g=f-fina(r.prueba,prev);if(gain===null||g>gain.g)gain={g:g,name:r.nadadora,prueba:r.prueba,d:prev-cs};}
-    [["ESP",MIN_ESP],["EH",MIN_EH]].forEach(pair=>{const m=pair[1][r.prueba]&&pair[1][r.prueba][r.anio];if(m){const mc=toCs(m);if(cs<=mc&&(prev===undefined||prev>mc))newmin.push(shortName(r.nadadora)+" · "+r.prueba+" ("+pair[0]+")");}});
+    [["ESP",MIN_ESP],["EH",MIN_EH]].forEach(pair=>{const tb=pair[1][sexFilter]||{};const m=tb[r.prueba]&&tb[r.prueba][r.anio];if(m){const mc=toCs(m);if(cs<=mc&&(prev===undefined||prev>mc))newmin.push(shortName(r.nadadora)+" · "+r.prueba+" ("+pair[0]+")");}});
   });
   let h=`<div class="sumcard"><div class="sumhead">🏆 <b>${esc(comp)}</b> · ${fmtDate(MAXFECHA)}</div>`;
-  h+=`<div class="sumstats"><div class="sst"><span class="n">${swimmers.size}</span>nadadoras</div><div class="sst"><span class="n">${latest.length}</span>marcas</div><div class="sst"><span class="n">${mejoras}</span>mejoras ⭐</div><div class="sst"><span class="n">${newmin.length}</span>mínimas nuevas</div></div>`;
+  h+=`<div class="sumstats"><div class="sst"><span class="n">${swimmers.size}</span>${sexFilter==="M"?"nadadores":"nadadoras"}</div><div class="sst"><span class="n">${latest.length}</span>marcas</div><div class="sst"><span class="n">${mejoras}</span>mejoras ⭐</div><div class="sst"><span class="n">${newmin.length}</span>mínimas nuevas</div></div>`;
   if(best)h+=`<div class="sumline"><span class="lbl">Mejor marca</span>${esc(shortName(best.name))} · ${esc(best.prueba)} · <span class="mono">${esc(best.tiempo)}</span> · <b>${best.f} FINA</b></div>`;
   if(gain)h+=`<div class="sumline"><span class="lbl">Mayor progresión</span>${esc(shortName(gain.name))} · ${esc(gain.prueba)} · <b>+${gain.g} FINA</b> (−${fmtClock(gain.d)})</div>`;
   const forma=formaList(3);
   const formaRes=forma?forma.list.map(x=>esc(shortName(x.name))+" (+"+x.total+")").join(" · "):"<span style='color:var(--muted)'>aún sin datos suficientes</span>";
-  h+=`<div class="sumline"><span class="lbl">Nadadora en forma 🔥</span>${formaRes}</div><div class="subnote">Mayor progresión acumulada en las 3 últimas jornadas.</div>`;
+  h+=`<div class="sumline"><span class="lbl">${sexFilter==="M"?"Nadador":"Nadadora"} en forma 🔥</span>${formaRes}</div><div class="subnote">Mayor progresión acumulada en las 3 últimas jornadas.</div>`;
   if(newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>${newmin.map(esc).join(" · ")}</div>`;
   h+=`</div>`;
   box.innerHTML=h;
@@ -733,7 +738,7 @@ function finaClass(recs,N){const R=poolRecs(recs);const names=[...new Set(R.map(
 
 function posTag(cur,prevMap){if(!(cur.name in prevMap))return '<div class="pos new">nuevo</div>';const d=prevMap[cur.name]-cur.rank;if(d>0)return `<div class="pos up">↑${d}</div>`;if(d<0)return `<div class="pos down">↓${-d}</div>`;return '<div class="pos eq">=</div>';}
 function medal(rank){if(rank===1)return{rail:"var(--gold)",bg:"var(--gold)",ink:"#3b2a06"};if(rank===2)return{rail:"var(--silver)",bg:"var(--silver)",ink:"#20262b"};if(rank===3)return{rail:"var(--bronze)",bg:"var(--bronze)",ink:"#2e1808"};return{rail:"transparent",bg:"var(--chip)",ink:"var(--muted)"};}
-function gapTag(rec,tbl,lab){const black='<b style="color:#0b2a3a;font-weight:700">'+lab+'</b>';const m=tbl[rec.prueba]&&tbl[rec.prueba][rec.anio];if(!m)return`<span class="tag na">${black} —</span>`;const dd=toCs(rec.tiempo)-toCs(m);if(dd<=0)return`<span class="tag ok">${black} −${fmtClock(Math.abs(dd))} ✓</span>`;return`<span class="tag no">${black} +${fmtClock(dd)}</span>`;}
+function gapTag(rec,tbl,lab){const black='<b style="color:#0b2a3a;font-weight:700">'+lab+'</b>';const tb=tbl[sexFilter]||{};const m=tb[rec.prueba]&&tb[rec.prueba][rec.anio];if(!m)return`<span class="tag na">${black} —</span>`;const dd=toCs(rec.tiempo)-toCs(m);if(dd<=0)return`<span class="tag ok">${black} −${fmtClock(Math.abs(dd))} ✓</span>`;return`<span class="tag no">${black} +${fmtClock(dd)}</span>`;}
 function starPre(ev){return (ev&&ev.dir==="up")?"⭐ ":"";}
 function deltaTag(ev){if(!ev)return"";if(ev.dir==="up")return`<span class="tag up">−${fmtClock(ev.d)}</span>`;return`<span class="tag down">+${fmtClock(ev.d)}</span>`;}
 
@@ -777,7 +782,7 @@ function render(){
     }
     return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div></div><div class="right">${right}</div></div>`;
   }).join("");
-  const body=rk.length?`<div class="list">${rows}</div>`:`<div class="empty">Sin nadadoras para esta selección.</div>`;
+  const body=rk.length?`<div class="list">${rows}</div>`:`<div class="empty">Sin ${sexFilter==="M"?"nadadores":"nadadoras"} para esta selección.</div>`;
   vw.innerHTML=`<div class="chips">${chips}</div>${body}`;
   const ce=vw.querySelector(".chips"),on=ce&&ce.querySelector(".chip.on");
   if(ce&&on){const cr=ce.getBoundingClientRect(),ar=on.getBoundingClientRect();ce.scrollLeft+=(ar.left-cr.left)-(ce.clientWidth-on.clientWidth)/2;}
@@ -811,10 +816,16 @@ function renderProfile(vw,q){
 }
 
 async function boot(){let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
-  RECORDS=parseCSV(txt);
+  ALLRECS=parseCSV(txt);
+  applySex();}
+function applySex(){
+  RECORDS=ALLRECS.filter(r=>r.sexo===sexFilter);
   MAXFECHA=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");
-  MINFECHA=RECORDS.reduce((m,r)=>r.fecha<m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");
+  MINFECHA=ALLRECS.reduce((m,r)=>r.fecha<m?r.fecha:m,ALLRECS[0]?ALLRECS[0].fecha:"");
   BEFORE=RECORDS.filter(r=>r.fecha<MAXFECHA);
+  const fem=sexFilter!=="M";
+  const t=el("h1t");if(t)t.textContent=fem?"Ranking Alevín Femenino":"Ranking Alevín Masculino";
+  const s=el("search");if(s)s.placeholder=fem?"Busca una nadadora…":"Busca un nadador…";
   fillClubs();
   renderSummary();
   render();}
@@ -823,13 +834,14 @@ function fillClubs(){const cs=[...new Set(RECORDS.map(r=>r.club).filter(Boolean)
 el("search").addEventListener("input",e=>{query=e.target.value;render();});
 el("clear").addEventListener("click",()=>{query="";el("search").value="";render();});
 el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;render();});
+el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sexFilter=b.dataset.s;el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
 el("segYear").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;yearFilter=b.dataset.y;el("segYear").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("segFina").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;finaN=+b.dataset.n;el("segFina").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("clubSel").addEventListener("change",e=>{clubFilter=e.target.value;render();});
 el("adminHead").addEventListener("click",()=>{el("adminHead").classList.toggle("open");el("adminBody").classList.toggle("open");});
 el("dlTemplate").addEventListener("click",()=>{const bl=new Blob([TEMPLATE],{type:"text/csv;charset=utf-8;"});const a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="plantilla-ranking.csv";a.click();URL.revokeObjectURL(a.href);});
 el("upBtn").addEventListener("click",()=>el("file").click());
-el("file").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const r=parseCSV(String(rd.result));if(!r.length){el("upMsg").innerHTML="No se han encontrado filas válidas.";el("upMsg").style.color="#c0392b";return;}r.forEach(x=>{x.tiempo=String(x.tiempo).replace(",",".");});const iss=checkData(r);RECORDS=r;MAXFECHA=RECORDS.reduce((m,x)=>x.fecha>m?x.fecha:m,RECORDS[0].fecha);MINFECHA=RECORDS.reduce((m,x)=>x.fecha<m?x.fecha:m,RECORDS[0].fecha);BEFORE=RECORDS.filter(x=>x.fecha<MAXFECHA);clubFilter="all";fillClubs();renderSummary();query="";el("search").value="";render();if(iss.length){const shown=iss.slice(0,10).map(s=>"• "+esc(s)).join("<br>");const extra=iss.length>10?"<br>…y "+(iss.length-10)+" más":"";el("upMsg").innerHTML='<b style="color:#c0392b">⚠️ Revisa antes de subir a GitHub ('+iss.length+"):</b><br>"+shown+extra;el("upMsg").style.color="#c0392b";}else{el("upMsg").innerHTML="✓ Vista previa: "+r.length+" marcas · sin errores detectados.";el("upMsg").style.color="var(--brand)";}};rd.readAsText(f,"utf-8");e.target.value="";});
+el("file").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const r=parseCSV(String(rd.result));if(!r.length){el("upMsg").innerHTML="No se han encontrado filas válidas.";el("upMsg").style.color="#c0392b";return;}r.forEach(x=>{x.tiempo=String(x.tiempo).replace(",",".");});const iss=checkData(r);ALLRECS=r;clubFilter="all";query="";el("search").value="";applySex();if(iss.length){const shown=iss.slice(0,10).map(s=>"• "+esc(s)).join("<br>");const extra=iss.length>10?"<br>…y "+(iss.length-10)+" más":"";el("upMsg").innerHTML='<b style="color:#c0392b">⚠️ Revisa antes de subir a GitHub ('+iss.length+"):</b><br>"+shown+extra;el("upMsg").style.color="#c0392b";}else{el("upMsg").innerHTML="✓ Vista previa: "+r.length+" marcas · sin errores detectados.";el("upMsg").style.color="var(--brand)";}};rd.readAsText(f,"utf-8");e.target.value="";});
 
 boot();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}
