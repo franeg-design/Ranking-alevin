@@ -111,6 +111,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .sst .n{display:block;font-size:18px;font-weight:800;color:var(--brand-deep);font-family:'Space Grotesk',sans-serif}
 .sumline{font-size:12px;color:var(--ink);margin-top:7px;line-height:1.4}
 .sumline .lbl{font-size:9.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em;margin-right:6px}
+.subnote{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.35}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -677,6 +678,23 @@ function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;","
 function normName(s){return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/,/g," ").replace(/\s+/g," ").trim();}
 function titleCase(s){return s.toLowerCase().split(" ").map(w=>w?w[0].toUpperCase()+w.slice(1):w).join(" ");}
 function shortName(n){const p=String(n).split(",");const sur=(p[0]||"").trim().split(" ")[0];const first=(p[1]||"").trim();return (titleCase(first)+" "+titleCase(sur)).trim();}
+const KNOWN_CLUBS=["CN Menditxo","CN Judizmendi","CN Urgain","CI Laudio","CN Zadorra"];
+function badTime(t){if(!t)return true;const s=String(t).trim().replace(",",".");if(!/^(\d{1,2}:){0,2}\d{1,2}(\.\d{1,2})?$/.test(s))return true;const p=s.split(":");if(parseFloat(p[p.length-1])>=60)return true;for(let i=1;i<p.length-1;i++){if(+p[i]>=60)return true;}return !isFinite(toCs(s));}
+function checkData(recs){const iss=[];recs.forEach((r,i)=>{const ref="fila "+(i+1)+" ("+(r.nadadora||"¿?")+")";if(!PRUEBA_ORDER.includes(r.prueba))iss.push(ref+": prueba no reconocida — \""+r.prueba+"\"");if(r.anio!=="2013"&&r.anio!=="2014")iss.push(ref+": año no válido — \""+r.anio+"\"");if(r.club&&!KNOWN_CLUBS.includes(r.club))iss.push(ref+": club no reconocido — \""+r.club+"\"");if(badTime(r.tiempo))iss.push(ref+": tiempo con formato raro — \""+r.tiempo+"\"");if(r.fecha&&!/^\d{4}-\d{2}-\d{2}$/.test(r.fecha))iss.push(ref+": fecha con formato raro — \""+r.fecha+"\"");});return iss;}
+function formaList(topN){
+  const fechas=[...new Set(RECORDS.map(r=>r.fecha))].sort();
+  const qual=fechas.filter(f=>RECORDS.some(r=>r.fecha===f&&RECORDS.some(o=>o.nadadora===r.nadadora&&o.prueba===r.prueba&&o.fecha<f)));
+  const last3=qual.slice(-3);
+  if(last3.length<2)return null;
+  const totals={};
+  last3.forEach(f=>{
+    const pb={};RECORDS.forEach(r=>{if(r.fecha<f){const k=r.nadadora+"|"+r.prueba,c=toCs(r.tiempo);if(pb[k]===undefined||c<pb[k])pb[k]=c;}});
+    const bg={};RECORDS.forEach(r=>{if(r.fecha===f){const prev=pb[r.nadadora+"|"+r.prueba];if(prev!==undefined){const g=fina(r.prueba,toCs(r.tiempo))-fina(r.prueba,prev);if(bg[r.nadadora]===undefined||g>bg[r.nadadora])bg[r.nadadora]=g;}}});
+    Object.keys(bg).forEach(n=>{totals[n]=(totals[n]||0)+Math.max(0,bg[n]);});
+  });
+  const arr=Object.keys(totals).map(n=>({name:n,total:totals[n]})).filter(x=>x.total>0).sort((a,b)=>b.total-a.total);
+  return arr.length?{torneos:last3.length,list:arr.slice(0,topN)}:null;
+}
 function renderSummary(){
   const box=el("summary");if(!box)return;
   if(!RECORDS.length){box.innerHTML="";return;}
@@ -695,6 +713,9 @@ function renderSummary(){
   h+=`<div class="sumstats"><div class="sst"><span class="n">${swimmers.size}</span>nadadoras</div><div class="sst"><span class="n">${latest.length}</span>marcas</div><div class="sst"><span class="n">${mejoras}</span>mejoras ⭐</div><div class="sst"><span class="n">${newmin.length}</span>mínimas nuevas</div></div>`;
   if(best)h+=`<div class="sumline"><span class="lbl">Mejor marca</span>${esc(shortName(best.name))} · ${esc(best.prueba)} · <span class="mono">${esc(best.tiempo)}</span> · <b>${best.f} FINA</b></div>`;
   if(gain)h+=`<div class="sumline"><span class="lbl">Mayor progresión</span>${esc(shortName(gain.name))} · ${esc(gain.prueba)} · <b>+${gain.g} FINA</b> (−${fmtClock(gain.d)})</div>`;
+  const forma=formaList(3);
+  const formaRes=forma?forma.list.map(x=>esc(shortName(x.name))+" (+"+x.total+")").join(" · "):"<span style='color:var(--muted)'>aún sin datos suficientes</span>";
+  h+=`<div class="sumline"><span class="lbl">Nadadora en forma 🔥</span>${formaRes}</div><div class="subnote">Mayor progresión acumulada en las 3 últimas jornadas.</div>`;
   if(newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>${newmin.map(esc).join(" · ")}</div>`;
   h+=`</div>`;
   box.innerHTML=h;
@@ -808,7 +829,7 @@ el("clubSel").addEventListener("change",e=>{clubFilter=e.target.value;render();}
 el("adminHead").addEventListener("click",()=>{el("adminHead").classList.toggle("open");el("adminBody").classList.toggle("open");});
 el("dlTemplate").addEventListener("click",()=>{const bl=new Blob([TEMPLATE],{type:"text/csv;charset=utf-8;"});const a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="plantilla-ranking.csv";a.click();URL.revokeObjectURL(a.href);});
 el("upBtn").addEventListener("click",()=>el("file").click());
-el("file").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const r=parseCSV(String(rd.result));if(!r.length){el("upMsg").textContent="No se han encontrado filas válidas.";el("upMsg").style.color="#c0392b";return;}RECORDS=r;MAXFECHA=RECORDS.reduce((m,x)=>x.fecha>m?x.fecha:m,RECORDS[0].fecha);MINFECHA=RECORDS.reduce((m,x)=>x.fecha<m?x.fecha:m,RECORDS[0].fecha);BEFORE=RECORDS.filter(x=>x.fecha<MAXFECHA);clubFilter="all";fillClubs();renderSummary();query="";el("search").value="";render();el("upMsg").textContent="Vista previa: "+r.length+" marcas.";el("upMsg").style.color="var(--brand)";};rd.readAsText(f,"utf-8");e.target.value="";});
+el("file").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const r=parseCSV(String(rd.result));if(!r.length){el("upMsg").innerHTML="No se han encontrado filas válidas.";el("upMsg").style.color="#c0392b";return;}r.forEach(x=>{x.tiempo=String(x.tiempo).replace(",",".");});const iss=checkData(r);RECORDS=r;MAXFECHA=RECORDS.reduce((m,x)=>x.fecha>m?x.fecha:m,RECORDS[0].fecha);MINFECHA=RECORDS.reduce((m,x)=>x.fecha<m?x.fecha:m,RECORDS[0].fecha);BEFORE=RECORDS.filter(x=>x.fecha<MAXFECHA);clubFilter="all";fillClubs();renderSummary();query="";el("search").value="";render();if(iss.length){const shown=iss.slice(0,10).map(s=>"• "+esc(s)).join("<br>");const extra=iss.length>10?"<br>…y "+(iss.length-10)+" más":"";el("upMsg").innerHTML='<b style="color:#c0392b">⚠️ Revisa antes de subir a GitHub ('+iss.length+"):</b><br>"+shown+extra;el("upMsg").style.color="#c0392b";}else{el("upMsg").innerHTML="✓ Vista previa: "+r.length+" marcas · sin errores detectados.";el("upMsg").style.color="var(--brand)";}};rd.readAsText(f,"utf-8");e.target.value="";});
 
 boot();
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}
