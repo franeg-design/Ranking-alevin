@@ -120,6 +120,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .sumline .lbl{display:block;font-size:9.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
 .sumline b{font-family:'Space Grotesk',sans-serif}
 .sitem{font-size:12.5px;margin-top:4px;line-height:1.45}
+.secdiv{display:flex;align-items:center;gap:10px;margin:28px 0 8px;color:var(--brand-deep);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.secdiv::before,.secdiv::after{content:"";flex:1;height:6px;border-radius:6px;background:repeating-linear-gradient(90deg,var(--brand) 0 9px,#d3e9ee 9px 18px);opacity:.75}
 .sn{display:inline-flex;width:15px;height:15px;border-radius:50%;background:var(--chip);color:var(--brand-deep);font-weight:800;font-size:9px;align-items:center;justify-content:center;margin-right:5px;vertical-align:-2px}
 .subnote{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.35}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -316,7 +318,7 @@ function renderSummary(){
   const forma=formaList(3);
   h+=`<div class="sumline"><span class="lbl">${sexFilter==="M"?"Nadadores":"Nadadoras"} en forma 🔥 <span style="text-transform:none;font-weight:600;color:var(--muted)">(mayor progresión acumulada en las 3 últimas jornadas)</span></span>`+(forma?forma.list.map((x,i)=>`<div class="sitem">${md[i]} ${esc(shortName(x.name))} · <b>+${x.total} FINA</b></div>`).join(""):"<div class='sitem' style='color:var(--muted)'>aún sin datos suficientes</div>")+`</div>`;
   if(newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>`+newmin.map(x=>`<div class="sitem"><span class="mb ${x.t==="ESP"?"mbESP":"mbEH"}" style="margin-left:0">${esc(x.t)}</span> ${esc(x.n)} · ${esc(x.p)}</div>`).join("")+`</div>`;
-  h+=`</div>`;
+  h+=`</div><div class="secdiv"><span>Ranking de la temporada</span></div>`;
   box.innerHTML=h;
 }
 
