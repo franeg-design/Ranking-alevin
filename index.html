@@ -120,6 +120,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .sumline .lbl{display:block;font-size:9.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
 .sumline b{font-family:'Space Grotesk',sans-serif}
 .sitem{font-size:12.5px;margin-top:4px;line-height:1.45}
+.rmline{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap}
+.rmbar{height:5px;width:170px;max-width:100%;background:var(--chip);border:1px solid var(--line);border-radius:5px;margin-top:4px;overflow:hidden}
+.rmfill{height:100%;background:linear-gradient(90deg,#a8dbe8,#5fb3c9);border-radius:5px}
 .secdiv{display:flex;align-items:center;gap:10px;margin:28px 0 8px;color:var(--brand-deep);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
 .secdiv::before,.secdiv::after{content:"";flex:1;height:6px;border-radius:6px;background:repeating-linear-gradient(90deg,var(--brand) 0 9px,#d3e9ee 9px 18px);opacity:.75}
 .sn{display:inline-flex;width:15px;height:15px;border-radius:50%;background:var(--chip);color:var(--brand-deep);font-weight:800;font-size:9px;align-items:center;justify-content:center;margin-right:5px;vertical-align:-2px}
@@ -360,7 +363,7 @@ function render(){
   // legend
   const legs={marcas:"<span style='font-weight:700'>Indicadores del último campeonato:</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ = variación de puesto<div style='margin-top:7px'><span style='font-weight:700'>Mínimas:</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de Euskadi / España conseguida en esta prueba</div>",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
-    topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.<br>El FINA no pondera por edad (por eso puedes ver Alevín o separar 2013 / 2014)."};
+    topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.<br>El FINA no pondera por edad (por eso puedes ver Alevín o separar 2013 / 2014).<br>1000 puntos = récord mundial (25 m). En la ficha, la barra muestra lo cerca que está cada marca del récord mundial."};
   if(view==="marcas"){el("leg").innerHTML=`<details class="legfold" id="legfold"${legOpen?" open":""}><summary>Leyenda · ⭐ − + ↑ ↓</summary><div class="legbody">${legs.marcas}</div></details>`;const lf=el("legfold");if(lf)lf.addEventListener("toggle",()=>{legOpen=lf.open;});}
   else{el("leg").innerHTML=legs[view];}
 
@@ -414,7 +417,12 @@ function renderProfile(vw,q){
   const html=names.slice(0,20).map(name=>{
     const rec0=RECORDS.find(r=>r.nadadora===name);
     const rows=PRUEBA_ORDER.map(p=>{const b=bestOf(RECORDS,name,p);if(!b)return"";const cs=toCs(b.tiempo);const rk=rankTime(RECORDS,p).find(x=>x.name===name);const ev=evolution(name,p);
-      const dt=deltaTag(ev);const dstr=(b.fecha>MINFECHA)?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";return `<div class="pRow"><div class="mid"><div class="prueba">${esc(p)}</div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${fina(p,cs)} FINA</div><div class="pmin">${gapTag(b,MIN_ESP,"ESP")}${gapTag(b,MIN_EH,"EH")}</div></div><div class="right"><div class="time mono">${starPre(ev)}${dstr}${esc(b.tiempo)}</div>${dt?("<div>"+dt+"</div>"):""}</div></div>`;
+      const dt=deltaTag(ev);const dstr=(b.fecha>MINFECHA)?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";
+      const f=fina(p,cs);
+      const detail=view==="topfina"
+        ?`<div class="rmline">Récord mundial <span class="mono">${fmtClock(Math.round((BASE[sexFilter][p]||0)*100))}</span> a ${1000-f} puntos<div class="rmbar"><div class="rmfill" style="width:${Math.max(1,Math.min(100,f/10)).toFixed(1)}%"></div></div></div>`
+        :`<div class="pmin">${gapTag(b,MIN_ESP,"ESP")}${gapTag(b,MIN_EH,"EH")}</div>`;
+      return `<div class="pRow"><div class="mid"><div class="prueba">${esc(p)}</div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${f} FINA</div>${detail}</div><div class="right"><div class="time mono">${starPre(ev)}${dstr}${esc(b.tiempo)}</div>${dt?("<div>"+dt+"</div>"):""}</div></div>`;
     }).join("");
     return `<div class="profile"><div class="pTop"><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club)} · ${esc(rec0.anio)}</div>${profileStat(name)}</div>${rows}</div>`;
   }).join("");
