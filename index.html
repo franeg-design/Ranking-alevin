@@ -87,6 +87,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .pTop{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:15px}
 .pName{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;line-height:1.15}
 .pClub{opacity:.9;font-size:12.5px;margin-top:3px}
+.pStat{display:inline-block;margin-top:9px;margin-right:5px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:11px;padding:4px 11px;font-size:11.5px;font-weight:700;line-height:1.6}
 .pRow{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;border-top:1px solid var(--line)}
 .prueba{font-weight:600;font-size:13.5px}
 .puesto{font-size:11px;color:var(--muted);margin-top:2px}
@@ -739,6 +740,12 @@ function finaClass(recs,N){const R=poolRecs(recs);const names=[...new Set(R.map(
 function posTag(cur,prevMap){if(!(cur.name in prevMap))return '<div class="pos new">nuevo</div>';const d=prevMap[cur.name]-cur.rank;if(d>0)return `<div class="pos up">↑${d}</div>`;if(d<0)return `<div class="pos down">↓${-d}</div>`;return '<div class="pos eq">=</div>';}
 function medal(rank){if(rank===1)return{rail:"var(--gold)",bg:"var(--gold)",ink:"#3b2a06"};if(rank===2)return{rail:"var(--silver)",bg:"var(--silver)",ink:"#20262b"};if(rank===3)return{rail:"var(--bronze)",bg:"var(--bronze)",ink:"#2e1808"};return{rail:"transparent",bg:"var(--chip)",ink:"var(--muted)"};}
 function gapTag(rec,tbl,lab){const black='<b style="color:#0b2a3a;font-weight:700">'+lab+'</b>';const tb=tbl[sexFilter]||{};const m=tb[rec.prueba]&&tb[rec.prueba][rec.anio];if(!m)return`<span class="tag na">${black} —</span>`;const dd=toCs(rec.tiempo)-toCs(m);if(dd<=0)return`<span class="tag ok">${black} −${fmtClock(Math.abs(dd))} ✓</span>`;return`<span class="tag no">${black} +${fmtClock(dd)}</span>`;}
+function minsList(name){const esp=[],eh=[];PRUEBA_ORDER.forEach(p=>{const b=bestOf(RECORDS,name,p);if(!b)return;const cs=toCs(b.tiempo);const tE=(MIN_ESP[sexFilter]||{})[p];if(tE&&tE[b.anio]&&cs<=toCs(tE[b.anio]))esp.push(abbrev(p));const tH=(MIN_EH[sexFilter]||{})[p];if(tH&&tH[b.anio]&&cs<=toCs(tH[b.anio]))eh.push(abbrev(p));});return{esp:esp,eh:eh};}
+function profileStat(name){
+  if(view!=="minimas")return"";
+  const m=minsList(name),f=a=>a.length?a.join(" · "):"—";
+  return `<div class="pStat">✓ ESP: ${f(m.esp)}</div> <div class="pStat">✓ EH: ${f(m.eh)}</div>`;
+}
 function starPre(ev){return (ev&&ev.dir==="up")?"⭐ ":"";}
 function deltaTag(ev){if(!ev)return"";if(ev.dir==="up")return`<span class="tag up">−${fmtClock(ev.d)}</span>`;return`<span class="tag down">+${fmtClock(ev.d)}</span>`;}
 
@@ -810,7 +817,7 @@ function renderProfile(vw,q){
     const rows=PRUEBA_ORDER.map(p=>{const b=bestOf(RECORDS,name,p);if(!b)return"";const cs=toCs(b.tiempo);const rk=rankTime(RECORDS,p).find(x=>x.name===name);const ev=evolution(name,p);
       const dt=deltaTag(ev);const dstr=(b.fecha>MINFECHA)?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";return `<div class="pRow"><div class="mid"><div class="prueba">${esc(p)}</div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${fina(p,cs)} FINA</div><div class="pmin">${gapTag(b,MIN_ESP,"ESP")}${gapTag(b,MIN_EH,"EH")}</div></div><div class="right"><div class="time mono">${starPre(ev)}${dstr}${esc(b.tiempo)}</div>${dt?("<div>"+dt+"</div>"):""}</div></div>`;
     }).join("");
-    return `<div class="profile"><div class="pTop"><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club)} · ${esc(rec0.anio)}</div></div>${rows}</div>`;
+    return `<div class="profile"><div class="pTop"><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club)} · ${esc(rec0.anio)}</div>${profileStat(name)}</div>${rows}</div>`;
   }).join("");
   clubFilter=savedClub;vw.innerHTML=html;
 }
