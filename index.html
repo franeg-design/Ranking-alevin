@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Ranking Alevín Femenino</title>
+<title>Ranking Alevín</title>
 <meta name="description" content="Mejores marcas, FINA y mínimas — Alevín Femenino, Álava." />
 <meta name="theme-color" content="#0e7c93" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -110,13 +110,15 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .hint{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5}
 .foot{text-align:center;font-size:11px;color:var(--muted);margin-top:20px;line-height:1.5;padding-bottom:env(safe-area-inset-bottom)}
 .sumcard{background:linear-gradient(160deg,#e8f6f9,#f5fbfc);border:1px solid var(--line);border-radius:16px;padding:13px 14px;margin-bottom:14px}
-.sumhead{font-size:13px;color:var(--ink);display:flex;align-items:center;gap:6px}
-.sumhead b{font-family:'Space Grotesk',sans-serif;font-weight:700}
-.sumstats{display:flex;gap:7px;flex-wrap:wrap;margin:11px 0 4px}
-.sst{flex:1;min-width:62px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 5px;text-align:center;font-size:10px;color:var(--muted);line-height:1.25}
-.sst .n{display:block;font-size:18px;font-weight:800;color:var(--brand-deep);font-family:'Space Grotesk',sans-serif}
-.sumline{font-size:12px;color:var(--ink);margin-top:7px;line-height:1.4}
-.sumline .lbl{font-size:9.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em;margin-right:6px}
+.sumhead{font-size:15px;color:var(--brand-deep);display:flex;align-items:center;gap:7px;flex-wrap:wrap;line-height:1.25}
+.sumhead b{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:15.5px;letter-spacing:-.01em}
+.sumdate{font-size:15px;color:var(--ink);font-weight:400}
+.sumstats{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px}
+.sst{flex:1;min-width:54px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:5px 4px;text-align:center;font-size:9px;color:var(--muted);line-height:1.25}
+.sst .n{display:block;font-size:14.5px;font-weight:800;color:var(--brand-deep);font-family:'Space Grotesk',sans-serif}
+.sumline{font-size:13px;color:var(--ink);margin-top:7px;line-height:1.45;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 10px}
+.sumline .lbl{display:block;font-size:9.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.sumline b{font-family:'Space Grotesk',sans-serif}
 .subnote{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.35}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -126,7 +128,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
   <header class="head">
     <div class="glow"></div>
     <div class="kicker">🌊 Natación · Álava</div>
-    <h1 class="title" id="h1t">Ranking Alevín Femenino</h1>
+    <h1 class="title" id="h1t">Ranking Alevín</h1>
     <div class="sub">Temporada 2025 / 26 · Piscina 25 m</div>
     <div class="lane"><span></span><span></span><span></span><span></span></div>
   </header>
@@ -303,7 +305,7 @@ function renderSummary(){
     if(prev!==undefined&&cs<prev){mejoras++;const g=f-fina(r.prueba,prev);if(gain===null||g>gain.g)gain={g:g,name:r.nadadora,prueba:r.prueba,d:prev-cs};}
     [["ESP",MIN_ESP],["EH",MIN_EH]].forEach(pair=>{const tb=pair[1][sexFilter]||{};const m=tb[r.prueba]&&tb[r.prueba][r.anio];if(m){const mc=toCs(m);if(cs<=mc&&(prev===undefined||prev>mc))newmin.push(shortName(r.nadadora)+" · "+r.prueba+" ("+pair[0]+")");}});
   });
-  let h=`<div class="sumcard"><div class="sumhead">🏆 <b>${esc(comp)}</b> · ${fmtDate(MAXFECHA)}</div>`;
+  let h=`<div class="sumcard"><div class="sumhead">🏆 <b>${esc(comp)}</b><span class="sumdate">· ${fmtDate(MAXFECHA)}</span></div>`;
   h+=`<div class="sumstats"><div class="sst"><span class="n">${swimmers.size}</span>${sexFilter==="M"?"nadadores":"nadadoras"}</div><div class="sst"><span class="n">${latest.length}</span>marcas</div><div class="sst"><span class="n">${mejoras}</span>mejoras ⭐</div><div class="sst"><span class="n">${newmin.length}</span>mínimas nuevas</div></div>`;
   if(best)h+=`<div class="sumline"><span class="lbl">Mejor marca</span>${esc(shortName(best.name))} · ${esc(best.prueba)} · <span class="mono">${esc(best.tiempo)}</span> · <b>${best.f} FINA</b></div>`;
   if(gain)h+=`<div class="sumline"><span class="lbl">Mayor progresión</span>${esc(shortName(gain.name))} · ${esc(gain.prueba)} · <b>+${gain.g} FINA</b> (−${fmtClock(gain.d)})</div>`;
@@ -351,7 +353,7 @@ function render(){
   el("clear").style.display=query?"block":"none";
 
   // legend
-  const legs={marcas:"<span style='font-weight:700'>Indicadores del último campeonato</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ = variación de puesto<br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de Euskadi / España conseguida en esta prueba",
+  const legs={marcas:"<span style='font-weight:700'>Indicadores del último campeonato:</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ = variación de puesto<div style='margin-top:7px'><span style='font-weight:700'>Mínimas:</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de Euskadi / España conseguida en esta prueba</div>",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
     topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.<br>El FINA no pondera por edad (por eso puedes ver Alevín o separar 2013 / 2014)."};
   if(view==="marcas"){el("leg").innerHTML=`<details class="legfold" id="legfold"${legOpen?" open":""}><summary>Leyenda · ⭐ − + ↑ ↓</summary><div class="legbody">${legs.marcas}</div></details>`;const lf=el("legfold");if(lf)lf.addEventListener("toggle",()=>{legOpen=lf.open;});}
@@ -423,7 +425,6 @@ function applySex(){
   MINFECHA=ALLRECS.reduce((m,r)=>r.fecha<m?r.fecha:m,ALLRECS[0]?ALLRECS[0].fecha:"");
   BEFORE=RECORDS.filter(r=>r.fecha<MAXFECHA);
   const fem=sexFilter!=="M";
-  const t=el("h1t");if(t)t.textContent=fem?"Ranking Alevín Femenino":"Ranking Alevín Masculino";
   const s=el("search");if(s)s.placeholder=fem?"Busca una nadadora…":"Busca un nadador…";
   fillClubs();
   renderSummary();
