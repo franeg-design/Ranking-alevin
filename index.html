@@ -119,6 +119,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .sumline{font-size:13px;color:var(--ink);margin-top:7px;line-height:1.45;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 10px}
 .sumline .lbl{display:block;font-size:9.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
 .sumline b{font-family:'Space Grotesk',sans-serif}
+.sitem{font-size:12.5px;margin-top:4px;line-height:1.45}
+.sn{display:inline-flex;width:15px;height:15px;border-radius:50%;background:var(--chip);color:var(--brand-deep);font-weight:800;font-size:9px;align-items:center;justify-content:center;margin-right:5px;vertical-align:-2px}
 .subnote{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.35}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -299,20 +301,21 @@ function renderSummary(){
   const comp=latest[0].competi||"Última competición";
   const pb={};RECORDS.forEach(r=>{if(r.fecha<MAXFECHA){const k=r.nadadora+"|"+r.prueba,c=toCs(r.tiempo);if(pb[k]===undefined||c<pb[k])pb[k]=c;}});
   const swimmers=new Set(latest.map(r=>r.nadadora));
-  let mejoras=0,best=null,gain=null;const newmin=[];
+  let mejoras=0;const bests=[],gains=[],newmin=[];
   latest.forEach(r=>{const cs=toCs(r.tiempo),f=fina(r.prueba,cs),k=r.nadadora+"|"+r.prueba,prev=pb[k];
-    if(best===null||f>best.f)best={f:f,name:r.nadadora,prueba:r.prueba,tiempo:r.tiempo};
-    if(prev!==undefined&&cs<prev){mejoras++;const g=f-fina(r.prueba,prev);if(gain===null||g>gain.g)gain={g:g,name:r.nadadora,prueba:r.prueba,d:prev-cs};}
-    [["ESP",MIN_ESP],["EH",MIN_EH]].forEach(pair=>{const tb=pair[1][sexFilter]||{};const m=tb[r.prueba]&&tb[r.prueba][r.anio];if(m){const mc=toCs(m);if(cs<=mc&&(prev===undefined||prev>mc))newmin.push(shortName(r.nadadora)+" · "+r.prueba+" ("+pair[0]+")");}});
+    bests.push({f:f,name:r.nadadora,prueba:r.prueba,tiempo:r.tiempo});
+    if(prev!==undefined&&cs<prev){mejoras++;gains.push({g:f-fina(r.prueba,prev),name:r.nadadora,prueba:r.prueba,d:prev-cs});}
+    [["ESP",MIN_ESP],["EH",MIN_EH]].forEach(pair=>{const tb=pair[1][sexFilter]||{};const m=tb[r.prueba]&&tb[r.prueba][r.anio];if(m){const mc=toCs(m);if(cs<=mc&&(prev===undefined||prev>mc))newmin.push({n:shortName(r.nadadora),p:r.prueba,t:pair[0]});}});
   });
+  bests.sort((a,b)=>b.f-a.f);gains.sort((a,b)=>b.g-a.g);
   let h=`<div class="sumcard"><div class="sumhead">🏆 <b>${esc(comp)}</b><span class="sumdate">· ${fmtDate(MAXFECHA)}</span></div>`;
   h+=`<div class="sumstats"><div class="sst"><span class="n">${swimmers.size}</span>${sexFilter==="M"?"nadadores":"nadadoras"}</div><div class="sst"><span class="n">${latest.length}</span>marcas</div><div class="sst"><span class="n">${mejoras}</span>mejoras ⭐</div><div class="sst"><span class="n">${newmin.length}</span>mínimas nuevas</div></div>`;
-  if(best)h+=`<div class="sumline"><span class="lbl">Mejor marca</span>${esc(shortName(best.name))} · ${esc(best.prueba)} · <span class="mono">${esc(best.tiempo)}</span> · <b>${best.f} FINA</b></div>`;
-  if(gain)h+=`<div class="sumline"><span class="lbl">Mayor progresión</span>${esc(shortName(gain.name))} · ${esc(gain.prueba)} · <b>+${gain.g} FINA</b> (−${fmtClock(gain.d)})</div>`;
+  const md=["🥇","🥈","🥉"];
+  if(bests.length)h+=`<div class="sumline"><span class="lbl">Mejores marcas del día</span>`+bests.slice(0,3).map((b,i)=>`<div class="sitem">${md[i]} ${esc(shortName(b.name))} · ${esc(b.prueba)} · <span class="mono">${esc(b.tiempo)}</span> · <b>${b.f} FINA</b></div>`).join("")+`</div>`;
+  if(gains.length)h+=`<div class="sumline"><span class="lbl">Mayores progresiones del día</span>`+gains.slice(0,3).map((g,i)=>`<div class="sitem">${md[i]} ${esc(shortName(g.name))} · ${esc(g.prueba)} · <b>+${g.g} FINA</b> (−${fmtClock(g.d)})</div>`).join("")+`</div>`;
   const forma=formaList(3);
-  const formaRes=forma?forma.list.map(x=>esc(shortName(x.name))+" (+"+x.total+")").join(" · "):"<span style='color:var(--muted)'>aún sin datos suficientes</span>";
-  h+=`<div class="sumline"><span class="lbl">${sexFilter==="M"?"Nadador":"Nadadora"} en forma 🔥</span>${formaRes}</div><div class="subnote">Mayor progresión acumulada en las 3 últimas jornadas.</div>`;
-  if(newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>${newmin.map(esc).join(" · ")}</div>`;
+  h+=`<div class="sumline"><span class="lbl">${sexFilter==="M"?"Nadadores":"Nadadoras"} en forma 🔥 <span style="text-transform:none;font-weight:600;color:var(--muted)">(mayor progresión acumulada en las 3 últimas jornadas)</span></span>`+(forma?forma.list.map((x,i)=>`<div class="sitem">${md[i]} ${esc(shortName(x.name))} · <b>+${x.total} FINA</b></div>`).join(""):"<div class='sitem' style='color:var(--muted)'>aún sin datos suficientes</div>")+`</div>`;
+  if(newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>`+newmin.map(x=>`<div class="sitem"><span class="mb ${x.t==="ESP"?"mbESP":"mbEH"}" style="margin-left:0">${esc(x.t)}</span> ${esc(x.n)} · ${esc(x.p)}</div>`).join("")+`</div>`;
   h+=`</div>`;
   box.innerHTML=h;
 }
