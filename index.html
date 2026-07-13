@@ -67,6 +67,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .pos.up{color:var(--good)} .pos.down{color:var(--warn)} .pos.eq{color:#b9c9d0} .pos.new{color:var(--brand)}
 .mid{flex:1;min-width:0}
 .name{font-weight:600;font-size:14px;line-height:1.22}
+.row .name{cursor:pointer;-webkit-tap-highlight-color:rgba(14,124,147,.12)}
+.row .name:active{color:var(--brand)}
 .club{font-size:11.5px;color:var(--muted);margin-top:2px}
 .right{margin-left:auto;text-align:right;flex-shrink:0;padding-left:6px}
 .time{font-size:16px;font-weight:700;letter-spacing:-.01em}
@@ -330,6 +332,7 @@ function profileStat(name){
   return `<div class="pStat">✓ ESP: ${f(m.esp)}</div> <div class="pStat">✓ EH: ${f(m.eh)}</div>`;
 }
 function starPre(ev){return (ev&&ev.dir==="up")?"⭐ ":"";}
+function goProfile(elm){const n=elm&&elm.dataset?elm.dataset.n:"";if(!n)return;query=n;const s=el("search");if(s)s.value=n;render();window.scrollTo({top:0,behavior:"smooth"});}
 function deltaTag(ev){if(!ev)return"";if(ev.dir==="up")return`<span class="tag up">−${fmtClock(ev.d)}</span>`;return`<span class="tag down">+${fmtClock(ev.d)}</span>`;}
 
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
@@ -370,7 +373,7 @@ function render(){
     }else{
       right=`<div class="time mono">${esc(r.tiempo)}</div><div>${gapTag(r,MIN_ESP,"ESP")}</div><div>${gapTag(r,MIN_EH,"EH")}</div>`;
     }
-    return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div></div><div class="right">${right}</div></div>`;
+    return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}" onclick="goProfile(this)">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div></div><div class="right">${right}</div></div>`;
   }).join("");
   const body=rk.length?`<div class="list">${rows}</div>`:`<div class="empty">Sin ${sexFilter==="M"?"nadadores":"nadadoras"} para esta selección.</div>`;
   vw.innerHTML=`<div class="chips">${chips}</div>${body}`;
@@ -385,7 +388,7 @@ function renderClass(vw,N){
   if(!cur.length){vw.innerHTML=`<div class="empty">${clubFilter==="all"?("Aún no hay nadadoras con <b>"+N+" pruebas</b>."):("Sin nadadoras de <b>"+esc(clubFilter)+"</b> con "+N+" pruebas.")}</div>`;return;}
   const rows=cur.map(r=>{const m=medal(r.rank);
     const chips=`<div class="pchips">${r.pruebas.map(p=>`<span class="pc">${esc(p)}</span>`).join("")}</div>`;
-    return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${chips}</div><div class="right"><div class="big">${r.sum}</div></div></div>`;
+    return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}" onclick="goProfile(this)">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${chips}</div><div class="right"><div class="big">${r.sum}</div></div></div>`;
   }).join("");
   vw.innerHTML=`<div class="list">${rows}</div>`;
 }
