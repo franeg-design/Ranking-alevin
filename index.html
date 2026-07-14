@@ -140,6 +140,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .sitem{font-size:12.5px;margin-top:4px;line-height:1.45}
 .pTop{position:relative}
 .cmpBtn{position:absolute;top:11px;right:11px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:4px 10px;font-size:10.5px;font-weight:700;cursor:pointer}
+.backFloat{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:50;background:linear-gradient(160deg,var(--brand),var(--brand-deep));color:#fff;border:none;border-radius:999px;padding:11px 22px;font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(11,42,58,.32);animation:vfade .25s ease-out}
 .pRow.tog{cursor:pointer}
 .chev{font-size:9px;color:var(--muted);margin-left:5px;vertical-align:2px}
 .histBox{display:none;padding:4px 13px 10px;border-top:1px dashed var(--line);background:#f7fbfc}
@@ -250,6 +251,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
       </div>
     </section>
 
+    <button id="backFloat" class="backFloat" style="display:none">← Volver</button>
     <div class="foot" id="foot">Federación Alavesa de Natación · FINA: World Aquatics SCM 2025</div>
   </main>
 </div>
@@ -468,7 +470,7 @@ function render(){
   el("clear").style.display=query?"block":"none";
 
   // legend
-  const legs={marcas:"<span style='font-weight:700'>Indicadores del último campeonato:</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ = variación de puesto<div style='margin-top:7px'><span style='font-weight:700'>Mínimas:</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de Euskadi / España conseguida en esta prueba</div><div style='margin-top:7px'><span style='font-weight:700'>Fichas:</span><br>Toca el <b>nombre</b> de cualquier nadador/a en las listas (o escríbelo en el buscador) para abrir su ficha.<br>Para volver al ranking general, pulsa la <b>✕</b> del buscador.<br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>⚖ Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>",
+  const legs={marcas:"<span style='font-weight:700'>Indicadores del último campeonato:</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ = variación de puesto<div style='margin-top:7px'><span style='font-weight:700'>Mínimas:</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de Euskadi / España conseguida en esta prueba</div><div style='margin-top:7px'><span style='font-weight:700'>Fichas:</span><br>Toca el <b>nombre</b> de cualquier nadador/a en las listas (o escríbelo en el buscador) para abrir su ficha.<br>Para volver al ranking, usa el botón <b>← Volver</b> o la <b>✕</b> del buscador.<br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>⚖ Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
     topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.",topfinaFicha:"La barra muestra lo cerca que está cada marca del récord de Álava de su edad; bajo cada marca, en tenue, el récord de Álava (alevín) y el mundial (absoluto)."};
   if(view==="marcas"){el("leg").innerHTML=`<details class="legfold" id="legfold"${legOpen?" open":""}><summary>Leyenda · ⭐ − + ↑ ↓</summary><div class="legbody">${legs.marcas}</div></details>`;const lf=el("legfold");if(lf)lf.addEventListener("toggle",()=>{legOpen=lf.open;});}
@@ -477,6 +479,7 @@ function render(){
 
   const tbs=el("tabs");
   if(tbs&&tbs.querySelectorAll){const fo=!!query.trim();const lbl=fo?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
+  const bf=el("backFloat");if(bf)bf.style.display=(query.trim()||cmpA)?"block":"none";
   const vw=el("view");
   if(cmpA){renderCompare(vw);return;}
   if(q){renderProfile(vw,q);return;}
@@ -605,6 +608,7 @@ function fillClubs(){const cs=[...new Set(RECORDS.map(r=>r.club).filter(Boolean)
 
 el("search").addEventListener("input",e=>{query=e.target.value;render();});
 el("clear").addEventListener("click",()=>{query="";el("search").value="";render();});
+el("backFloat").addEventListener("click",()=>{query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();const sd=document.querySelector?document.querySelector(".secdiv"):null;if(sd&&sd.scrollIntoView){try{sd.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){window.scrollTo(0,0);}}else{window.scrollTo({top:0,behavior:"smooth"});}});
 el("view").addEventListener("click",e=>{
   const cl=s=>e.target&&e.target.closest?e.target.closest(s):null;
   const cb=cl(".cmpBtn");if(cb){cmpA=cb.dataset.n;cmpB=null;render();return;}
