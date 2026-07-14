@@ -93,6 +93,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .pTop{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:15px}
 .pName{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;line-height:1.15}
 .pClub{opacity:.9;font-size:12.5px;margin-top:3px}
+.goalStrip{background:#fdf6e7;border-bottom:1px dashed #e0cf9e;padding:8px 13px;font-size:11.5px;color:var(--ink)}
 .pStat{display:inline-block;margin-top:9px;margin-right:5px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:11px;padding:4px 11px;font-size:11.5px;font-weight:700;line-height:1.6}
 .pRow{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;border-top:1px solid var(--line)}
 .prueba{font-weight:600;font-size:13.5px}
@@ -381,6 +382,18 @@ function medal(rank){if(rank===1)return{rail:"var(--gold)",bg:"var(--gold)",ink:
 function gapTag(rec,tbl,lab){const black='<b style="color:#0b2a3a;font-weight:700">'+lab+'</b>';const tb=tbl[sexFilter]||{};const m=tb[rec.prueba]&&tb[rec.prueba][rec.anio];if(!m)return`<span class="tag na">${black} —</span>`;const dd=toCs(rec.tiempo)-toCs(m);if(dd<=0)return`<span class="tag ok">${black} −${fmtClock(Math.abs(dd))} ✓</span>`;return`<span class="tag no">${black} +${fmtClock(dd)}</span>`;}
 function hasMin(rec,tbl){const tb=tbl[sexFilter]||{};const m=tb[rec.prueba]&&tb[rec.prueba][rec.anio];if(!m)return false;return toCs(rec.tiempo)-toCs(m)<=0;}
 function minsList(name){const esp=[],eh=[];PRUEBA_ORDER.forEach(p=>{const b=bestOf(RECORDS,name,p);if(!b)return;const cs=toCs(b.tiempo);const tE=(MIN_ESP[sexFilter]||{})[p];if(tE&&tE[b.anio]&&cs<=toCs(tE[b.anio]))esp.push(abbrev(p));const tH=(MIN_EH[sexFilter]||{})[p];if(tH&&tH[b.anio]&&cs<=toCs(tH[b.anio]))eh.push(abbrev(p));});return{esp:esp,eh:eh};}
+function goalPill(name){
+  const cand=[];
+  PRUEBA_ORDER.forEach(p=>{const b=bestOf(RECORDS,name,p);if(!b)return;const cs=toCs(b.tiempo);
+    [["EH",MIN_EH],["ESP",MIN_ESP]].forEach(pair=>{const tb=pair[1][sexFilter]||{};const m=tb[p]&&tb[p][b.anio];if(!m)return;const mc=toCs(m);if(cs>mc)cand.push({t:pair[0],p:p,d:cs-mc,rel:(cs-mc)/mc});});
+  });
+  if(!cand.length)return"";
+  cand.sort((a,b)=>a.rel-b.rel);
+  const hot=cand.filter(x=>x.rel<=0.015).slice(0,3);
+  if(hot.length)return `<div class="goalStrip">🎯 A tiro: ${hot.map(x=>x.t+" "+abbrev(x.p)+" (a "+fmtClock(x.d)+")").join(" · ")}</div>`;
+  const c=cand[0];
+  return `<div class="goalStrip">🎯 Objetivo más cercano: ${c.t} ${abbrev(c.p)} (a ${fmtClock(c.d)})</div>`;
+}
 function profileStat(name){
   if(view!=="minimas")return"";
   const m=minsList(name),f=a=>a.length?a.join(" · "):"—";
@@ -435,10 +448,13 @@ function render(){
   // legend
   const legs={marcas:"<span style='font-weight:700'>Indicadores del último campeonato:</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ = variación de puesto<div style='margin-top:7px'><span style='font-weight:700'>Mínimas:</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de Euskadi / España conseguida en esta prueba</div><div style='margin-top:7px'><span style='font-weight:700'>Fichas:</span><br>Toca el <b>nombre</b> de cualquier nadador/a en las listas (o escríbelo en el buscador) para abrir su ficha.<br>Para volver al ranking general, pulsa la <b>✕</b> del buscador.<br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>⚖ Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
-    topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.<br>El FINA no pondera por edad (por eso puedes ver Alevín o separar 2013 / 2014).<br>1000 puntos = récord mundial (25 m). En la ficha, la barra muestra lo cerca que está cada marca del récord de Álava de su edad; bajo cada marca, en tenue, el récord de Álava y el mundial."};
+    topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.",topfinaFicha:"La barra muestra lo cerca que está cada marca del récord de Álava de su edad; bajo cada marca, en tenue, el récord de Álava (alevín) y el mundial (absoluto)."};
   if(view==="marcas"){el("leg").innerHTML=`<details class="legfold" id="legfold"${legOpen?" open":""}><summary>Leyenda · ⭐ − + ↑ ↓</summary><div class="legbody">${legs.marcas}</div></details>`;const lf=el("legfold");if(lf)lf.addEventListener("toggle",()=>{legOpen=lf.open;});}
+  else if(view==="topfina"&&query.trim()){el("leg").innerHTML=legs.topfinaFicha;}
   else{el("leg").innerHTML=legs[view];}
 
+  const tbs=el("tabs");
+  if(tbs&&tbs.querySelectorAll){const fo=!!query.trim();const lbl=fo?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
   const vw=el("view");
   if(cmpA){renderCompare(vw);return;}
   if(q){renderProfile(vw,q);return;}
@@ -502,10 +518,10 @@ function renderProfile(vw,q){
           detail=dif<=0
             ?`<div class="raline rabeat">¡Récord de Álava (${edad} años) batido!</div><div class="rmbar"><div class="rmfill rfbeat" style="width:100%"></div></div>`
             :`<div class="raline">Récord de Álava (${edad} años) a ${fmtClock(dif)}</div><div class="rmbar"><div class="rmfill" style="width:${Math.max(1,Math.min(100,rcs/cs*100)).toFixed(1)}%"></div></div>`;
-          recs=`<div class="time mono recFaint"><span class="recL">Álava</span>${esc(ra)}</div><div class="time mono recFaint rm2"><span class="recL">Mundial</span>${rmT}</div>`;
+          recs=`<div class="time mono recFaint"><span class="recL">Álava</span>${esc(ra)}</div><div class="time mono recFaint rm2"><span class="recL">WR</span>${rmT}</div>`;
         }else{
           detail="";
-          recs=`<div class="time mono recFaint rm2"><span class="recL">Mundial</span>${rmT}</div>`;
+          recs=`<div class="time mono recFaint rm2"><span class="recL">WR</span>${rmT}</div>`;
         }
       }else if(view==="marcas"){
         detail="";
@@ -521,7 +537,7 @@ function renderProfile(vw,q){
       const tf=view==="topfina";
       return `<div class="pRow tog"><div class="mid"><div class="prueba">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${f} FINA</div>${detail}</div><div class="right"><div class="time mono">${tf?"":starPre(ev)}${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}</div></div>`+histBox(name,p);
     }).join("");
-    return `<div class="profile"><div class="pTop"><button class="cmpBtn" data-n="${esc(name)}">⚖ Comparar</button><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club)} · ${esc(rec0.anio)}</div>${profileStat(name)}</div>${rows}</div>`;
+    return `<div class="profile"><div class="pTop"><button class="cmpBtn" data-n="${esc(name)}">⚖ Comparar</button><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club)} · ${esc(rec0.anio)}</div>${profileStat(name)}</div>${view==="minimas"?goalPill(name):""}${rows}</div>`;
   }).join("");
   clubFilter=savedClub;vw.innerHTML=html;
 }
