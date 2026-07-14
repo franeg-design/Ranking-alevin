@@ -77,6 +77,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .time{font-size:16px;font-weight:700;letter-spacing:-.01em}
 .tdate{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:var(--muted);margin-right:5px;letter-spacing:0}
 .tag{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:700;border-radius:6px;padding:2px 6px}
+.tagL{font-size:7.5px;font-weight:800;letter-spacing:.03em;opacity:.75;margin-right:4px;vertical-align:1px}
 .tag.fina{color:var(--brand);background:rgba(14,124,147,.09)}
 .tag.up{color:var(--good);background:rgba(15,157,107,.1)}
 .tag.down{color:var(--warn);background:rgba(138,151,162,.14)}
@@ -418,7 +419,7 @@ function renderCompare(vw){
   vw.innerHTML=`<div class="cmpCard"><div class="cmpTop"><button class="cmpClose">✕</button><div class="cmpNames"><div class="cn"><b>${esc(shortName(cmpA))}</b><span>${esc(recA.club)} · ${esc(recA.anio)}</span></div><div class="cmpScore">${wA} – ${wB}</div><div class="cn"><b>${esc(shortName(cmpB))}</b><span>${esc(recB.club)} · ${esc(recB.anio)}</span></div></div><div class="cmpFina">FINA en pruebas comunes: <b>${fA}</b> · <b>${fB}</b></div></div><div class="cmpBody">${rows.join("")||'<div class="empty">Sin pruebas que comparar.</div>'}</div><div class="cmpNote">El marcador cuenta solo las pruebas nadadas por ambos. — = prueba no nadada.</div></div>`;
 }
 function goProfile(n){if(!n)return;query=n;const s=el("search");if(s){s.value=n;}render();try{s.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){window.scrollTo(0,0);}}
-function deltaTag(ev){if(!ev)return"";if(ev.dir==="up")return`<span class="tag up">−${fmtClock(ev.d)}</span>`;return`<span class="tag down">+${fmtClock(ev.d)}</span>`;}
+function deltaTag(ev){if(!ev)return"";const L='<span class="tagL">ÚLT. CAMP.</span>';if(ev.dir==="up")return`<span class="tag up">${L}−${fmtClock(ev.d)}</span>`;return`<span class="tag down">${L}+${fmtClock(ev.d)}</span>`;}
 
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
 function lastUpdated(){if(!RECORDS.length)return"—";const lat=RECORDS.filter(r=>r.fecha===MAXFECHA);const comp=lat.length?lat[0].competi:"";return fmtDate(MAXFECHA)+(comp?" · "+comp:"");}
