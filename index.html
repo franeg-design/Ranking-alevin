@@ -95,7 +95,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .pStat{display:inline-block;margin-top:9px;margin-right:5px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:11px;padding:4px 11px;font-size:11.5px;font-weight:700;line-height:1.6}
 .pRow{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;border-top:1px solid var(--line)}
 .prueba{font-weight:600;font-size:13.5px}
-.puesto{font-size:11px;color:var(--muted);margin-top:2px}
+.puesto{font-size:11.5px;color:var(--muted);margin-top:2px}
 .pmin{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
 .admin{margin-top:24px;border:1px dashed var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
 .adminHead{width:100%;display:flex;align-items:center;gap:9px;padding:13px 15px;background:none;border:none;cursor:pointer;font-size:14px;font-weight:600;color:var(--ink)}
@@ -152,7 +152,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .cmpList{max-height:330px;overflow:auto;border-top:1px solid var(--line)}
 .cmpPick{padding:9px 13px;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer}
 .cmpNote{font-size:10px;color:var(--muted);padding:8px 13px 10px}
-.raline{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap}
+.raline{font-size:11.5px;color:var(--muted);margin-top:4px;white-space:nowrap}
+.progline{font-size:11.5px;color:var(--muted);margin-top:3px}
+.progline b,.progline .mono{color:#335362;font-weight:700}
 .raline.rabeat{color:var(--good);font-weight:800}
 .rmfill.rfbeat{background:linear-gradient(90deg,#8fdcc0,var(--good))}
 .recFaint{color:#a9c0ca;font-weight:600}
@@ -486,7 +488,7 @@ function renderProfile(vw,q){
   const savedClub=clubFilter;clubFilter="all";
   const html=names.slice(0,20).map(name=>{
     const rec0=RECORDS.find(r=>r.nadadora===name);
-    const rows=PRUEBA_ORDER.map(p=>{const b=bestOf(RECORDS,name,p);if(!b)return"";const cs=toCs(b.tiempo);const rk=rankTime(RECORDS,p).find(x=>x.name===name);const ev=evolution(name,p);
+    const rows=PRUEBA_ORDER.map(p=>{const b=bestOf(RECORDS,name,p);if(!b)return"";const cs=toCs(b.tiempo);const rkList=rankTime(RECORDS,p);const rk=rkList.find(x=>x.name===name);const ev=evolution(name,p);
       const dt=deltaTag(ev);const dstr=(b.fecha>MINFECHA)?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";
       const f=fina(p,cs);
       let detail,recs="";
@@ -504,6 +506,14 @@ function renderProfile(vw,q){
           detail="";
           recs=`<div class="time mono recFaint rm2"><span class="recL">Mundial</span>${rmT}</div>`;
         }
+      }else if(view==="marcas"){
+        detail="";
+        if(rk&&rk.rank>1)detail+=`<div class="progline">Distancia al líder: <span class="mono">${fmtClock(cs-rkList[0].cs)}</span></div>`;
+        const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===p);
+        const d0=sw.reduce((m,r)=>r.fecha<m?r.fecha:m,sw[0].fecha);
+        let first=Infinity;sw.forEach(r=>{if(r.fecha===d0){const c=toCs(r.tiempo);if(c<first)first=c;}});
+        const gain=first-cs;
+        if(new Set(sw.map(r=>r.fecha)).size>1&&gain>0)detail+=`<div class="progline">Progresión esta temporada: <b>−${fmtClock(gain)}</b></div>`;
       }else{
         detail=`<div class="pmin">${gapTag(b,MIN_ESP,"ESP")}${gapTag(b,MIN_EH,"EH")}</div>`;
       }
