@@ -57,7 +57,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .legfold[open] summary::after{content:"▴  cerrar"}
 .legbody{padding:0 11px 10px;font-size:11px;color:var(--muted);line-height:1.6}
 .chipwrap{position:relative}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 22px 12px 2px;margin-bottom:2px;scrollbar-width:none}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 22px 12px 22px;margin-bottom:2px;scrollbar-width:none}
+.chipmore.cl{right:auto;left:2px}
 .chipmore{position:absolute;right:2px;top:50%;transform:translateY(-58%);font-size:19px;font-weight:800;color:var(--muted);pointer-events:none;transition:opacity .25s ease}
 .chips::-webkit-scrollbar{display:none}
 .chips::-webkit-scrollbar{display:none}
@@ -421,7 +422,7 @@ function profileStat(name){
   return `<div class="pStat">✓ ESP: ${f(m.esp)}</div> <div class="pStat">✓ EH: ${f(m.eh)}</div>`;
 }
 function starPre(ev){return (ev&&ev.dir==="up")?"⭐ ":"";}
-let cmpA=null,cmpB=null,chipScrollPos=0;
+let cmpA=null,cmpB=null,chipScrollPos=0,chipAnim=false;
 function toggleHist(row){const c=row.nextElementSibling;if(!c||!c.classList||!c.classList.contains("histBox"))return;const open=c.style.display==="block";c.style.display=open?"none":"block";const ch=row.querySelector(".chev");if(ch)ch.textContent=open?"▾":"▴";}
 function histBox(name,p){
   const rows=RECORDS.filter(r=>r.nadadora===name&&r.prueba===p).map(r=>({fecha:r.fecha,competi:r.competi,tiempo:r.tiempo,cs:toCs(r.tiempo)})).sort((a,b)=>a.fecha<b.fecha?-1:(a.fecha>b.fecha?1:a.cs-b.cs));
@@ -487,7 +488,8 @@ function render(){
   const present=pruebasPresent();
   if(present.length&&!present.includes(activePrueba))activePrueba=present[0];
   const stCls=p=>({Libre:"st-l",Espalda:"st-e",Braza:"st-b",Mariposa:"st-m",Estilos:"st-x"})[p.split(" ")[1]]||"st-x";
-  const chips=present.map(p=>`<button class="chip ${stCls(p)} ${p===activePrueba?"on":""}" data-p="${esc(p)}">${esc(p)}</button>`).join("");
+  const chips1=present.map(p=>`<button class="chip ${stCls(p)} ${p===activePrueba?"on":""}" data-p="${esc(p)}">${esc(p)}</button>`).join("");
+  const chips=chips1+chips1+chips1;
   const rk=rankTime(RECORDS,activePrueba);
   const prev=rankMap(rankTime(BEFORE,activePrueba));
   const rows=rk.map(r=>{
@@ -505,15 +507,30 @@ function render(){
     return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}${badges}</div></div><div class="right">${right}</div></div>`;
   }).join("");
   const body=rk.length?`<div class="list">${rows}</div>`:`<div class="empty">Sin ${sexFilter==="M"?"nadadores":"nadadoras"} para esta selección.</div>`;
-  vw.innerHTML=`<div class="chipwrap"><div class="chips">${chips}</div><span class="chipmore">›</span></div>${body}`;
-  const ce=vw.querySelector(".chips"),on=ce&&ce.querySelector(".chip.on");
+  vw.innerHTML=`<div class="chipwrap"><div class="chips">${chips}</div><span class="chipmore cl">‹</span><span class="chipmore">›</span></div>${body}`;
+  const ce=vw.querySelector(".chips");
   if(ce){
-    ce.scrollLeft=chipScrollPos;
-    const more=vw.querySelector(".chipmore");
-    const updMore=()=>{if(more)more.style.opacity=(ce.scrollLeft+ce.clientWidth>=ce.scrollWidth-8)?"0":"1";};
-    ce.onscroll=()=>{chipScrollPos=ce.scrollLeft;updMore();};
-    if(on){const cr=ce.getBoundingClientRect(),ar=on.getBoundingClientRect();const target=ce.scrollLeft+(ar.left-cr.left)-(ce.clientWidth-on.clientWidth)/2;try{ce.scrollTo({left:target,behavior:"smooth"});}catch(e){ce.scrollLeft=target;}}
-    updMore();
+    const n=present.length;
+    const kids=ce.children||[];
+    const period=(n>0&&kids.length>=2*n&&kids[n]&&kids[n].offsetLeft!==undefined)?(kids[n].offsetLeft-kids[0].offsetLeft):0;
+    const norm=x=>{if(!period)return x;while(x<period*0.5)x+=period;while(x>period*1.5)x-=period;return x;};
+    ce.scrollLeft=norm(chipScrollPos);
+    ce.onscroll=()=>{
+      chipScrollPos=ce.scrollLeft;
+      if(!chipAnim&&period){const x=ce.scrollLeft;if(x<period*0.3)ce.scrollLeft=x+period;else if(x>period*1.7)ce.scrollLeft=x-period;}
+    };
+    const idx=present.indexOf(activePrueba);
+    if(idx>=0&&period){
+      const centerNow=ce.scrollLeft+ce.clientWidth/2;
+      let bestT=null,bestD=Infinity;
+      [idx,idx+n,idx+2*n].forEach(k=>{const el2=kids[k];if(!el2)return;const t=el2.offsetLeft-(ce.clientWidth-el2.clientWidth)/2;const d=Math.abs((el2.offsetLeft+el2.clientWidth/2)-centerNow);if(d<bestD){bestD=d;bestT=t;}});
+      if(bestT!==null){
+        chipAnim=true;
+        const smooth=(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)?"auto":"smooth";
+        try{ce.scrollTo({left:bestT,behavior:smooth});}catch(e){ce.scrollLeft=bestT;}
+        setTimeout(()=>{chipAnim=false;ce.scrollLeft=norm(ce.scrollLeft);chipScrollPos=ce.scrollLeft;},450);
+      }
+    }
   }
   vw.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{activePrueba=c.dataset.p;render();});
 }
