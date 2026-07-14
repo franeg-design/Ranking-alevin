@@ -57,9 +57,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .legfold[open] summary::after{content:"▴  cerrar"}
 .legbody{padding:0 11px 10px;font-size:11px;color:var(--muted);line-height:1.6}
 .chipwrap{position:relative}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 22px 12px 22px;margin-bottom:2px;scrollbar-width:none}
-.chipmore.cl{right:auto;left:2px}
-.chipmore{position:absolute;right:2px;top:50%;transform:translateY(-58%);font-size:19px;font-weight:800;color:var(--muted);pointer-events:none;transition:opacity .25s ease}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 2px 12px;margin-bottom:2px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
 .chips::-webkit-scrollbar{display:none}
 .chip{white-space:nowrap;border:1px solid transparent;padding:8px 13px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease,color .18s ease}
@@ -507,7 +505,7 @@ function render(){
     return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}${badges}</div></div><div class="right">${right}</div></div>`;
   }).join("");
   const body=rk.length?`<div class="list">${rows}</div>`:`<div class="empty">Sin ${sexFilter==="M"?"nadadores":"nadadoras"} para esta selección.</div>`;
-  vw.innerHTML=`<div class="chipwrap"><div class="chips">${chips}</div><span class="chipmore cl">‹</span><span class="chipmore">›</span></div>${body}`;
+  vw.innerHTML=`<div class="chipwrap"><div class="chips">${chips}</div></div>${body}`;
   const ce=vw.querySelector(".chips");
   if(ce){
     const n=present.length;
