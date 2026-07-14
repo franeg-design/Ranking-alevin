@@ -152,7 +152,12 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .cmpList{max-height:330px;overflow:auto;border-top:1px solid var(--line)}
 .cmpPick{padding:9px 13px;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer}
 .cmpNote{font-size:10px;color:var(--muted);padding:8px 13px 10px}
-.rmline{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap}
+.raline{font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap}
+.raline.rabeat{color:var(--good);font-weight:800}
+.rmfill.rfbeat{background:linear-gradient(90deg,#8fdcc0,var(--good))}
+.recFaint{color:#a9c0ca;font-weight:600}
+.recFaint.rm2{color:#c2d3da}
+.recL{font-size:8px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-right:4px;vertical-align:2px}
 .rmbar{height:5px;width:170px;max-width:100%;background:var(--chip);border:1px solid var(--line);border-radius:5px;margin-top:4px;overflow:hidden}
 .rmfill{height:100%;background:linear-gradient(90deg,#a8dbe8,#5fb3c9);border-radius:5px}
 .secdiv{display:flex;align-items:center;gap:10px;margin:28px 0 8px;color:var(--brand-deep);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
@@ -226,6 +231,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 </div>
 
 <script>
+const REC_ALAVA={"F":{"50 Libre":{"2013":"28.43","2014":"29.48"},"100 Libre":{"2013":"1:01.09","2014":"1:04.86"},"200 Libre":{"2013":"2:12.62","2014":"2:18.95"},"400 Libre":{"2013":"4:39.60","2014":"4:56.70"},"800 Libre":{"2013":"9:31.87","2014":"10:03.69"},"50 Espalda":{"2013":"33.23","2014":"34.47"},"100 Espalda":{"2013":"1:08.53","2014":"1:14.40"},"200 Espalda":{"2013":"2:26.77","2014":"2:38.80"},"50 Braza":{"2013":"35.88","2014":"37.43"},"100 Braza":{"2013":"1:14.07","2014":"1:18.97"},"200 Braza":{"2013":"2:44.71","2014":"2:50.86"},"50 Mariposa":{"2013":"31.73","2014":"32.73"},"100 Mariposa":{"2013":"1:08.43","2014":"1:11.21"},"200 Mariposa":{"2013":"2:31.12","2014":"2:50.86"},"100 Estilos":{"2013":"1:14.55","2014":"1:19.20"},"200 Estilos":{"2013":"2:26.20","2014":"2:38.22"},"400 Estilos":{"2013":"5:17.74","2014":"5:51.73"}},"M":{"50 Libre":{"2013":"26.70","2014":"28.44"},"100 Libre":{"2013":"59.11","2014":"1:01.45"},"200 Libre":{"2013":"2:07.67","2014":"2:18.37"},"400 Libre":{"2013":"4:29.60","2014":"4:49.26"},"800 Libre":{"2013":"9:19.26","2014":"10:12.06"},"50 Espalda":{"2013":"29.78","2014":"32.19"},"100 Espalda":{"2013":"1:01.99","2014":"1:09.15"},"200 Espalda":{"2013":"2:21.55","2014":"2:33.81"},"50 Braza":{"2013":"33.97","2014":"37.61"},"100 Braza":{"2013":"1:12.68","2014":"1:21.20"},"200 Braza":{"2013":"2:39.52","2014":"2:56.53"},"50 Mariposa":{"2013":"29.34","2014":"30.88"},"100 Mariposa":{"2013":"1:02.92","2014":"1:09.06"},"200 Mariposa":{"2013":"2:17.37","2014":"2:36.10"},"100 Estilos":{"2013":"1:10.28","2014":"1:16.19"},"200 Estilos":{"2013":"2:20.90","2014":"2:31.89"},"400 Estilos":{"2013":"5:09.80","2014":"5:34.51"}}};
 const PRUEBA_ORDER=["50 Libre","100 Libre","200 Libre","400 Libre","800 Libre","50 Espalda","100 Espalda","200 Espalda","50 Braza","100 Braza","200 Braza","50 Mariposa","100 Mariposa","200 Mariposa","100 Estilos","200 Estilos","400 Estilos"];
 // Tiempos base FINA — World Aquatics SCM 2025 (25 m), femenino (segundos)
 const BASE={F:{"50 Libre":22.83,"100 Libre":50.25,"200 Libre":110.31,"400 Libre":230.25,"800 Libre":477.42,"50 Espalda":25.23,"100 Espalda":54.02,"200 Espalda":118.04,"50 Braza":28.37,"100 Braza":62.36,"200 Braza":132.50,"50 Mariposa":23.94,"100 Mariposa":52.71,"200 Mariposa":119.32,"100 Estilos":55.11,"200 Estilos":121.63,"400 Estilos":255.48},M:{"50 Libre":19.90,"100 Libre":44.84,"200 Libre":98.61,"400 Libre":212.25,"800 Libre":440.46,"50 Espalda":22.11,"100 Espalda":48.33,"200 Espalda":105.63,"50 Braza":24.95,"100 Braza":55.28,"200 Braza":120.16,"50 Mariposa":21.32,"100 Mariposa":47.71,"200 Mariposa":106.85,"100 Estilos":49.28,"200 Estilos":108.88,"400 Estilos":234.81}};
@@ -426,7 +432,7 @@ function render(){
   // legend
   const legs={marcas:"<span style='font-weight:700'>Indicadores del último campeonato:</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ = variación de puesto<div style='margin-top:7px'><span style='font-weight:700'>Mínimas:</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de Euskadi / España conseguida en esta prueba</div><div style='margin-top:7px'><span style='font-weight:700'>Fichas:</span><br>Toca el <b>nombre</b> de cualquier nadador/a en las listas (o escríbelo en el buscador) para abrir su ficha.<br>Para volver al ranking general, pulsa la <b>✕</b> del buscador.<br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>⚖ Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
-    topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.<br>El FINA no pondera por edad (por eso puedes ver Alevín o separar 2013 / 2014).<br>1000 puntos = récord mundial (25 m). En la ficha, la barra muestra lo cerca que está cada marca del récord mundial."};
+    topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.<br>El FINA no pondera por edad (por eso puedes ver Alevín o separar 2013 / 2014).<br>1000 puntos = récord mundial (25 m). En la ficha, la barra muestra lo cerca que está cada marca del récord de Álava de su edad; bajo cada marca, en tenue, el récord de Álava y el mundial."};
   if(view==="marcas"){el("leg").innerHTML=`<details class="legfold" id="legfold"${legOpen?" open":""}><summary>Leyenda · ⭐ − + ↑ ↓</summary><div class="legbody">${legs.marcas}</div></details>`;const lf=el("legfold");if(lf)lf.addEventListener("toggle",()=>{legOpen=lf.open;});}
   else{el("leg").innerHTML=legs[view];}
 
@@ -483,10 +489,26 @@ function renderProfile(vw,q){
     const rows=PRUEBA_ORDER.map(p=>{const b=bestOf(RECORDS,name,p);if(!b)return"";const cs=toCs(b.tiempo);const rk=rankTime(RECORDS,p).find(x=>x.name===name);const ev=evolution(name,p);
       const dt=deltaTag(ev);const dstr=(b.fecha>MINFECHA)?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";
       const f=fina(p,cs);
-      const detail=view==="topfina"
-        ?`<div class="rmline">Récord mundial <span class="mono">${fmtClock(Math.round((BASE[sexFilter][p]||0)*100))}</span> a ${1000-f} puntos<div class="rmbar"><div class="rmfill" style="width:${Math.max(1,Math.min(100,f/10)).toFixed(1)}%"></div></div></div>`
-        :`<div class="pmin">${gapTag(b,MIN_ESP,"ESP")}${gapTag(b,MIN_EH,"EH")}</div>`;
-      return `<div class="pRow tog"><div class="mid"><div class="prueba">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${f} FINA</div>${detail}</div><div class="right"><div class="time mono">${starPre(ev)}${dstr}${esc(b.tiempo)}</div>${dt?("<div>"+dt+"</div>"):""}</div></div>`+histBox(name,p);
+      let detail,recs="";
+      if(view==="topfina"){
+        const edad=b.anio==="2013"?"13":"12";
+        const ra=(REC_ALAVA[sexFilter][p]||{})[b.anio];
+        const rmT=fmtClock(Math.round((BASE[sexFilter][p]||0)*100));
+        if(ra){
+          const rcs=toCs(ra),dif=cs-rcs;
+          detail=dif<=0
+            ?`<div class="raline rabeat">¡Récord de Álava (${edad} años) batido!</div><div class="rmbar"><div class="rmfill rfbeat" style="width:100%"></div></div>`
+            :`<div class="raline">Récord de Álava (${edad} años) a ${fmtClock(dif)}</div><div class="rmbar"><div class="rmfill" style="width:${Math.max(1,Math.min(100,rcs/cs*100)).toFixed(1)}%"></div></div>`;
+          recs=`<div class="time mono recFaint"><span class="recL">Álava</span>${esc(ra)}</div><div class="time mono recFaint rm2"><span class="recL">Mundial</span>${rmT}</div>`;
+        }else{
+          detail="";
+          recs=`<div class="time mono recFaint rm2"><span class="recL">Mundial</span>${rmT}</div>`;
+        }
+      }else{
+        detail=`<div class="pmin">${gapTag(b,MIN_ESP,"ESP")}${gapTag(b,MIN_EH,"EH")}</div>`;
+      }
+      const tf=view==="topfina";
+      return `<div class="pRow tog"><div class="mid"><div class="prueba">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Puesto ${rk?rk.rank:"-"} · ${f} FINA</div>${detail}</div><div class="right"><div class="time mono">${tf?"":starPre(ev)}${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}</div></div>`+histBox(name,p);
     }).join("");
     return `<div class="profile"><div class="pTop"><button class="cmpBtn" data-n="${esc(name)}">⚖ Comparar</button><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club)} · ${esc(rec0.anio)}</div>${profileStat(name)}</div>${rows}</div>`;
   }).join("");
