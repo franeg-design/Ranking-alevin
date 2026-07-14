@@ -149,8 +149,9 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .cmpRow .cA{flex:1;font-weight:600}
 .cmpRow .cB{flex:1;text-align:right;font-weight:600}
 .cmpRow .cP{flex:1.15;text-align:center;font-size:10.5px;color:var(--muted)}
-.cmpRow.wa .cA{color:var(--good);font-weight:800}
-.cmpRow.wb .cB{color:var(--good);font-weight:800}
+.cmpRow.wa .cA .mono{color:var(--good);font-weight:800}
+.cmpRow.wb .cB .mono{color:var(--good);font-weight:800}
+.cmpRow .cd{display:block;font-size:9px;color:var(--muted);font-weight:400}
 .cmpList{max-height:330px;overflow:auto;border-top:1px solid var(--line)}
 .cmpPick{padding:9px 13px;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer}
 .cmpNote{font-size:10px;color:var(--muted);padding:8px 13px 10px}
@@ -420,15 +421,17 @@ function renderCompare(vw){
   }
   const recB=RECORDS.find(r=>r.nadadora===cmpB);
   if(!recB){vw.innerHTML=`<div class="empty">No hay datos de <b>${esc(cmpB)}</b> en esta categoría. <button class="cmpClose" style="position:static;width:auto;border-radius:9px;padding:2px 10px;background:var(--chip);color:var(--brand-deep);border:1px solid var(--line)">Cerrar</button></div>`;return;}
-  let wA=0,wB=0,fA=0,fB=0;const rows=[];
+  let wA=0,wB=0,fA=0,fB=0;const rowsB=[],rowsO=[];
+  const cell=x=>x?`<span class="mono">${esc(x.tiempo)}</span>${x.fecha>MINFECHA?`<span class="cd">${fmtDate(x.fecha)}</span>`:""}`:"—";
   PRUEBA_ORDER.forEach(p=>{
     const a=bestOf(RECORDS,cmpA,p),b=bestOf(RECORDS,cmpB,p);
     if(!a&&!b)return;
     const ca=a?toCs(a.tiempo):null,cb=b?toCs(b.tiempo):null;
     let cls="";
     if(a&&b){fA+=fina(p,ca);fB+=fina(p,cb);if(ca<cb){wA++;cls=" wa";}else if(cb<ca){wB++;cls=" wb";}}
-    rows.push(`<div class="cmpRow${cls}"><span class="cA mono">${a?esc(a.tiempo):"—"}</span><span class="cP">${esc(p)}</span><span class="cB mono">${b?esc(b.tiempo):"—"}</span></div>`);
+    (a&&b?rowsB:rowsO).push(`<div class="cmpRow${cls}"><span class="cA">${cell(a)}</span><span class="cP">${esc(p)}</span><span class="cB">${cell(b)}</span></div>`);
   });
+  const rows=rowsB.concat(rowsO);
   vw.innerHTML=`<div class="cmpCard"><div class="cmpTop"><button class="cmpClose">✕</button><div class="cmpNames"><div class="cn"><b>${esc(shortName(cmpA))}</b><span>${esc(recA.club)} · ${esc(recA.anio)}</span></div><div class="cmpScore">${wA} – ${wB}</div><div class="cn"><b>${esc(shortName(cmpB))}</b><span>${esc(recB.club)} · ${esc(recB.anio)}</span></div></div><div class="cmpFina">FINA en pruebas comunes: <b>${fA}</b> · <b>${fB}</b></div></div><div class="cmpBody">${rows.join("")||'<div class="empty">Sin pruebas que comparar.</div>'}</div><div class="cmpNote">El marcador cuenta solo las pruebas nadadas por ambos. — = prueba no nadada.</div></div>`;
 }
 function goProfile(n){if(!n)return;query=n;const s=el("search");if(s){s.value=n;}render();try{s.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){window.scrollTo(0,0);}}
@@ -518,10 +521,10 @@ function renderProfile(vw,q){
           detail=dif<=0
             ?`<div class="raline rabeat">¡Récord de Álava (${edad} años) batido!</div><div class="rmbar"><div class="rmfill rfbeat" style="width:100%"></div></div>`
             :`<div class="raline">Récord de Álava (${edad} años) a ${fmtClock(dif)}</div><div class="rmbar"><div class="rmfill" style="width:${Math.max(1,Math.min(100,rcs/cs*100)).toFixed(1)}%"></div></div>`;
-          recs=`<div class="time mono recFaint"><span class="recL">Álava</span>${esc(ra)}</div><div class="time mono recFaint rm2"><span class="recL">WR</span>${rmT}</div>`;
+          recs=`<div class="time mono recFaint"><span class="recL">Álava</span>${esc(ra)}</div><div class="time mono recFaint rm2"><span class="recL">World Record</span>${rmT}</div>`;
         }else{
           detail="";
-          recs=`<div class="time mono recFaint rm2"><span class="recL">WR</span>${rmT}</div>`;
+          recs=`<div class="time mono recFaint rm2"><span class="recL">World Record</span>${rmT}</div>`;
         }
       }else if(view==="marcas"){
         detail="";
