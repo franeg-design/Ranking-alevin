@@ -28,7 +28,10 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .head{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:calc(20px + env(safe-area-inset-top)) 20px 16px;position:relative;overflow:hidden}
 .glow{position:absolute;right:-40px;top:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%)}
 .kicker{display:flex;align-items:center;gap:7px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.86;font-weight:600}
-.title{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:24px;line-height:1.06;margin:8px 0 2px;letter-spacing:-.01em}
+.titleRow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:8px 0 2px}
+.title{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:24px;line-height:1.06;margin:0;letter-spacing:-.01em}
+.seasonPill{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;padding:5px 12px;font-size:11.5px;font-weight:700;white-space:nowrap}
+select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer}
 .sub{font-size:12.5px;opacity:.9}
 .updated{margin-top:10px;font-size:11.5px;font-weight:600;opacity:1;display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:4px 11px}
 .clubsel{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px}
@@ -197,8 +200,12 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
   <header class="head">
     <div class="glow"></div>
     <div class="kicker">🌊 Natación · Álava</div>
-    <h1 class="title" id="h1t">Ranking Alevín</h1>
-    <div class="sub">Temporada 2025 / 26 · Piscina 25 m</div>
+    <div class="titleRow">
+      <h1 class="title" id="h1t">Ranking Alevín</h1>
+      <span class="seasonPill" id="seasonLabel"></span>
+      <select class="seasonPill seasonSel" id="seasonSel" style="display:none"></select>
+    </div>
+    <div class="sub">Piscina 25 m</div>
     <div class="lane"><span></span><span></span><span></span><span></span></div>
   </header>
   <main class="body">
@@ -233,7 +240,6 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
     </div>
 
     <select class="clubsel" id="clubSel"><option value="all">Todos los clubes</option></select>
-    <select class="clubsel" id="seasonSel" style="display:none"></select>
 
     <div class="leg" id="leg"></div>
     <div id="view"></div>
@@ -262,7 +268,7 @@ let BASE,MIN_ESP,MIN_EH,REC_ALAVA;
 function applySeasonTables(){const ks=Object.keys(TABLES).sort();const t=TABLES[season]||TABLES[ks[ks.length-1]];BASE=t.BASE;MIN_ESP=t.MIN_ESP;MIN_EH=t.MIN_EH;REC_ALAVA=t.REC_ALAVA;}
 function seasonOf(f){const y=+String(f).slice(0,4),m=+String(f).slice(5,7);if(!y)return"";const st=m>=9?y:y-1;return st+"/"+String((st+1)%100).padStart(2,"0");}
 function initSeasons(){SEASONS=[...new Set(ALLRECS.map(r=>seasonOf(r.fecha)).filter(Boolean))].sort();if(!SEASONS.includes(season))season=SEASONS[SEASONS.length-1]||"";}
-function fillSeasons(){const sel=el("seasonSel");if(!sel)return;sel.innerHTML=SEASONS.map(s2=>`<option value="${s2}"${s2===season?" selected":""}>Temporada ${s2}</option>`).join("");sel.style.display=SEASONS.length>1?"":"none";}
+function fillSeasons(){const multi=SEASONS.length>1;const sel=el("seasonSel");if(sel){sel.innerHTML=SEASONS.map(s2=>`<option value="${s2}"${s2===season?" selected":""}>Temporada ${s2}</option>`).join("");sel.style.display=multi?"":"none";}const lab=el("seasonLabel");if(lab){lab.textContent=season?("Temporada "+season):"";lab.style.display=multi?"none":"";}}
 function fillYears(){const seg=el("segYear");if(!seg)return;const ys=[...new Set(ALLRECS.filter(r=>seasonOf(r.fecha)===season).map(r=>r.anio))].sort();if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>Alevín</button>`+ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${y}</button>`).join("");}
 const PRUEBA_ORDER=["50 Libre","100 Libre","200 Libre","400 Libre","800 Libre","50 Espalda","100 Espalda","200 Espalda","50 Braza","100 Braza","200 Braza","50 Mariposa","100 Mariposa","200 Mariposa","100 Estilos","200 Estilos","400 Estilos"];
 // Tiempos base FINA — World Aquatics SCM 2025 (25 m), femenino (segundos)
