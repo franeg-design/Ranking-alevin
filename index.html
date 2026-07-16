@@ -137,6 +137,9 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 @keyframes shineSweep{from{left:-45%}to{left:110%}}
 .mfill{height:100%;border-radius:6px;background:linear-gradient(90deg,#93b4d8 0%,#a4cfd6 32%,#e2d5a0 62%,#eab894 84%,#dd9d9a 100%);background-repeat:no-repeat}
 .mfill.mok{background:linear-gradient(90deg,#7fc9a4 0%,#5fac88 100%)}
+.stamp.pre{opacity:0}
+.stamp.slam{animation:slam .32s cubic-bezier(.2,1.5,.35,1) both}
+@keyframes slam{0%{opacity:0;transform:translate(-50%,-50%) rotate(-15deg) scale(2.7)}55%{opacity:.24}100%{opacity:.15;transform:translate(-50%,-50%) rotate(-15deg) scale(1)}}
 .stamp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-15deg);border:3px solid var(--good);color:var(--good);opacity:.15;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:19px;letter-spacing:.05em;padding:3px 12px;border-radius:9px;white-space:nowrap;pointer-events:none;z-index:0}
 .admin{margin-top:24px;border:1px dashed var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
 .adminHead{width:100%;display:flex;align-items:center;gap:9px;padding:13px 15px;background:none;border:none;cursor:pointer;font-size:14px;font-weight:600;color:var(--ink)}
@@ -472,7 +475,15 @@ function profileStat(name){
 }
 function starPre(ev){return (ev&&ev.dir==="up")?"⭐ ":"";}
 let cmpA=null,cmpB=null,chipScrollPos=0,chipAnim=false,finaSel="3",finaChipPos=0,finaChipAnim=false;
-function pendingCel(el){const k="sh:"+(el.dataset?el.dataset.ck:"");try{return !localStorage.getItem(k);}catch(e){return true;}}
+function pendingKey(k){try{return !localStorage.getItem(k);}catch(e){return true;}}
+function pendingCel(el){return pendingKey("sh:"+(el.dataset?el.dataset.ck:""));}
+function slamStamp(el,anim){
+  try{
+    const row=el.closest?el.closest(".pRow"):null;if(!row||!row.querySelector)return;
+    const st=row.querySelector(".stamp.pre");if(!st)return;
+    st.className=anim?"stamp slam":"stamp";
+  }catch(e){}
+}
 let AC_CTX=null,AC_BUS=null;
 function actx(){
   if(!AC_CTX){
@@ -551,7 +562,7 @@ function startBar(el){
   const now=(window.performance?performance.now():Date.now());
   const t0=Math.min(Math.max(now+90,BAR_T+220),now+520);BAR_T=t0;
   const dur=1250;
-  if(pct>=100&&pendingCel(el))setTimeout(levelUp,Math.max(0,(t0-now)+dur-350));
+  if(pct>=100&&pendingCel(el)){const d=Math.max(0,(t0-now)+dur-350);setTimeout(levelUp,d);setTimeout(()=>slamStamp(el,true),d+305);}
   const step=nw=>{
     const t=Math.min(1,Math.max(0,(nw-t0)/dur)),e=1-Math.pow(1-t,3);
     el.style.width=(pct*e).toFixed(1)+"%";
@@ -572,6 +583,7 @@ function animateBars(vw){
       const row=el.parentNode&&el.parentNode.parentNode?el.parentNode.parentNode:null;
       const out=row&&row.querySelector?row.querySelector(".mpct"):null;
       el.style.width=pct+"%";if(out){out.textContent=Math.round(pct)+"%";if(pct>=100)out.className="mpct done";}
+      slamStamp(el,false);
       maybeShine(el,pct,true);
     });
     return;
@@ -805,7 +817,11 @@ function renderProfile(vw,q){
           return `<div class="mset"><div class="mtag">${gapTag(b,tbl,lab)}</div><div class="mrow"><div class="mbar"><div class="mfill${got?" mok":""}" style="${bg}width:0%" data-pct="${pct.toFixed(1)}" data-ck="${esc(ck)}"></div></div><span class="mpct">0%</span></div></div>`;};
         detail=`<div class="pmin">${mline(MIN_EH,"EH")}${mline(MIN_ESP,"ESP")}</div>`;
         const gEsp=hasMin(b,MIN_ESP),gEh=hasMin(b,MIN_EH);
-        if(gEsp||gEh)stamp=`<div class="stamp">${sexFilter==="M"?"CLASIFICADO":"CLASIFICADA"} ${gEsp?"ESP":"EH"}</div>`;
+        if(gEsp||gEh){
+          const lab=gEsp?"ESP":"EH";
+          const cel=pendingKey("sh:"+sexFilter+"|"+name+"|"+p+"|"+lab);
+          stamp=`<div class="stamp${cel?" pre":""}">${sexFilter==="M"?"CLASIFICADO":"CLASIFICADA"} ${lab}</div>`;
+        }
       }
       const tf=view==="topfina";
       let pctTxt="",pctBadge="";
