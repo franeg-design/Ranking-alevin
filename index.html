@@ -472,27 +472,43 @@ function profileStat(name){
 }
 function starPre(ev){return (ev&&ev.dir==="up")?"⭐ ":"";}
 let cmpA=null,cmpB=null,chipScrollPos=0,chipAnim=false,finaSel="3",finaChipPos=0,finaChipAnim=false;
-function roar(){
+function pendingCel(el){const k="sh:"+(el.dataset?el.dataset.ck:"");try{return !localStorage.getItem(k);}catch(e){return true;}}
+function levelUp(){
   try{
     const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
     const ctx=new AC();try{ctx.resume();}catch(e){}
-    const dur=1.5,sr=ctx.sampleRate,n=Math.floor(sr*dur);
-    const buf=ctx.createBuffer(1,n,sr),d=buf.getChannelData(0);
-    for(let i=0;i<n;i++)d[i]=Math.random()*2-1;
-    const src=ctx.createBufferSource();src.buffer=buf;
-    const hp=ctx.createBiquadFilter();hp.type="highpass";hp.frequency.value=380;
-    const bp=ctx.createBiquadFilter();bp.type="bandpass";bp.frequency.value=1100;bp.Q.value=.6;
-    const g=ctx.createGain(),t=ctx.currentTime;
-    g.gain.setValueAtTime(.0001,t);
-    g.gain.exponentialRampToValueAtTime(.42,t+.16);
-    g.gain.setValueAtTime(.42,t+.55);
-    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-    bp.frequency.setValueAtTime(700,t);
-    bp.frequency.linearRampToValueAtTime(1500,t+.5);
-    bp.frequency.linearRampToValueAtTime(800,t+dur);
-    src.connect(hp);hp.connect(bp);bp.connect(g);g.connect(ctx.destination);
-    src.start(t);src.stop(t+dur);
-    setTimeout(()=>{try{ctx.close();}catch(e){}},(dur+.4)*1000);
+    const t0=ctx.currentTime+.02;
+    const master=ctx.createGain();master.gain.setValueAtTime(.55,t0);master.connect(ctx.destination);
+    const notes=[523.25,659.25,783.99,1046.5,1318.51];
+    notes.forEach((fq,i)=>{
+      const t=t0+i*.058;
+      const o=ctx.createOscillator();o.type="square";o.frequency.setValueAtTime(fq,t);
+      const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.setValueAtTime(4200,t);
+      const g=ctx.createGain();
+      g.gain.setValueAtTime(.0001,t);
+      g.gain.exponentialRampToValueAtTime(.3,t+.012);
+      g.gain.exponentialRampToValueAtTime(.0001,t+.15);
+      o.connect(lp);lp.connect(g);g.connect(master);
+      o.start(t);o.stop(t+.17);
+    });
+    const tb=t0+notes.length*.058+.015;
+    const sub=ctx.createOscillator();sub.type="sine";
+    sub.frequency.setValueAtTime(190,tb);
+    sub.frequency.exponentialRampToValueAtTime(36,tb+.34);
+    const sg=ctx.createGain();
+    sg.gain.setValueAtTime(.0001,tb);
+    sg.gain.exponentialRampToValueAtTime(.95,tb+.03);
+    sg.gain.exponentialRampToValueAtTime(.0001,tb+.8);
+    sub.connect(sg);sg.connect(master);
+    sub.start(tb);sub.stop(tb+.85);
+    const sr=ctx.sampleRate,n=Math.floor(sr*.07),nb=ctx.createBuffer(1,n,sr),d=nb.getChannelData(0);
+    for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n);
+    const ns=ctx.createBufferSource();ns.buffer=nb;
+    const nf=ctx.createBiquadFilter();nf.type="lowpass";nf.frequency.setValueAtTime(1000,tb);
+    const ng=ctx.createGain();ng.gain.setValueAtTime(.4,tb);ng.gain.exponentialRampToValueAtTime(.0001,tb+.1);
+    ns.connect(nf);nf.connect(ng);ng.connect(master);
+    ns.start(tb);
+    setTimeout(()=>{try{ctx.close();}catch(e){}},1800);
   }catch(e){}
 }
 function maybeShine(el,pct,reduce){
@@ -500,7 +516,6 @@ function maybeShine(el,pct,reduce){
   const k="sh:"+(el.dataset?el.dataset.ck:"");
   try{if(localStorage.getItem(k))return;localStorage.setItem(k,"1");}catch(e){}
   el.className=el.className+" shine";
-  roar();
 }
 let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false;
 function fireBar(el){
@@ -522,8 +537,9 @@ function startBar(el){
   const row=el.parentNode&&el.parentNode.parentNode?el.parentNode.parentNode:null;
   const out=row&&row.querySelector?row.querySelector(".mpct"):null;
   const now=(window.performance?performance.now():Date.now());
-  const t0=Math.max(now+120,BAR_T+430);BAR_T=t0;
+  const t0=Math.min(Math.max(now+90,BAR_T+220),now+520);BAR_T=t0;
   const dur=1250;
+  if(pct>=100&&pendingCel(el))setTimeout(levelUp,Math.max(0,(t0-now)+dur-350));
   const step=nw=>{
     const t=Math.min(1,Math.max(0,(nw-t0)/dur)),e=1-Math.pow(1-t,3);
     el.style.width=(pct*e).toFixed(1)+"%";
