@@ -69,12 +69,16 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .chip.st-b{background:#faf0de;color:#94570a;border-color:#f0e2c6}
 .chip.st-m{background:#efe9fb;color:#5b2fb8;border-color:#e3daf5}
 .chip.st-x{background:#eaeff2;color:#43596a;border-color:#dde5ea}
+.chip.st-n{background:#fdecf1;color:#9f1239;border-color:#f6d3de}
+.chip.st-sp{background:#fff;color:#173a4a;border-color:#8fa8b4}
 .chip.on{color:#fff;transform:scale(1.08);box-shadow:0 3px 10px rgba(11,42,58,.24);font-weight:700;animation:chipin .2s ease-out}
 .chip.st-l.on{background:#0e7c93;border-color:#0e7c93}
 .chip.st-e.on{background:#0f9d6b;border-color:#0f9d6b}
 .chip.st-b.on{background:#d97706;border-color:#d97706}
 .chip.st-m.on{background:#7c3aed;border-color:#7c3aed}
 .chip.st-x.on{background:#5c7386;border-color:#5c7386}
+.chip.st-n.on{background:#e11d48;border-color:#e11d48}
+.chip.st-sp.on{background:#173a4a;border-color:#173a4a;color:#fff}
 @keyframes chipin{from{transform:scale(1)}to{transform:scale(1.08)}}
 .list{display:flex;flex-direction:column;gap:8px}
 .row{display:flex;align-items:flex-start;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 12px;border-left:4px solid transparent;box-shadow:0 1px 3px rgba(11,42,58,.06),0 1px 2px rgba(11,42,58,.04)}
@@ -579,7 +583,7 @@ function renderClass(vw,N){
   const stKl={Libre:"st-l",Espalda:"st-e",Braza:"st-b",Mariposa:"st-m",Estilos:"st-x"};
   const royal=sexFilter==="M"?"Rey":"Reina";
   const art={Libre:"del",Espalda:"de la",Braza:"de la",Mariposa:"de la",Estilos:"de los"};
-  const items=[{v:"3",t:"3 mejores",c:"st-x"},{v:"6",t:"6 mejores",c:"st-x"},{v:"9",t:"9 mejores",c:"st-x"}].concat(strokes.map(s=>({v:s,t:"👑 "+royal+" "+art[s]+" "+s,c:stKl[s]}))).concat([{v:"spr",t:"🚀 Velocista",c:"st-b"},{v:"mid",t:"⏱️ Mediofondista",c:"st-e"},{v:"fon",t:"🌊 Fondista",c:"st-l"}]);
+  const items=[{v:"3",t:"3 mejores",c:"st-n"},{v:"6",t:"6 mejores",c:"st-n"},{v:"9",t:"9 mejores",c:"st-n"}].concat(strokes.map(s=>({v:s,t:"👑 "+royal+" "+art[s]+" "+s,c:stKl[s]}))).concat([{v:"spr",t:"🚀 Velocista",c:"st-sp"},{v:"mid",t:"⏱️ Mediofondista",c:"st-sp"},{v:"fon",t:"🌊 Fondista",c:"st-sp"}]);
   const SPEC={spr:["50","100"],mid:["200","400"],fon:["400","800"]};
   const chips1=items.map(it=>`<button class="chip ${it.c} ${it.v===finaSel?"on":""}" data-f="${esc(it.v)}">${it.t}</button>`).join("");
   const isNum=/^\d+$/.test(finaSel);
