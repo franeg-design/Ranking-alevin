@@ -111,6 +111,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .big{font-size:19px;font-weight:800;color:var(--brand-deep);letter-spacing:-.02em}
 .big,.cmpScore,.sst .n,.sumline b,.time{font-variant-numeric:tabular-nums}
 .empty{text-align:center;color:var(--muted);padding:30px 16px;font-size:14px}
+.empty.tall{min-height:calc(100vh - 210px)}
 .empty b{color:var(--ink)}
 .profile{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(11,42,58,.06),0 1px 2px rgba(11,42,58,.04)}
 .pTop{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:15px}
@@ -686,7 +687,7 @@ function scrollSec(){
   try{
     const sd=document.querySelector?document.querySelector(".secdiv"):null;
     if(!sd||!sd.getBoundingClientRect){window.scrollTo(0,0);return;}
-    const y=(window.scrollY||window.pageYOffset||0)+sd.getBoundingClientRect().top-18;
+    const y=(window.scrollY||window.pageYOffset||0)+sd.getBoundingClientRect().top-6;
     window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
   }catch(e){try{window.scrollTo(0,0);}catch(e2){}}
 }
@@ -840,9 +841,9 @@ function foundSwimmers(){
 }
 function renderProfile(vw,q){
   const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
-  if(!query.trim()){vw.innerHTML=`<div class="empty">Escribe el nombre de ${sexFilter==="M"?"un nadador":"una nadadora"} para ver su ficha, o vuelve al ranking con <b>← Volver</b>.</div>`;return;}
+  if(!query.trim()){vw.innerHTML=`<div class="empty tall">Escribe el nombre de ${sexFilter==="M"?"un nadador":"una nadadora"} o su club para ver su ficha, o vuelve al ranking con <b>← Volver</b>.</div>`;animateBars(vw);return;}
   const found=foundSwimmers();
-  if(!found.length){vw.innerHTML=`<div class="empty">Sin resultados para <b>“${esc(query)}”</b>.</div>`;return;}
+  if(!found.length){vw.innerHTML=`<div class="empty tall">Sin resultados para <b>“${esc(query)}”</b>.</div>`;return;}
   const savedClub=clubFilter,savedSex=sexFilter,savedRec=RECORDS,savedMax=MAXFECHA;
   found.sort((a,b)=>(a.sexo===savedSex?0:1)-(b.sexo===savedSex?0:1));
   clubFilter="all";
@@ -928,8 +929,8 @@ function applySex(){
   render();}
 function fillClubs(){const cs=[...new Set(RECORDS.map(r=>r.club).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const sel=el("clubSel");if(!sel)return;sel.innerHTML='<option value="all">Todos los clubes</option>'+cs.map(c=>`<option value="${esc(c)}"${c===clubFilter?" selected":""}>${esc(c)}</option>`).join("");}
 
-el("search").addEventListener("input",e=>{query=e.target.value;if(query.trim())mode="fichas";render();});
-el("clear").addEventListener("click",()=>{query="";el("search").value="";render();});
+el("search").addEventListener("input",e=>{const prev=query;query=e.target.value;if(query.trim())mode="fichas";render();if(mode==="fichas"&&!query.trim()&&prev.trim())scrollSec();});
+el("clear").addEventListener("click",()=>{query="";el("search").value="";render();if(mode==="fichas")scrollSec();});
 el("backFloat").addEventListener("click",()=>{mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();scrollSec();});
 el("view").addEventListener("click",e=>{
   const cl=s=>e.target&&e.target.closest?e.target.closest(s):null;
