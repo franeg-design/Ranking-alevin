@@ -477,6 +477,26 @@ function profileStat(name){
 }
 function starPre(ev){return (ev&&ev.dir==="up")?"⭐ ":"";}
 let cmpA=null,cmpB=null,chipScrollPos=0,chipAnim=false,finaSel="3",finaChipPos=0,finaChipAnim=false;
+function swoosh(entra){
+  try{
+    if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+    const ctx=actx();if(!ctx)return;
+    const t=ctx.currentTime+.01,dur=.24,sr=ctx.sampleRate,n=Math.floor(sr*dur);
+    const buf=ctx.createBuffer(1,n,sr),d=buf.getChannelData(0);
+    for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*(1-i/n*.35);
+    const src=ctx.createBufferSource();src.buffer=buf;
+    const bp=ctx.createBiquadFilter();bp.type="bandpass";bp.Q.setValueAtTime(1.15,t);
+    bp.frequency.setValueAtTime(entra?750:2300,t);
+    bp.frequency.exponentialRampToValueAtTime(entra?2400:700,t+dur);
+    const hp=ctx.createBiquadFilter();hp.type="highpass";hp.frequency.setValueAtTime(320,t);
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(.2,t+.05);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    src.connect(hp);hp.connect(bp);bp.connect(g);g.connect(AC_BUS||ctx.destination);
+    src.start(t);src.stop(t+dur);
+  }catch(e){}
+}
 function pendingKey(k){try{return !localStorage.getItem(k);}catch(e){return true;}}
 function pendingCel(el){return pendingKey("sh:"+(el.dataset?el.dataset.ck:""));}
 function slamStamp(el,anim){
@@ -542,7 +562,7 @@ function maybeShine(el,pct,reduce){
   try{if(localStorage.getItem(k))return;localStorage.setItem(k,"1");}catch(e){}
   el.className=el.className+" shine";
 }
-let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false;
+let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null;
 function fireBar(el){
   if(BAR_IO){try{BAR_IO.unobserve(el);}catch(e){}}
   BAR_PEND=BAR_PEND.filter(x=>x!==el);
@@ -650,6 +670,7 @@ function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));
 
 function render(){
   const fo=!!query.trim();
+  if(PREV_FO===null)PREV_FO=fo;else if(PREV_FO!==fo){PREV_FO=fo;swoosh(fo);}
   el("tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===view));
   const perPrueba=(view==="marcas"||view==="minimas");
   el("segYear").style.display=(perPrueba||view==="topfina")?"flex":"none";
