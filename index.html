@@ -20,11 +20,9 @@
 --line:#d8e8ee;--chip:#e7f1f4;--gold:#e0ad3f;--silver:#a9b6bf;--bronze:#c07f43;--good:#0f9d6b;--warn:#8a97a2;--amber:#b26a00;}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;transition:background-color .35s ease}
-body.fichas{background:#f4ecdd}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
 .mono{font-family:'Space Mono',ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
-.shell{max-width:540px;margin:0 auto;min-height:100vh;background:var(--bg);transition:background-color .35s ease}
-body.fichas .shell{background:#f4ecdd}
+.shell{max-width:540px;margin:0 auto;min-height:100vh;background:var(--bg)}
 .head::before,.pTop::before,.cmpTop::before,.cmpHead::before{content:"";position:absolute;left:0;right:0;bottom:0;height:72%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120'%3E%3Cpath d='M0 70 Q75 42 150 70 T300 70 T450 70 T600 70 V120 H0 Z' fill='%23ffffff' fill-opacity='.05'/%3E%3Cpath d='M0 92 Q75 64 150 92 T300 92 T450 92 T600 92 V120 H0 Z' fill='%23ffffff' fill-opacity='.05'/%3E%3C/svg%3E") bottom/620px 120px repeat-x;pointer-events:none}
 .pTop{overflow:hidden}.cmpTop{overflow:hidden}.cmpHead{overflow:hidden}
 .head{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:calc(20px + env(safe-area-inset-top)) 20px 16px;position:relative;overflow:hidden}
@@ -690,7 +688,6 @@ function render(){
 
   const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":"Ranking de la temporada";
   const sc=el("secdiv");if(sc&&sc.classList)sc.classList.toggle("fmode",fo);
-  try{if(document.body&&document.body.classList)document.body.classList.toggle("fichas",fo);}catch(e){}
   const tbs=el("tabs");
   if(tbs&&tbs.querySelectorAll){const fo2=!!query.trim();const lbl=fo2?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
   const bf=el("backFloat");if(bf)bf.style.display=(query.trim()||cmpA)?"block":"none";
