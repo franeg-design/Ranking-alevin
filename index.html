@@ -487,16 +487,21 @@ function tick(){
   try{
     if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
     const ctx=actx();if(!ctx)return;
-    const t=ctx.currentTime+.005,dur=.07;
-    const o=ctx.createOscillator();o.type="triangle";
-    o.frequency.setValueAtTime(1180,t);
-    o.frequency.exponentialRampToValueAtTime(1560,t+dur);
+    const t=ctx.currentTime+.004;
+    const o=ctx.createOscillator();o.type="sine";o.frequency.setValueAtTime(660,t);
+    o.frequency.exponentialRampToValueAtTime(620,t+.12);
     const g=ctx.createGain();
     g.gain.setValueAtTime(.0001,t);
-    g.gain.exponentialRampToValueAtTime(.13,t+.008);
-    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-    o.connect(g);g.connect(AC_BUS||ctx.destination);
-    o.start(t);o.stop(t+dur+.02);
+    g.gain.exponentialRampToValueAtTime(.09,t+.006);
+    g.gain.exponentialRampToValueAtTime(.0001,t+.13);
+    const o2=ctx.createOscillator();o2.type="sine";o2.frequency.setValueAtTime(1980,t);
+    const g2=ctx.createGain();
+    g2.gain.setValueAtTime(.0001,t);
+    g2.gain.exponentialRampToValueAtTime(.022,t+.003);
+    g2.gain.exponentialRampToValueAtTime(.0001,t+.045);
+    const lp=ctx.createBiquadFilter();lp.type="lowpass";lp.frequency.setValueAtTime(2800,t);
+    o.connect(g);o2.connect(g2);g.connect(lp);g2.connect(lp);lp.connect(AC_BUS||ctx.destination);
+    o.start(t);o.stop(t+.16);o2.start(t);o2.stop(t+.06);
   }catch(e){}
 }
 function swoosh(entra){
@@ -584,7 +589,7 @@ function maybeShine(el,pct,reduce){
   try{if(localStorage.getItem(k))return;localStorage.setItem(k,"1");}catch(e){}
   el.className=el.className+" shine";
 }
-let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false;
+let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking";
 function fireBar(el){
   if(BAR_IO){try{BAR_IO.unobserve(el);}catch(e){}}
   BAR_PEND=BAR_PEND.filter(x=>x!==el);
@@ -685,13 +690,13 @@ function scrollSec(){
     window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
   }catch(e){try{window.scrollTo(0,0);}catch(e2){}}
 }
-function goProfile(n){if(!n)return;query=n;const s=el("search");if(s){s.value=n;}render();scrollSec();}
+function goProfile(n){if(!n)return;mode="fichas";query=n;const s=el("search");if(s){s.value=n;}render();scrollSec();}
 function deltaTag(ev){if(!ev)return"";const L='<span class="tagL">ÚLT. CAMP.</span>';if(ev.dir==="up")return`<span class="tag up">${L}−${fmtClock(ev.d)}</span>`;return`<span class="tag down">${L}+${fmtClock(ev.d)}</span>`;}
 
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
 
 function render(){
-  const fo=!!query.trim();
+  const fo=(mode==="fichas");
   if(PREV_FO===null)PREV_FO=fo;else if(PREV_FO!==fo){PREV_FO=fo;swoosh(fo);}
   el("tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===view));
   const perPrueba=(view==="marcas"||view==="minimas");
@@ -710,18 +715,19 @@ function render(){
     marcasFicha:"<span style='font-weight:700'>Indicadores del último campeonato:</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b> (Alevín / 2013 / 2014): al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.<br><b>Distancia al líder</b>: lo que le falta para el Nº 1. <b>Progresión</b>: cuánto ha bajado desde su primera marca de la temporada. Los tiempos van en segundos (<b>s</b>) o minutos (<b>min</b>).</div>"+"",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
     topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.",topfinaRey:"<span style='font-weight:700'>👑 "+(sexFilter==="M"?"Rey":"Reina")+" de cada estilo.</span> Suma de los puntos FINA de su mejor marca en cada distancia nadada de ese estilo. No exige un número mínimo de pruebas.",topfinaSpec:"<span style='font-weight:700'>🚀⏱️🌊 Especialistas.</span> Suma de los puntos FINA de sus dos mejores distancias: Velocista = mejor 50 + mejor 100 · Mediofondista = 200 + 400 · Fondista = 400 + 800. Solo aparece quien tiene marcas en ambas.",topfinaFicha:"La barra muestra lo cerca que está cada marca del récord de Álava de su edad; bajo cada marca, en tenue, el récord de Álava (alevín) y el mundial (absoluto)."};
-  if(view==="marcas"){el("leg").innerHTML=`<details class="legfold" id="legfold"${legOpen?" open":""}><summary>Leyenda 📖</summary><div class="legbody">${query.trim()?legs.marcasFicha:legs.marcas}</div></details>`;const lf=el("legfold");if(lf)lf.addEventListener("toggle",()=>{legOpen=lf.open;});}
-  else if(view==="topfina"){el("leg").innerHTML=query.trim()?legs.topfinaFicha:(/^\d+$/.test(finaSel)?legs.topfina:(["spr","mid","fon"].indexOf(finaSel)>=0?legs.topfinaSpec:legs.topfinaRey));}
+  if(view==="marcas"){el("leg").innerHTML=`<details class="legfold" id="legfold"${legOpen?" open":""}><summary>Leyenda 📖</summary><div class="legbody">${fo?legs.marcasFicha:legs.marcas}</div></details>`;const lf=el("legfold");if(lf)lf.addEventListener("toggle",()=>{legOpen=lf.open;});}
+  else if(view==="topfina"){el("leg").innerHTML=fo?legs.topfinaFicha:(/^\d+$/.test(finaSel)?legs.topfina:(["spr","mid","fon"].indexOf(finaSel)>=0?legs.topfinaSpec:legs.topfinaRey));}
   else{el("leg").innerHTML=legs[view];}
 
   const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":"Ranking de la temporada";
   const sc=el("secdiv");if(sc&&sc.classList)sc.classList.toggle("fmode",fo);
   const tbs=el("tabs");
-  if(tbs&&tbs.querySelectorAll){const fo2=!!query.trim();const lbl=fo2?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
-  const bf=el("backFloat");if(bf)bf.style.display=(query.trim()||cmpA)?"block":"none";
+  if(tbs&&tbs.querySelectorAll){const fo2=fo;const lbl=fo2?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
+  const bf=el("backFloat");if(bf)bf.style.display=(fo||cmpA)?"block":"none";
+  const sIn=el("search");if(sIn)sIn.placeholder=fo?"Nadador/a - Club":(sexFilter==="M"?"Busca un nadador…":"Busca una nadadora…");
   const vw=el("view");
   if(cmpA){renderCompare(vw);return;}
-  if(q){renderProfile(vw,q);return;}
+  if(fo){renderProfile(vw,q);return;}
   if(view==="topfina"){renderClass(vw,finaN);return;}
 
   // per-prueba (marcas / minimas)
@@ -834,6 +840,7 @@ function foundSwimmers(){
 }
 function renderProfile(vw,q){
   const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  if(!query.trim()){vw.innerHTML=`<div class="empty">Escribe el nombre de ${sexFilter==="M"?"un nadador":"una nadadora"} para ver su ficha, o vuelve al ranking con <b>← Volver</b>.</div>`;return;}
   const found=foundSwimmers();
   if(!found.length){vw.innerHTML=`<div class="empty">Sin resultados para <b>“${esc(query)}”</b>.</div>`;return;}
   const savedClub=clubFilter,savedSex=sexFilter,savedRec=RECORDS,savedMax=MAXFECHA;
@@ -921,9 +928,9 @@ function applySex(){
   render();}
 function fillClubs(){const cs=[...new Set(RECORDS.map(r=>r.club).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const sel=el("clubSel");if(!sel)return;sel.innerHTML='<option value="all">Todos los clubes</option>'+cs.map(c=>`<option value="${esc(c)}"${c===clubFilter?" selected":""}>${esc(c)}</option>`).join("");}
 
-el("search").addEventListener("input",e=>{query=e.target.value;render();});
+el("search").addEventListener("input",e=>{query=e.target.value;if(query.trim())mode="fichas";render();});
 el("clear").addEventListener("click",()=>{query="";el("search").value="";render();});
-el("backFloat").addEventListener("click",()=>{query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();scrollSec();});
+el("backFloat").addEventListener("click",()=>{mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();scrollSec();});
 el("view").addEventListener("click",e=>{
   const cl=s=>e.target&&e.target.closest?e.target.closest(s):null;
   const cb=cl(".cmpBtn");if(cb){cmpA=cb.dataset.n;cmpB=null;render();return;}
