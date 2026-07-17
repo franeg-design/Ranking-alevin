@@ -20,9 +20,11 @@
 --line:#d8e8ee;--chip:#e7f1f4;--gold:#e0ad3f;--silver:#a9b6bf;--bronze:#c07f43;--good:#0f9d6b;--warn:#8a97a2;--amber:#b26a00;}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;transition:background-color .35s ease}
+body.fichas{background:#f4ecdd}
 .mono{font-family:'Space Mono',ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
-.shell{max-width:540px;margin:0 auto;min-height:100vh;background:var(--bg)}
+.shell{max-width:540px;margin:0 auto;min-height:100vh;background:var(--bg);transition:background-color .35s ease}
+body.fichas .shell{background:#f4ecdd}
 .head::before,.pTop::before,.cmpTop::before,.cmpHead::before{content:"";position:absolute;left:0;right:0;bottom:0;height:72%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120'%3E%3Cpath d='M0 70 Q75 42 150 70 T300 70 T450 70 T600 70 V120 H0 Z' fill='%23ffffff' fill-opacity='.05'/%3E%3Cpath d='M0 92 Q75 64 150 92 T300 92 T450 92 T600 92 V120 H0 Z' fill='%23ffffff' fill-opacity='.05'/%3E%3C/svg%3E") bottom/620px 120px repeat-x;pointer-events:none}
 .pTop{overflow:hidden}.cmpTop{overflow:hidden}.cmpHead{overflow:hidden}
 .head{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:calc(20px + env(safe-area-inset-top)) 20px 16px;position:relative;overflow:hidden}
@@ -218,8 +220,8 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .rmbar{height:5px;width:170px;max-width:100%;background:var(--chip);border:1px solid var(--line);border-radius:5px;margin-top:4px;overflow:hidden}
 .rmfill{height:100%;background:linear-gradient(90deg,#a8dbe8,#5fb3c9);border-radius:5px;animation:fillup .7s cubic-bezier(.22,.75,.25,1) .25s backwards}
 @keyframes fillup{from{width:0}}
-.secdiv{display:flex;align-items:center;gap:10px;margin:28px 0 8px;text-transform:uppercase;letter-spacing:.07em}
-.secdiv span{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:800;filter:drop-shadow(0 1px 1.5px rgba(11,42,58,.22));background:linear-gradient(120deg,var(--brand) 0%,var(--brand-deep) 90%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;white-space:nowrap}
+.secdiv{display:flex;align-items:center;gap:11px;margin:40px 0 20px;text-transform:uppercase;letter-spacing:.07em}
+.secdiv span{font-family:'Space Grotesk',sans-serif;font-size:23px;font-weight:800;filter:drop-shadow(0 1px 1.5px rgba(11,42,58,.22));background:linear-gradient(120deg,var(--brand) 0%,var(--brand-deep) 90%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;white-space:nowrap}
 .secdiv.fmode span{background:linear-gradient(100deg,#101f29 0 40%,#bfefff 50%,#101f29 60% 100%);background-size:260% 100%;background-position:0 0;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 1px 0 rgba(255,255,255,.9)) drop-shadow(0 2px 2px rgba(11,42,58,.32));animation:sheen 1.15s ease-out .08s 1 both}
 @keyframes sheen{from{background-position:100% 0}to{background-position:0 0}}
 .secdiv::before,.secdiv::after{content:"";flex:1;height:7px;border-radius:7px;border:1px solid var(--line);background:repeating-linear-gradient(90deg,#e05252 0 9px,#fff 9px 15px,#2f7fb2 15px 24px,#fff 24px 30px);opacity:.95;transform:scaleX(1)}
@@ -633,7 +635,15 @@ function renderCompareInner(vw){
   const rows=rowsB.concat(rowsO);
   vw.innerHTML=`<div class="cmpCard"><div class="cmpTop"><button class="cmpClose">✕</button><div class="cmpNames"><div class="cn">${logoImg(recA.club,"sm")}<b>${esc(shortName(cmpA))}</b><span>${esc(recA.club)} · ${esc(recA.anio)}</span></div><div class="cmpScore">${wA} – ${wB}</div><div class="cn">${logoImg(recB.club,"sm")}<b>${esc(shortName(cmpB))}</b><span>${esc(recB.club)} · ${esc(recB.anio)}</span></div></div><div class="cmpFina">FINA en pruebas comunes: <b>${fA}</b> · <b>${fB}</b></div></div><div class="cmpBody">${rows.join("")||'<div class="empty">Sin pruebas que comparar.</div>'}</div><div class="cmpNote">El marcador cuenta solo las pruebas nadadas por ambos. — = prueba no nadada.</div></div>`;
 }
-function goProfile(n){if(!n)return;query=n;const s=el("search");if(s){s.value=n;}render();const sd=document.querySelector?document.querySelector(".secdiv"):null;try{(sd||s).scrollIntoView({behavior:"smooth",block:"start"});}catch(e){window.scrollTo(0,0);}}
+function scrollSec(){
+  try{
+    const sd=document.querySelector?document.querySelector(".secdiv"):null;
+    if(!sd||!sd.getBoundingClientRect){window.scrollTo(0,0);return;}
+    const y=(window.scrollY||window.pageYOffset||0)+sd.getBoundingClientRect().top-18;
+    window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+  }catch(e){try{window.scrollTo(0,0);}catch(e2){}}
+}
+function goProfile(n){if(!n)return;query=n;const s=el("search");if(s){s.value=n;}render();scrollSec();}
 function deltaTag(ev){if(!ev)return"";const L='<span class="tagL">ÚLT. CAMP.</span>';if(ev.dir==="up")return`<span class="tag up">${L}−${fmtClock(ev.d)}</span>`;return`<span class="tag down">${L}+${fmtClock(ev.d)}</span>`;}
 
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
@@ -659,6 +669,7 @@ function render(){
 
   const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":"Ranking de la temporada";
   const sc=el("secdiv");if(sc&&sc.classList)sc.classList.toggle("fmode",fo);
+  try{if(document.body&&document.body.classList)document.body.classList.toggle("fichas",fo);}catch(e){}
   const tbs=el("tabs");
   if(tbs&&tbs.querySelectorAll){const fo2=!!query.trim();const lbl=fo2?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
   const bf=el("backFloat");if(bf)bf.style.display=(query.trim()||cmpA)?"block":"none";
@@ -862,7 +873,7 @@ function fillClubs(){const cs=[...new Set(RECORDS.map(r=>r.club).filter(Boolean)
 
 el("search").addEventListener("input",e=>{query=e.target.value;render();});
 el("clear").addEventListener("click",()=>{query="";el("search").value="";render();});
-el("backFloat").addEventListener("click",()=>{query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();const sd=document.querySelector?document.querySelector(".secdiv"):null;if(sd&&sd.scrollIntoView){try{sd.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){window.scrollTo(0,0);}}else{window.scrollTo({top:0,behavior:"smooth"});}});
+el("backFloat").addEventListener("click",()=>{query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();scrollSec();});
 el("view").addEventListener("click",e=>{
   const cl=s=>e.target&&e.target.closest?e.target.closest(s):null;
   const cb=cl(".cmpBtn");if(cb){cmpA=cb.dataset.n;cmpB=null;render();return;}
