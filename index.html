@@ -48,6 +48,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .tabs button{flex:1;border:none;background:none;padding:9px 4px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .12s}
 .tabs button.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.09)}
 .seg{display:flex;gap:6px;background:var(--chip);padding:4px;border-radius:12px;margin-bottom:8px}
+.seg.wide button{flex:1}
 .seg button{flex:1;border:none;background:none;padding:7px 6px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
 .seg button.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .leg{font-size:11px;color:var(--muted);margin:0 2px 12px;line-height:1.45}
@@ -306,7 +307,7 @@ function applySeasonTables(){const ks=Object.keys(TABLES).sort();const t=TABLES[
 function seasonOf(f){const y=+String(f).slice(0,4),m=+String(f).slice(5,7);if(!y)return"";const st=m>=9?y:y-1;return st+"/"+String((st+1)%100).padStart(2,"0");}
 function initSeasons(){SEASONS=[...new Set(ALLRECS.map(r=>seasonOf(r.fecha)).filter(Boolean))].sort();if(!SEASONS.includes(season))season=SEASONS[SEASONS.length-1]||"";}
 function fillSeasons(){const multi=SEASONS.length>1;const sel=el("seasonSel");if(sel){sel.innerHTML=SEASONS.map(s2=>`<option value="${s2}"${s2===season?" selected":""}>Temporada ${s2}</option>`).join("");sel.style.display=multi?"":"none";}const lab=el("seasonLabel");if(lab){lab.textContent=season?("Temporada "+season):"";lab.style.display=multi?"none":"";}}
-function fillYears(){const seg=el("segYear");if(!seg)return;const ys=[...new Set(ALLRECS.filter(r=>seasonOf(r.fecha)===season).map(r=>r.anio))].sort();if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>Alevín${ys.length?" "+ys.map(y=>y.slice(2)).join("/"):""}</button>`+ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${y}</button>`).join("");}
+function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>seasonOf(r.fecha)===season).map(r=>r.anio))].sort();const ys=(only&&only.length)?only.slice().sort():all;if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>Alevín${all.length?" "+all.map(y=>y.slice(2)).join("/"):""}</button>`+ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${y}</button>`).join("");if(seg.classList)seg.classList.toggle("wide",!!(only&&only.length));}
 const PRUEBA_ORDER=["50 Libre","100 Libre","200 Libre","400 Libre","800 Libre","50 Espalda","100 Espalda","200 Espalda","50 Braza","100 Braza","200 Braza","50 Mariposa","100 Mariposa","200 Mariposa","100 Estilos","200 Estilos","400 Estilos"];
 // Tiempos base FINA — World Aquatics SCM 2025 (25 m), femenino (segundos)
 const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo
@@ -442,7 +443,14 @@ function renderSummary(){
 
 function poolRecs(recs){let out=recs;if(yearFilter!=="all")out=out.filter(r=>r.anio===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
 function bestOf(recs,name,prueba){let b=null,bc=Infinity;for(const r of recs){if(r.nadadora===name&&r.prueba===prueba){const c=toCs(r.tiempo);if(c<bc){bc=c;b=r;}}}return b;}
-function rankTime(recs,prueba){const rr=poolRecs(recs).filter(r=>r.prueba===prueba);const names=[...new Set(rr.map(r=>r.nadadora))];const arr=names.map(n=>{const b=bestOf(rr,n,prueba);return{name:n,prueba:prueba,club:b.club,anio:b.anio,cs:toCs(b.tiempo),tiempo:b.tiempo,fecha:b.fecha};});arr.sort((a,b)=>a.cs-b.cs||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.cs===arr[i-1].cs)?arr[i-1].rank:i+1;});return arr;}
+let RT_CACHE=new WeakMap();
+function rankTime(recs,prueba){
+  const k=sexFilter+"|"+yearFilter+"|"+clubFilter+"|"+season+"|"+prueba;
+  let m=RT_CACHE.get(recs);if(!m){m=new Map();RT_CACHE.set(recs,m);}
+  const hit=m.get(k);if(hit)return hit;
+  const val=(function(){const rr=poolRecs(recs).filter(r=>r.prueba===prueba);const names=[...new Set(rr.map(r=>r.nadadora))];const arr=names.map(n=>{const b=bestOf(rr,n,prueba);return{name:n,prueba:prueba,club:b.club,anio:b.anio,cs:toCs(b.tiempo),tiempo:b.tiempo,fecha:b.fecha};});arr.sort((a,b)=>a.cs-b.cs||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.cs===arr[i-1].cs)?arr[i-1].rank:i+1;});return arr;})();
+  m.set(k,val);return val;
+}
 function rankMap(arr){const m={};arr.forEach(x=>m[x.name]=x.rank);return m;}
 
 function evolution(name,prueba){const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===prueba);if(!sw.length)return null;const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);if(latest<MAXFECHA)return null;const before=sw.filter(s=>s.fecha<latest);if(!before.length)return null;const prev=Math.min(...before.map(s=>toCs(s.tiempo)));const lat=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));if(lat<prev)return{dir:"up",d:prev-lat,date:latest};if(lat>prev)return{dir:"down",d:lat-prev,date:latest};return null;}
@@ -475,6 +483,22 @@ function profileStat(name){
 }
 function starPre(ev){return (ev&&ev.dir==="up")?"⭐ ":"";}
 let cmpA=null,cmpB=null,chipScrollPos=0,chipAnim=false,finaSel="3",finaChipPos=0,finaChipAnim=false;
+function tick(){
+  try{
+    if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+    const ctx=actx();if(!ctx)return;
+    const t=ctx.currentTime+.005,dur=.07;
+    const o=ctx.createOscillator();o.type="triangle";
+    o.frequency.setValueAtTime(1180,t);
+    o.frequency.exponentialRampToValueAtTime(1560,t+dur);
+    const g=ctx.createGain();
+    g.gain.setValueAtTime(.0001,t);
+    g.gain.exponentialRampToValueAtTime(.13,t+.008);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g);g.connect(AC_BUS||ctx.destination);
+    o.start(t);o.stop(t+dur+.02);
+  }catch(e){}
+}
 function swoosh(entra){
   try{
     if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
@@ -560,7 +584,7 @@ function maybeShine(el,pct,reduce){
   try{if(localStorage.getItem(k))return;localStorage.setItem(k,"1");}catch(e){}
   el.className=el.className+" shine";
 }
-let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null;
+let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false;
 function fireBar(el){
   if(BAR_IO){try{BAR_IO.unobserve(el);}catch(e){}}
   BAR_PEND=BAR_PEND.filter(x=>x!==el);
@@ -675,7 +699,11 @@ function render(){
   el("segFina").style.display="none";
   const q=query.trim().toLowerCase();
   el("clear").style.display=query?"block":"none";
-  if(fo){["segSex","segFina","clubSel"].forEach(id=>{const e2=el(id);if(e2)e2.style.display="none";});el("segYear").style.display="flex";}else{const cs=el("clubSel");if(cs)cs.style.display="";const sx=el("segSex");if(sx)sx.style.display="";}
+  if(fo){["segSex","segFina","clubSel"].forEach(id=>{const e2=el(id);if(e2)e2.style.display="none";});el("segYear").style.display="flex";
+    const yrs=[...new Set(foundSwimmers().slice(0,20).map(c=>c.anio))].sort();
+    fillYears(yrs.length?yrs:null);}
+  else if(PREV_YRS){fillYears(null);PREV_YRS=false;}
+  if(fo)PREV_YRS=true;else{const cs=el("clubSel");if(cs)cs.style.display="";const sx=el("segSex");if(sx)sx.style.display="";}
 
   // legend
   const legs={marcas:"<span style='font-weight:700'>Indicadores del último campeonato:</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ = variación de puesto<div style='margin-top:7px'><span style='font-weight:700'>Mínimas:</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de Euskadi / España <b>conseguida en este campeonato</b> (todas las mínimas, en la pestaña <b>Mínimas</b>)</div><div style='margin-top:7px'><span style='font-weight:700'>Fichas:</span><br>Toca el <b>nombre</b> de cualquier nadador/a en las listas (o escríbelo en el buscador) para abrir su ficha.<br>Para volver al ranking, usa el botón <b>← Volver</b> o la <b>✕</b> del buscador.<br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>",
@@ -744,7 +772,7 @@ function render(){
       }
     }
   }
-  vw.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{activePrueba=c.dataset.p;render();});
+  vw.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{tick();activePrueba=c.dataset.p;render();});
 }
 
 function finaStyle(recs,stroke){const R=poolRecs(recs);const names=[...new Set(R.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of R){if(r.nadadora!==n||r.prueba.split(" ")[1]!==stroke)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba])byP[r.prueba]=c;}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p]),p:p,cs:byP[p]})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(!list.length)return;const sum=list.reduce((a,b)=>a+b.f,0);const rec=R.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:list.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.sum===arr[i-1].sum)?arr[i-1].rank:i+1;});return arr;}
@@ -793,16 +821,20 @@ function renderClass(vw,N){
         setTimeout(()=>{finaChipAnim=false;ce.scrollLeft=norm(ce.scrollLeft);finaChipPos=ce.scrollLeft;},450);
       }
     }
-    vw.querySelectorAll(".chip").forEach(c=>{if(c.dataset&&c.dataset.f)c.onclick=()=>{finaSel=c.dataset.f;if(/^\d+$/.test(finaSel))finaN=+finaSel;render();};});
+    vw.querySelectorAll(".chip").forEach(c=>{if(c.dataset&&c.dataset.f)c.onclick=()=>{tick();finaSel=c.dataset.f;if(/^\d+$/.test(finaSel))finaN=+finaSel;render();};});
   }
 }
 
-function renderProfile(vw,q){
+function foundSwimmers(){
   const qtok=normName(query).split(" ").filter(Boolean);
   const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
   const seen=new Set(),cand=[];
-  SREC.forEach(r=>{if(seen.has(r.nadadora))return;seen.add(r.nadadora);cand.push({name:r.nadadora,sexo:r.sexo});});
-  const found=cand.filter(c=>{const hay=normName(c.name);return qtok.every(t=>hay.includes(t));});
+  SREC.forEach(r=>{if(seen.has(r.nadadora))return;seen.add(r.nadadora);cand.push({name:r.nadadora,sexo:r.sexo,anio:r.anio,club:r.club});});
+  return cand.filter(c=>{const hay=normName(c.name+" "+c.club);return qtok.every(t=>hay.includes(t));});
+}
+function renderProfile(vw,q){
+  const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  const found=foundSwimmers();
   if(!found.length){vw.innerHTML=`<div class="empty">Sin resultados para <b>“${esc(query)}”</b>.</div>`;return;}
   const savedClub=clubFilter,savedSex=sexFilter,savedRec=RECORDS,savedMax=MAXFECHA;
   found.sort((a,b)=>(a.sexo===savedSex?0:1)-(b.sexo===savedSex?0:1));
@@ -900,11 +932,11 @@ el("view").addEventListener("click",e=>{
   const pr=cl(".pRow.tog");if(pr){toggleHist(pr);return;}
   const t=cl(".name");if(t&&t.dataset&&t.dataset.n)goProfile(t.dataset.n);
 });
-el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;render();});
-el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sexFilter=b.dataset.s;el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
-el("segYear").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;yearFilter=b.dataset.y;el("segYear").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
+el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;tick();view=b.dataset.v;render();});
+el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;tick();sexFilter=b.dataset.s;el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
+el("segYear").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;tick();yearFilter=b.dataset.y;el("segYear").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("segFina").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;finaN=+b.dataset.n;el("segFina").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
-el("clubSel").addEventListener("change",e=>{clubFilter=e.target.value;render();});
+el("clubSel").addEventListener("change",e=>{tick();clubFilter=e.target.value;render();});
 el("seasonSel").addEventListener("change",e=>{season=e.target.value;yearFilter="all";clubFilter="all";query="";const s=el("search");if(s)s.value="";applySex();});
 el("adminHead").addEventListener("click",()=>{el("adminHead").classList.toggle("open");el("adminBody").classList.toggle("open");});
 el("dlTemplate").addEventListener("click",()=>{const bl=new Blob([TEMPLATE],{type:"text/csv;charset=utf-8;"});const a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download="plantilla-ranking.csv";a.click();URL.revokeObjectURL(a.href);});
