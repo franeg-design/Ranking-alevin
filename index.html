@@ -184,6 +184,23 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;border-radius:11px;padding:9px 13px;cursor:pointer;border:1px solid var(--brand);background:var(--brand);color:#fff}
 .btn.ghost{background:var(--surface);color:var(--brand)}
 .hint{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.5}
+.sumBand{position:relative;width:auto;display:flex;align-items:center;gap:10px;margin:0 -14px;padding:10px 16px;border:none;border-top:1px solid #2f6a90;border-bottom:1px solid #103046;border-radius:0;cursor:pointer;text-align:left;font-family:inherit;color:#f2d79b;background:linear-gradient(120deg,#15455f,#1c5878 55%,#236a8c);box-shadow:0 3px 12px rgba(9,34,50,.22);overflow:hidden}
+.sumBand::before{content:"";position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(100deg,transparent,rgba(246,216,155,.15),transparent);transform:skewX(-18deg);animation:sbShine 6.5s ease-in-out infinite}
+@keyframes sbShine{0%,80%{left:-60%}92%,100%{left:135%}}
+.sbIcon{font-size:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+.sbTxt{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:13.5px;letter-spacing:.11em;color:#f6d89f;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.sbSel{margin-left:auto;font-size:11.5px;font-weight:700;color:#9dc3d6}
+.sbArrow{margin-left:auto;font-size:22px;line-height:1;color:#f2cd82;text-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .3s ease}
+.sumBand.open .sbArrow{transform:rotate(180deg)}
+.sumMenu{max-height:0;overflow:hidden;opacity:0;transition:max-height .38s ease,opacity .28s ease,margin .28s ease;display:flex;flex-direction:column;gap:1px;margin:0 -14px;padding:0 14px}
+.sumMenu.open{max-height:1600px;opacity:1;margin:8px -14px 0;padding:0 14px}
+.sumOpt{display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-family:inherit;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-left:3px solid transparent;border-radius:11px;padding:11px 13px}
+.sumOpt.on{border-left-color:#e0b45f;background:linear-gradient(90deg,rgba(224,180,95,.10),var(--surface) 40%)}
+.soDate{font-weight:800;font-size:12.5px;color:var(--ink);min-width:66px;font-variant-numeric:tabular-nums}
+.soName{font-size:12.5px;color:var(--muted);flex:1;line-height:1.3}
+.sumOpt.on .soName{color:var(--ink)}
+.soChk{color:#c79433;font-weight:800;font-size:14px}
+.sumWrap{margin-top:8px}
 .sumcard{background:linear-gradient(160deg,#e8f6f9,#f5fbfc);border:1px solid var(--line);border-radius:16px;padding:13px 14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(11,42,58,.06),0 1px 2px rgba(11,42,58,.04)}
 .sumhead{font-size:15px;color:var(--brand-deep);display:flex;align-items:center;gap:7px;flex-wrap:wrap;line-height:1.25}
 .sumhead b{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:15.5px;letter-spacing:-.01em}
@@ -211,6 +228,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .histRow .ht{font-weight:600}
 .histRow.hbest .ht{font-weight:800;color:var(--brand-deep)}
 .hmmp{font-size:8px;font-weight:800;color:var(--good);border:1px solid var(--good);border-radius:5px;padding:0 4px}
+.cmpCard.tall{min-height:calc(100vh - 210px)}
 .cmpCard{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(11,42,58,.06),0 1px 2px rgba(11,42,58,.04)}
 .cmpTop{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:13px;position:relative}
 .cmpHead{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:13px 42px 13px 13px;font-size:13.5px;position:relative}
@@ -229,7 +247,8 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .cmpRow .cP{flex:1.15;text-align:center;font-size:10.5px;color:var(--muted)}
 .cmpRow.wa .cA .mono{color:var(--good);font-weight:800}
 .cmpRow.wb .cB .mono{color:var(--good);font-weight:800}
-.cmpRow .cd{display:block;font-size:9px;color:var(--muted);font-weight:400}
+.cmpRow .cpos{display:block;font-size:10px;font-weight:700;color:var(--brand-deep)}
+.cd{display:block;font-size:9px;color:var(--muted);font-weight:400}
 .cmpList{max-height:330px;overflow:auto;border-top:1px solid var(--line)}
 .cmpPick{padding:9px 13px;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer}
 .cmpNote{font-size:10px;color:var(--muted);padding:8px 13px 10px}
@@ -483,13 +502,15 @@ function medalTable(){
   MED_CACHE[ck]=arr;return arr;
 }
 function medalsOf(name){return medalTable().find(a=>a.name===name)||null;}
-function renderSummary(){
+function summaryFechas(){return [...new Set(RECORDS.map(r=>r.fecha))].sort().reverse();}
+function renderSummary(fecha){
   const box=el("summary");if(!box)return;
   if(!RECORDS.length){box.innerHTML="";return;}
-  const latest=RECORDS.filter(r=>r.fecha===MAXFECHA);
+  const FE=fecha||MAXFECHA;
+  const latest=RECORDS.filter(r=>r.fecha===FE);
   if(!latest.length){box.innerHTML="";return;}
   const comp=latest[0].competi||"Última competición";
-  const pb={};RECORDS.forEach(r=>{if(r.fecha<MAXFECHA){const k=r.nadadora+"|"+r.prueba,c=toCs(r.tiempo);if(pb[k]===undefined||c<pb[k])pb[k]=c;}});
+  const pb={};RECORDS.forEach(r=>{if(r.fecha<FE){const k=r.nadadora+"|"+r.prueba,c=toCs(r.tiempo);if(pb[k]===undefined||c<pb[k])pb[k]=c;}});
   const swimmers=new Set(latest.map(r=>r.nadadora));
   let mejoras=0;const bests=[],gains=[],newmin=[];
   latest.forEach(r=>{const cs=toCs(r.tiempo),f=fina(r.prueba,cs),k=r.nadadora+"|"+r.prueba,prev=pb[k];
@@ -498,9 +519,17 @@ function renderSummary(){
     [["ESP",MIN_ESP],["EH",MIN_EH]].forEach(pair=>{const tb=pair[1][sexFilter]||{};const m=tb[r.prueba]&&tb[r.prueba][r.anio];if(m){const mc=toCs(m);if(cs<=mc&&(prev===undefined||prev>mc))newmin.push({n:shortName(r.nadadora),p:r.prueba,t:pair[0]});}});
   });
   bests.sort((a,b)=>b.f-a.f);gains.sort((a,b)=>b.g-a.g);
-  let h=`<div class="sumcard"><div class="sumhead">🏆 <b>${esc(comp)}</b><span class="sumdate">· ${fmtDate(MAXFECHA)}</span></div>`;
+  let h=`<div class="sumcard"><div class="sumhead">🏆 <b>${esc(comp)}</b><span class="sumdate">· ${fmtDate(FE)}</span></div>`;
   h+=`<div class="sumstats"><div class="sst"><span class="n">${swimmers.size}</span>${sexFilter==="M"?"nadadores":"nadadoras"}</div><div class="sst"><span class="n">${latest.length}</span>marcas</div><div class="sst"><span class="n">${mejoras}</span>mejoras ⭐</div><div class="sst"><span class="n">${newmin.length}</span>mínimas nuevas</div></div>`;
   const md=["🥇","🥈","🥉"];
+  // Mejor nadador/a del día: suma de FINA de todas sus pruebas (sin relevos), por año
+  const totF={};latest.forEach(r=>{const k=r.nadadora;if(!totF[k])totF[k]={f:0,anio:r.anio,n:0};totF[k].f+=fina(r.prueba,toCs(r.tiempo));totF[k].n++;});
+  const bestSw=Object.keys(totF).map(n=>({name:n,f:totF[n].f,anio:totF[n].anio,n:totF[n].n})).sort((a,b)=>b.f-a.f);
+  if(bestSw.length){const byB=[...new Set(bestSw.map(b=>b.anio))].sort();
+  h+=`<div class="sumline"><span class="lbl">Mejor ${sexFilter==="M"?"nadador":"nadadora"} del día <span style="text-transform:none;font-weight:600;color:var(--muted)">(suma de FINA de todas sus pruebas)</span></span>`+byB.map(y=>{
+    const top=bestSw.filter(b=>b.anio===y).slice(0,3);
+    return (byB.length>1?`<div class="syear">${esc(y)}</div>`:"")+top.map((b,i)=>`<div class="sitem">${md[i]} ${esc(shortName(b.name))} · <b>${b.f} FINA</b> <span style="color:var(--muted)">(${b.n} prueba${b.n===1?"":"s"})</span></div>`).join("");
+  }).join("")+`</div>`;}
   if(bests.length){const byY=[...new Set(bests.map(b=>b.anio))].sort();
   h+=`<div class="sumline"><span class="lbl">Mejores marcas del día</span>`+byY.map(y=>{
     const top=bests.filter(b=>b.anio===y).slice(0,3);
@@ -510,8 +539,13 @@ function renderSummary(){
   const forma=formaList(3,MAXFECHA);
   h+=`<div class="sumline"><span class="lbl">${sexFilter==="M"?"Nadadores":"Nadadoras"} en forma 🔥 <span style="text-transform:none;font-weight:600;color:var(--muted)">(mayor progresión acumulada en las 3 últimas jornadas)</span></span>`+(forma?forma.list.map((x,i)=>`<div class="sitem">${md[i]} ${esc(shortName(x.name))} · <b>+${x.total} FINA</b></div>`).join(""):"<div class='sitem' style='color:var(--muted)'>aún sin datos suficientes</div>")+`</div>`;
   if(newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>`+newmin.map(x=>`<div class="sitem"><span class="mb ${x.t==="ESP"?"mbESP":"mbEH"}" style="margin-left:0">${esc(x.t)}</span> ${esc(x.n)} · ${esc(x.p)}</div>`).join("")+`</div>`;
-  h+=`</div><div class="secdiv" id="secdiv"><span id="secTitle">Ranking de la temporada</span></div>`;
-  box.innerHTML=h;
+  h+=`</div>`;  // cierra .sumcard
+  const fechas=summaryFechas();
+  const rows=fechas.map(f=>{const c=(RECORDS.find(r=>r.fecha===f)||{}).competi||"";return `<button class="sumOpt${f===FE?" on":""}" data-f="${f}"><span class="soDate">${fmtDate(f)}</span><span class="soName">${esc(c)}</span>${f===FE?'<span class="soChk">✓</span>':""}</button>`;}).join("");
+  const band=`<button class="sumBand${sumOpen?" open":""}" id="sumBand"><span class="sbIcon">🏆</span><span class="sbTxt">COMPETICIONES</span><span class="sbArrow">▾</span></button>`;
+  const menu=`<div class="sumMenu${sumOpen?" open":""}">${rows}</div>`;
+  const cuerpo=sumShown?`<div class="sumWrap">${h}</div>`:"";
+  box.innerHTML=band+menu+cuerpo+`<div class="secdiv" id="secdiv"><span id="secTitle">${mode==="fichas"?"Fichas individuales":"Ranking de la temporada"}</span></div>`;
 }
 
 function poolRecs(recs){let out=recs;if(yearFilter!=="all")out=out.filter(r=>r.anio===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
@@ -656,7 +690,7 @@ function maybeShine(el,pct,reduce){
   try{if(localStorage.getItem(k))return;localStorage.setItem(k,"1");}catch(e){}
   el.className=el.className+" shine";
 }
-let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking",badgesFor=null;
+let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking",badgesFor=null,sumOpen=false,sumFecha=null,sumShown=false;
 function fireBar(el){
   if(BAR_IO){try{BAR_IO.unobserve(el);}catch(e){}}
   BAR_PEND=BAR_PEND.filter(x=>x!==el);
@@ -729,7 +763,7 @@ function renderCompareInner(vw){
   if(!recA){vw.innerHTML=`<div class="empty">No hay datos de <b>${esc(cmpA)}</b> en esta categoría. <button class="cmpClose" style="position:static;width:auto;border-radius:9px;padding:2px 10px;background:var(--chip);color:var(--brand-deep);border:1px solid var(--line)">Cerrar</button></div>`;return;}
   if(!cmpB){
     const names=[...new Set(RECORDS.map(r=>r.nadadora))].filter(n=>n!==cmpA).sort();
-    vw.innerHTML=`<div class="cmpCard"><div class="cmpHead">Comparar a <b>${esc(shortName(cmpA))}</b> con…<button class="cmpClose">✕</button></div><div style="padding:10px 13px 4px"><input id="cmpSearch" class="search" style="padding-left:14px" placeholder="Escribe el nombre del rival…" autocomplete="off"/></div><div class="cmpList">${names.map(n=>`<div class="cmpPick" data-n="${esc(n)}">${esc(n)}</div>`).join("")}</div></div>`;
+    vw.innerHTML=`<div class="cmpCard tall"><div class="cmpHead">Comparar a <b>${esc(shortName(cmpA))}</b> con…<button class="cmpClose">✕</button></div><div style="padding:10px 13px 4px"><input id="cmpSearch" class="search" style="padding-left:14px" placeholder="Escribe el nombre del rival…" autocomplete="off"/></div><div class="cmpList">${names.map(n=>`<div class="cmpPick" data-n="${esc(n)}">${esc(n)}</div>`).join("")}</div></div>`;
     const inp=el("cmpSearch");
     if(inp)inp.addEventListener("input",()=>{const q2=normName(inp.value);vw.querySelectorAll(".cmpPick").forEach(d=>{d.style.display=!q2||normName(d.dataset.n).includes(q2)?"block":"none";});});
     return;
@@ -737,14 +771,16 @@ function renderCompareInner(vw){
   const recB=RECORDS.find(r=>r.nadadora===cmpB);
   if(!recB){vw.innerHTML=`<div class="empty">No hay datos de <b>${esc(cmpB)}</b> en esta categoría. <button class="cmpClose" style="position:static;width:auto;border-radius:9px;padding:2px 10px;background:var(--chip);color:var(--brand-deep);border:1px solid var(--line)">Cerrar</button></div>`;return;}
   let wA=0,wB=0,fA=0,fB=0;const rowsB=[],rowsO=[];
-  const cell=x=>x?`<span class="mono">${esc(x.tiempo)}</span>${x.fecha>MINFECHA?`<span class="cd">${fmtDate(x.fecha)}</span>`:""}`:"—";
+  const cell=(x,rk)=>x?`<span class="mono">${esc(x.tiempo)}</span>${rk?`<span class="cpos">Nº ${rk}</span>`:""}${x.fecha>MINFECHA?`<span class="cd">${fmtDate(x.fecha)}</span>`:""}`:"—";
   PRUEBA_ORDER.forEach(p=>{
     const a=bestOf(RECORDS,cmpA,p),b=bestOf(RECORDS,cmpB,p);
     if(!a&&!b)return;
     const ca=a?toCs(a.tiempo):null,cb=b?toCs(b.tiempo):null;
+    const rl=rankTime(RECORDS,p);
+    const rkA=a?(rl.find(x=>x.name===cmpA)||{}).rank:null,rkB=b?(rl.find(x=>x.name===cmpB)||{}).rank:null;
     let cls="";
     if(a&&b){fA+=fina(p,ca);fB+=fina(p,cb);if(ca<cb){wA++;cls=" wa";}else if(cb<ca){wB++;cls=" wb";}}
-    (a&&b?rowsB:rowsO).push(`<div class="cmpRow${cls}"><span class="cA">${cell(a)}</span><span class="cP">${esc(p)}</span><span class="cB">${cell(b)}</span></div>`);
+    (a&&b?rowsB:rowsO).push(`<div class="cmpRow${cls}"><span class="cA">${cell(a,rkA)}</span><span class="cP">${esc(p)}</span><span class="cB">${cell(b,rkB)}</span></div>`);
   });
   const rows=rowsB.concat(rowsO);
   vw.innerHTML=`<div class="cmpCard"><div class="cmpTop"><button class="cmpClose">✕</button><div class="cmpNames"><div class="cn">${logoImg(recA.club,"sm")}<b>${esc(shortName(cmpA))}</b><span>${esc(recA.club)} · ${esc(recA.anio)}</span></div><div class="cmpScore">${wA} – ${wB}</div><div class="cn">${logoImg(recB.club,"sm")}<b>${esc(shortName(cmpB))}</b><span>${esc(recB.club)} · ${esc(recB.anio)}</span></div></div><div class="cmpFina">FINA en pruebas comunes: <b>${fA}</b> · <b>${fB}</b></div></div><div class="cmpBody">${rows.join("")||'<div class="empty">Sin pruebas que comparar.</div>'}</div><div class="cmpNote">El marcador cuenta solo las pruebas nadadas por ambos. — = prueba no nadada.</div></div>`;
@@ -1030,18 +1066,25 @@ function applySex(){
   const fem=sexFilter!=="M";
   const s=el("search");if(s)s.placeholder=fem?"Busca una nadadora…":"Busca un nadador…";
   fillYears();fillClubs();fillSeasons();
-  renderSummary();
+  renderSummary(sumFecha);
   render();}
 function fillClubs(){const cs=[...new Set(RECORDS.map(r=>r.club).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const sel=el("clubSel");if(!sel)return;sel.innerHTML='<option value="all">Todos los clubes</option>'+cs.map(c=>`<option value="${esc(c)}"${c===clubFilter?" selected":""}>${esc(c)}</option>`).join("");}
 
 el("search").addEventListener("input",e=>{const prev=query;query=e.target.value;if(query.trim())mode="fichas";render();if(mode==="fichas"&&!query.trim()&&prev.trim())scrollSec();});
 el("clear").addEventListener("click",()=>{query="";el("search").value="";render();if(mode==="fichas")scrollSec();});
 el("backFloat").addEventListener("click",()=>{if(badgesFor){badgesFor=null;render();scrollSec();return;}mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();scrollSec();});
+el("summary").addEventListener("click",e=>{
+  const t=e.target&&e.target.closest?e.target.closest:null;if(!t)return;
+  const band=e.target.closest("#sumBand");
+  if(band){sumOpen=!sumOpen;renderSummary(sumFecha);return;}
+  const opt=e.target.closest(".sumOpt");
+  if(opt){sumFecha=opt.dataset.f;sumOpen=false;sumShown=true;renderSummary(sumFecha);return;}
+});
 el("view").addEventListener("click",e=>{
   const cl=s=>e.target&&e.target.closest?e.target.closest(s):null;
   const bb=cl(".badgeBtn");if(bb){badgesFor=bb.dataset.n;render();scrollSec();return;}
-  const cb=cl(".cmpBtn");if(cb){cmpA=cb.dataset.n;cmpB=null;render();return;}
-  const cp=cl(".cmpPick");if(cp){cmpB=cp.dataset.n;render();return;}
+  const cb=cl(".cmpBtn");if(cb){cmpA=cb.dataset.n;cmpB=null;render();scrollSec();return;}
+  const cp=cl(".cmpPick");if(cp){cmpB=cp.dataset.n;render();scrollSec();return;}
   const cc=cl(".cmpClose");if(cc){cmpA=null;cmpB=null;render();return;}
   const pr=cl(".pRow.tog");if(pr){toggleHist(pr);return;}
   const t=cl(".name");if(t&&t.dataset&&t.dataset.n)goProfile(t.dataset.n);
