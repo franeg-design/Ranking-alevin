@@ -221,6 +221,8 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .sumline .lbl{display:block;font-size:9.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
 .sumline b{font-family:'Space Grotesk',sans-serif}
 .sitem{font-size:12.5px;margin-top:4px;line-height:1.45}
+.sumClose{display:block;margin:11px auto 1px;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;padding:6px 15px;font-size:11.5px;font-weight:700;cursor:pointer;box-shadow:0 1px 3px rgba(11,42,58,.06)}
+.sumClose:active{opacity:.65}
 .pTop{position:relative}
 .pHead{display:flex;align-items:center;gap:11px;padding-right:80px}
 .clubLogo{width:46px;height:46px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(11,42,58,.35))}
@@ -555,6 +557,7 @@ function renderSummary(fecha){
   const forma=formaList(3,MAXFECHA);
   h+=`<div class="sumline"><span class="lbl">${sexFilter==="M"?"Nadadores":"Nadadoras"} en forma 🔥 <span style="text-transform:none;font-weight:600;color:var(--muted)">(mayor progresión acumulada en las 3 últimas jornadas)</span></span>`+(forma?forma.list.map((x,i)=>`<div class="sitem">${md[i]} ${esc(shortName(x.name))} · <b>+${x.total} FINA</b></div>`).join(""):"<div class='sitem' style='color:var(--muted)'>aún sin datos suficientes</div>")+`</div>`;
   if(newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>`+newmin.map(x=>`<div class="sitem"><span class="mb ${x.t==="ESP"?"mbESP":"mbEH"}" style="margin-left:0">${esc(x.t)}</span> ${esc(x.n)} · ${esc(x.p)}</div>`).join("")+`</div>`;
+  h+=`<button class="sumClose" id="sumClose">✕ Cerrar competi</button>`;
   h+=`</div>`;  // cierra .sumcard
   const fechas=summaryFechas();
   const rows=fechas.map(f=>{const c=(RECORDS.find(r=>r.fecha===f)||{}).competi||"";return `<button class="sumOpt${f===FE?" on":""}" data-f="${f}"><span class="soDate">${fmtDate(f)}</span><span class="soName">${esc(c)}</span>${f===FE?'<span class="soChk">✓</span>':""}</button>`;}).join("");
@@ -707,6 +710,7 @@ function maybeShine(el,pct,reduce){
   el.className=el.className+" shine";
 }
 let LEG_HTML="",LEG_OPEN=false;
+function sumLeg(){const nad=sexFilter==="M"?"nadador":"nadadora";return "<span style='font-weight:700'>Resumen del campeonato — cómo se calcula cada premio:</span><br>🏆 <b>Mejor "+nad+" del día</b>: suma de los puntos FINA de todas sus pruebas de ese campeonato (sin relevos); podio por año.<br><b>Mejores marcas del día</b>: las marcas con más puntos FINA del campeonato, por año.<br><b>Mayores progresiones del día</b>: quienes más puntos FINA ganaron respecto a su mejor marca anterior; entre paréntesis, el tiempo que bajaron.<br><b>En forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br><b>Mínimas nuevas</b>: mínimas EH / ESP conseguidas en ese campeonato que antes no se tenían.<br>Las cifras de arriba cuentan participantes, marcas nadadas, mejoras ⭐ (marcas que baten la mejor marca previa) y mínimas nuevas.<div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";}
 let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking",badgesFor=null,sumOpen=false,sumFecha=null,sumShown=false;
 function fireBar(el){
   if(BAR_IO){try{BAR_IO.unobserve(el);}catch(e){}}
@@ -834,7 +838,7 @@ function render(){
   const legs={marcas:"<span style='font-weight:700'>Indicadores del último campeonato:</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ = variación de puesto<div style='margin-top:7px'><span style='font-weight:700'>Mínimas:</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de Euskadi / España <b>conseguida en este campeonato</b> (todas las mínimas, en la pestaña <b>Mínimas</b>)</div><div style='margin-top:7px'><span style='font-weight:700'>Fichas:</span><br>Toca el <b>nombre</b> de cualquier nadador/a en las listas (o escríbelo en el buscador) para abrir su ficha.<br>Para volver al ranking, usa el botón <b>← Volver</b>.<br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div> <span style='display:block;margin-top:7px;padding-top:7px;border-top:1px solid var(--line);color:var(--muted)'>Este botón ⓘ abre esta ventana con la explicación de lo que tengas seleccionado en cada momento: cambia según estés en Marcas, Mínimas, Top FINA o en una ficha.</span>",
     marcasFicha:"<span style='font-weight:700'>Indicadores del último campeonato:</span><br>⭐ nueva MMP (mejor marca personal)<br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b> (Alevín / 2013 / 2014): al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.<br><b>Distancia al líder</b>: lo que le falta para el Nº 1. <b>Progresión</b>: cuánto ha bajado desde su primera marca de la temporada. Los tiempos van en segundos (<b>s</b>) o minutos (<b>min</b>).</div>"+"",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>España</b> y <b style='color:var(--brand)'>Euskal Herria</b> (− conseguida ✓ / + falta).",
-    topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.",topfinaRey:"<span style='font-weight:700'>👑 "+(sexFilter==="M"?"Rey":"Reina")+" de cada estilo.</span> Suma de los puntos FINA de su mejor marca en cada distancia nadada de ese estilo. No exige un número mínimo de pruebas.",topfinaMed:"⚠️ Las insignias no son medallas reales. Es simplemente un juego creado a partir del resumen del torneo.",topfinaSpec:"<span style='font-weight:700'>🚀⏱️🌊 Especialistas.</span> Suma de los puntos FINA de sus dos mejores distancias: Velocista = mejor 50 + mejor 100 · Mediofondista = 200 + 400 · Fondista = 400 + 800. Solo aparece quien tiene marcas en ambas.",topfinaFicha:"La barra muestra lo cerca que está cada marca del récord de Álava de su edad; bajo cada marca, en tenue, el récord de Álava (alevín) y el mundial (absoluto)."};
+    topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada nadadora. Aparecen las que tienen al menos "+finaN+" pruebas.",topfinaRey:"<span style='font-weight:700'>👑 "+(sexFilter==="M"?"Rey":"Reina")+" de cada estilo.</span> Suma de los puntos FINA de su mejor marca en cada distancia nadada de ese estilo. No exige un número mínimo de pruebas.",topfinaMed:"⚠️ Las insignias no son medallas reales. Es simplemente un juego creado a partir del resumen de las competiciones.",topfinaSpec:"<span style='font-weight:700'>🚀⏱️🌊 Especialistas.</span> Suma de los puntos FINA de sus dos mejores distancias: Velocista = mejor 50 + mejor 100 · Mediofondista = 200 + 400 · Fondista = 400 + 800. Solo aparece quien tiene marcas en ambas.",topfinaFicha:"La barra muestra lo cerca que está cada marca del récord de Álava de su edad; bajo cada marca, en tenue, el récord de Álava (alevín) y el mundial (absoluto)."};
   if(view==="marcas"){LEG_HTML=fo?legs.marcasFicha:legs.marcas;}
   else if(view==="topfina"){LEG_HTML=fo?legs.topfinaFicha:(finaSel==="med"?legs.topfinaMed:/^\d+$/.test(finaSel)?legs.topfina:(["spr","mid","fon"].indexOf(finaSel)>=0?legs.topfinaSpec:legs.topfinaRey));}
   else{LEG_HTML=legs[view];}
@@ -979,7 +983,7 @@ function renderBadges(vw,name){
   const CAT={mejor:"Mejor del día",marcas:"Mejores marcas",prog:"Progresiones",forma:"En forma 🔥"};
   let h2=`<div class="profile bdg"><div class="pTop"><div class="pHead">${logoImg(rec0.club)}<div><div class="pName">${esc(name)}</div><div class="pClub">${esc(rec0.club||"")} · ${esc(rec0.anio||"")}</div></div></div></div>`;
   if(!a){
-    h2+=`<div class="empty tall">Aún no tiene insignias esta temporada.<br><span style="font-size:12px">Se ganan entrando en el podio del resumen de cada competición.</span></div><div class="bdgNote">⚠️ Las insignias no son medallas reales. Es simplemente un juego creado a partir del resumen del torneo.</div></div>`;
+    h2+=`<div class="empty tall">Aún no tiene insignias esta temporada.<br><span style="font-size:12px">Se ganan entrando en el podio del resumen de cada competición.</span></div><div class="bdgNote">⚠️ Las insignias no son medallas reales. Es simplemente un juego creado a partir del resumen de las competiciones.</div></div>`;
     vw.innerHTML=h2;
     clubFilter=savedClub;yearFilter=savedYear;sexFilter=savedSex;RECORDS=savedRec;MAXFECHA=savedMax;
     return;
@@ -994,7 +998,7 @@ function renderBadges(vw,name){
   const md=["🥇","🥈","🥉"];
   const list=a.list.slice().sort((x,y)=>y.fecha.localeCompare(x.fecha)||x.pos-y.pos);
   h2+=`<div class="bdgList"><div class="bdgLbl">Palmarés de la temporada</div>`+list.map(x=>
-    `<div class="bdgRow"><span class="bi">${md[x.pos]}</span><div><div class="bt">${esc(x.det||CAT[x.cat])}</div><div class="bs">${CAT[x.cat]} · ${fmtDate(x.fecha)}</div></div></div>`).join("")+`</div><div class="bdgNote">⚠️ Las insignias no son medallas reales. Es simplemente un juego creado a partir del resumen del torneo.</div></div>`;
+    `<div class="bdgRow"><span class="bi">${md[x.pos]}</span><div><div class="bt">${esc(x.det||CAT[x.cat])}</div><div class="bs">${CAT[x.cat]} · ${fmtDate(x.fecha)}</div></div></div>`).join("")+`</div><div class="bdgNote">⚠️ Las insignias no son medallas reales. Es simplemente un juego creado a partir del resumen de las competiciones.</div></div>`;
   vw.innerHTML=h2;
   clubFilter=savedClub;yearFilter=savedYear;sexFilter=savedSex;RECORDS=savedRec;MAXFECHA=savedMax;
 }
@@ -1093,9 +1097,11 @@ el("clear").addEventListener("click",()=>{query="";el("search").value="";render(
 el("backFloat").addEventListener("click",()=>{if(badgesFor){badgesFor=null;render();scrollSec();return;}mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();scrollSec();});
 el("summary").addEventListener("click",e=>{
   const ic=e.target.closest("#legInfo");
-  if(ic){e.stopPropagation();const pop=el("legPop"),bd=el("legPopBody");if(pop&&bd){bd.innerHTML=LEG_HTML||"";pop.style.display="flex";}return;}
+  if(ic){e.stopPropagation();const pop=el("legPop"),bd=el("legPopBody");if(pop&&bd){bd.innerHTML=(sumShown?sumLeg():"")+(LEG_HTML||"");pop.style.display="flex";}return;}
 
   const t=e.target&&e.target.closest?e.target.closest:null;if(!t)return;
+  const cl=e.target.closest("#sumClose");
+  if(cl){sumShown=false;sumOpen=false;renderSummary(sumFecha);return;}
   const band=e.target.closest("#sumBand");
   if(band){
     if(sumShown||sumOpen){sumShown=false;sumOpen=false;}   // algo abierto -> cerrar todo
