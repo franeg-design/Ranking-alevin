@@ -108,11 +108,14 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .tag.ok{color:#0f9d6b;background:rgba(15,157,107,.13)}
 .tag.no{color:#c0392b;background:rgba(192,57,43,.12)}
 .tag.na{color:var(--muted);background:var(--chip)}
-.pchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.pchips{display:flex;flex-wrap:wrap;gap:3px 9px;margin-top:5px}
+.pc{font-size:11px;font-weight:700;letter-spacing:.01em}
+.pc.st-l{color:#0b5f70}.pc.st-e{color:#0b7550}.pc.st-b{color:#94570a}.pc.st-m{color:#5b2fb8}.pc.st-x{color:#43596a}
 .medcats{display:grid;grid-template-columns:max-content max-content;column-gap:12px;row-gap:1px;margin-top:6px;align-items:baseline}
 .mcn{font-size:12px;font-weight:600;color:var(--muted)}
 .mcv{font-size:12.5px;font-weight:700;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums;display:flex;gap:7px}
-.big{font-size:19px;font-weight:800;color:var(--brand-deep);letter-spacing:-.02em}
+.big{font-size:17px;font-weight:800;color:var(--brand-deep);letter-spacing:-.02em}
+.big .pts{font-size:9.5px;font-weight:700;color:var(--muted);margin-left:3px;letter-spacing:.02em}
 .big,.cmpScore,.sst .n,.sumline b,.time{font-variant-numeric:tabular-nums}
 .empty{text-align:center;color:var(--muted);padding:30px 16px;font-size:14px}
 .empty.tall{min-height:calc(100vh - 210px)}
@@ -926,8 +929,9 @@ function renderClass(vw,N){
     body=`<div class="empty">${isNum?(clubFilter==="all"?("Aún no hay nadadoras con <b>"+N+" pruebas</b>."):("Sin nadadoras de <b>"+esc(clubFilter)+"</b> con "+N+" pruebas.")):(isSpec?("Aún nadie tiene marcas en <b>"+SPEC[finaSel][0]+" y "+SPEC[finaSel][1]+"</b>."):("Aún nadie ha nadado <b>"+esc(finaSel)+"</b>"+(clubFilter==="all"?"":" en "+esc(clubFilter))+"."))}</div>`;
   }else{
     const rows=cur.map(r=>{const m=medal(r.rank);
-      const chips=`<div class="pchips">${r.pruebas.map(p=>`<span class="pc">${esc(p)}</span>`).join("")}</div>`;
-      return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${chips}</div><div class="right"><div class="big">${r.sum}</div></div></div>`;
+      const abKl={L:"st-l",E:"st-e",B:"st-b",M:"st-m",Est:"st-x"};
+      const chips=`<div class="pchips">${r.pruebas.map(p=>`<span class="pc ${abKl[p.split(" ")[1]]||"st-x"}">${esc(p)}</span>`).join("")}</div>`;
+      return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${chips}</div><div class="right"><div class="big">${r.sum}<span class="pts">pts</span></div></div></div>`;
     }).join("");
     body=`<div class="list">${rows}</div>`;
   }
