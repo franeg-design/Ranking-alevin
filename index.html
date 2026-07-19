@@ -889,7 +889,7 @@ function render(){
     const m=medal(r.rank);
     let right,badges="";
     if(view==="marcas"){
-      const f=fina(r.prueba,r.cs);const ev=evolution(r.name,r.prueba);const dt=deltaTag(ev);const est=!RECORDS.some(x=>x.nadadora===r.name&&x.prueba===r.prueba&&x.fecha<r.fecha);
+      const f=fina(r.prueba,r.cs);const ev=evolution(r.name,r.prueba);const dt=deltaTag(ev);const est=(r.fecha===MAXFECHA)&&!RECORDS.some(x=>x.nadadora===r.name&&x.prueba===r.prueba&&x.fecha<r.fecha);
       const dstr=!/^Ranking /.test(r.competi||"")?`<span class="tdate">${fmtDate(r.fecha)}</span>`:"";
       if(newMin(r,MIN_EH))badges+='<span class="mb mbEH" style="margin-right:4px">EH</span>';
       if(newMin(r,MIN_ESP))badges+='<span class="mb mbESP" style="margin-right:4px">ESP</span>';
