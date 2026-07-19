@@ -874,9 +874,10 @@ function render(){
     if(view==="marcas"){
       const f=fina(r.prueba,r.cs);const ev=evolution(r.name,r.prueba);const dt=deltaTag(ev);
       const dstr=(r.fecha>MINFECHA)?`<span class="tdate">${fmtDate(r.fecha)}</span>`:"";
-      right=`<div class="time mono">${starPre(ev)}${dstr}${esc(r.tiempo)}</div><div><span class="tag fina">${f} FINA</span></div>${dt?("<div>"+dt+"</div>"):""}`;
-      if(newMin(r,MIN_EH))badges+='<span class="mb mbEH">EH</span>';
-      if(newMin(r,MIN_ESP))badges+='<span class="mb mbESP">ESP</span>';
+      if(newMin(r,MIN_EH))badges+='<span class="mb mbEH" style="margin-right:4px">EH</span>';
+      if(newMin(r,MIN_ESP))badges+='<span class="mb mbESP" style="margin-right:4px">ESP</span>';
+      right=`<div class="time mono">${starPre(ev)}${dstr}${esc(r.tiempo)}</div><div><span class="tag fina">${f} FINA</span></div>${(dt||badges)?("<div>"+badges+dt+"</div>"):""}`;
+      badges="";
     }else{
       right=`<div class="time mono">${esc(r.tiempo)}</div><div>${gapTag(r,MIN_EH,"EH")}</div><div>${gapTag(r,MIN_ESP,"ESP")}</div>`;
     }
