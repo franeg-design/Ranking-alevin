@@ -211,7 +211,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .sbTxt{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:13.5px;letter-spacing:.11em;color:#f6d89f;text-shadow:0 1px 2px rgba(0,0,0,.25)}
 .sbArrow{margin-left:auto;font-size:22px;line-height:1;color:#f2cd82;text-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .3s ease}
 .sumBand.open .sbArrow{transform:rotate(180deg)}
-.sumMenu{max-height:0;overflow:hidden;opacity:0;transition:max-height .38s ease,opacity .28s ease,margin .28s ease;display:flex;flex-direction:column;gap:1px}
+.sumMenu{position:relative;z-index:2;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s ease,opacity .28s ease,margin .28s ease;display:flex;flex-direction:column;gap:1px}
 .sumMenu.open{max-height:1600px;opacity:1;margin-top:8px}
 .sumOpt{display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-family:inherit;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-left:3px solid transparent;border-radius:11px;padding:11px 13px}
 .sumOpt.on{border-left-color:#e0b45f;background:linear-gradient(90deg,rgba(224,180,95,.10),var(--surface) 40%)}
@@ -219,7 +219,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .soName{font-size:12.5px;color:var(--muted);flex:1;line-height:1.3}
 .sumOpt.on .soName{color:var(--ink)}
 .soChk{color:#c79433;font-weight:800;font-size:14px}
-.sumWrap{margin-top:8px}
+.sumWrap{position:relative;z-index:2;margin-top:8px}
 .sumcard{background:linear-gradient(160deg,#e8f6f9,#f5fbfc);border:1px solid var(--line);border-radius:16px;padding:13px 14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(11,42,58,.06),0 1px 2px rgba(11,42,58,.04)}
 .sumhead{font-size:15px;color:var(--brand-deep);display:flex;align-items:center;gap:7px;flex-wrap:wrap;line-height:1.25}
 .sumhead b{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:15.5px;letter-spacing:-.01em}
