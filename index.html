@@ -274,11 +274,8 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .cmpList{max-height:330px;overflow:auto;border-top:1px solid var(--line)}
 .cmpPick{padding:9px 13px;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer}
 .cmpNote{font-size:10px;color:var(--muted);padding:8px 13px 10px}
-.sugCard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.06)}
 .searchSug{margin:-4px 0 10px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;max-height:60vh;overflow-y:auto;box-shadow:0 6px 20px rgba(0,0,0,.10)}
 .sugEmpty{padding:12px 14px;font-size:13px;color:var(--muted);font-weight:600}
-.sugHead{font-size:11px;font-weight:700;color:var(--muted);padding:10px 13px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.03em}
-.sugList{max-height:66vh;overflow:auto}
 .sugPick{display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--line);cursor:pointer}
 .sugPick:last-child{border-bottom:none}
 .sugPick:active{background:var(--chip)}
@@ -315,11 +312,13 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 body.mfich .head{display:none}
 body.mfich .searchwrap{display:none}
 body.mfich .body{padding-top:calc(10px + env(safe-area-inset-top))}
-/* Título principal de la ficha: escudo + nombre (con brillo) + pastillas */
-.fTitleCard{margin-bottom:14px}
+/* Título principal de la ficha: escudo + nombre + pastillas; destello en toda la tarjeta al entrar */
+.fTitleCard{margin-bottom:14px;box-shadow:0 6px 20px rgba(11,42,58,.22),0 2px 6px rgba(11,42,58,.14)}
 .fTop{padding:16px 15px 13px}
+.fTop::after{content:"";position:absolute;top:0;left:-60%;width:42%;height:100%;pointer-events:none;background:linear-gradient(100deg,transparent,rgba(255,255,255,.30),transparent);transform:skewX(-18deg);animation:cardSheen 1.15s ease-out .18s 1 both}
+@keyframes cardSheen{from{left:-60%}to{left:135%}}
 .fHead{padding-right:0}
-.fName{font-size:23px;background:linear-gradient(100deg,#ffffff 0 42%,#eafcff 50%,#ffffff 58% 100%);background-size:260% 100%;background-position:0 0;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:sheen 1.2s ease-out .12s 1 both}
+.fName{font-size:23px}
 .fPills{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
 .fPills button{position:static;top:auto;right:auto;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.34);color:#fff;border-radius:999px;padding:6px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .fPills button:active{background:rgba(255,255,255,.28)}
@@ -974,7 +973,7 @@ function render(){
   if(compsFor){renderComps(vw,compsFor);return;}
   if(badgesFor){renderBadges(vw,badgesFor);return;}
   if(cmpA){renderCompare(vw);return;}
-  if(fo){renderProfile(vw,q);return;}
+  if(fo){renderProfile(vw);return;}
   if(view==="topfina"){renderClass(vw,finaN);return;}
 
   // per-prueba (marcas / minimas)
@@ -1131,7 +1130,7 @@ function renderBadges(vw,name){
   vw.innerHTML=h2;
   clubFilter=savedClub;yearFilter=savedYear;sexFilter=savedSex;RECORDS=savedRec;MAXFECHA=savedMax;
 }
-function renderProfile(vw,q){
+function renderProfile(vw){
   const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
   if(!query.trim()){vw.innerHTML=`<div class="empty tall">Escribe el nombre de ${sexFilter==="M"?"un nadador":"una nadadora"} o su club para ver su ficha, o vuelve al ranking con <b>← Volver</b>.</div>`;animateBars(vw);return;}
   const found=foundSwimmers();
@@ -1238,7 +1237,7 @@ function hideSug(){const b=el("searchSug");if(b){b.style.display="none";b.innerH
 el("search").addEventListener("input",e=>{el("clear").style.display=e.target.value.trim()?"block":"none";renderSug(e.target.value);});
 el("searchSug").addEventListener("click",e=>{const sp=e.target.closest?e.target.closest(".sugPick"):null;if(sp){hideSug();goProfile(sp.dataset.n);}});
 el("clear").addEventListener("click",()=>{query="";el("search").value="";el("clear").style.display="none";hideSug();badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;render();if(mode==="fichas")scrollSec();});
-el("backFloat").addEventListener("click",()=>{if(compFecha){compFecha=null;render();scrollSec();return;}if(compsFor){compsFor=null;render();scrollSec();return;}if(badgesFor){badgesFor=null;render();scrollSec();return;}if(cmpA){cmpA=null;cmpB=null;render();scrollSec();return;}mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();scrollSec();});
+el("backFloat").addEventListener("click",()=>{if(compFecha){compFecha=null;render();scrollSec();return;}if(compsFor){compsFor=null;render();scrollSec();return;}if(badgesFor){badgesFor=null;render();scrollSec();return;}if(cmpA){cmpA=null;cmpB=null;render();scrollSec();return;}mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();window.scrollTo({top:0,behavior:"smooth"});});
 el("infoFab").addEventListener("click",()=>{const pop=el("legPop"),bd=el("legPopBody");if(pop&&bd){bd.innerHTML=(sumShown?sumLeg():"")+(LEG_HTML||"");pop.style.display="flex";}});
 el("summary").addEventListener("click",e=>{
   const t=e.target&&e.target.closest?e.target.closest:null;if(!t)return;
@@ -1263,7 +1262,6 @@ el("view").addEventListener("click",e=>{
   const cbk=cl(".compBack");if(cbk){compFecha=null;render();scrollSec();return;}
   const bb=cl(".badgeBtn");if(bb){badgesFor=bb.dataset.n;render();scrollSec();return;}
   const cb=cl(".cmpBtn");if(cb){cmpA=cb.dataset.n;cmpB=null;render();scrollSec();return;}
-  const sg=cl(".sugPick");if(sg){goProfile(sg.dataset.n);return;}
   const cp=cl(".cmpPick");if(cp){cmpB=cp.dataset.n;render();scrollSec();return;}
   const cc=cl(".cmpClose");if(cc){cmpA=null;cmpB=null;render();return;}
   const pr=cl(".pRow.tog");if(pr){toggleHist(pr);return;}
