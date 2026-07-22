@@ -275,6 +275,8 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .cmpPick{padding:9px 13px;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer}
 .cmpNote{font-size:10px;color:var(--muted);padding:8px 13px 10px}
 .sugCard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+.searchSug{margin:-4px 0 10px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;max-height:60vh;overflow-y:auto;box-shadow:0 6px 20px rgba(0,0,0,.10)}
+.sugEmpty{padding:12px 14px;font-size:13px;color:var(--muted);font-weight:600}
 .sugHead{font-size:11px;font-weight:700;color:var(--muted);padding:10px 13px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.03em}
 .sugList{max-height:66vh;overflow:auto}
 .sugPick{display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--line);cursor:pointer}
@@ -380,6 +382,7 @@ body.mfich .body{padding-top:calc(10px + env(safe-area-inset-top))}
       <input class="search" id="search" placeholder="Busca una nadadora…" autocomplete="off" />
       <button class="clear" id="clear" style="display:none" aria-label="Borrar">✕</button>
     </div>
+    <div id="searchSug" class="searchSug" style="display:none"></div>
 
     <div class="tabs" id="tabs">
       <button data-v="marcas" class="on">Marcas (MMP)</button>
@@ -925,7 +928,7 @@ function scrollSec(){
     window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
   }catch(e){try{window.scrollTo(0,0);}catch(e2){}}
 }
-function goProfile(n){if(!n)return;mode="fichas";query=n;badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s){s.value=n;}render();scrollSec();}
+function goProfile(n){if(!n)return;mode="fichas";query=n;badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s){s.value=n;}const sg=el("searchSug");if(sg){sg.style.display="none";sg.innerHTML="";}render();scrollSec();}
 function deltaTag(ev){if(!ev)return"";const L='<span class="tagL">ÚLT. COMPETI</span>';if(ev.dir==="up")return`<span class="tag up">${L}−${fmtClock(ev.d)}</span>`;return`<span class="tag down">${L}+${fmtClock(ev.d)}</span>`;}
 
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
@@ -1134,11 +1137,6 @@ function renderProfile(vw,q){
   const found=foundSwimmers();
   if(!found.length){vw.innerHTML=`<div class="empty tall">Sin resultados para <b>“${esc(query)}”</b>.</div>`;return;}
   const exact=found.find(c=>normName(c.name)===normName(query));
-  if(found.length>1&&!exact){
-    const list=found.slice().sort((a,b)=>(a.sexo===sexFilter?0:1)-(b.sexo===sexFilter?0:1)||a.name.localeCompare(b.name));
-    vw.innerHTML=`<div class="sugCard"><div class="sugHead">${list.length} coincidencias · toca un nombre</div><div class="sugList">`+list.map(c=>{const r0=SREC.find(r=>r.nadadora===c.name)||{};return `<div class="sugPick" data-n="${esc(c.name)}">${logoImg(r0.club||"","sm")}<span class="sgN">${esc(shortName(c.name))}</span><span class="sgM">${esc(r0.club||"")} · ${esc(r0.anio||"")}</span></div>`;}).join("")+`</div></div>`;
-    return;
-  }
   const savedClub=clubFilter,savedSex=sexFilter,savedRec=RECORDS,savedMax=MAXFECHA;
   found.sort((a,b)=>(a.sexo===savedSex?0:1)-(b.sexo===savedSex?0:1));
   clubFilter="all";
@@ -1224,8 +1222,22 @@ function applySex(){
   render();}
 function fillClubs(){const cs=[...new Set(RECORDS.map(r=>r.club).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const sel=el("clubSel");if(!sel)return;sel.innerHTML='<option value="all">Todos los clubes</option>'+cs.map(c=>`<option value="${esc(c)}"${c===clubFilter?" selected":""}>${esc(c)}</option>`).join("");}
 
-el("search").addEventListener("input",e=>{const prev=query;query=e.target.value;badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;if(query.trim())mode="fichas";render();if(mode==="fichas"&&!query.trim()&&prev.trim())scrollSec();});
-el("clear").addEventListener("click",()=>{query="";el("search").value="";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;render();if(mode==="fichas")scrollSec();});
+function renderSug(q){
+  const box=el("searchSug");if(!box)return;
+  const qn=normName(q);
+  if(!qn){box.style.display="none";box.innerHTML="";return;}
+  const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  const seen={},list=[];
+  SREC.forEach(r=>{if(seen[r.nadadora])return;if(normName(r.nadadora+" "+r.club).includes(qn)){seen[r.nadadora]=1;list.push(r);}});
+  list.sort((a,b)=>(a.sexo===sexFilter?0:1)-(b.sexo===sexFilter?0:1)||a.nadadora.localeCompare(b.nadadora));
+  if(!list.length){box.innerHTML=`<div class="sugEmpty">Sin coincidencias</div>`;box.style.display="block";return;}
+  box.innerHTML=list.slice(0,40).map(r=>`<div class="sugPick" data-n="${esc(r.nadadora)}">${logoImg(r.club,"sm")}<span class="sgN">${esc(shortName(r.nadadora))}</span><span class="sgM">${esc(r.club)} · ${esc(r.anio)}</span></div>`).join("");
+  box.style.display="block";
+}
+function hideSug(){const b=el("searchSug");if(b){b.style.display="none";b.innerHTML="";}}
+el("search").addEventListener("input",e=>{el("clear").style.display=e.target.value.trim()?"block":"none";renderSug(e.target.value);});
+el("searchSug").addEventListener("click",e=>{const sp=e.target.closest?e.target.closest(".sugPick"):null;if(sp){hideSug();goProfile(sp.dataset.n);}});
+el("clear").addEventListener("click",()=>{query="";el("search").value="";el("clear").style.display="none";hideSug();badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;render();if(mode==="fichas")scrollSec();});
 el("backFloat").addEventListener("click",()=>{if(compFecha){compFecha=null;render();scrollSec();return;}if(compsFor){compsFor=null;render();scrollSec();return;}if(badgesFor){badgesFor=null;render();scrollSec();return;}if(cmpA){cmpA=null;cmpB=null;render();scrollSec();return;}mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();scrollSec();});
 el("infoFab").addEventListener("click",()=>{const pop=el("legPop"),bd=el("legPopBody");if(pop&&bd){bd.innerHTML=(sumShown?sumLeg():"")+(LEG_HTML||"");pop.style.display="flex";}});
 el("summary").addEventListener("click",e=>{
