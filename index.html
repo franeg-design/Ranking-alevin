@@ -274,6 +274,14 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .cmpList{max-height:330px;overflow:auto;border-top:1px solid var(--line)}
 .cmpPick{padding:9px 13px;border-bottom:1px solid var(--line);font-size:13px;font-weight:600;cursor:pointer}
 .cmpNote{font-size:10px;color:var(--muted);padding:8px 13px 10px}
+.sugCard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.06)}
+.sugHead{font-size:11px;font-weight:700;color:var(--muted);padding:10px 13px;border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.03em}
+.sugList{max-height:66vh;overflow:auto}
+.sugPick{display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--line);cursor:pointer}
+.sugPick:last-child{border-bottom:none}
+.sugPick:active{background:var(--chip)}
+.sugPick .sgN{font-size:14px;font-weight:700;color:var(--brand-deep)}
+.sugPick .sgM{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600;text-align:right}
 .raline{font-size:11.5px;color:var(--muted);margin-top:4px;white-space:nowrap}
 .pctline{margin-top:5px;white-space:nowrap}
 .pctline .emo{font-size:13px;vertical-align:-2px;margin-right:4px}
@@ -576,8 +584,8 @@ function medalTable(){
 function medalsOf(name){return medalTable().find(a=>a.name===name)||null;}
 function summaryFechas(){return [...new Set(RECORDS.map(r=>r.fecha))].sort().reverse();}
 // ---- Parciales y pacing (ficha) ----
-function paceParts(str){if(!str)return null;const a=String(str).split(";").map(x=>x.trim()).filter(Boolean);if(a.length<2)return null;const cs=a.map(toCs);if(cs.some(x=>!isFinite(x)))return null;return cs;}
-function paceVerdict(prueba,cs){if(!cs)return null;const st=prueba.split(" ")[1];const dist=parseInt(prueba,10)||0;if(st==="Estilos"||dist<200||cs.length<4||cs.length%2)return null;const h=cs.length/2;const fh=cs.slice(0,h).reduce((a,b)=>a+b,0),sh=cs.slice(h).reduce((a,b)=>a+b,0);if(!fh)return null;const d=(sh-fh)/fh*100;let key,lab;if(d<=2){key="prog";lab="Progresivo";}else if(d<=9){key="even";lab="Estable";}else{key="reg";lab="Regresivo";}return{key:key,lab:lab,diff:d};}
+function paceParts(str){if(!str)return null;const a=String(str).split(";").map(x=>x.trim());if(a.length<2||a.some(x=>!x))return null;const cs=a.map(toCs);if(cs.some(x=>!isFinite(x)))return null;return cs;}
+function paceVerdict(prueba,cs){if(!cs)return null;const st=prueba.split(" ")[1];const dist=parseInt(prueba,10)||0;if(st==="Estilos"||dist<200||cs.length<4||cs.length%2||cs.length!==dist/50)return null;const h=cs.length/2;const fh=cs.slice(0,h).reduce((a,b)=>a+b,0),sh=cs.slice(h).reduce((a,b)=>a+b,0);if(!fh)return null;const d=(sh-fh)/fh*100;let key,lab;if(d<=2){key="prog";lab="Progresivo";}else if(d<=9){key="even";lab="Estable";}else{key="reg";lab="Regresivo";}return{key:key,lab:lab,diff:d};}
 function fichFechas(name){const sw=ALLRECS.filter(r=>r.nadadora===name&&seasonOf(r.fecha)===season);return[...new Set(sw.map(r=>r.fecha))].sort((a,b)=>b.localeCompare(a));}
 function fichCompCard(name,FE){
   const sw=ALLRECS.filter(r=>r.nadadora===name&&r.fecha===FE);if(!sw.length)return "";
@@ -587,9 +595,9 @@ function fichCompCard(name,FE){
   let h=`<div class="ccCard"><div class="ccHead">${esc(comp)} · ${fmtDate(FE)}</div>`;
   h+=`<div class="pcList">`;
   sw.forEach(r=>{
-    const raw=r.parciales?String(r.parciales).split(";").map(x=>x.trim()).filter(Boolean):[];
+    const raw=r.parciales?String(r.parciales).split(";").map(x=>x.trim()):[];
     const cs=paceParts(r.parciales);const v=paceVerdict(r.prueba,cs);
-    const splits=raw.length?raw.map((x,i)=>`<span class="pcCell"><span class="pcDist">${(i+1)*50}m</span><span class="pcp">${esc(x)}</span></span>`).join(""):`<span class="pcnp">sin parciales</span>`;
+    const splits=raw.some(Boolean)?raw.map((x,i)=>x?`<span class="pcCell"><span class="pcDist">${(i+1)*50}m</span><span class="pcp">${esc(x)}</span></span>`:"").join(""):`<span class="pcnp">sin parciales</span>`;
     const badge=v?`<span class="pcV pcV-${v.key}">${v.lab}</span>`:"";
     h+=`<div class="pcSwim"><div class="pcTop"><span class="pc ${stCls(r.prueba)}">${esc(r.prueba)}</span><span class="pcTime mono">${esc(r.tiempo)}</span>${badge}</div><div class="pcSplits">${splits}</div></div>`;
   });
@@ -1125,10 +1133,16 @@ function renderProfile(vw,q){
   if(!query.trim()){vw.innerHTML=`<div class="empty tall">Escribe el nombre de ${sexFilter==="M"?"un nadador":"una nadadora"} o su club para ver su ficha, o vuelve al ranking con <b>← Volver</b>.</div>`;animateBars(vw);return;}
   const found=foundSwimmers();
   if(!found.length){vw.innerHTML=`<div class="empty tall">Sin resultados para <b>“${esc(query)}”</b>.</div>`;return;}
+  const exact=found.find(c=>normName(c.name)===normName(query));
+  if(found.length>1&&!exact){
+    const list=found.slice().sort((a,b)=>(a.sexo===sexFilter?0:1)-(b.sexo===sexFilter?0:1)||a.name.localeCompare(b.name));
+    vw.innerHTML=`<div class="sugCard"><div class="sugHead">${list.length} coincidencias · toca un nombre</div><div class="sugList">`+list.map(c=>{const r0=SREC.find(r=>r.nadadora===c.name)||{};return `<div class="sugPick" data-n="${esc(c.name)}">${logoImg(r0.club||"","sm")}<span class="sgN">${esc(shortName(c.name))}</span><span class="sgM">${esc(r0.club||"")} · ${esc(r0.anio||"")}</span></div>`;}).join("")+`</div></div>`;
+    return;
+  }
   const savedClub=clubFilter,savedSex=sexFilter,savedRec=RECORDS,savedMax=MAXFECHA;
   found.sort((a,b)=>(a.sexo===savedSex?0:1)-(b.sexo===savedSex?0:1));
   clubFilter="all";
-  const html=found.slice(0,1).map(c=>{
+  const html=[exact||found[0]].map(c=>{
     const name=c.name;
     if(sexFilter!==c.sexo){sexFilter=c.sexo;RECORDS=SREC.filter(r=>r.sexo===sexFilter);MAXFECHA=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");}
     const rec0=RECORDS.find(r=>r.nadadora===name);
@@ -1237,6 +1251,7 @@ el("view").addEventListener("click",e=>{
   const cbk=cl(".compBack");if(cbk){compFecha=null;render();scrollSec();return;}
   const bb=cl(".badgeBtn");if(bb){badgesFor=bb.dataset.n;render();scrollSec();return;}
   const cb=cl(".cmpBtn");if(cb){cmpA=cb.dataset.n;cmpB=null;render();scrollSec();return;}
+  const sg=cl(".sugPick");if(sg){goProfile(sg.dataset.n);return;}
   const cp=cl(".cmpPick");if(cp){cmpB=cp.dataset.n;render();scrollSec();return;}
   const cc=cl(".cmpClose");if(cc){cmpA=null;cmpB=null;render();return;}
   const pr=cl(".pRow.tog");if(pr){toggleHist(pr);return;}
