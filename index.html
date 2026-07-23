@@ -345,7 +345,9 @@ body.mfich .body{padding-top:calc(10px + env(safe-area-inset-top))}
 .pcnp{font-style:italic;color:var(--warn);font-size:12px}
 .pcV{font-size:11px;font-weight:800;border-radius:999px;padding:2px 9px;letter-spacing:.01em;white-space:nowrap}
 .pcV-opt{background:#e4f5ec;color:#0f7d53;border:1px solid #bfe6d1}
+.pcV-gd{background:#eef7e3;color:#41802a;border:1px solid #d3e9bd}
 .pcV-low{background:#fdf3d6;color:#8a6300;border:1px solid #f2e0aa}
+.pcV-wk{background:#fdeedf;color:#a25510;border:1px solid #f4d9bd}
 .pcV-fat{background:#fce8e4;color:#a63a26;border:1px solid #f3cec6}
 .pcBars{margin-top:9px;display:flex;flex-direction:column;gap:7px}
 .pcR{display:flex;flex-direction:column;gap:3px}
@@ -356,17 +358,23 @@ body.mfich .body{padding-top:calc(10px + env(safe-area-inset-top))}
 .pcRl{margin-left:auto;font-weight:800;letter-spacing:.01em}
 .pcRs{font-weight:800;font-variant-numeric:tabular-nums;min-width:20px;text-align:right}
 .pcL-opt{color:#0f7d53}
+.pcL-gd{color:#41802a}
 .pcL-low{color:#a67c00}
+.pcL-wk{color:#b35c14}
 .pcL-fat{color:#c0442a}
 .pcBt{width:72%;height:5px;border-radius:999px;background:#eef3f5;overflow:hidden}
 .pcBf{display:block;height:100%;border-radius:999px;transition:width .5s ease}
 .pcF-opt{background:linear-gradient(90deg,#3fbe86,#1f9c68)}
+.pcF-gd{background:linear-gradient(90deg,#93d16d,#63ac41)}
 .pcF-low{background:linear-gradient(90deg,#f2c14e,#dba00f)}
+.pcF-wk{background:linear-gradient(90deg,#f4a95f,#e07b39)}
 .pcF-fat{background:linear-gradient(90deg,#ef8a70,#d95336)}
 .pcNotes{margin-top:8px;display:flex;flex-direction:column;gap:4px}
 .pcN{font-size:11.5px;line-height:1.42;padding:6px 9px;border-radius:9px;border-left:3px solid transparent}
 .pcN-opt{background:#f1faf5;border-left-color:#1f9c68;color:#14634a}
+.pcN-gd{background:#f4faed;border-left-color:#63ac41;color:#3b6b24}
 .pcN-low{background:#fdf9ec;border-left-color:#dba00f;color:#6f5307}
+.pcN-wk{background:#fdf4ec;border-left-color:#e07b39;color:#8a4a12}
 .pcN-fat{background:#fdf1ee;border-left-color:#d95336;color:#8f3623}
 .pcGlob{margin-top:8px;font-size:11.5px;line-height:1.45;padding:8px 10px;border-radius:10px;border-left:3px solid transparent}
 .soEmpty{padding:10px 13px;color:var(--muted);font-size:12.5px}
@@ -608,7 +616,7 @@ function summaryFechas(){return [...new Set(RECORDS.map(r=>r.fecha))].sort().rev
    Métrica: caída relativa (%) entre tramos, no segundos fijos (escala con el nivel de cada una).
    Puntuación 0-100 por TRAMO y GLOBAL: 100 dentro de la banda buena y baja en proporción hasta
    valer 30 justo en el percentil 95 real de esa prueba (el peor 5% de la muestra).            */
-const PC_NIV=[[85,"Ritmo óptimo","opt"],[70,"Buen ritmo","opt"],[50,"Baja un poco","low"],[30,"Se resiente","low"],[0,"Fatigado","fat"]];
+const PC_NIV=[[85,"Ritmo óptimo","opt"],[70,"Buen ritmo","gd"],[50,"Baja un poco","low"],[30,"Se resiente","wk"],[0,"Fatigado","fat"]];
 function pcNivel(s){for(const n of PC_NIV){if(s>=n[0])return {sc:Math.round(s),lab:n[1],key:n[2]};}return {sc:Math.round(s),lab:"Fatigado",key:"fat"};}
 /* Escala anclada a percentiles reales de cada prueba:
    una sola cola (cuanto menos, mejor): o=p35 -> 100 · a=p85 -> 70 · x=p95 -> 30 · más allá baja a 0 */
@@ -637,7 +645,8 @@ const PC_CV={400:[2.6,4.4,5.2],800:[2.4,3.9,4.3]};
 // IM — % del total por estilo (medianas reales) y desviación absoluta [p35,p85,p95]
 const PC_IM={Mariposa:23.1,Espalda:25.5,Braza:28.9,Libre:22.4};
 const PC_IM4={Mariposa:25.1,Espalda:25,Braza:28.1,Libre:21.9};
-const PC_IMD={200:[.3,1.4,2],400:[.4,1.4,2.4]};
+// desviación por estilo: percentiles de la MAYOR desviación positiva de cada carrera [p35,p85,p95]
+const PC_IMD={200:[.9,1.9,2.1],400:[.7,1.7,2.7]};
 const IM_LEGS=["Mariposa","Espalda","Braza","Libre"];
 function pcRow(met,tiempo,nom,n,w){
   return `<div class="pcR"><div class="pcRh"><span class="pcRm">${esc(met)}</span><span class="pcRt mono">${esc(tiempo)}</span><span class="pcRn">${esc(nom)}</span><span class="pcRl pcL-${n.key}">${n.lab}</span><span class="pcRs pcL-${n.key}">${n.sc}</span></div><div class="pcBt"><i class="pcBf pcF-${n.key}" style="width:${Math.max(6,Math.min(100,w))}%"></i></div></div>`;
@@ -662,17 +671,19 @@ function pcAnalyse(prueba,parc){
       const REF=dist===200?PC_IM:PC_IM4,tot=legCs.reduce((a,b)=>a+b,0);
       const DV=PC_IMD[dist]||PC_IMD[200];
       const fastLeg=Math.min.apply(null,legCs);
-      let worst=null,best=null,maxdev=0;
+      let worst=null,best=null,maxdev=0,sum=0;
       legCs.forEach((c,i)=>{
         const leg=IM_LEGS[i],p=c/tot*100,ref=REF[leg],d=p-ref,ad=Math.abs(d);
         const sc=pcScore1(d,DV[0],DV[1],DV[2]);
-        const n=pcNivel(sc);
+        const n=pcNivel(sc);sum+=sc;
         if(d>maxdev)maxdev=d;
         rows.push(pcRow(dist===200?((i+1)*50)+"m":((i+1)*100)+"m",csFmt(c),leg,n,fastLeg/c*100));
         if(d>0&&(!worst||d>worst.d))worst={leg:leg,d:d,p:p,ref:ref};
         if(d<0&&(!best||d<best.d))best={leg:leg,d:d,p:p,ref:ref};
       });
-      const g=pcScore1(maxdev,DV[0],DV[1],DV[2]);
+      // 60% el estilo que más se descompensa (eslabón débil) + 40% el conjunto,
+      // para no castigar de más una carrera que en global va bien.
+      const g=pcScore1(maxdev,DV[0],DV[1],DV[2])*0.6+(sum/4)*0.4;
       if(worst&&worst.d>DV[1])notes.push({k:pcNivel(pcScore1(worst.d,DV[0],DV[1],DV[2])).key,t:`<b>${worst.leg}</b> te pesa más de lo normal (${worst.p.toFixed(1)}% del total, lo habitual es ${worst.ref}%). Es tu estilo a reforzar.`});
       if(best&&-best.d>DV[1])notes.push({k:"opt",t:`<b>${best.leg}</b> te sale barato (${best.p.toFixed(1)}% frente al ${best.ref}% habitual): ahí ganas tiempo.`});
       if(maxdev<=DV[1]&&!(best&&-best.d>DV[1]))notes.push({k:"opt",t:"Los cuatro estilos guardan la proporción esperada: no hay ninguno que te descuadre la carrera."});
@@ -726,7 +737,7 @@ function pcAnalyse(prueba,parc){
     rows.push(pcRow("50m",vals[0],"Salida",pcNivel(s1),bw(cs[0])));
     rows.push(pcRow("100m",vals[1],"Final",pcNivel(s2),bw(cs[1])));
     const n=pcNivel(g);
-    notes.push({k:n.key,t:`Caída del 2º largo: <b>${fmt(d)}</b> (lo habitual en ${est.toLowerCase()} es ${B[2]}–${B[3]}%).`});
+    notes.push({k:n.key,t:`Caída del 2º largo: <b>${fmt(d)}</b> (el rango óptimo en ${est.toLowerCase()} es ${B[0]}–${B[1]}%).`});
     const T={
       Libre:["Has salido con margen de sobra: te ha quedado gasolina sin usar. Prueba a apretar más el primer largo.","Reparto de libro: has sostenido la técnica bajo fatiga y el segundo largo no se te ha ido.","Has salido muy fuerte y el final ha pesado: la brazada se ha acortado en los últimos metros."],
       Espalda:["Muy contenida en la ida. En espalda no hay impulso de poyete, así que puedes arriesgar algo más al salir.","Gran control: el batido ha aguantado hasta el final, que es justo lo que más cuesta en espalda.","Las piernas han dicho basta: en espalda el batido es constante y se paga si sales por encima de tu ritmo."],
@@ -757,7 +768,7 @@ function pcAnalyse(prueba,parc){
     rows.push(pcRow("100m",vals[1],"Crucero",pcNivel(sSal),bw(cs[1])));
     rows.push(pcRow("150m",vals[2],"Crucero",pcNivel(sCen),bw(cs[2])));
     rows.push(pcRow("200m",vals[3],"Final",pcNivel(sFin),bw(cs[3])));
-    notes.push({k:pcNivel(sMit).key,t:`Caída de la 2ª mitad: <b>${fmt(d)}</b> (lo habitual en ${est.toLowerCase()} es ${B[2]}–${B[3]}%).`});
+    notes.push({k:pcNivel(sMit).key,t:`Caída de la 2ª mitad: <b>${fmt(d)}</b> (el rango óptimo en ${est.toLowerCase()} es ${B[0]}–${B[1]}%).`});
     notes.push(sCen>=85?{k:"opt",t:`Tramo central sostenido (${fmt(dc)} del 3er 50): mantienes la velocidad justo donde más cuesta.`}
               :sCen>=50?{k:"low",t:`El 3er 50 cede un poco (${fmt(dc)}): es el tramo más duro psicológicamente, y ahí se decide la carrera.`}
                        :{k:"fat",t:`Pérdida de tracción clara en el 3er 50 (${fmt(dc)}): ahí se ha ido la carrera.`});
@@ -1015,7 +1026,7 @@ function maybeShine(el,pct,reduce){
   el.className=el.className+" shine";
 }
 let LEG_HTML="",LEG_OPEN=false;
-function sumLeg(){const nad=sexFilter==="M"?"nadador":"nadadora";if(mode==="fichas")return "<span style='font-weight:700'>Competición de la ficha — parciales y análisis de ritmo:</span><br>Cada prueba muestra sus <b>parciales</b> con los metros, una <b>puntuación de 0 a 100</b> por tramo y otra <b>global</b>, más una barra proporcional (cuanto más larga, más rápido fue ese tramo).<br>Niveles: <span class='pcV pcV-opt' style='font-size:10px'>Ritmo óptimo</span> <span class='pcV pcV-opt' style='font-size:10px'>Buen ritmo</span> <span class='pcV pcV-low' style='font-size:10px'>Baja un poco</span> <span class='pcV pcV-low' style='font-size:10px'>Se resiente</span> <span class='pcV pcV-fat' style='font-size:10px'>Fatigado</span>.<br>Los márgenes están calibrados <b>por estilo y distancia</b> con los datos reales de la categoría: se puntúa 100 dentro del rango habitual y baja en proporción según se aleja. En <b>100</b> se mide la caída del 2º largo; en <b>200</b>, el sostén del tramo central y el cierre; en <b>400 y 800</b>, la <b>regularidad</b> de los largos; y en <b>Estilos</b>, cuánto pesa cada estilo para ver cuál va descompensado. Salir suave baja la nota, pero menos que fundirse: lo primero es táctico y lo segundo, físico.<div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";return "<span style='font-weight:700'>Resumen de la competición — cómo se calcula cada premio:</span><br>🏆 <b>Mejor "+nad+" del día</b>: suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br><b>Mejores marcas del día</b>: las marcas con más puntos FINA de la competición, por año.<br><b>Mayores progresiones del día</b>: quienes más puntos FINA ganaron respecto a su mejor marca anterior; entre paréntesis, el tiempo que bajaron.<br><b>En forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br><b>Mínimas nuevas</b>: mínimas EH / ESP conseguidas en esa competición que antes no se tenían.<br>Las cifras de arriba cuentan participantes, marcas nadadas, mejoras ⭐ (marcas que baten la mejor marca previa) y mínimas nuevas.<div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";}
+function sumLeg(){const nad=sexFilter==="M"?"nadador":"nadadora";if(mode==="fichas")return "<span style='font-weight:700'>Competición de la ficha — parciales y análisis de ritmo:</span><br>Cada prueba muestra sus <b>parciales</b> con los metros, una <b>puntuación de 0 a 100</b> por tramo y otra <b>global</b>, más una barra proporcional (cuanto más larga, más rápido fue ese tramo).<br>Niveles: <span class='pcV pcV-opt' style='font-size:10px'>Ritmo óptimo</span> <span class='pcV pcV-gd' style='font-size:10px'>Buen ritmo</span> <span class='pcV pcV-low' style='font-size:10px'>Baja un poco</span> <span class='pcV pcV-wk' style='font-size:10px'>Se resiente</span> <span class='pcV pcV-fat' style='font-size:10px'>Fatigado</span>.<br>Los márgenes están calibrados <b>por estilo y distancia</b> con los datos reales de la categoría: se puntúa 100 dentro del rango habitual y baja en proporción según se aleja. En <b>100</b> se mide la caída del 2º largo; en <b>200</b>, el sostén del tramo central y el cierre; en <b>400 y 800</b>, la <b>regularidad</b> de los largos; y en <b>Estilos</b>, cuánto pesa cada estilo para ver cuál va descompensado. Salir suave baja la nota, pero menos que fundirse: lo primero es táctico y lo segundo, físico.<div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";return "<span style='font-weight:700'>Resumen de la competición — cómo se calcula cada premio:</span><br>🏆 <b>Mejor "+nad+" del día</b>: suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br><b>Mejores marcas del día</b>: las marcas con más puntos FINA de la competición, por año.<br><b>Mayores progresiones del día</b>: quienes más puntos FINA ganaron respecto a su mejor marca anterior; entre paréntesis, el tiempo que bajaron.<br><b>En forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br><b>Mínimas nuevas</b>: mínimas EH / ESP conseguidas en esa competición que antes no se tenían.<br>Las cifras de arriba cuentan participantes, marcas nadadas, mejoras ⭐ (marcas que baten la mejor marca previa) y mínimas nuevas.<div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";}
 let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking",badgesFor=null,sumOpen=false,sumFecha=null,sumShown=false,BAND_KEY=null,compsFor=null,compFecha=null;
 function fireBar(el){
   if(BAR_IO){try{BAR_IO.unobserve(el);}catch(e){}}
@@ -1154,7 +1165,7 @@ function render(){
   else if(view==="topfina"){LEG_HTML=fo?legs.topfinaFicha:(finaSel==="med"?legs.topfinaMed:/^\d+$/.test(finaSel)?legs.topfina:(["spr","mid","fon"].indexOf(finaSel)>=0?legs.topfinaSpec:legs.topfinaRey));}
   else{LEG_HTML=legs[view];}
   if(badgesFor){const bsx=((ALLRECS.find(r=>r.nadadora===badgesFor)||{}).sexo)||sexFilter;const nb=bsx==="M"?"nadador":"nadadora";LEG_HTML="🏅 <span style='font-weight:700'>Recuento de insignias.</span> Aquí se cuentan todas las insignias que ha conseguido en los resúmenes de las competiciones de esta temporada. Se gana una por cada podio (🥇🥈🥉) en estas categorías del resumen:<br>🏆 <b>Mejor "+nb+" del día</b>: suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br><b>Mejores marcas del día</b>: las marcas con más puntos FINA de la competición, por año.<br><b>Mayores progresiones del día</b>: quienes más puntos FINA ganaron respecto a su mejor marca anterior.<br><b>En forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br>El orden del medallero es olímpico: mandan los oros, luego las platas y luego los bronces.<br>⚠️ No son medallas reales: es simplemente un juego.";}
-  if(compsFor){LEG_HTML="🏅 <span style='font-weight:700'>Competiciones y análisis de ritmo.</span> Elige una competición para ver los <b>parciales</b> de cada prueba, con <b>puntuación por tramo y global</b> (0-100) y barras proporcionales: <span class='pcV pcV-opt' style='font-size:10px'>Ritmo óptimo</span> <span class='pcV pcV-opt' style='font-size:10px'>Buen ritmo</span> <span class='pcV pcV-low' style='font-size:10px'>Baja un poco</span> <span class='pcV pcV-low' style='font-size:10px'>Se resiente</span> <span class='pcV pcV-fat' style='font-size:10px'>Fatigado</span>. Márgenes calibrados por <b>estilo y distancia</b> con datos reales (100: caída del 2º largo · 200: tramo central y cierre · 400/800: regularidad · Estilos: equilibrio entre estilos).";}
+  if(compsFor){LEG_HTML="🏅 <span style='font-weight:700'>Competiciones y análisis de ritmo.</span> Elige una competición para ver los <b>parciales</b> de cada prueba, con <b>puntuación por tramo y global</b> (0-100) y barras proporcionales: <span class='pcV pcV-opt' style='font-size:10px'>Ritmo óptimo</span> <span class='pcV pcV-gd' style='font-size:10px'>Buen ritmo</span> <span class='pcV pcV-low' style='font-size:10px'>Baja un poco</span> <span class='pcV pcV-wk' style='font-size:10px'>Se resiente</span> <span class='pcV pcV-fat' style='font-size:10px'>Fatigado</span>. Márgenes calibrados por <b>estilo y distancia</b> con datos reales (100: caída del 2º largo · 200: tramo central y cierre · 400/800: regularidad · Estilos: equilibrio entre estilos).";}
 
   const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":"Ranking de la temporada";
   const sc=el("secdiv");if(sc&&sc.classList)sc.classList.toggle("fmode",fo);
