@@ -642,6 +642,7 @@ const IM_LEGS=["Mariposa","Espalda","Braza","Libre"];
 function pcRow(met,tiempo,nom,n,w){
   return `<div class="pcR"><div class="pcRh"><span class="pcRm">${esc(met)}</span><span class="pcRt mono">${esc(tiempo)}</span><span class="pcRn">${esc(nom)}</span><span class="pcRl pcL-${n.key}">${n.lab}</span><span class="pcRs pcL-${n.key}">${n.sc}</span></div><div class="pcBt"><i class="pcBf pcF-${n.key}" style="width:${Math.max(6,Math.min(100,w))}%"></i></div></div>`;
 }
+function pcNom(i,n,completa){return i===0?"Salida":((completa&&i===n-1)?"Final":"Crucero");}
 function pcAnalyse(prueba,parc){
   const est=prueba.split(" ")[1],dist=parseInt(prueba,10)||0;
   const slots=String(parc||"").split(";").map(x=>x.trim());
@@ -674,12 +675,12 @@ function pcAnalyse(prueba,parc){
       const g=pcScore1(maxdev,DV[0],DV[1],DV[2]);
       if(worst&&worst.d>DV[1])notes.push({k:pcNivel(pcScore1(worst.d,DV[0],DV[1],DV[2])).key,t:`<b>${worst.leg}</b> te pesa más de lo normal (${worst.p.toFixed(1)}% del total, lo habitual es ${worst.ref}%). Es tu estilo a reforzar.`});
       if(best&&-best.d>DV[1])notes.push({k:"opt",t:`<b>${best.leg}</b> te sale barato (${best.p.toFixed(1)}% frente al ${best.ref}% habitual): ahí ganas tiempo.`});
-      if(maxdev<=DV[1])notes.push({k:"opt",t:"Los cuatro estilos guardan la proporción esperada: no hay ninguno que te descuadre la carrera."});
+      if(maxdev<=DV[1]&&!(best&&-best.d>DV[1]))notes.push({k:"opt",t:"Los cuatro estilos guardan la proporción esperada: no hay ninguno que te descuadre la carrera."});
       const glob=(worst&&worst.d>DV[1])?`Reparto entre estilos ${g>=70?"bastante equilibrado":"desigual"}: donde más tiempo se escapa es en ${worst.leg.toLowerCase()}${(best&&-best.d>DV[1])?`, y donde más ganas es en ${best.leg.toLowerCase()}`:""}.`
                      :"Carrera muy equilibrada entre los cuatro estilos. Así se construye una buena estilista.";
       return done(g,glob);
     }
-    cs.forEach((c,i)=>rows.push(pcRow(((i+1)*50)+"m",vals[i],"Tramo "+(i+1),pcNivel(100),bw(c))));
+    cs.forEach((c,i)=>rows.push(pcRow(((i+1)*50)+"m",vals[i],pcNom(i,cs.length,true),pcNivel(100),bw(c))));
     return {rows:rows,notes:[],glob:"En 100 estilos cada tramo mezcla dos estilos distintos: se muestran los parciales sin comparar ritmos.",gkey:"opt",lab:"Parciales",score:null};
   }
   // ---------- FONDO (400/800) ----------
@@ -695,7 +696,7 @@ function pcAnalyse(prueba,parc){
       cs.forEach((c,i)=>{
         let sc=100;
         if(i>0){const dv=(c-m)/m*100;sc=pcScore1(dv,B[0],B[1],B[2]);}
-        sum+=sc;rows.push(pcRow(((i+1)*step)+"m",vals[i],"Largo "+(i+1),pcNivel(sc),bw(c)));
+        sum+=sc;rows.push(pcRow(((i+1)*step)+"m",vals[i],pcNom(i,cs.length,true),pcNivel(sc),bw(c)));
       });
       const last=cs[cs.length-1];
       let g=gcv;
@@ -710,7 +711,7 @@ function pcAnalyse(prueba,parc){
         :"La regularidad se ha perdido pronto. En fondo, salir más suave y sostener el tempo da tiempos mejores.";
       return done(g,glob);
     }
-    cs.forEach((c,i)=>rows.push(pcRow(((i+1)*step)+"m",vals[i],"Largo "+(i+1),pcNivel(100),bw(c))));
+    cs.forEach((c,i)=>rows.push(pcRow(((i+1)*step)+"m",vals[i],pcNom(i,cs.length,true),pcNivel(100),bw(c))));
     return {rows:rows,notes:[],glob:"Parciales de la prueba (sin datos suficientes para valorar la regularidad).",gkey:"opt",lab:"Parciales",score:null};
   }
   // ---------- 100 m ----------
@@ -723,7 +724,7 @@ function pcAnalyse(prueba,parc){
     else {s1=100;s2=100;}
     const g=s1*0.4+s2*0.6;
     rows.push(pcRow("50m",vals[0],"Salida",pcNivel(s1),bw(cs[0])));
-    rows.push(pcRow("100m",vals[1],"Regreso",pcNivel(s2),bw(cs[1])));
+    rows.push(pcRow("100m",vals[1],"Final",pcNivel(s2),bw(cs[1])));
     const n=pcNivel(g);
     notes.push({k:n.key,t:`Caída del 2º largo: <b>${fmt(d)}</b> (lo habitual en ${est.toLowerCase()} es ${B[2]}–${B[3]}%).`});
     const T={
@@ -753,8 +754,8 @@ function pcAnalyse(prueba,parc){
     if(d>B[1])sSal=100-(100-sMit)*0.5; else if(d<B[0])sSal=sMit; else sSal=100;
     const g=sSal*0.25+sCen*0.45+sFin*0.30;
     rows.push(pcRow("50m",vals[0],"Salida",pcNivel(sSal),bw(cs[0])));
-    rows.push(pcRow("100m",vals[1],"Ritmo",pcNivel(sSal),bw(cs[1])));
-    rows.push(pcRow("150m",vals[2],"Ritmo",pcNivel(sCen),bw(cs[2])));
+    rows.push(pcRow("100m",vals[1],"Crucero",pcNivel(sSal),bw(cs[1])));
+    rows.push(pcRow("150m",vals[2],"Crucero",pcNivel(sCen),bw(cs[2])));
     rows.push(pcRow("200m",vals[3],"Final",pcNivel(sFin),bw(cs[3])));
     notes.push({k:pcNivel(sMit).key,t:`Caída de la 2ª mitad: <b>${fmt(d)}</b> (lo habitual en ${est.toLowerCase()} es ${B[2]}–${B[3]}%).`});
     notes.push(sCen>=85?{k:"opt",t:`Tramo central sostenido (${fmt(dc)} del 3er 50): mantienes la velocidad justo donde más cuesta.`}
@@ -771,7 +772,7 @@ function pcAnalyse(prueba,parc){
     return done(g,glob);
   }
   // ---------- Parciales incompletos ----------
-  cs.forEach((c,i)=>rows.push(pcRow(((i+1)*50)+"m",vals[i],"Tramo "+(i+1),pcNivel(100),bw(c))));
+  cs.forEach((c,i)=>rows.push(pcRow(((i+1)*50)+"m",vals[i],pcNom(i,cs.length,false),pcNivel(100),bw(c))));
   return {rows:rows,notes:[],glob:"Parciales incompletos en el acta: se muestran los tramos disponibles, sin valoración de ritmo.",gkey:"opt",lab:"Parciales",score:null};
 }
 function csFmt(cs){const s=cs/100;return s>=60?(Math.floor(s/60)+":"+(s%60<10?"0":"")+(s%60).toFixed(2)):s.toFixed(2);}
