@@ -381,6 +381,7 @@ body.mfich .body{padding-top:calc(10px + env(safe-area-inset-top))}
 .pcF-fat{background:linear-gradient(90deg,#ef8a70,#d95336)}
 .pcNotes{margin-top:8px;display:flex;flex-direction:column;gap:4px}
 .pcN{font-size:11.5px;line-height:1.42;padding:6px 9px;border-radius:9px;border-left:3px solid transparent}
+.pcNm{display:block;font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;opacity:.68;margin-bottom:3px}
 .pcN-na{background:#f3f6f7;border-left-color:#9fadb5;color:#5a6b73}
 .pcN-opt{background:#f1faf5;border-left-color:#1f9c68;color:#14634a}
 .pcN-gd{background:#f4faed;border-left-color:#63ac41;color:#3b6b24}
@@ -733,10 +734,12 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       // 60% el estilo que más se descompensa (eslabón débil) + 40% el conjunto,
       // para no castigar de más una carrera que en global va bien.
       const g=pcScore1(maxdev,DV[0],DV[1],DV[2])*0.6+(sum/4)*0.4;
-      if(worst&&worst.d>DV[1])notes.push({k:pcNivel(pcScore1(worst.d,DV[0],DV[1],DV[2])).key,t:`<b>${worst.leg}</b> te pesa más de lo normal (${worst.p.toFixed(1)}% del total, lo habitual es ${worst.ref}%). Es tu estilo a reforzar.`});
-      if(best&&-best.d>DV[1])notes.push({k:"opt",t:`<b>${best.leg}</b> te sale barato (${best.p.toFixed(1)}% frente al ${best.ref}% habitual): ahí ganas tiempo.`});
-      if(maxdev<=DV[1]&&!(best&&-best.d>DV[1]))notes.push({k:"opt",t:"Los cuatro estilos guardan la proporción esperada: no hay ninguno que te descuadre la carrera."});
+      const legM=l=>((IM_LEGS.indexOf(l)+1)*(dist===200?50:100))+" m · "+l;
+      if(worst&&worst.d>DV[1])notes.push({k:pcNivel(pcScore1(worst.d,DV[0],DV[1],DV[2])).key,m:legM(worst.leg),t:`<b>${worst.leg}</b> te pesa más de lo normal (${worst.p.toFixed(1)}% del total, lo habitual es ${worst.ref}%). Es tu estilo a reforzar.`});
+      if(best&&-best.d>DV[1])notes.push({k:"opt",m:legM(best.leg),t:`<b>${best.leg}</b> te sale barato (${best.p.toFixed(1)}% frente al ${best.ref}% habitual): ahí ganas tiempo.`});
+      const eq=maxdev<=DV[1]&&!(best&&-best.d>DV[1]);
       const glob=(worst&&worst.d>DV[1])?`Reparto entre estilos ${g>=70?"bastante equilibrado":"desigual"}: donde más tiempo se escapa es en ${worst.leg.toLowerCase()}${(best&&-best.d>DV[1])?`, y donde más ganas es en ${best.leg.toLowerCase()}`:""}.`
+                     :eq?"Carrera muy equilibrada entre los cuatro estilos: ninguno se sale de la proporción esperada ni te descuadra la carrera. Así se construye una buena estilista."
                      :"Carrera muy equilibrada entre los cuatro estilos. Así se construye una buena estilista.";
       return done(g,glob);
     }
@@ -761,21 +764,21 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
         const dv=(c-m)/m*100,sc=pcScore1(dv,B[0],B[1],B[2]);
         rows.push(pcRow(((i+1)*step)+"m",vals[i],pcNom(i,cs.length,true),pcNivel(sc),bw(c)));
       });
-      if(sal)notes.push({k:pcNivel(sal.sc).key,t:`Salida: primer 50 un <b>${sal.d.toFixed(1)}%</b> por encima de tu mejor 50 (en esta distancia lo óptimo es ${sal.B[0]}–${sal.B[1]}%).`+
+      if(sal)notes.push({k:pcNivel(sal.sc).key,m:step+" m · Salida",t:`Has pasado el primer ${step} un <b>${sal.d.toFixed(1)}%</b> por encima de tu mejor 50 (en esta distancia lo óptimo es ${sal.B[0]}–${sal.B[1]}%).`+
         (sal.d<sal.B[0]?" Muy rápida para la distancia: en fondo eso se paga a mitad de carrera."
         :sal.d>sal.B[1]?" Muy contenida: en fondo no es un error grave, pero puedes arrancar algo más firme."
         :" Arranque perfectamente medido para la distancia.")});
       const last=cs[cs.length-1];
       let g=sal?gcv*0.8+sal.sc*0.2:gcv;
       if(last<m)g=Math.min(100,g+5);
-      notes.push({k:pcNivel(gcv).key,t:`Regularidad de los largos: <b>${cv.toFixed(1)}%</b> de variación (por debajo de ${B[0]}% es un crucero impecable; hasta ${B[1]}% se considera regular).`});
-      if(last<m)notes.push({k:"opt",t:"Has cerrado <b>por debajo de tu media</b>: te quedaba depósito para el final. Eso es dosificar bien."});
+      if(last<m)notes.push({k:"opt",m:dist+" m · Final",t:"Has cerrado <b>por debajo de tu media</b>: te quedaba depósito para el final. Eso es dosificar bien."});
       const n=pcNivel(g);
-      const glob=g>=85?"Ritmo de crucero admirable. En fondo gana quien sostiene el mismo tempo largo tras largo, y eso lo has hecho."
+      const glob=(g>=85?"Ritmo de crucero admirable. En fondo gana quien sostiene el mismo tempo largo tras largo, y eso lo has hecho."
         :g>=70?"Ritmo sólido en general, con algún largo que se escapa del tempo. Series largas a ritmo fijo lo van a pulir."
         :g>=50?"El tempo se sostiene a ratos: hay tramos que se salen de tu media. Trabajar ritmo controlado es la clave."
         :g>=30?"El ritmo se va soltando por el camino. Conviene salir un punto más contenida para llegar entera al final."
-        :"La regularidad se ha perdido pronto. En fondo, salir más suave y sostener el tempo da tiempos mejores.";
+        :"La regularidad se ha perdido pronto. En fondo, salir más suave y sostener el tempo da tiempos mejores.")
+        +` Regularidad de los largos: <b>${cv.toFixed(1)}%</b> de variación (por debajo de ${B[0]}% es un crucero impecable; hasta ${B[1]}% se considera regular).`;
       return done(g,glob);
     }
     cs.forEach((c,i)=>rows.push(pcRow(((i+1)*step)+"m",vals[i],pcNom(i,cs.length,true),pcNivel(100),bw(c))));
@@ -791,13 +794,13 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
     const g=s1==null?s2:(s1*0.4+s2*0.6);
     rows.push(pcRow("50m",vals[0],"Salida",s1==null?{sc:"–",lab:"Sin 50 de referencia",key:"na"}:pcNivel(s1),bw(cs[0])));
     rows.push(pcRow("100m",vals[1],"Final",pcNivel(s2),bw(cs[1])));
-    if(sal)notes.push({k:pcNivel(s1).key,t:`Salida: has pasado el primer 50 un <b>${sal.d.toFixed(1)}%</b> por encima de tu mejor 50 de ${est.toLowerCase()} (lo óptimo es ${sal.B[0]}–${sal.B[1]}%).`+
+    if(sal)notes.push({k:pcNivel(s1).key,m:"50 m · Salida",t:`Has pasado el primer 50 un <b>${sal.d.toFixed(1)}%</b> por encima de tu mejor 50 de ${est.toLowerCase()} (lo óptimo es ${sal.B[0]}–${sal.B[1]}%).`+
       (sal.d<sal.B[0]?" Has salido muy cerca de tu ritmo de 50 puro: arriesgado, se suele pagar al final."
       :sal.d>sal.B[1]?(d>B[1]?" Has salido contenida y aun así el segundo largo se te ha caído: primero toca resistencia, luego ya apretarás la salida."
                               :" Has salido con freno: te queda margen para apretar más el primer largo.")
       :" Salida perfectamente dosificada.")});
-    else notes.push({k:"na",t:`Salida sin valorar: no hay ninguna marca tuya de 50 ${est.toLowerCase()} con la que compararla.`});
-    notes.push({k:pcNivel(s2).key,t:`Caída del 2º largo: <b>${fmt(d)}</b> (el rango óptimo en ${est.toLowerCase()} es ${B[0]}–${B[1]}%).`+
+    else notes.push({k:"na",m:"50 m · Salida",t:`Sin valorar: no hay ninguna marca tuya de 50 ${est.toLowerCase()} con la que compararla.`});
+    notes.push({k:pcNivel(s2).key,m:"100 m · Final",t:`Caída del 2º largo: <b>${fmt(d)}</b> (el rango óptimo en ${est.toLowerCase()} es ${B[0]}–${B[1]}%).`+
       (d>B[1]?" Por encima de ese rango: ahí es donde baja la nota del Final, te ha faltado resistencia."
              :" Has sostenido bien el segundo largo.")});
     const T={
@@ -806,12 +809,12 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       Braza:["Deslizamiento mantenido: no has entrado en pánico ni has acortado la brazada. Braza madura.","Has subido la frecuencia pero perdido avance por brazada: patinas en el agua. Toca alargar cada deslizamiento."],
       Mariposa:["Aguante notable: mantener la cadera alta en mariposa con fatiga es de las cosas más difíciles que hay.","Las caderas se han hundido al final. Muy normal a esta edad: es cuestión de core y de no acortar la brazada."]
     };
-    notes.push({k:pcNivel(s2).key,t:(T[est]||T.Libre)[s2>=70?0:1]});
-    const glob=g>=85?"Carrera bien gestionada. En 100 se sale con cabeza y se vuelve con corazón, y eso es lo que has hecho."
+    const glob=(g>=85?"Carrera bien gestionada. En 100 se sale con cabeza y se vuelve con corazón, y eso es lo que has hecho."
       :g>=70?"Buena gestión en conjunto, con un punto de mejora en el reparto. Estás muy cerca del 100 ideal."
       :g>=50?"100 correcto, pero el reparto entre salida y final se puede afinar bastante."
       :g>=30?"El reparto ha desequilibrado la carrera: revisa cómo sales para poder sostener el final."
-      :"Carrera muy desequilibrada: el arranque ha pasado factura. Base aeróbica para sostener el final.";
+      :"Carrera muy desequilibrada: el arranque ha pasado factura. Base aeróbica para sostener el final.")
+      +" "+(T[est]||T.Libre)[s2>=70?0:1];
     return done(g,glob);
   }
   // ---------- 200 m ----------
@@ -830,25 +833,25 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
     rows.push(pcRow("100m",vals[1],"Crucero",pcNivel(s2),bw(cs[1])));
     rows.push(pcRow("150m",vals[2],"Crucero",pcNivel(s3),bw(cs[2])));
     rows.push(pcRow("200m",vals[3],"Final",pcNivel(sFin),bw(cs[3])));
-    if(sal)notes.push({k:pcNivel(sSal).key,t:`Salida: primer 50 un <b>${sal.d.toFixed(1)}%</b> por encima de tu mejor 50 de ${est.toLowerCase()} (lo óptimo en un 200 es ${sal.B[0]}–${sal.B[1]}%).`+
+    if(sal)notes.push({k:pcNivel(sSal).key,m:"50 m · Salida",t:`Has pasado el primer 50 un <b>${sal.d.toFixed(1)}%</b> por encima de tu mejor 50 de ${est.toLowerCase()} (lo óptimo en un 200 es ${sal.B[0]}–${sal.B[1]}%).`+
       (sal.d<sal.B[0]?" Demasiado cerca de tu ritmo de 50: en un 200 eso se paga en la segunda mitad."
       :sal.d>sal.B[1]?(d>B[1]?" Has salido contenida y aun así la 2ª mitad se te ha caído: el margen está en la resistencia, no en salir más fuerte."
                               :" Has salido con freno: podías haber apretado algo más sin comprometer el final.")
       :" Dosificación de salida perfecta para la distancia.")});
-    else notes.push({k:"na",t:`Salida sin valorar: no hay ninguna marca tuya de 50 ${est.toLowerCase()} con la que compararla.`});
+    else notes.push({k:"na",m:"50 m · Salida",t:`Sin valorar: no hay ninguna marca tuya de 50 ${est.toLowerCase()} con la que compararla.`});
     const dcr=Math.abs((cs[2]-cs[1])/cs[1]*100);
-    notes.push((s2+s3)/2>=85?{k:"opt",t:`Crucero muy parejo (los dos largos centrales se llevan ${fmt(dcr)}): mantienes la velocidad justo donde más cuesta.`}
-              :(s2+s3)/2>=50?{k:"low",t:`El crucero se desequilibra un poco (${fmt(dcr)} entre los dos largos centrales): ahí se pierden décimas.`}
-                            :{k:"fat",t:`Pérdida de tracción clara en el crucero (${fmt(dcr)} entre los dos largos centrales): ahí se ha ido la carrera.`});
-    notes.push(sFin>=85?{k:"opt",t:`Cierre fuerte: el último largo va un <b>${fmt(df)}</b> respecto a tu ritmo de crucero. Te quedaba depósito.`}
-              :sFin>=50?{k:"low",t:`Último largo de aguante (${fmt(df)} sobre tu crucero). Casi todas cierran más rápido: ahí ganas décimas fáciles.`}
-                       :{k:"fat",t:`El último largo se cae (${fmt(df)} sobre tu crucero) cuando lo normal es acelerar. Series largas a ritmo controlado.`});
-    notes.push({k:pcNivel(d<=B[1]?100:60).key,t:`Reparto global: la 2ª mitad cae un <b>${fmt(d)}</b> respecto a la 1ª (lo óptimo en ${est.toLowerCase()} es ${B[0]}–${B[1]}%).`});
-    const glob=g>=85?"Reparto de energía muy maduro para la edad: primera mitad con cabeza y segunda sostenida."
+    notes.push((s2+s3)/2>=85?{k:"opt",m:"100-150 m · Crucero",t:`Crucero muy parejo (los dos largos centrales se llevan ${fmt(dcr)}): mantienes la velocidad justo donde más cuesta.`}
+              :(s2+s3)/2>=50?{k:"low",m:"100-150 m · Crucero",t:`El crucero se desequilibra un poco (${fmt(dcr)} entre los dos largos centrales): ahí se pierden décimas.`}
+                            :{k:"fat",m:"100-150 m · Crucero",t:`Pérdida de tracción clara en el crucero (${fmt(dcr)} entre los dos largos centrales): ahí se ha ido la carrera.`});
+    notes.push(sFin>=85?{k:"opt",m:"200 m · Final",t:`Cierre fuerte: el último largo va un <b>${fmt(df)}</b> respecto a tu ritmo de crucero. Te quedaba depósito.`}
+              :sFin>=50?{k:"low",m:"200 m · Final",t:`Último largo de aguante (${fmt(df)} sobre tu crucero). Casi todas cierran más rápido: ahí ganas décimas fáciles.`}
+                       :{k:"fat",m:"200 m · Final",t:`El último largo se cae (${fmt(df)} sobre tu crucero) cuando lo normal es acelerar. Series largas a ritmo controlado.`});
+    const glob=(g>=85?"Reparto de energía muy maduro para la edad: primera mitad con cabeza y segunda sostenida."
       :g>=70?"Buen 200 en conjunto. Puliendo el tramo que flojea, el tiempo baja solo."
       :g>=50?"200 correcto con altibajos: el ritmo no se mantiene igual en toda la carrera."
       :g>=30?"El 200 se te ha hecho largo. La clave está en sostener el crucero sin salir por encima de tu ritmo."
-      :"Carrera muy irregular: salida por encima de tu ritmo y final muy penalizado.";
+      :"Carrera muy irregular: salida por encima de tu ritmo y final muy penalizado.")
+      +` La 2ª mitad cae un <b>${fmt(d)}</b> respecto a la 1ª (lo óptimo en ${est.toLowerCase()} es ${B[0]}–${B[1]}%).`;
     return done(g,glob);
   }
   // ---------- Parciales incompletos ----------
@@ -871,7 +874,7 @@ function fichCompCard(name,FE){
     if(!an){body=`<div class="pcnp">sin parciales</div>`;}
     else{
       body=`<div class="pcBars">${an.rows.join("")}</div>`;
-      if(an.notes.length)body+=`<div class="pcNotes">${an.notes.map(n=>`<div class="pcN pcN-${n.k}">${n.t}</div>`).join("")}</div>`;
+      if(an.notes.length)body+=`<div class="pcNotes">${an.notes.map(n=>`<div class="pcN pcN-${n.k}">${n.m?`<span class="pcNm">${n.m}</span>`:""}${n.t}</div>`).join("")}</div>`;
       if(an.glob)body+=`<div class="pcGlob pcN-${an.gkey}"><b>Valoración:</b> ${an.glob}</div>`;
     }
     h+=`<div class="pcSwim"><div class="pcTop"><span class="pc ${stCls(r.prueba)}">${esc(r.prueba)}</span><span class="pcTime mono">${esc(r.tiempo)}</span>${badge}</div>${body}</div>`;
