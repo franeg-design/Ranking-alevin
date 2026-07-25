@@ -1498,9 +1498,9 @@ function renderProfile(vw){
         if(ra){
           const rcs=toCs(ra),dif=cs-rcs;
           detail=dif<=0
-            ?`<div class="raline rabeat">¡Récord de Álava (${edad} años) batido!</div><div class="rmbar"><div class="rmfill rfbeat" style="width:100%"></div></div>`
-            :`<div class="raline">Récord de Álava (${edad} años) a ${fmtClock(dif)}</div><div class="rmbar"><div class="rmfill" style="width:${Math.max(1,Math.min(100,rcs/cs*100)).toFixed(1)}%"></div></div>`;
-          recs=`<div class="time mono recFaint"><span class="recL">Álava</span>${esc(ra)}</div><div class="time mono recFaint rm2"><span class="recL">World Record</span>${rmT}</div>`;
+            ?`<div class="raline rabeat">¡Récord de Álava batido!</div><div class="rmbar"><div class="rmfill rfbeat" style="width:100%"></div></div>`
+            :`<div class="raline">Récord de Álava a ${fmtClock(dif)}</div><div class="rmbar"><div class="rmfill" style="width:${Math.max(1,Math.min(100,rcs/cs*100)).toFixed(1)}%"></div></div>`;
+          recs=`<div class="time mono recFaint"><span class="recL">Álava ${edad} años</span>${esc(ra)}</div><div class="time mono recFaint rm2"><span class="recL">World Record</span>${rmT}</div>`;
         }else{
           detail="";
           recs=`<div class="time mono recFaint rm2"><span class="recL">World Record</span>${rmT}</div>`;
