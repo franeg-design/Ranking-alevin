@@ -104,6 +104,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .tagL{font-size:7.5px;font-weight:800;letter-spacing:.03em;opacity:.75;margin-right:4px;vertical-align:1px}
 .tag.fina{color:var(--brand);background:none;padding:2px 0}
 .tag.up{color:var(--good);background:rgba(15,157,107,.1)}
+.tag.up.ultc{transform:scale(1.18);animation:pop .5s cubic-bezier(.2,1.7,.35,1) both}
 .tag.down{color:var(--warn);background:none;padding:2px 0}
 .tag.down .tagL{opacity:1}
 .tag.ok{color:#0f9d6b;background:none;padding:2px 0}
@@ -1264,7 +1265,7 @@ function scrollSec(){
   }catch(e){try{window.scrollTo(0,0);}catch(e2){}}
 }
 function goProfile(n){if(!n)return;mode="fichas";query=n;badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s){s.value=n;}const sg=el("searchSug");if(sg){sg.style.display="none";sg.innerHTML="";}render();scrollSec();}
-function deltaTag(ev){if(!ev)return"";const L='<span class="tagL">ÚLT. COMPETI</span>';if(ev.dir==="up")return`<span class="tag up">${L}−${fmtClock(ev.d)}</span>`;return`<span class="tag down">${L}+${fmtClock(ev.d)}</span>`;}
+function deltaTag(ev,pop){if(!ev)return"";const L='<span class="tagL">ÚLT. COMPETI</span>';if(ev.dir==="up")return`<span class="tag up${pop?" ultc":""}">${L}−${fmtClock(ev.d)}</span>`;return`<span class="tag down">${L}+${fmtClock(ev.d)}</span>`;}
 
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
 
@@ -1324,7 +1325,7 @@ function render(){
     const m=medal(r.rank);
     let right,badges="";
     if(view==="marcas"){
-      const f=fina(r.prueba,r.cs);const ev=evolution(r.name,r.prueba);const dt=deltaTag(ev);
+      const f=fina(r.prueba,r.cs);const ev=evolution(r.name,r.prueba);const dt=deltaTag(ev,1);
       const dstr=!/^Ranking /.test(r.competi||"")?`<span class="tdate">${fmtDate(r.fecha)}</span>`:"";
       if(newMin(r,MIN_EH))badges+='<span class="mb mbEH" style="margin-right:4px">EH</span>';
       if(newMin(r,MIN_ESP))badges+='<span class="mb mbESP" style="margin-right:4px">ESP</span>';
