@@ -104,7 +104,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .tagL{font-size:7.5px;font-weight:800;letter-spacing:.03em;opacity:.75;margin-right:4px;vertical-align:1px}
 .tag.fina{color:var(--brand);background:none;padding:2px 0}
 .tag.up{color:var(--good);background:rgba(15,157,107,.1)}
-.tag.up.ultc{transform:scale(1.18);animation:pop .5s cubic-bezier(.2,1.7,.35,1) both}
+.tag.up.ultc.go{animation:popTag .5s cubic-bezier(.2,1.7,.35,1)}
 .tag.down{color:var(--warn);background:none;padding:2px 0}
 .tag.down .tagL{opacity:1}
 .tag.ok{color:#0f9d6b;background:none;padding:2px 0}
@@ -169,6 +169,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .mpct{display:inline-block;width:44px;flex-shrink:0;text-align:right;font-size:11px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;transform-origin:right center}
 .mpct.done{color:var(--good);font-weight:900;transform:scale(1.18);animation:pop .5s cubic-bezier(.2,1.7,.35,1) both}
 @keyframes pop{0%{transform:scale(1)}52%{transform:scale(1.5)}100%{transform:scale(1.18)}}
+@keyframes popTag{0%{transform:scale(1)}52%{transform:scale(1.5)}100%{transform:scale(1)}}
 .mmRow{display:block}
 .mHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .mfill.shine{position:relative;overflow:hidden}
@@ -1214,6 +1215,17 @@ function animateBars(vw){
   Array.prototype.forEach.call(fills,el=>{BAR_PEND.push(el);BAR_IO.observe(el);});
   if(!BAR_HOOK&&window.addEventListener){BAR_HOOK=true;window.addEventListener("scroll",flushBars,{passive:true});window.addEventListener("resize",flushBars,{passive:true});}
 }
+let TAG_IO=null;
+function animateTags(vw){
+  if(TAG_IO){try{TAG_IO.disconnect();}catch(e){}TAG_IO=null;}
+  if(!vw||!vw.querySelectorAll)return;
+  const tags=vw.querySelectorAll(".tag.up.ultc");if(!tags||!tags.length)return;
+  const reduce=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  if(reduce)return;
+  if(!window.IntersectionObserver){Array.prototype.forEach.call(tags,el=>el.classList.add("go"));return;}
+  TAG_IO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("go");if(TAG_IO)TAG_IO.unobserve(e.target);}});},{rootMargin:"0px 0px -33% 0px",threshold:0});
+  Array.prototype.forEach.call(tags,el=>TAG_IO.observe(el));
+}
 function toggleHist(row){const c=row.nextElementSibling;if(!c||!c.classList||!c.classList.contains("histBox"))return;const open=c.style.display==="block";c.style.display=open?"none":"block";row.classList.toggle("open",!open);}
 function histBox(name,p){
   const rows=RECORDS.filter(r=>r.nadadora===name&&r.prueba===p).map(r=>({fecha:r.fecha,competi:r.competi,tiempo:r.tiempo,cs:toCs(r.tiempo)})).sort((a,b)=>a.fecha<b.fecha?-1:(a.fecha>b.fecha?1:a.cs-b.cs));
@@ -1338,6 +1350,7 @@ function render(){
   }).join("");
   const body=rk.length?`<div class="list">${rows}</div>`:`<div class="empty">Sin ${sexFilter==="M"?"nadadores":"nadadoras"} para esta selección.</div>`;
   vw.innerHTML=`<div class="chipwrap"><div class="chips">${chips}</div></div>${body}`;
+  animateTags(vw);
   const ce=vw.querySelector(".chips");
   if(ce){
     const n=present.length;
