@@ -107,7 +107,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .tag.down{color:var(--warn);background:none;padding:2px 0}
 .tag.down .tagL{opacity:1}
 .tag.ok{color:#0f9d6b;background:rgba(15,157,107,.13)}
-.tag.no{color:#c0392b;background:rgba(192,57,43,.12)}
+.tag.no{color:#c0392b;background:none;padding:2px 0}
 .tag.na{color:var(--muted);background:var(--chip)}
 .pchips{display:flex;flex-wrap:wrap;gap:3px 9px;margin-top:5px}
 .pc{font-size:11px;font-weight:700;letter-spacing:.01em}
@@ -250,6 +250,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .backFloat{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:50;background:linear-gradient(160deg,var(--brand),var(--brand-deep));color:#fff;border:none;border-radius:999px;padding:11px 22px;font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(11,42,58,.32);animation:vfade .25s ease-out}
 .pRow.tog{cursor:pointer}
 .chev{font-size:9px;color:var(--muted);margin-left:5px;vertical-align:2px}
+.prueba .chev{font-size:13px;vertical-align:0}
 .histBox{display:none;padding:4px 13px 10px;border-top:1px dashed var(--line);background:#f7fbfc}
 .histRow{display:flex;gap:8px;align-items:baseline;font-size:11.5px;color:var(--ink);padding:3px 0}
 .histRow .hd{color:var(--muted);min-width:62px}
@@ -292,10 +293,10 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .pctline{margin-top:5px;white-space:nowrap}
 .pctline .emo{font-size:13px;vertical-align:-2px;margin-right:4px}
 .pctline .emo.eo{font-size:15px;vertical-align:-3px}
-.pctb{display:inline-block;padding:2px 7px;border-radius:7px;font-size:10px;font-weight:800;letter-spacing:.01em;white-space:nowrap}
-.pctb.pb5{background:#e6f7f1;color:#0b6b48;border:1px solid #c2ead9}
-.pctb.pb10{background:#e8f2fb;color:#14507f;border:1px solid #cfe1f3}
-.pctb.pb20{background:#f2f0fb;color:#4b3a8f;border:1px solid #ddd7f2}
+.pctb{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.01em;white-space:nowrap}
+.pctb.pb5{color:#0b6b48}
+.pctb.pb10{color:#14507f}
+.pctb.pb20{color:#4b3a8f}
 .progline{font-size:11.5px;color:var(--muted);margin-top:3px;white-space:nowrap}
 .progline b,.progline .mono{color:#335362;font-weight:700}
 .raline.rabeat{color:var(--good);font-weight:800}
