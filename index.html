@@ -103,6 +103,10 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .tag.up.ultc.go{animation:popTag .5s cubic-bezier(.2,1.7,.35,1)}
 .tag.down{color:var(--warn);background:none;padding:2px 0}
 .tag.down .tagL{opacity:1}
+.tagO{font-size:9px;font-weight:800;letter-spacing:.03em;margin-right:5px;vertical-align:1px}
+.tagO.up{color:var(--good)}
+.tagO.down{color:var(--warn)}
+.tagO+.tag{background:none;padding:2px 0}
 .tag.ok{color:#0f9d6b;background:none;padding:2px 0}
 .tag.no{color:#c0392b;background:none;padding:2px 0}
 .tag.na{color:var(--muted);background:none;padding:2px 0}
@@ -133,7 +137,11 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .puesto{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap}
 .pmin{display:flex;flex-direction:column;gap:9px;margin-top:7px}
 .mset{display:flex;flex-direction:column;gap:3px}
-.mtag{line-height:1}
+.mtag{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;line-height:1.3}
+.mlab{font-size:12px;font-weight:800;color:var(--ink);letter-spacing:.02em}
+.mmin{display:inline-flex;align-items:baseline;gap:4px;background:var(--chip);border-radius:6px;padding:1px 6px;font-size:12px;font-weight:400;color:#3c5a68;font-variant-numeric:tabular-nums}
+.mmin i{font-size:9px;font-weight:800;font-style:normal;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.mtag .tag{margin-top:0;font-size:13px;font-weight:800;padding:0}
 .mrow{display:flex;align-items:center;gap:9px}
 .bdg .pTop{padding-bottom:12px}
 .profile.bdg{background:none;border:0;border-radius:0;box-shadow:none;overflow:visible}
@@ -162,7 +170,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .mdc .me{font-size:13.5px;line-height:1}
 .medtot{font-size:12px;font-weight:600;color:var(--muted);text-align:right;margin-top:3px}
 .mbar{flex:1;height:9px;background:var(--chip);border:1px solid var(--line);border-radius:6px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(11,42,58,.09)}
-.mpct{display:inline-block;width:44px;flex-shrink:0;text-align:right;font-size:11px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;transform-origin:right center}
+.mpct{display:inline-block;width:46px;flex-shrink:0;text-align:right;font-size:12px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;transform-origin:right center}
 .mpct.done{color:var(--good);font-weight:900;transform:scale(1.18);animation:pop .5s cubic-bezier(.2,1.7,.35,1) both}
 @keyframes pop{0%{transform:scale(1)}52%{transform:scale(1.5)}100%{transform:scale(1.18)}}
 @keyframes popTag{0%{transform:scale(1)}52%{transform:scale(1.5)}100%{transform:scale(1)}}
@@ -295,13 +303,13 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .pctb.pb5{color:#0b6b48}
 .pctb.pb10{color:#14507f}
 .pctb.pb20{color:#4b3a8f}
-.pstats{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
-.pstat{position:relative;display:flex;flex-direction:column;gap:1px;background:var(--chip);border-radius:6px;padding:4px 9px;white-space:nowrap}
-.psL{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.pstats{display:flex;gap:6px;margin-top:7px}
+.pstat{flex:0 1 auto;min-width:0;position:relative;display:flex;flex-direction:column;gap:1px;background:var(--chip);border-radius:6px;padding:4px 8px}
+.psL{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .psV{font-size:14px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.15}
-.pstat.pgain{background:rgba(15,157,107,.10)}
-.pstat.pgain .psL{color:#0f7d53}
-.pstat.pgain .psV{color:var(--good)}
+.pstat.pgain{background:rgba(109,75,196,.10)}
+.pstat.pgain .psL{color:#5b3fa8}
+.pstat.pgain .psV{color:#6d4bc4}
 .raline.rabeat{color:var(--good);font-weight:800}
 .rmfill.rfbeat{background:linear-gradient(90deg,#8fdcc0,var(--good))}
 .recFaint{color:#6d8c9c;font-weight:400}
@@ -566,7 +574,11 @@ function fmtDate(f){const p=f.split("-");if(p.length<3)return f;const mes=["ene"
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function normName(s){return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/,/g," ").replace(/\s+/g," ").trim();}
 function titleCase(s){return s.toLowerCase().split(" ").map(w=>w?w[0].toUpperCase()+w.slice(1):w).join(" ");}
-function shortName(n){const p=String(n).split(",");const sur=(p[0]||"").trim().split(" ")[0];const first=(p[1]||"").trim();return (titleCase(first)+" "+titleCase(sur)).trim();}
+const PARTIC=/^(de|del|la|las|los|el|al|da|das|dos|di|van|von|mc|san|santa|ben)$/i;
+function shortName(n){const p=String(n).split(",");const w=(p[0]||"").trim().split(/\s+/).filter(Boolean);
+  const sur=[];let i=0;while(i<w.length&&PARTIC.test(w[i]))sur.push(w[i++]);
+  if(i<w.length)sur.push(w[i]);
+  const first=(p[1]||"").trim();return (titleCase(first)+" "+titleCase(sur.join(" "))).trim();}
 const KNOWN_CLUBS=["CN Menditxo","CN Judizmendi","CN Urgain","CI Laudio","CN Zadorra"];
 function badTime(t){if(!t)return true;const s=String(t).trim().replace(",",".");if(!/^(\d{1,2}:){0,2}\d{1,2}(\.\d{1,2})?$/.test(s))return true;const p=s.split(":");if(parseFloat(p[p.length-1])>=60)return true;for(let i=1;i<p.length-1;i++){if(+p[i]>=60)return true;}return !isFinite(toCs(s));}
 function checkData(recs){const iss=[];recs.forEach((r,i)=>{const ref="fila "+(i+1)+" ("+(r.nadadora||"¿?")+")";if(!PRUEBA_ORDER.includes(r.prueba))iss.push(ref+": prueba no reconocida — \""+r.prueba+"\"");if(r.anio!=="2013"&&r.anio!=="2014")iss.push(ref+": año no válido — \""+r.anio+"\"");if(r.club&&!KNOWN_CLUBS.includes(r.club))iss.push(ref+": club no reconocido — \""+r.club+"\"");if(badTime(r.tiempo))iss.push(ref+": tiempo con formato raro — \""+r.tiempo+"\"");if(r.fecha&&!/^\d{4}-\d{2}-\d{2}$/.test(r.fecha))iss.push(ref+": fecha con formato raro — \""+r.fecha+"\"");});const dup={};recs.forEach((r,i)=>{const k=[r.nadadora,r.prueba,r.tiempo,r.fecha].join("|");if(dup[k]!==undefined)iss.push("fila "+(i+1)+" ("+(r.nadadora||"¿?")+"): duplicada de la fila "+dup[k]+" — "+r.prueba+" "+r.tiempo+" ("+r.fecha+")");else dup[k]=i+1;});return iss;}
@@ -1042,7 +1054,20 @@ function finaClass(recs,N){const R=poolRecs(recs);const names=[...new Set(R.map(
 
 function posTag(cur,prevMap){if(!(cur.name in prevMap))return '<div class="pos new">nuevo</div>';const d=prevMap[cur.name]-cur.rank;if(d>0)return `<div class="pos up">↑${d}</div>`;if(d<0)return `<div class="pos down">↓${-d}</div>`;return '<div class="pos eq">=</div>';}
 function medal(rank){if(rank===1)return{rail:"var(--gold)",bg:"var(--gold)",ink:"#3b2a06"};if(rank===2)return{rail:"var(--silver)",bg:"var(--silver)",ink:"#20262b"};if(rank===3)return{rail:"var(--bronze)",bg:"var(--bronze)",ink:"#2e1808"};return{rail:"transparent",bg:"var(--chip)",ink:"var(--muted)"};}
-function gapTag(rec,tbl,lab){const black='<b style="color:#0b2a3a;font-weight:700">'+lab+'</b>';const tb=tbl[sexFilter]||{};const m=tb[rec.prueba]&&tb[rec.prueba][rec.anio];if(!m)return`<span class="tag na">${black} —</span>`;const dd=toCs(rec.tiempo)-toCs(m);if(dd<=0)return`<span class="tag ok">${black} −${fmtClock(Math.abs(dd))} ✓</span>`;return`<span class="tag no">${black} +${fmtClock(dd)}</span>`;}
+function gapTag(rec,tbl,lab,full){
+  const tb=tbl[sexFilter]||{};const m=tb[rec.prueba]&&tb[rec.prueba][rec.anio];
+  if(full){
+    const L=`<span class="mlab">${lab}</span>`;
+    if(!m)return`${L}<span class="tag na">sin mínima</span>`;
+    const mt=`<span class="mmin"><i>mín.</i><span class="mono">${esc(m)}</span></span>`;
+    const d=toCs(rec.tiempo)-toCs(m);
+    return d<=0?`${L}${mt}<span class="tag ok">−${fmtClock(-d)} ✓</span>`
+               :`${L}${mt}<span class="tag no">+${fmtClock(d)}</span>`;}
+  const black='<b style="color:#0b2a3a;font-weight:700">'+lab+'</b>';
+  if(!m)return`<span class="tag na">${black} —</span>`;
+  const dd=toCs(rec.tiempo)-toCs(m);
+  if(dd<=0)return`<span class="tag ok">${black} −${fmtClock(Math.abs(dd))} ✓</span>`;
+  return`<span class="tag no">${black} +${fmtClock(dd)}</span>`;}
 function newMin(rec,tbl){if(!hasMin(rec,tbl))return false;const b0=bestOf(BEFORE,rec.name,rec.prueba);return !b0||!hasMin(b0,tbl);}
 function hasMin(rec,tbl){const tb=tbl[sexFilter]||{};const m=tb[rec.prueba]&&tb[rec.prueba][rec.anio];if(!m)return false;return toCs(rec.tiempo)-toCs(m)<=0;}
 function minsList(name){const esp=[],eh=[];PRUEBA_ORDER.forEach(p=>{const b=bestOf(RECORDS,name,p);if(!b)return;const cs=toCs(b.tiempo);const tE=(MIN_ESP[sexFilter]||{})[p];if(tE&&tE[b.anio]&&cs<=toCs(tE[b.anio]))esp.push(abbrev(p));const tH=(MIN_EH[sexFilter]||{})[p];if(tH&&tH[b.anio]&&cs<=toCs(tH[b.anio]))eh.push(abbrev(p));});return{esp:esp,eh:eh};}
@@ -1282,7 +1307,12 @@ function scrollSec(){
   }catch(e){try{window.scrollTo(0,0);}catch(e2){}}
 }
 function goProfile(n){if(!n)return;mode="fichas";query=n;badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s){s.value=n;}const sg=el("searchSug");if(sg){sg.style.display="none";sg.innerHTML="";}render();scrollSec();}
-function deltaTag(ev,pop){if(!ev)return"";const L='<span class="tagL">ÚLT. COMPETI</span>';if(ev.dir==="up")return`<span class="tag up${pop?" ultc":""}">${L}−${fmtClock(ev.d)}</span>`;return`<span class="tag down">${L}+${fmtClock(ev.d)}</span>`;}
+function deltaTag(ev,pop,corto){if(!ev)return"";
+  const c=ev.dir==="up"?"up":"down",sg=ev.dir==="up"?"−":"+";
+  if(corto)return`<span class="tagO ${c}">ÚLT. COMP</span><span class="tag ${c}">${sg}${fmtClock(ev.d)}</span>`;
+  const L='<span class="tagL">ÚLT. COMPETI</span>';
+  if(ev.dir==="up")return`<span class="tag up${pop?" ultc":""}">${L}−${fmtClock(ev.d)}</span>`;
+  return`<span class="tag down">${L}+${fmtClock(ev.d)}</span>`;}
 
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
 
@@ -1307,8 +1337,8 @@ function render(){
   if(fo)PREV_YRS=true;else{const cs=el("clubSel");if(cs)cs.style.display="";const sx=el("segSex");if(sx)sx.style.display="";const tb=el("tabs");if(tb)tb.style.display="";}
 
   // legend
-  const legs={marcas:"<span style='font-weight:700'>Ranking por MMP.</span> Cada nadador/a con su <b>mejor marca personal</b> de la temporada en la prueba elegida. <b>Nº</b> = puesto · <b>pts</b> = puntos FINA.<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Indicadores de la última competición.</span> <span style='color:var(--muted)'>Solo en marcas logradas en la última competición.</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ variación de puesto<br><span class='pos new' style='display:inline-block;margin-top:0;padding:0 5px;font-size:10px'>nuevo</span> primera vez en este ranking</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Mínimas.</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de <b>Euskadi</b> / <b>España</b> conseguida. En la pestaña <b>Mínimas</b> se ven todas las de cada nadador/a.</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Fichas.</span><br>Toca un <b>nombre</b> de la lista (o búscalo) para abrir su ficha; <b>← Volver</b> regresa al ranking.</div><span style='display:block;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);color:var(--muted)'>El botón flotante ⓘ abre esta ventana con la explicación de lo que tengas seleccionado en cada momento: cambia según estés en Marcas, Mínimas, Top FINA o en una ficha.</span>",
-    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b> (Alevín / 2013 / 2014): al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.<br><b>Distancia al líder</b>: lo que le falta para el Nº 1. <b>Progresión</b>: cuánto ha bajado desde su primera marca de la temporada. Los tiempos van en segundos (<b>s</b>) o minutos (<b>min</b>).</div>"+"",
+  const legs={marcas:"<span style='font-weight:700'>Ranking por MMP.</span> Cada nadador/a con su <b>mejor marca personal</b> de la temporada en la prueba elegida. <b>Nº</b> = puesto · <b>pts</b> = puntos FINA.<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Indicadores de la última competición.</span> <span style='color:var(--muted)'>Solo en marcas logradas en la última competición.</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ variación de puesto<br><span class='pos new' style='display:inline-block;margin-top:0;padding:0 5px;font-size:10px'>nuevo</span> primer registro en esta prueba</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Mínimas.</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de <b>Euskadi</b> / <b>España</b> conseguida. En la pestaña <b>Mínimas</b> se ven todas las de cada nadador/a.</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Fichas.</span><br>Toca un <b>nombre</b> de la lista (o búscalo) para abrir su ficha; <b>← Volver</b> regresa al ranking.</div><span style='display:block;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);color:var(--muted)'>El botón flotante ⓘ abre esta ventana con la explicación de lo que tengas seleccionado en cada momento: cambia según estés en Marcas, Mínimas, Top FINA o en una ficha.</span>",
+    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b> (Alevín / 2013 / 2014): al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.<br><b>Distancia al líder</b>: lo que le falta para el Nº 1. <b>Progresión</b>: cuánto ha bajado desde su primera marca de la temporada.</div>"+"",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>Euskal Herria</b> y <b style='color:var(--brand)'>España</b> (− conseguida ✓ / + falta).",
     topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada "+(sexFilter==="M"?"nadador":"nadadora")+". Aparecen "+(sexFilter==="M"?"los":"las")+" que tienen al menos "+finaN+" pruebas.",topfinaRey:(function(){const ra={Libre:"del",Espalda:"de la",Braza:"de la",Mariposa:"de la",Estilos:"de los"};const st=ra[finaSel]?finaSel:"";return "<span style='font-weight:700'>👑 "+(sexFilter==="M"?"Rey":"Reina")+" "+(st?ra[st]+" "+st.toLowerCase():"de cada estilo")+".</span> Suma de los puntos FINA de su mejor marca en cada distancia nadada "+(st?"en "+st.toLowerCase():"de ese estilo")+". No exige un número mínimo de pruebas."})(),topfinaMed:"🏅 <span style='font-weight:700'>Medallero de insignias.</span> Recuento de todas las insignias ganadas en los resúmenes de las competiciones de esta temporada: una por cada podio (🥇🥈🥉) en las cuatro categorías del resumen.<br>🏆 <b>Mejor del día</b>: mejor "+(sexFilter==="M"?"nadador":"nadadora")+" del día — suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br><b>Marcas</b>: mejores marcas del día — las de más puntos FINA de la competición, por año.<br><b>Progresión</b>: mayores progresiones del día — quienes más puntos FINA ganaron respecto a su mejor marca anterior.<br><b>Forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br>El orden del medallero es olímpico: mandan los oros, luego las platas y luego los bronces. La lista se filtra con los selectores de año y club.<br>⚠️ No son medallas reales: es simplemente un juego.",topfinaSpec:"<span style='font-weight:700'>🚀⏱️🌊 Especialistas.</span> Suma de los puntos FINA de sus dos mejores distancias: Velocista = mejor 50 + mejor 100 · Mediofondista = 200 + 400 · Fondista = 400 + 800. Solo aparece quien tiene marcas en ambas.",topfinaFicha:"La barra muestra lo cerca que está cada marca del récord de Álava de su edad; bajo cada marca, en tenue, el récord de Álava (alevín) y el mundial (absoluto)."};
   if(view==="marcas"){LEG_HTML=fo?legs.marcasFicha:legs.marcas;}
@@ -1500,7 +1530,7 @@ function renderProfile(vw){
     const rec0=RECORDS.find(r=>r.nadadora===name);
     let ri=0;
     const rows=PRUEBA_ORDER.map(p=>{const b=bestOf(RECORDS,name,p);if(!b)return"";const cs=toCs(b.tiempo);const rkList=rankTime(RECORDS,p);const rk=rkList.find(x=>x.name===name);const ev=evolution(name,p);
-      const dt=deltaTag(ev);const dstr=!/^Ranking /.test(b.competi||"")?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";
+      const dt=deltaTag(ev,0,1);const dstr=!/^Ranking /.test(b.competi||"")?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";
       const f=fina(p,cs);
       let detail,recs="",stamp="";
       if(view==="topfina"){
@@ -1532,7 +1562,7 @@ function renderProfile(vw){
           const mc=toCs(m),got=cs<=mc,pct=got?100:Math.max(3,Math.min(99,mc/cs*100));
           const bg=got?"":`background-size:${Math.round(100/pct*100)}% 100%;`;
           const ck=`${sexFilter}|${name}|${p}|${lab}`;
-          return `<div class="mset"><div class="mtag">${gapTag(b,tbl,lab)}</div><div class="mrow"><div class="mbar"><div class="mfill${got?" mok":""}" style="${bg}width:0%" data-pct="${pct.toFixed(1)}" data-ck="${esc(ck)}"></div></div><span class="mpct">0%</span></div></div>`;};
+          return `<div class="mset"><div class="mtag">${gapTag(b,tbl,lab,1)}</div><div class="mrow"><div class="mbar"><div class="mfill${got?" mok":""}" style="${bg}width:0%" data-pct="${pct.toFixed(1)}" data-ck="${esc(ck)}"></div></div><span class="mpct">0%</span></div></div>`;};
         detail=`<div class="pmin">${mline(MIN_EH,"EH")}${mline(MIN_ESP,"ESP")}</div>`;
         const gEsp=hasMin(b,MIN_ESP),gEh=hasMin(b,MIN_EH);
         if(gEsp||gEh){
