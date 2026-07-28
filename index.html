@@ -704,7 +704,7 @@ function pcTraNota(tr){
   if(!tr)return null;
   const B=tr.B,d=tr.d,f=Math.abs(d).toFixed(1)+"%";
   const t=d>B[1]?`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, por encima de lo habitual (${B[0]}–${B[1]}%): has salido por encima del ritmo que luego puedes sostener.`
-        :d<B[0]?`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, por debajo de lo habitual (${B[0]}–${B[1]}%): o has salido contenida, o sostienes muy bien el ritmo. No resta: es el reparto que suele aparecer en las mejores carreras.`
+        :d<B[0]?`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, por debajo de lo habitual (${B[0]}–${B[1]}%): o has salido con freno, o sostienes muy bien el ritmo. No resta: es el reparto que suele aparecer en las mejores carreras.`
                :`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, justo en lo habitual (${B[0]}–${B[1]}%): has enganchado bien el ritmo de carrera.`;
   return {k:tr.ns?"na":pcNivel(tr.sc).key,m:"50→100 m · Transición",
           t:t+(tr.ns?" <i>En esta prueba aún hay pocas carreras registradas, así que este tramo no puntúa.</i>":"")};
@@ -765,9 +765,10 @@ function pcNom(i,n,completa){return i===0?"Salida":((completa&&i===n-1)?"Final":
    semáforo, nunca con el umbral crudo. Así el texto y el color no se pueden
    contradecir. Antes 114 de 803 carreras recibían un texto duro con nota 85+.
    Los arrays van SIEMPRE en orden [óptimo, bueno, baja, se resiente, fatigado]. */
+function pcSalCmp(d){return d>=0?`un <b>${d.toFixed(1)}%</b> más lento que`:`un <b>${Math.abs(d).toFixed(1)}%</b> más rápido que`;}
 function pcT(sc,a){return sc>=85?a[0]:sc>=70?a[1]:sc>=50?a[2]:sc>=30?a[3]:a[4];}
 const PC_T100={
-  Libre:["Reparto de libro: has sostenido la técnica y el segundo largo no se te ha ido.",
+  Libre:["Has sostenido la técnica y el segundo largo no se te ha ido.",
     "El segundo largo pesa algo, pero lo has llevado bien: el desgaste está dentro de lo normal.",
     "Se te ha acortado la brazada en los últimos metros y ahí se han ido unas décimas.",
     "El final lo ha acusado: la brazada se ha acortado bastante en el último largo.",
@@ -787,8 +788,8 @@ const PC_T100={
     "La cadera se ha ido hundiendo en el segundo largo y el avance se ha resentido.",
     "Las caderas se han hundido al final y la brazada se ha acortado.",
     "Las caderas se han venido abajo. Muy normal a esta edad: es cuestión de core y de no irte al límite en el primer largo."]};
-const PC_TFIN100=[" Has sostenido el segundo largo de sobra.",
-  " Has sostenido bien el segundo largo.",
+const PC_TFIN100=[" Has sostenido el segundo largo.",
+  " El segundo largo ha aguantado casi entero.",
   " Ahí se han ido unas décimas.",
   " Ahí baja la nota del Final: te ha faltado un punto de resistencia.",
   " Ahí está lo que más margen te da ahora mismo: resistencia."];
@@ -805,11 +806,12 @@ function pcSalTxt(sal,fin,dist,sc){
       :fin>=50?" Has salido por encima de tu ritmo "+ref+" y el final lo ha notado un poco: ahí tienes el margen."
       :" Has salido por encima de tu ritmo "+ref+" y el final lo ha acusado: ahí está el margen.";
   }
-  return fin>=70?" Has salido con freno y aun así has llegado entera: te sobra margen para arrancar más firme."
-    :" Has salido contenida y aun así el final se ha caído: el margen está en la resistencia, no en salir más fuerte.";
+  // ojo: aquí NO cabe "aun así" — si sales frenada, llegar entera es la consecuencia, no una sorpresa.
+  return fin>=70?" Has salido con freno y te ha sobrado depósito al final: te queda margen para arrancar más firme."
+    :" Has salido con freno y aun así el final se ha caído: el margen está en la resistencia, no en salir más fuerte.";
 }
-const PC_TIM=[" Está dentro de lo normal.",
-  " Se desvía un poco de la proporción habitual, pero nada preocupante.",
+const PC_TIM=[" Se desvía poco: nada que corregir de momento.",
+  " La desviación es pequeña, pero se nota.",
   " Ahí se te escapa algo de tiempo.",
   " Es tu estilo a reforzar.",
   " Es lo que más te lastra ahora mismo: ahí tienes el margen grande."];
@@ -894,8 +896,8 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
         const dv=(c-m)/m*100,sc=pcScore1(dv,B[0],B[1],B[2]);
         rows.push(pcRow(((i+1)*step)+"m",vals[i],pcNom(i,cs.length,true),pcNivel(sc),bw(c)));
       });
-      if(sal)notes.push({k:pcNivel(sal.sc).key,m:step+" m · Salida",t:`Has pasado el primer ${step} un <b>${sal.d.toFixed(1)}%</b> por encima de tu mejor 50 (en esta distancia lo óptimo es ${sal.B[0]}–${sal.B[1]}%).`+
-        pcSalTxt(sal,cs[cs.length-1]<m?100:gcv,dist,sal.sc)});
+      if(sal)notes.push({k:pcNivel(sal.sc).key,m:step+" m · Salida",t:`Has pasado el primer ${step} ${pcSalCmp(sal.d)} tu mejor 50 (en esta distancia lo normal es ${sal.B[0]}–${sal.B[1]}%).`+
+        pcSalTxt(sal,gcv,dist,sal.sc)});
       const last=cs[cs.length-1];
       // crucero para la transición: largos intermedios SIN el último (que suele acelerar)
       const midT=cs.slice(1,-1),cruT=midT.length?midT.reduce((a,b)=>a+b,0)/midT.length:null;
@@ -915,7 +917,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       const glob=(g>=85?"Ritmo de crucero admirable. En fondo gana quien sostiene el mismo tempo largo tras largo, y eso lo has hecho."
         :g>=70?"Ritmo sólido en general, con algún largo que se escapa del tempo. Series largas a ritmo fijo lo van a pulir."
         :g>=50?"El tempo se sostiene a ratos: hay tramos que se salen de tu media. Trabajar ritmo controlado es la clave."
-        :g>=30?"El ritmo se va soltando por el camino. Conviene salir un punto más contenida para llegar entera al final."
+        :g>=30?"El ritmo se va soltando por el camino. Conviene salir un punto más suave para sostener el final."
         :"La regularidad se ha perdido pronto. En fondo, salir más suave y sostener el tempo da tiempos mejores.")
         +` Los largos se han movido entre sí un <b>${cv.toFixed(cv>B[1]&&cv.toFixed(1)===B[1].toFixed(1)?2:1)}%</b>: ${cv<=B[0]?"por debajo del "+B[0]+"% que se considera un crucero impecable":cv<=B[1]?"dentro del "+B[1]+"% que se considera un ritmo regular":"por encima del "+B[1]+"% que marca el límite de un ritmo regular"}.`;
       return done(g,glob);
@@ -933,7 +935,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
     const g=s1==null?s2:(s1*0.4+s2*0.6);
     rows.push(pcRow("50m",vals[0],"Salida",s1==null?{sc:"–",lab:"Sin 50 de referencia",key:"na"}:pcNivel(s1),bw(cs[0])));
     rows.push(pcRow("100m",vals[1],"Final",pcNivel(s2),bw(cs[1])));
-    if(sal)notes.push({k:pcNivel(s1).key,m:"50 m · Salida",t:`Has pasado el primer 50 un <b>${sal.d.toFixed(1)}%</b> por encima de tu mejor 50 de ${est.toLowerCase()} (lo óptimo es ${sal.B[0]}–${sal.B[1]}%).`+
+    if(sal)notes.push({k:pcNivel(s1).key,m:"50 m · Salida",t:`Has pasado el primer 50 ${pcSalCmp(sal.d)} tu mejor 50 de ${est.toLowerCase()} (lo normal es ${sal.B[0]}–${sal.B[1]}%).`+
       pcSalTxt(sal,s2,100,s1)});
     else notes.push({k:"na",m:"50 m · Salida",t:`Sin valorar: no hay ninguna marca tuya de 50 ${est.toLowerCase()} con la que compararla.`});
     notes.push({k:pcNivel(s2).key,m:"100 m · Final",t:`Caída del 2º largo: <b>${fmtp(d)}</b> (el rango bueno en ${est.toLowerCase()} es ${B[0]}–${B[1]}%).`+
@@ -969,7 +971,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
     rows.push(pcRow("100m",vals[1],"Crucero",pcNivel(s2),bw(cs[1])));
     rows.push(pcRow("150m",vals[2],"Crucero",pcNivel(s3),bw(cs[2])));
     rows.push(pcRow("200m",vals[3],"Final",pcNivel(sFin),bw(cs[3])));
-    if(sal)notes.push({k:pcNivel(sSal).key,m:"50 m · Salida",t:`Has pasado el primer 50 un <b>${sal.d.toFixed(1)}%</b> por encima de tu mejor 50 de ${est.toLowerCase()} (lo óptimo en un 200 es ${sal.B[0]}–${sal.B[1]}%).`+
+    if(sal)notes.push({k:pcNivel(sSal).key,m:"50 m · Salida",t:`Has pasado el primer 50 ${pcSalCmp(sal.d)} tu mejor 50 de ${est.toLowerCase()} (lo normal en un 200 es ${sal.B[0]}–${sal.B[1]}%).`+
       pcSalTxt(sal,sFin,200,sSal)});
     else notes.push({k:"na",m:"50 m · Salida",t:`Sin valorar: no hay ninguna marca tuya de 50 ${est.toLowerCase()} con la que compararla.`});
     const tnota=pcTraNota(tr);if(tnota)notes.push(tnota);
