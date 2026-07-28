@@ -17,7 +17,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Space+Grotesk:wght@600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
 :root{--bg:#eef6f8;--surface:#fff;--ink:#0b2a3a;--muted:#4e6d7c;--brand:#0e7c93;--brand-deep:#0b3d5c;
---line:#d8e8ee;--chip:#e7f1f4;--gold:#e0ad3f;--silver:#a9b6bf;--bronze:#c07f43;--good:#0f9d6b;--warn:#61737f;--amber:#b26a00;}
+--line:#d8e8ee;--chip:#e7f1f4;--gold:#e0ad3f;--silver:#a9b6bf;--bronze:#c07f43;--good:#0f9d6b;--warn:#61737f;--amber:#b26a00;
+--violet:#6d4bc4;--violet-deep:#5b3fa8;--ink-soft:#3c5a68;}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
@@ -139,7 +140,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .mset{display:flex;flex-direction:column;gap:3px}
 .mtag{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;line-height:1.3}
 .mlab{font-size:12px;font-weight:800;color:var(--ink);letter-spacing:.02em}
-.mmin{display:inline-flex;align-items:baseline;gap:4px;background:var(--chip);border-radius:6px;padding:1px 6px;font-size:12px;font-weight:400;color:#3c5a68;font-variant-numeric:tabular-nums}
+.mmin{display:inline-flex;align-items:baseline;gap:4px;background:var(--chip);border-radius:6px;padding:1px 6px;font-size:12px;font-weight:400;color:var(--ink-soft);font-variant-numeric:tabular-nums}
 .mmin i{font-size:9px;font-weight:800;font-style:normal;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
 .mtag .tag{margin-top:0;font-size:13px;font-weight:800;padding:0}
 .mrow{display:flex;align-items:center;gap:9px}
@@ -308,8 +309,8 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .psL{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .psV{font-size:14px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.15}
 .pstat.pgain{background:rgba(109,75,196,.10)}
-.pstat.pgain .psL{color:#5b3fa8}
-.pstat.pgain .psV{color:#6d4bc4}
+.pstat.pgain .psL{color:var(--violet-deep)}
+.pstat.pgain .psV{color:var(--violet)}
 .raline.rabeat{color:var(--good);font-weight:800}
 .rmfill.rfbeat{background:linear-gradient(90deg,#8fdcc0,var(--good))}
 .recFaint{color:#6d8c9c;font-weight:400}
@@ -1310,7 +1311,7 @@ function goProfile(n){if(!n)return;mode="fichas";query=n;badgesFor=null;cmpA=nul
 function deltaTag(ev,pop,corto){if(!ev)return"";
   const c=ev.dir==="up"?"up":"down",sg=ev.dir==="up"?"−":"+";
   if(corto)return`<span class="tagO ${c}">ÚLT. COMP</span><span class="tag ${c}">${sg}${fmtClock(ev.d)}</span>`;
-  const L='<span class="tagL">ÚLT. COMPETI</span>';
+  const L='<span class="tagL">ÚLT. COMP</span>';
   if(ev.dir==="up")return`<span class="tag up${pop?" ultc":""}">${L}−${fmtClock(ev.d)}</span>`;
   return`<span class="tag down">${L}+${fmtClock(ev.d)}</span>`;}
 
