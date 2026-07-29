@@ -101,6 +101,10 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .tagL{font-size:9px;font-weight:800;letter-spacing:.03em;opacity:.75;margin-right:4px;vertical-align:1px}
 .tag.fina{color:var(--brand);background:none;padding:2px 0}
 .tag.up{color:var(--good);background:rgba(15,157,107,.1)}
+/* La cifra de ÚLT. COMP. va en Space Mono, que es una fuente ALTA (~1,48 de altura de línea
+   natural frente a ~1,21 de Inter). Sin fijarla, cada línea crecía ~3 px y con ella la fila
+   entera del ranking. Fijada al 1,21 de Inter, la altura queda exactamente como antes. */
+.tag.up .mono,.tag.down .mono,.tag.up.mono,.tag.down.mono{line-height:1.21}
 .tag.up.ultc.go{animation:popTag .5s cubic-bezier(.2,1.7,.35,1)}
 .tag.down{color:var(--warn);background:none;padding:2px 0}
 .tag.down .tagL{opacity:1}
@@ -137,14 +141,13 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .prueba{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;line-height:1.2}
 .prueba.st-l{color:#0b5f70}.prueba.st-e{color:#0b7550}.prueba.st-b{color:#94570a}.prueba.st-m{color:#5b2fb8}.prueba.st-x{color:#43596a}
 .puesto{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap}
-.pmin{display:flex;flex-direction:column;gap:9px;margin-top:7px}
-.mset{display:flex;flex-direction:column;gap:3px}
-.mtag{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;line-height:1.3}
-.mlab{font-size:12px;font-weight:800;color:var(--ink);letter-spacing:.02em}
+.pmin{display:grid;grid-template-columns:auto auto 1fr;align-items:baseline;column-gap:6px;row-gap:3px;margin-top:7px;line-height:1.3}
+.mlab{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:.02em}
 .mmin{display:inline-flex;align-items:baseline;gap:4px;background:var(--chip);border-radius:6px;padding:1px 6px;font-size:12px;font-weight:400;color:var(--ink-soft);font-variant-numeric:tabular-nums}
 .mmin i{font-size:9px;font-weight:800;font-style:normal;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
-.mtag .tag{margin-top:0;font-size:13px;font-weight:800;padding:0}
-.mrow{display:flex;align-items:center;gap:9px}
+.pmin .tag{margin-top:0;font-size:13px;font-weight:700;padding:0}
+.mrow{grid-column:1/-1;display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.mrow:last-child{margin-bottom:0}
 .bdg .pTop{padding-bottom:12px}
 .profile.bdg{background:none;border:0;border-radius:0;box-shadow:none;overflow:visible}
 .bdgHero{background:linear-gradient(160deg,#fff8e6,#f7e6bd);border:1px solid #e6cf95;border-radius:16px;padding:16px 14px;margin:0 0 12px;text-align:center}
@@ -1098,8 +1101,8 @@ function gapTag(rec,tbl,lab,full){
     if(!m)return`${L}<span class="tag na">sin mínima</span>`;
     const mt=`<span class="mmin"><i>mín.</i><span class="mono">${esc(m)}</span></span>`;
     const d=toCs(rec.tiempo)-toCs(m);
-    return d<=0?`${L}${mt}<span class="tag ok">−${fmtClock(-d)}</span>`
-               :`${L}${mt}<span class="tag no">+${fmtClock(d)}</span>`;}
+    return d<=0?`${L}${mt}<span class="tag ok mono">−${fmtClock(-d)}</span>`
+               :`${L}${mt}<span class="tag no mono">+${fmtClock(d)}</span>`;}
   // sin ✓: el verde de .tag.ok ya dice que está conseguida, y así los números
   // de EH y ESP quedan alineados sin necesidad de reservar carril para nada.
   const black='<b style="color:#0b2a3a;font-weight:700">'+lab+'</b>';
@@ -1348,10 +1351,10 @@ function scrollSec(){
 function goProfile(n){if(!n)return;mode="fichas";query=n;badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s){s.value=n;}const sg=el("searchSug");if(sg){sg.style.display="none";sg.innerHTML="";}render();scrollSec();}
 function deltaTag(ev,pop,corto){if(!ev)return"";
   const c=ev.dir==="up"?"up":"down",sg=ev.dir==="up"?"−":"+";
-  if(corto)return`<span class="tagO ${c}">ÚLT. COMP.</span><span class="tag ${c}">${sg}${fmtClock(ev.d)}</span>`;
+  if(corto)return`<span class="tagO ${c}">ÚLT. COMP.</span><span class="tag ${c} mono">${sg}${fmtClock(ev.d)}</span>`;
   const L='<span class="tagL">ÚLT. COMP.</span>';
-  if(ev.dir==="up")return`<span class="tag up${pop?" ultc":""}">${L}−${fmtClock(ev.d)}</span>`;
-  return`<span class="tag down">${L}+${fmtClock(ev.d)}</span>`;}
+  if(ev.dir==="up")return`<span class="tag up${pop?" ultc":""}">${L}<span class="mono">−${fmtClock(ev.d)}</span></span>`;
+  return`<span class="tag down">${L}<span class="mono">+${fmtClock(ev.d)}</span></span>`;}
 
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
 
@@ -1605,7 +1608,7 @@ function renderProfile(vw){
           const mc=toCs(m),got=cs<=mc,pct=got?100:Math.max(3,Math.min(99,mc/cs*100));
           const bg=got?"":`background-size:${Math.round(100/pct*100)}% 100%;`;
           const ck=`${sexFilter}|${name}|${p}|${lab}`;
-          return `<div class="mset"><div class="mtag">${gapTag(b,tbl,lab,1)}</div><div class="mrow"><div class="mbar"><div class="mfill${got?" mok":""}" style="${bg}width:0%" data-pct="${pct.toFixed(1)}" data-ck="${esc(ck)}"></div></div><span class="mpct">0%</span></div></div>`;};
+          return `${gapTag(b,tbl,lab,1)}<div class="mrow"><div class="mbar"><div class="mfill${got?" mok":""}" style="${bg}width:0%" data-pct="${pct.toFixed(1)}" data-ck="${esc(ck)}"></div></div><span class="mpct">0%</span></div>`;};
         detail=`<div class="pmin">${mline(MIN_EH,"EH")}${mline(MIN_ESP,"ESP")}</div>`;
         const gEsp=hasMin(b,MIN_ESP),gEh=hasMin(b,MIN_EH);
         if(gEsp||gEh){
