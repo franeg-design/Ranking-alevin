@@ -134,7 +134,8 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .pStat{display:inline-block;margin-top:0;margin-right:5px;background:#e4f5ec;border:1px solid #bfe6d1;color:#0f7d53;border-radius:10px;padding:4px 11px;font-size:12px;font-weight:700;line-height:1.6}
 .pRow{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;border-top:1px solid var(--line);position:relative;overflow:hidden}
 .pRow>.mid,.pRow>.right{position:relative;z-index:1}
-.prueba{font-weight:600;font-size:14px}
+.prueba{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;line-height:1.2}
+.prueba.st-l{color:#0b5f70}.prueba.st-e{color:#0b7550}.prueba.st-b{color:#94570a}.prueba.st-m{color:#5b2fb8}.prueba.st-x{color:#43596a}
 .puesto{font-size:12px;color:var(--muted);margin-top:2px;white-space:nowrap}
 .pmin{display:flex;flex-direction:column;gap:9px;margin-top:7px}
 .mset{display:flex;flex-direction:column;gap:3px}
@@ -1070,6 +1071,8 @@ function renderSummary(fecha){
 }
 
 function poolRecs(recs){let out=recs;if(yearFilter!=="all")out=out.filter(r=>r.anio===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
+// Clase de color por estilo (misma paleta que los chips y las tarjetas de ritmo).
+function stKlass(p){return ({Libre:"st-l",Espalda:"st-e",Braza:"st-b",Mariposa:"st-m",Estilos:"st-x"})[String(p).split(" ")[1]]||"st-x";}
 function bestOf(recs,name,prueba){let b=null,bc=Infinity;for(const r of recs){if(r.nadadora===name&&r.prueba===prueba){const c=toCs(r.tiempo);if(c<bc){bc=c;b=r;}}}return b;}
 let RT_CACHE=new WeakMap();
 function rankTime(recs,prueba){
@@ -1621,8 +1624,8 @@ function renderProfile(vw){
       }
       const anim=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
       if(view==="minimas")
-        return `<div class="pRow tog mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts</div></div><div class="time mono">${dstr}${esc(b.tiempo)}</div></div>${detail}</div>`+histBox(name,p);
-      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div><div class="right"><div class="time mono">${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}${pctBadge}</div></div>`+histBox(name,p);
+        return `<div class="pRow tog mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts</div></div><div class="time mono">${dstr}${esc(b.tiempo)}</div></div>${detail}</div>`+histBox(name,p);
+      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div><div class="right"><div class="time mono">${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}${pctBadge}</div></div>`+histBox(name,p);
     }).join("");
     return `<div class="profile">${view==="minimas"?`<div class="pMinHead">${profileStat(name)}${goalPill(name)}</div>`:""}${rows}</div>`;
   }).join("");
