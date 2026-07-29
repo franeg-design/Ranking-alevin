@@ -395,6 +395,7 @@ body.mfich .body{padding-top:calc(10px + env(safe-area-inset-top))}
 .pcN-low{background:#fdf9ec;border-left-color:#dba00f;color:#6f5307}
 .pcN-wk{background:#fdf4ec;border-left-color:#e07b39;color:#8a4a12}
 .pcN-fat{background:#fdf1ee;border-left-color:#d95336;color:#8f3623}
+.pcPrev{margin-top:6px;font-size:12px;line-height:1.42;padding:6px 9px;border-radius:10px;background:var(--c-surf-2);color:var(--c-ink-2);border-left:3px solid var(--c-line)}
 .pcGlob{margin-top:8px;font-size:12px;line-height:1.45;padding:8px 10px;border-radius:10px;border-left:3px solid transparent}
 /* Paso 5 · zonas de toque de 44px sin cambiar el aspecto.
    El ::after es invisible y solo crece EN VERTICAL (left:0;right:0), asi que
@@ -813,6 +814,25 @@ const PC_TFIN100=[" Has sostenido el segundo largo.",
   " Ahí está lo que más margen te da ahora mismo: resistencia."];
 /* Salida y Final se hablan entre sí: la misma salida se lee distinto según
    cómo acabara la carrera. Salir fuerte y aguantar es mérito, no un error. */
+/* PC_PREV_U (jul-2026): umbral de indiferencia de la línea .pcPrev, en puntos porcentuales.
+   Sale de la variabilidad de la caída DENTRO de cada nadador/a: desv. típica mediana de 2,3 pp
+   sobre 76 pares con >=3 carreras de la misma prueba. Por debajo de eso la diferencia no se
+   distingue de su vaivén normal y nombrarla sería inventar precisión. No confundir con el 2,8
+   del rescate, que mide otra distribución (p75 de la diferencia contra la plantilla). */
+const PC_PREV_U=2.5;
+function pcPrevTxt(prueba,parciales,nadadora,fecha){
+  const tpl=bestShape(nadadora,prueba,fecha);
+  if(tpl==null)return "";
+  const v=String(parciales||"").split(";").map(x=>x.trim()).filter(Boolean);
+  if(v.length!==2)return "";
+  const a=toCs(v[0]),b=toCs(v[1]);
+  if(!isFinite(a)||!isFinite(b)||a<=0)return "";
+  const d=(b-a)/a*100,dif=d-tpl;
+  const cab="Tu caída habitual en tu mejor "+prueba.toLowerCase()+" es del <b>"+dec(tpl)+"%</b>; hoy <b>"+dec(d)+"%</b>: ";
+  if(Math.abs(dif)<PC_PREV_U)return cab+"has repartido como sueles.";
+  return cab+(dif>0?"hoy has caído <b>"+dec(Math.abs(dif))+" puntos más</b> que en tu mejor carrera."
+                   :"hoy has caído <b>"+dec(Math.abs(dif))+" puntos menos</b> que en tu mejor carrera.");
+}
 function pcSalTxt(sal,fin,dist,sc,resc){
   const fuerte=sal.d<sal.B[0],cont=sal.d>sal.B[1];
   const ref=dist>=400?"para la distancia":"de 50";
@@ -1061,6 +1081,8 @@ function fichCompCard(name,FE){
     else{
       body=`<div class="pcBars">${an.rows.join("")}</div>`;
       if(an.notes.length)body+=`<div class="pcNotes">${an.notes.map(n=>`<div class="pcN pcN-${n.k}">${n.m?`<span class="pcNm">${n.m}</span>`:""}${n.t}</div>`).join("")}</div>`;
+      const prev=pcPrevTxt(r.prueba,r.parciales,r.nadadora,r.fecha);
+      if(prev)body+=`<div class="pcPrev">${prev}</div>`;
       if(an.glob)body+=`<div class="pcGlob pcN-${an.gkey}"><b>Valoración:</b> ${an.glob}</div>`;
     }
     h+=`<div class="pcSwim"><div class="pcTop"><span class="pc ${stCls(r.prueba)}">${esc(r.prueba)}</span><span class="pcTime mono">${esc(r.tiempo)}</span>${badge}</div>${body}</div>`;
