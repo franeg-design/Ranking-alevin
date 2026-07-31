@@ -961,7 +961,15 @@ function pcPrevTxt(prueba,parciales,nadadora,fecha){
   return cab+(dif>0?"hoy has caído <b>"+dec(Math.abs(dif))+" puntos más</b> que en tu mejor carrera."
                    :"hoy has caído <b>"+dec(Math.abs(dif))+" puntos menos</b> que en tu mejor carrera.");
 }
-function pcSalTxt(sal,fin,dist,sc,resc,tra){
+/* finFuera (jul-2026): ¿la caída real se ha ido por encima de la banda buena? Es un dato
+   ABSOLUTO, independiente de la nota. Hace falta porque la nota del Final puede venir rescatada
+   por la plantilla propia de la nadadora (§«rescate por plantilla») y entonces vale 75 aunque la
+   caída sea mala: sin este freno el texto proclamaba "te ha sobrado depósito al final" justo
+   encima de una línea que decía "caída 12,6%, el rango bueno es 6,3-9,1%". Lo cazó Fran en una
+   captura (Carla Eguiguren, 100 Libre, 14-jun: nota bruta 35, rescatada a 75).
+   Solo lo pasa el bloque del 100, que es donde la caída es directamente comparable con su banda;
+   las demás distancias lo dejan sin definir y conservan el texto de siempre. */
+function pcSalTxt(sal,fin,dist,sc,resc,tra,finFuera){
   const fuerte=sal.d<sal.B[0],cont=sal.d>sal.B[1];
   /* La Transición manda sobre el "aun así lo has sostenido": si el escalón al crucero se fue por
      encima de lo habitual, la salida NO se sostuvo, por buena que fuese la nota del Final. Sin este
@@ -990,6 +998,13 @@ function pcSalTxt(sal,fin,dist,sc,resc,tra){
       :" Has salido por encima de tu ritmo "+ref+" y el final lo ha acusado: ahí está el margen.";
   }
   // ojo: aquí NO cabe "aun así" — si sales frenada, llegar entera es la consecuencia, no una sorpresa.
+  /* "Sobrar depósito" es una afirmación FÍSICA: solo puede decirse si la caída se quedó dentro
+     de su banda. Si se fue fuera, el consejo además estaba del revés — le pedía arrancar más
+     firme a quien ya salió frenada y aun así se cayó. Lo que le falta es resistencia.
+     El fin>=70 acota el arreglo a lo que estaba ROTO: con nota baja el texto de siempre ya decía
+     la verdad ("aun así el final se ha caído") y no se toca. Solo cambian las 14 carreras en las
+     que una nota buena hacía decir lo contrario de lo que enseñaba el número. */
+  if(finFuera&&fin>=70)return " Has salido con freno y aun así la caída se te ha ido por encima de lo normal: el margen está en la resistencia, no en salir más fuerte.";
   return fin>=70?" Has salido con freno y te ha sobrado depósito al final: te queda margen para arrancar más firme."
     :" Has salido con freno y aun así el final se ha caído: el margen está en la resistencia, no en salir más fuerte.";
 }
@@ -1145,6 +1160,23 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
        su propia plantilla cuando la hay, y si no contra la banda de categoría. Nunca contra el
        crono: dos carreras con los mismos parciales tienen que sacar la misma nota. */
     const tpl=bestShape(nadadora,prueba,fecha);
+    /* caidaFuera: ¿el segundo largo se ha caído más de lo que marca su banda buena? Es el dato
+       que manda para los TEXTOS, porque no depende de ninguna referencia externa —solo compara
+       los dos largos entre sí (ver JERARQUÍA DE FIABILIDAD más abajo)—, mientras que la NOTA que
+       se enseña puede venir rescatada por la plantilla propia y valer 75 con una caída mala.
+       La nota no se toca: esto solo decide qué se escribe. */
+    const caidaFuera=d>B[1];
+    /* NOTA QUE SE VE vs NOTA QUE ESCRIBE (jul-2026). Tres textos distintos se eligen con s2 y los
+       tres afirman cosas ABSOLUTAS sobre el segundo largo: la frase de la Salida, la coletilla del
+       Final y la cola de la Valoración. Como s2 puede venir rescatada por la plantilla propia,
+       los tres proclamaban "ha aguantado" encima de una caída fuera de banda (Carla Eguiguren,
+       100 Libre 14-jun: caída 12,6% con la banda buena hasta 9,1%, nota bruta 35 rescatada a 75).
+       Solución: con la caída fuera, los TEXTOS se eligen con la nota tapada a 69, que es el
+       escalón justo por debajo de las frases de "sostenido/aguantado" en pcT. La nota que se
+       ENSEÑA sigue siendo s2 intacta: la pastilla y la línea de "tu caída habitual" ya explican
+       por qué es buena. Se probó usar la nota bruta y no vale: con 35 sale "Ahí baja la nota del
+       Final" al lado de una pastilla de 75, que es cambiar una contradicción por otra. */
+    const scTxt=()=>caidaFuera?Math.min(s2,69):s2;
     if(tpl!=null&&d<B[5]&&d-tpl<=2.8)s2=Math.max(s2,75);
     /* ¿PAGÓ la salida fuerte? Se mira el 2º largo contra su mejor 50 (la vuelta), NO la caída.
        La caída no sirve de juez aquí: al llevar el 1er largo en el denominador, sube sola
@@ -1173,7 +1205,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
     rows.push(pcRow("50m",vals[0],"Salida",s1==null?{sc:"–",lab:"Sin 50 de referencia",key:"na"}:pcNivel(s1),bw(cs[0])));
     rows.push(pcRow("100m",vals[1],"Final",pcNivel(s2),bw(cs[1])));
     if(sal)notes.push({k:pcNivel(s1).key,m:"50 m · Salida",t:`Has pasado el primer 50 ${pcSalCmp(sal.d)} tu mejor 50 de ${est.toLowerCase()} (lo normal es ${nc(sal.B[0])}–${nc(sal.B[1])}%).`+
-      pcSalTxt(sal,s2,100,s1,resc)});
+      pcSalTxt(sal,s2,100,s1,resc,null,caidaFuera)});
     else notes.push({k:"na",m:"50 m · Salida",t:`La salida no se puede valorar: aún no tienes ninguna marca de 50 ${est.toLowerCase()} con la que compararla.`});
     /* Si la salida se rescató, la Salida dice "el segundo largo lo has aguantado" y aquí sale una
        caída fuera de rango: son DOS preguntas distintas sobre el mismo largo. Se explica aquí. */
@@ -1193,7 +1225,14 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       +(chocan?(d>=B[3]
         ? ` Aun así, ojo: contra tu mejor 50 el segundo largo (<b>${fmtClock(cs[1])}</b>) se queda en un ${dec(resc.v)}% y parece correcto, pero esa marca de 50 es tuya de hace tiempo y puede quedarse corta. Con una caída así, lo más probable es que el segundo largo <b>sí se haya resentido</b>.`
         : ` Ojo a cómo se lee: la caída compara los dos largos <b>entre sí</b>, y hoy el primero ha sido rápido para ti. Medido contra tu mejor 50, el segundo largo (<b>${fmtClock(cs[1])}</b>) se queda en un ${dec(resc.v)}%, dentro de lo normal. Las dos cosas son ciertas a la vez: el segundo largo no ha sido malo en sí, pero se ha separado del primero más de lo habitual.`):"")+
-      pcT(s2,PC_TFIN100)});
+      /* Misma regla: la coletilla comenta la caída que se acaba de escribir dos palabras antes,
+         así que NO puede decir "el segundo largo ha aguantado" si esa caída está fuera de banda.
+         Con la caída fuera se usa siempre PC_TFIN100[4], que dice dónde está el margen y —esto
+         importa— NO menciona la nota: se probó elegir la coletilla con la nota bruta y salía
+         "Ahí baja la nota del Final" al lado de una pastilla que marcaba 75, o sea cambiar una
+         contradicción por otra. La pastilla y la línea de "tu caída habitual" ya explican por qué
+         la NOTA es buena; la coletilla se limita a describir el hecho. */
+      pcT(scTxt(),PC_TFIN100)});
     const glob=(g>=90?(s1==null?"Carrera bien gestionada: el segundo largo aguanta como tiene que aguantar."
                               :"Carrera bien gestionada. En 100 se sale con cabeza y se vuelve con corazón, y eso es lo que has hecho.")
       :g>=70?"Buena gestión en conjunto, con un punto de mejora en el reparto. Estás muy cerca del 100 ideal."
@@ -1207,7 +1246,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       :(s1==null?"Carrera muy desequilibrada: el segundo largo se ha ido del todo. Base aeróbica para sostenerlo."
               :s2>=70?"Carrera muy desequilibrada por el arranque: has salido demasiado fuerte y el final lo has sacado a pulso."
               :"Carrera muy desequilibrada: el arranque ha pasado factura. Base aeróbica para sostener el final."))
-      +" "+pcT(s2,PC_T100[est]||PC_T100.Libre);
+      +" "+pcT(scTxt(),PC_T100[est]||PC_T100.Libre);
     return done(g,glob);
   }
   // ---------- 200 m ----------
