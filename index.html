@@ -925,7 +925,18 @@ function pcNom(i,n,completa){return i===0?"Salida":((completa&&i===n-1)?"Final":
    semáforo, nunca con el umbral crudo. Así el texto y el color no se pueden
    contradecir. Antes 114 de 803 carreras recibían un texto duro con nota 85+.
    Los arrays van SIEMPRE en orden [óptimo, bueno, baja, se resiente, fatigado]. */
-function pcSalCmp(d){return d>=0?`un <b>${dec(d)}%</b> más lento que`:`un <b>${dec(Math.abs(d))}%</b> más rápido que`;}
+/* Mismo truco que el crucero y la Transición: si el valor redondeado a un decimal coincide con el
+   borde de su propia banda pero está FUERA, se enseña un decimal más. Sin esto salían 8 carreras
+   diciendo "un 4,2% más lento (lo normal es 1–4,2%)… has salido con freno": el lector ve el número
+   dentro de la banda y el texto afirmando lo contrario. El margen real era 4,228%. La Salida era el
+   único tramo que se había quedado sin el truco. (ago-2026, lo cazó Fran en una captura de Sara
+   Araico, 100 Braza 7-mar.) */
+function pcSalCmp(d,B){
+  const ad=Math.abs(d);
+  const bor=!!B&&((d>B[1]&&ad.toFixed(1)===B[1].toFixed(1))||(d<B[0]&&ad.toFixed(1)===Math.abs(B[0]).toFixed(1)));
+  const f=nc(ad.toFixed(bor?2:1));
+  return d>=0?`un <b>${f}%</b> más lento que`:`un <b>${f}%</b> más rápido que`;
+}
 /* Único sustantivo del motor que se refiere a la persona: hay que declinarlo.
    El resto del texto usa participios (has salido, has sostenido), que no llevan género. */
 function ESTILISTA(){return sexFilter==="M"?"un buen estilista":"una buena estilista";}
@@ -1186,7 +1197,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
         const dv=(c-m)/m*100,sc=pcScore1(dv,B[0],B[1],B[2]);
         rows.push(pcRow(((i+1)*step)+"m",vals[i],pcNom(i,cs.length,true),pcNivel(sc),bw(c)));
       });
-      if(sal)notes.push({k:pcNivel(sSal).key,m:step+" m · Salida",t:`Has pasado el primer ${step} ${pcSalCmp(sal.d)} tu mejor 50${pcRefF(sal,fecha)} (en esta distancia lo normal es ${nc(sal.B[0])}–${nc(sal.B[1])}%).`+
+      if(sal)notes.push({k:pcNivel(sSal).key,m:step+" m · Salida",t:`Has pasado el primer ${step} ${pcSalCmp(sal.d,sal.B)} tu mejor 50${pcRefF(sal,fecha)} (en esta distancia lo normal es ${nc(sal.B[0])}–${nc(sal.B[1])}%).`+
         pcSalTxt(sal,gcv,dist,sSal,salResc,tr)});
       // 65% regularidad + 20% Salida + 15% Transición, normalizado a lo disponible
       const parts=[[gcv,.65]];
@@ -1280,7 +1291,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
     const g=Math.round(s1==null?s2:(s1*0.5+s2*0.5));
     rows.push(pcRow("50m",vals[0],"Salida",s1==null?{sc:"–",lab:"Sin 50 de referencia",key:"na"}:pcSalNiv(sal,s1),bw(cs[0])));
     rows.push(pcRow("100m",vals[1],"Final",pcNivel(s2),bw(cs[1])));
-    if(sal)notes.push({k:pcNivel(s1).key,m:"50 m · Salida",t:`Has pasado el primer 50 ${pcSalCmp(sal.d)} tu mejor 50 de ${est.toLowerCase()}${pcRefF(sal,fecha)} (lo normal es ${nc(sal.B[0])}–${nc(sal.B[1])}%).`+
+    if(sal)notes.push({k:pcNivel(s1).key,m:"50 m · Salida",t:`Has pasado el primer 50 ${pcSalCmp(sal.d,sal.B)} tu mejor 50 de ${est.toLowerCase()}${pcRefF(sal,fecha)} (lo normal es ${nc(sal.B[0])}–${nc(sal.B[1])}%).`+
       pcSalTxt(sal,s2,100,s1,resc,null,caidaFuera)});
     else notes.push({k:"na",m:"50 m · Salida",t:`La salida no se puede valorar: aún no tienes ninguna marca de 50 ${est.toLowerCase()} con la que compararla.`});
     /* Si la salida se rescató, la Salida dice "el segundo largo lo has aguantado" y aquí sale una
@@ -1373,7 +1384,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
     rows.push(pcRow("100m",vals[1],"Crucero",pcNivel(s2),bw(cs[1])));
     rows.push(pcRow("150m",vals[2],"Crucero",pcNivel(s3),bw(cs[2])));
     rows.push(pcRow("200m",vals[3],"Final",pcNivel(sFin),bw(cs[3])));
-    if(sal)notes.push({k:pcNivel(sSal).key,m:"50 m · Salida",t:`Has pasado el primer 50 ${pcSalCmp(sal.d)} tu mejor 50 de ${est.toLowerCase()}${pcRefF(sal,fecha)} (lo normal en un 200 es ${nc(sal.B[0])}–${nc(sal.B[1])}%).`+
+    if(sal)notes.push({k:pcNivel(sSal).key,m:"50 m · Salida",t:`Has pasado el primer 50 ${pcSalCmp(sal.d,sal.B)} tu mejor 50 de ${est.toLowerCase()}${pcRefF(sal,fecha)} (lo normal en un 200 es ${nc(sal.B[0])}–${nc(sal.B[1])}%).`+
       pcSalTxt(sal,sFin,200,sSal,salResc,tr)});
     else notes.push({k:"na",m:"50 m · Salida",t:`La salida no se puede valorar: aún no tienes ninguna marca de 50 ${est.toLowerCase()} con la que compararla.`});
     const tnota=pcTraNota(tr,sSal!=null);if(tnota)notes.push(tnota);
