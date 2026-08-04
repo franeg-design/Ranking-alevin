@@ -498,7 +498,7 @@ const CLUB_LOGOS={"CN Menditxo":"data:image/webp;base64,UklGRqQTAABXRUJQVlA4WAoA
 function logoImg(club,cls){const src=CLUB_LOGOS[club];return src?`<img class="clubLogo${cls?" "+cls:""}" src="${src}" alt="">`:"";}
 const TABLES={"2025/26":{BASE:{F:{"50 Libre":22.83,"100 Libre":50.25,"200 Libre":110.31,"400 Libre":230.25,"800 Libre":477.42,"50 Espalda":25.23,"100 Espalda":54.02,"200 Espalda":118.04,"50 Braza":28.37,"100 Braza":62.36,"200 Braza":132.50,"50 Mariposa":23.94,"100 Mariposa":52.71,"200 Mariposa":119.32,"100 Estilos":55.11,"200 Estilos":121.63,"400 Estilos":255.48},M:{"50 Libre":19.90,"100 Libre":44.84,"200 Libre":98.61,"400 Libre":212.25,"800 Libre":440.46,"50 Espalda":22.11,"100 Espalda":48.33,"200 Espalda":105.63,"50 Braza":24.95,"100 Braza":55.28,"200 Braza":120.16,"50 Mariposa":21.32,"100 Mariposa":47.71,"200 Mariposa":106.85,"100 Estilos":49.28,"200 Estilos":108.88,"400 Estilos":234.81}},MIN_ESP:{F:{"50 Libre":{"2013":"28.35","2014":"29.85"},"100 Libre":{"2013":"1:02.15","2014":"1:05.70"},"200 Libre":{"2013":"2:17.65","2014":"2:24.50"},"400 Libre":{"2013":"4:48.00","2014":"5:04.35"},"800 Libre":{"2013":"9:58.35","2014":"10:37.50"},"50 Espalda":{"2013":"31.90","2014":"34.35"},"100 Espalda":{"2013":"1:09.35","2014":"1:13.30"},"200 Espalda":{"2013":"2:30.65","2014":"2:40.90"},"50 Braza":{"2013":"36.25","2014":"38.35"},"100 Braza":{"2013":"1:19.70","2014":"1:24.35"},"200 Braza":{"2013":"2:51.50","2014":"3:01.20"},"50 Mariposa":{"2013":"31.15","2014":"33.20"},"100 Mariposa":{"2013":"1:08.80","2014":"1:13.10"},"200 Mariposa":{"2013":"2:38.20","2014":"2:49.45"},"200 Estilos":{"2013":"2:33.35","2014":"2:42.05"},"400 Estilos":{"2013":"5:26.75","2014":"5:46.15"}},M:{"50 Libre":{"2013":"26.75","2014":"28.70"},"100 Libre":{"2013":"59.95","2014":"1:04.25"},"200 Libre":{"2013":"2:11.55","2014":"2:20.85"},"400 Libre":{"2013":"4:39.70","2014":"4:57.30"},"800 Libre":{"2013":"9:41.75","2014":"10:23.85"},"50 Espalda":{"2013":"31.15","2014":"33.75"},"100 Espalda":{"2013":"1:06.70","2014":"1:12.05"},"200 Espalda":{"2013":"2:25.95","2014":"2:35.75"},"50 Braza":{"2013":"34.90","2014":"37.90"},"100 Braza":{"2013":"1:17.80","2014":"1:23.60"},"200 Braza":{"2013":"2:46.65","2014":"2:55.30"},"50 Mariposa":{"2013":"29.60","2014":"32.30"},"100 Mariposa":{"2013":"1:07.45","2014":"1:12.60"},"200 Mariposa":{"2013":"2:32.95","2014":"2:44.70"},"200 Estilos":{"2013":"2:28.15","2014":"2:37.75"},"400 Estilos":{"2013":"5:22.25","2014":"5:41.55"}}},MIN_EH:{F:{"50 Libre":{"2013":"32.71","2014":"34.49"},"100 Libre":{"2013":"1:12.00","2014":"1:15.92"},"200 Libre":{"2013":"2:38.05","2014":"2:46.65"},"400 Libre":{"2013":"5:29.89","2014":"5:47.86"},"800 Libre":{"2013":"11:24.03","2014":"12:01.28"},"50 Espalda":{"2013":"39.28","2014":"42.12"},"100 Espalda":{"2013":"1:24.10","2014":"1:30.17"},"200 Espalda":{"2013":"3:03.77","2014":"3:17.04"},"50 Braza":{"2013":"42.86","2014":"45.65"},"100 Braza":{"2013":"1:34.21","2014":"1:40.35"},"200 Braza":{"2013":"3:20.18","2014":"3:33.21"},"50 Mariposa":{"2013":"37.51","2014":"40.28"},"100 Mariposa":{"2013":"1:22.59","2014":"1:28.68"},"200 Mariposa":{"2013":"3:06.95","2014":"3:20.74"},"200 Estilos":{"2013":"3:05.92","2014":"3:18.52"},"400 Estilos":{"2013":"6:30.51","2014":"6:56.98"}},M:{"50 Libre":{"2013":"30.98","2014":"33.22"},"100 Libre":{"2013":"1:09.81","2014":"1:14.85"},"200 Libre":{"2013":"2:33.52","2014":"2:44.60"},"400 Libre":{"2013":"5:30.44","2014":"5:54.30"},"800 Libre":{"2013":"11:25.74","2014":"12:15.24"},"50 Espalda":{"2013":"37.81","2014":"41.61"},"100 Espalda":{"2013":"1:22.64","2014":"1:30.96"},"200 Espalda":{"2013":"3:00.62","2014":"3:18.80"},"50 Braza":{"2013":"40.15","2014":"43.40"},"100 Braza":{"2013":"1:28.95","2014":"1:36.16"},"200 Braza":{"2013":"3:13.36","2014":"3:29.01"},"50 Mariposa":{"2013":"36.46","2014":"40.13"},"100 Mariposa":{"2013":"1:21.58","2014":"1:29.79"},"200 Mariposa":{"2013":"3:02.71","2014":"3:21.10"},"200 Estilos":{"2013":"2:57.71","2014":"3:12.84"},"400 Estilos":{"2013":"6:23.24","2014":"6:55.87"}}},REC_ALAVA:{"F":{"50 Libre":{"2013":"28.43","2014":"29.48"},"100 Libre":{"2013":"1:01.09","2014":"1:04.86"},"200 Libre":{"2013":"2:12.62","2014":"2:18.95"},"400 Libre":{"2013":"4:39.60","2014":"4:56.70"},"800 Libre":{"2013":"9:31.87","2014":"10:03.69"},"50 Espalda":{"2013":"33.23","2014":"34.47"},"100 Espalda":{"2013":"1:08.53","2014":"1:14.40"},"200 Espalda":{"2013":"2:26.77","2014":"2:38.80"},"50 Braza":{"2013":"35.88","2014":"37.43"},"100 Braza":{"2013":"1:14.07","2014":"1:18.97"},"200 Braza":{"2013":"2:44.71","2014":"2:50.86"},"50 Mariposa":{"2013":"31.73","2014":"32.73"},"100 Mariposa":{"2013":"1:08.43","2014":"1:11.21"},"200 Mariposa":{"2013":"2:31.12","2014":"2:50.86"},"100 Estilos":{"2013":"1:14.55","2014":"1:19.20"},"200 Estilos":{"2013":"2:26.20","2014":"2:38.22"},"400 Estilos":{"2013":"5:17.74","2014":"5:51.73"}},"M":{"50 Libre":{"2013":"26.70","2014":"28.44"},"100 Libre":{"2013":"59.11","2014":"1:01.45"},"200 Libre":{"2013":"2:07.67","2014":"2:18.37"},"400 Libre":{"2013":"4:29.60","2014":"4:49.26"},"800 Libre":{"2013":"9:19.26","2014":"10:12.06"},"50 Espalda":{"2013":"29.78","2014":"32.19"},"100 Espalda":{"2013":"1:01.99","2014":"1:09.15"},"200 Espalda":{"2013":"2:21.55","2014":"2:33.81"},"50 Braza":{"2013":"33.97","2014":"37.61"},"100 Braza":{"2013":"1:12.68","2014":"1:21.20"},"200 Braza":{"2013":"2:39.52","2014":"2:56.53"},"50 Mariposa":{"2013":"29.34","2014":"30.88"},"100 Mariposa":{"2013":"1:02.92","2014":"1:09.06"},"200 Mariposa":{"2013":"2:17.37","2014":"2:36.10"},"100 Estilos":{"2013":"1:10.28","2014":"1:16.19"},"200 Estilos":{"2013":"2:20.90","2014":"2:31.89"},"400 Estilos":{"2013":"5:09.80","2014":"5:34.51"}}}}};
 let BASE,MIN_ESP,MIN_EH,REC_ALAVA;
-function applySeasonTables(){const ks=Object.keys(TABLES).sort();const t=TABLES[season]||TABLES[ks[ks.length-1]];BASE=t.BASE;MIN_ESP=t.MIN_ESP;MIN_EH=t.MIN_EH;REC_ALAVA=t.REC_ALAVA;}
+function applySeasonTables(){const ks=Object.keys(TABLES).sort();const t=TABLES[season]||TABLES[ks[ks.length-1]];BASE=t.BASE;MIN_ESP=t.MIN_ESP;MIN_EH=t.MIN_EH;REC_ALAVA=t.REC_ALAVA;applySeasonPace();}
 function seasonOf(f){const y=+String(f).slice(0,4),m=+String(f).slice(5,7);if(!y)return"";const st=m>=9?y:y-1;return st+"/"+String((st+1)%100).padStart(2,"0");}
 function initSeasons(){SEASONS=[...new Set(ALLRECS.map(r=>seasonOf(r.fecha)).filter(Boolean))].sort();if(!SEASONS.includes(season))season=SEASONS[SEASONS.length-1]||"";}
 function fillSeasons(){const multi=SEASONS.length>1;const sel=el("seasonSel");if(sel){sel.innerHTML=SEASONS.map(s2=>`<option value="${s2}"${s2===season?" selected":""}>Temporada ${s2}</option>`).join("");sel.style.display=multi?"":"none";}const lab=el("seasonLabel");if(lab){lab.textContent=season?("Temporada "+season):"";lab.style.display=multi?"none":"";}}
@@ -709,7 +709,7 @@ function pcScore1(d,o,a,x){
    CONTROL: con este método PC_100 se reproduce EXACTA en los cuatro estilos (6,3-9,1 / 2,9-5 /
    9,6-11,7 / 13,8-16,2). Si una recalibración futura no reproduce PC_100, el método está mal.
    Celdas con n<12 conservan el valor original (200 Braza, 200 Mariposa, 800 Libre). */
-const PC_SAL={
+let PC_SAL={
   "100 Libre":[6,9.4,3.1,11.4,2.4,11.7],
   "100 Espalda":[4.6,6,3.3,8,0.7,9.2],
   "100 Braza":[1,4.2,-0.4,6.8,-2.1,8.2],
@@ -721,16 +721,16 @@ const PC_SAL={
   "400 Libre":[16.5,21.3,13.1,23.2,12.1,24.4],
   "800 Libre":[15.8,22.1,14,30,10.6,33]};
 // 200 — desviación de cada largo de crucero respecto a la media del crucero: [p35,p85,p95]
-const PC_CRU={Libre:[1.3,1.9,2.3],Espalda:[.7,1.5,2.4],Braza:[1.2,2.8,3.6],Mariposa:[1.1,4.5,4.6]};
+let PC_CRU={Libre:[1.3,1.9,2.3],Espalda:[.7,1.5,2.4],Braza:[1.2,2.8,3.6],Mariposa:[1.1,4.5,4.6]};
 // 200 — último largo vs media del crucero (negativo = cierra fuerte): [p65,p85,p95]
-const PC_FIN={Libre:[-1.5,.7,1.1],Espalda:[-3.2,-2,.2],Braza:[-.4,2.8,3.5],Mariposa:[-2.2,.8,2.3]};
+let PC_FIN={Libre:[-1.5,.7,1.1],Espalda:[-3.2,-2,.2],Braza:[-.4,2.8,3.5],Mariposa:[-2.2,.8,2.3]};
 /* TRANSICIÓN = (ritmo de crucero − 1er 50) / 1er 50 × 100. El escalón que hay entre el largo
    de salida (con poyete y sin viraje de entrada) y el ritmo al que luego se instala la carrera.
    Mide algo DISTINTO del margen de salida: sobre 143 carreras la correlación entre ambos es
    r = 0,08. Bandas [p35,p65,p15,p85,p5,p95] de percentiles reales de esta misma app.
    Escalón GRANDE = salió por encima del ritmo que puede sostener (se paga; baja hasta 0).
    Escalón PEQUEÑO = salió contenida o tiene un crucero muy fuerte (ambiguo; no baja de 50). */
-const PC_TRA={
+let PC_TRA={
   "200 Libre":[12.1,14.5,10.8,17.7,9.6,20.1],"200 Espalda":[8.1,10.5,6.4,12.2,5.4,13.6],
   "200 Braza":[10.6,14.4,8.1,15.7,7.2,18],"200 Mariposa":[18.3,26.3,16.1,27.5,13.5,27.9],
   "400 Libre":[12.4,14.2,10.5,17.3,10.1,18.9],"800 Libre":[13.4,14.6,11,16.6,10.7,18.7]};
@@ -975,30 +975,52 @@ function bestRace100(nad,est,fecha){
   let b=null;for(const x of a){if(x.f>=fecha)break;if(!b||x.T<b.T)b=x;}return b;
 }
 // 100 m — caída del 2º largo: [p35,p65,p15,p85,p5,p95]
-const PC_100={Libre:[6.3,9.1,4.6,11.1,2.6,12.8],Espalda:[2.9,5,2,6.9,-1.1,8.8],Braza:[9.6,11.7,8.1,13.9,5.5,17],Mariposa:[13.8,16.2,11.4,22.2,10.7,23.1]};
+let PC_100={Libre:[6.3,9.1,4.6,11.1,2.6,12.8],Espalda:[2.9,5,2,6.9,-1.1,8.8],Braza:[9.6,11.7,8.1,13.9,5.5,17],Mariposa:[13.8,16.2,11.4,22.2,10.7,23.1]};
 // 200 m — mitad: [p35,p65,p15,p85,p5,p95] · central (T3-T2): [p35,p85,p95]
-const PC_200={Libre:[5.9,7.8,4.4,9.5,0.6,10.5],Espalda:[1.9,3.7,0.8,5.2,-2.1,5.7],Braza:[5.4,8.3,2.8,9,2.6,12.2],Mariposa:[6.3,13.4,4.6,15.7,3.8,16.6]};
-const PC_200C={Libre:[2.4,6.2,8.5],Espalda:[0.3,3,4.9],Braza:[0.2,4.7,5.7],Mariposa:[1.8,9.2,9.6]};
-const PC_200F=[0,1,2.5];               // último 50 vs 3º (negativo = cierre fuerte = 100)
+let PC_200={Libre:[5.9,7.8,4.4,9.5,0.6,10.5],Espalda:[1.9,3.7,0.8,5.2,-2.1,5.7],Braza:[5.4,8.3,2.8,9,2.6,12.2],Mariposa:[6.3,13.4,4.6,15.7,3.8,16.6]};
+let PC_200C={Libre:[2.4,6.2,8.5],Espalda:[0.3,3,4.9],Braza:[0.2,4.7,5.7],Mariposa:[1.8,9.2,9.6]};
+let PC_200F=[0,1,2.5];               // último 50 vs 3º (negativo = cierre fuerte = 100)
 // Fondo — CV% de largos: [p35,p85,p95]
 /* RECALIBRADO jul-2026 al sacar el último largo del crucero. Los valores anteriores
    (400:[2.4,3.5,4.7], 800:[2.4,3.9,4.3]) medían la dispersión INCLUYENDO el último largo, que
    acelera fuerte y era la mayor fuente de variación: al quitarlo el CV baja de golpe y con las
    bandas viejas el 69% de las carreras de fondo salía en óptimo. Mismo método de siempre: mejor
    carrera de cada nadador/a, mitad con mejor marca, p35/p85/p95. n=22 (400) y n=14 (800). */
-const PC_CV={400:[1.2,2.5,3.6],800:[1.3,3.3,3.7]};
+let PC_CV={400:[1.2,2.5,3.6],800:[1.3,3.3,3.7]};
 /* DERIVA DEL CRUCERO (jul-2026). El CV mide dispersión, no TENDENCIA: una carrera que se cae escalón
    a escalón de forma ordenada tiene CV bajo y se llevaba un "ritmo de crucero admirable" (8 casos,
    uno de ellos con los largos subiendo de 42,25 a 44,98). Esto mide la pendiente de los largos de
    crucero por regresión lineal, en % del ritmo medio y por largo. Una sola cola: acelerar no resta.
    Banda [p65,p85,p95] con las dos distancias juntas (n=47): por separado el 800 daba p85=p65 con
    n=14, degenerado. La deriva es adimensional, así que se pueden juntar. */
-const PC_DER=[0.7,1.0,1.6];
+let PC_DER=[0.7,1.0,1.6];
 // IM — % del total por estilo (medianas reales) y desviación absoluta [p35,p85,p95]
-const PC_IM={Mariposa:23.1,Espalda:25.5,Braza:28.9,Libre:22.4};
-const PC_IM4={Mariposa:25.1,Espalda:25,Braza:28.1,Libre:21.9};
+let PC_IM={Mariposa:23.1,Espalda:25.5,Braza:28.9,Libre:22.4};
+let PC_IM4={Mariposa:25.1,Espalda:25,Braza:28.1,Libre:21.9};
 // desviación por estilo: percentiles de la MAYOR desviación positiva de cada carrera [p35,p85,p95]
-const PC_IMD={200:[.9,1.9,2.1],400:[.7,1.7,2.7]};
+let PC_IMD={200:[.9,1.9,2.1],400:[.7,1.7,2.7]};
+/* TABLAS DE RITMO POR TEMPORADA (ago-2026). Antes eran constantes únicas, así que recalibrar en
+   junio habría reescrito las notas de la temporada anterior, ya publicadas desde hacía un año.
+   Ahora se congelan igual que BASE / MIN_ESP / MIN_EH / REC_ALAVA en `TABLES`.
+   El registro guarda las referencias declaradas arriba, así que **el contenido de las tablas no se
+   ha tocado**: solo cambia quién las asigna.
+   Para añadir una temporada, pegar el bloque que imprime `recalibrar.py`:
+       PC_TABLES["2026/27"]={PC_SAL:{…},PC_100:{…}, …};
+   No hace falta repetir las tablas que no cambien: lo que falte se hereda de la temporada calibrada
+   más reciente que no sea posterior a la que se está viendo. Por eso una temporada recién empezada
+   sigue puntuando con las bandas del año anterior hasta que se calibre la suya, que es lo correcto
+   —con dos competiciones no hay muestra— y no deja ningún hueco sin tabla. */
+const PC_TABLES={"2025/26":{PC_SAL,PC_CRU,PC_FIN,PC_TRA,PC_100,PC_200,PC_200C,PC_200F,PC_CV,PC_DER,PC_IM,PC_IM4,PC_IMD}};
+function applySeasonPace(){
+  const ks=Object.keys(PC_TABLES).sort();
+  let k=ks[0];
+  for(const x of ks) if(!season||x<=season) k=x;   // la más reciente que no sea posterior
+  let t={};
+  for(const x of ks){ if(x>k) break; t=Object.assign(t,PC_TABLES[x]); }  // herencia acumulativa
+  PC_SAL=t.PC_SAL; PC_CRU=t.PC_CRU; PC_FIN=t.PC_FIN; PC_TRA=t.PC_TRA;
+  PC_100=t.PC_100; PC_200=t.PC_200; PC_200C=t.PC_200C; PC_200F=t.PC_200F;
+  PC_CV=t.PC_CV; PC_DER=t.PC_DER; PC_IM=t.PC_IM; PC_IM4=t.PC_IM4; PC_IMD=t.PC_IMD;
+}
 const IM_LEGS=["Mariposa","Espalda","Braza","Libre"];
 function pcRow(met,tiempo,nom,n,w){
   return `<div class="pcR"><div class="pcRh"><span class="pcRm">${esc(met)}</span><span class="pcRt mono">${esc(tiempo)}</span><span class="pcRn">${esc(nom)}</span><span class="pcRl pcL-${n.key}">${n.lab}</span><span class="pcRs pcL-${n.key}">${n.sc}</span></div><div class="pcBt"><i class="pcBf pcF-${n.key}" style="width:${Math.max(6,Math.min(100,w))}%"></i></div></div>`;
