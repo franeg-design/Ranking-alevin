@@ -762,9 +762,9 @@ function pcTraNota(tr,haySal){
   /* Guardarraíl de arriba: `d>B[1]` es binario, así que basta pasarse una décima del borde para
      disparar el texto de reproche con una nota de 99. Si el tramo apenas se resiente, se dice así. */
   const casi=tr.sc!=null&&tr.sc>=90;
-  const t=(d>B[1]&&casi)?`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, un pelo por encima de lo habitual (${nc(B[0])}–${nc(B[1])}%), pero tan poco que no cuenta como error.`
-        :d>B[1]?`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, por encima de lo habitual (${nc(B[0])}–${nc(B[1])}%): ${haySal===false?"hay un escalón grande entre el primer largo y el ritmo de carrera":"has salido por encima del ritmo que luego puedes sostener"}.`
-        :d<B[0]?`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, por debajo de lo habitual (${nc(B[0])}–${nc(B[1])}%): ${haySal===false?"el ritmo de carrera te queda cerca del de salida, así que has entrado en él sin escalón":"o has salido con freno, o sostienes muy bien el ritmo"}. No resta: es el reparto que suele aparecer en las mejores carreras.`
+  const t=(d>B[1]&&casi)?`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, un pelo más de lo habitual (${nc(B[0])}–${nc(B[1])}%), pero tan poco que no cuenta como error.`
+        :d>B[1]?`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, más de lo habitual (${nc(B[0])}–${nc(B[1])}%): ${haySal===false?"hay un escalón grande entre el primer largo y el ritmo de carrera":"has salido más rápido de lo que luego puedes sostener"}.`
+        :d<B[0]?`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, menos de lo habitual (${nc(B[0])}–${nc(B[1])}%): ${haySal===false?"tu ritmo de carrera está cerca del de salida, así que has entrado en él sin escalón":"o has salido con freno, o sostienes muy bien el ritmo"}. No resta: comparando a ${NADADOR()} consigo ${sexFilter==="M"?"mismo":"misma"}, este es el reparto que aparece en sus mejores carreras, no en las peores.`
                :`Del primer 50 al ritmo de crucero subes un <b>${f}</b>, justo en lo habitual (${nc(B[0])}–${nc(B[1])}%): has enganchado bien el ritmo de carrera.`;
   return {k:tr.ns?"na":pcNivel(tr.sc).key,m:"50→100 m · Transición",
           t:t+(tr.ns?" <i>En esta prueba aún hay pocas carreras registradas, así que este tramo no puntúa.</i>":"")};
@@ -784,6 +784,22 @@ function pcSalida(prueba,t1cs,nadadora,fecha){
   const B=PC_SAL[prueba];if(!B)return null;
   const est=prueba.split(" ")[1],be=best50E(nadadora,est,fecha);
   if(!be)return null;
+  /* DESCARTE DE REFERENCIA DESACTUALIZADA (ago-2026). Si en algún 100 de ese estilo ya ha nadado un
+     PRIMER LARGO más rápido que su mejor 50 suelto, ese 50 ha dejado de ser una vara válida: el
+     primer largo de un 100 se nada dosificando, así que batirlo solo puede significar que la marca
+     de 50 se quedó atrás. Es frecuente en formación, donde se mejora sin parar y se tarda meses en
+     volver a competir un 50.
+     Lo destapó Xabier Ibarrarán (100 Braza, 14-jun): 45.53 en el primer largo contra un mejor 50 de
+     48.05 de febrero. La app le daba 0 en Salida y global 47 ("Se resiente") en la que era su mejor
+     marca de la vida, con 4,49 s de mejora.
+     ⚠️ REGLA GLOBAL, no por carrera: basta con que UN 100 lo haya batido para que el 50 quede
+     invalidado en TODAS las distancias. Si se comprobara carrera a carrera casi nunca saltaría en
+     200 y fondo —ahí el primer 50 va un 10-13% y un 16-21% más lento— aunque la referencia esté
+     rotísima. Medido: regla global 55 cienes y 12 doscientos; por carrera, 47 y 9.
+     Devuelve un objeto con `inval` en vez de null para que el texto pueda EXPLICAR por qué no hay
+     nota, que es distinto de no haber nadado nunca un 50. */
+  const t1m=bestT1(nadadora,est,fecha);
+  if(t1m!=null&&t1m<be.cs)return {inval:true,b50:be.cs,b50f:be.f,t1m:t1m};
   const b=be.cs,d=(t1cs-b)/b*100;
   let sc;
   if(d<B[0])sc=pcOut(B[0]-d,B[0]-B[2],B[0]-B[4],30,0);
@@ -802,14 +818,61 @@ function pcSalida(prueba,t1cs,nadadora,fecha){
    El año solo se escribe si no coincide con el de la carrera: dentro de una temporada solo hay un
    diciembre, pero al acumular temporadas dejaría de ser cierto. */
 const PC_MESES=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+function pcMes(f,ref){
+  const p=String(f).split("-");if(p.length<3)return "";
+  const m=PC_MESES[(+p[1])-1];if(!m)return "";
+  return m+(p[0]!==String(ref).slice(0,4)?" de "+p[0]:"");
+}
 function pcRefF(sal,fecha){
   if(!sal||!sal.b50f)return "";
   /* 134 de 503 referencias son del MISMO día: nadó ese 50 en la misma competición. Escribir "de
      junio" ahí desperdicia justo lo que importa —que la vara es de hoy— y suena raro. */
-  if(sal.b50f===fecha)return ", de esa misma competición";
-  const p=String(sal.b50f).split("-");if(p.length<3)return "";
-  const m=PC_MESES[(+p[1])-1];if(!m)return "";
-  return ", de "+m+(p[0]!==String(fecha).slice(0,4)?" de "+p[0]:"");
+  if(sal.b50f===fecha)return ", que es de esta misma competición";
+  const m=pcMes(sal.b50f,fecha);
+  return m?", registrado en "+m:"";
+}
+/* COMPARACIÓN ESTRATÉGICA (ago-2026). Segunda lectura de la salida en el 100: el primer largo de
+   hoy contra el primer largo de su MEJOR 100 anterior del mismo estilo. Responde a "¿planteé la
+   carrera más ofensiva o más conservadora que en mi mejor versión?".
+   ⚠️ SOLO TEXTO, NUNCA NOTA, y esto es deliberado. Medido sobre 240 carreras: correlaciona 0,88
+   con la mejora del TIEMPO TOTAL y solo 0,34 con el cambio de reparto real. O sea que mide sobre
+   todo si hoy nadó más rápido en general, no cómo repartió. El propio Xabier lo enseña: su primer
+   largo bajó 3,9% pero su tiempo total bajó 4,4%, así que en realidad repartió MÁS conservador y
+   la métrica cruda diría lo contrario.
+   Se probó corregirla comparando el PESO del primer largo sobre el total (como los Estilos) y no
+   vale: en un 100 con dos largos, peso y caída son la misma medida (r=−1,00 exacto), así que la
+   Salida y el Final puntuarían el mismo número dos veces. Con dos parciales solo hay UNA dimensión
+   de información. Por eso la nota se queda en la caída y esto acompaña como contexto. */
+function pcEstrat(nadadora,est,fecha,t1cs,t2cs){
+  const b=bestRace100(nadadora,est,fecha);
+  if(!b||!b.t1||!b.T)return null;
+  /* La CIFRA es la comparación cruda que se pide enseñar. El ADJETIVO (más ofensivo / más
+     conservador) NO puede salir de ella: mide progresión, no reparto. Sale del PESO del primer
+     largo sobre el total, que es inmune a la mejora — si bajan los dos largos por igual, el peso no
+     se mueve. Xabier lo enseña: primer largo 3,9% más rápido, pero el peso sube de 46,9% a 47,2%,
+     o sea que repartió más CONSERVADOR. Decir "más ofensivo" ahí sería falso.
+     Peso menor = primer largo relativamente más rápido = planteamiento más ofensivo.
+     Umbral 0,5 puntos: es el equivalente en peso a los ~2,3 puntos que la caída de un mismo nadador
+     se mueve sola entre carreras, ya documentado para la línea gris. Por debajo no se nombra. */
+  const p=(t1cs-b.t1)/b.t1*100, m=pcMes(b.f,fecha);
+  const pesoH=t1cs/(t1cs+t2cs)*100, pesoB=b.t1/b.T*100, dPeso=pesoH-pesoB;
+  return {p:p,f:b.f,mes:m,t1:b.t1,dPeso:dPeso};
+}
+/* Veredicto de la salida cuando NO hay nota propia (referencia invalidada o inexistente). Se gradúa
+   con la NOTA DEL FINAL, que es la que pinta el color de la carrera: así el texto no puede decir
+   "demasiado agresiva" al lado de una pastilla verde ni al revés. Es la garantía estructural de
+   siempre, aplicada al caso nuevo. */
+function pcSalSinRef(s2,caidaFuera,d,B,est){
+  /* Lleva la CIFRA y el RANGO, con el mismo formato que la tarjeta del Final ("el rango bueno en X
+     es A–B%"). Se probó decirlo en vago —"un punto por encima del rango"— y no vale: sin el número
+     la tarjeta de Salida no se sostiene sola, que es justo lo que hace falta cuando esa tarjeta no
+     lleva nota. (ago-2026) */
+  const sit=d>B[1]?"más de lo que marca el":d<B[0]?"menos de lo que marca el":"dentro del";
+  const r=` El segundo largo se ha caído un <b>${dec(Math.abs(d))}%</b>, ${sit} rango bueno en ${est.toLowerCase()} (${nc(B[0])}–${nc(B[1])}%)`;
+  if(!caidaFuera)return r+": el arranque estuvo bien medido.";
+  if(s2>=70)return r+": la salida fue algo más agresiva de lo que podías sostener.";
+  if(s2>=40)return r+": la salida fue demasiado agresiva para lo que aguantaste.";
+  return r+": saliste mucho más rápido de lo que podías sostener y el final lo ha pagado.";
 }
 /* ETIQUETA DEL TRAMO SALIDA (ago-2026). El semáforo general (Ritmo óptimo…Fatigado) no sirve para
    el primer largo por dos motivos. Uno: "Fatigado" en el 50 de salida es físicamente imposible,
@@ -883,14 +946,35 @@ function best50E(nad,est,fecha){
 }
 /* Compatibilidad: quien solo quiera el número. */
 function best50(nad,est,fecha){const e=best50E(nad,est,fecha);return e?e.cs:null;}
+/* ÍNDICE DE PRIMEROS LARGOS DE 100 (ago-2026). Paralelo al de los 50 sueltos. Sirve para dos cosas
+   nuevas: invalidar una referencia de 50 que se ha quedado atrás, y dar la referencia ESTRATÉGICA
+   (el planteamiento de su mejor 100 anterior). Se reconstruye con el CSV, igual que _B50. */
+let _T1=null;
+function _t1Init(){
+  if(_T1)return;
+  _T1={};
+  ALLRECS.forEach(r=>{
+    if(String(r.prueba).indexOf("100 ")!==0||String(r.prueba).indexOf("Estilos")>=0)return;
+    const v=String(r.parciales||"").split(";").map(s=>s.trim()).filter(Boolean);
+    if(v.length!==2)return;
+    const t1=toCs(v[0]),T=toCs(r.tiempo);
+    if(!isFinite(t1)||!isFinite(T))return;
+    const k=r.nadadora+"|"+r.prueba.split(" ")[1];
+    (_T1[k]=_T1[k]||[]).push({f:r.fecha,T:T,t1:t1});
+  });
+  Object.keys(_T1).forEach(k=>_T1[k].sort((a,b)=>a.f<b.f?-1:(a.f>b.f?1:0)));
+}
+/* El mejor primer largo logrado en CUALQUIER 100 hasta esa fecha (incluida). */
+function bestT1(nad,est,fecha){
+  _t1Init();const a=_T1[nad+"|"+est];if(!a||!fecha)return null;
+  let m=null;for(const x of a){if(x.f>fecha)break;if(m==null||x.t1<m)m=x.t1;}return m;
+}
+/* Su MEJOR 100 ANTERIOR por tiempo, con su primer parcial: la referencia ESTRATÉGICA. */
+function bestRace100(nad,est,fecha){
+  _t1Init();const a=_T1[nad+"|"+est];if(!a||!fecha)return null;
+  let b=null;for(const x of a){if(x.f>=fecha)break;if(!b||x.T<b.T)b=x;}return b;
+}
 // 100 m — caída del 2º largo: [p35,p65,p15,p85,p5,p95]
-/* VUELTA (jul-2026) = (2º largo − su mejor 50 de ese estilo hasta la fecha) / ese mejor 50.
-   Es la MISMA vara que la Salida, aplicada al otro largo. Sirve para responder "¿pagó la
-   salida fuerte?" sin que la respuesta dependa de la salida misma, que es lo que le pasa a
-   la caída (cociente con el 1er largo dentro). Rangos gordos porque el 2º largo sale de
-   viraje y con fatiga: el listón son los percentiles de la categoría, que arrastran el
-   mismo hándicap. [p35,p65,p85,p95]. Libre n=152 · Espalda n=84 · Braza n=71 · Mariposa n=24. */
-const PC_VUE={Libre:[13.8,16.7,20.4,22.6],Espalda:[8.9,12,13.8,14.6],Braza:[10.5,16.5,20.3,21.9],Mariposa:[26.8,32.7,37.8,39.2]};
 const PC_100={Libre:[6.3,9.1,4.6,11.1,2.6,12.8],Espalda:[2.9,5,2,6.9,-1.1,8.8],Braza:[9.6,11.7,8.1,13.9,5.5,17],Mariposa:[13.8,16.2,11.4,22.2,10.7,23.1]};
 // 200 m — mitad: [p35,p65,p15,p85,p5,p95] · central (T3-T2): [p35,p85,p95]
 const PC_200={Libre:[5.9,7.8,4.4,9.5,0.6,10.5],Espalda:[1.9,3.7,0.8,5.2,-2.1,5.7],Braza:[5.4,8.3,2.8,9,2.6,12.2],Mariposa:[6.3,13.4,4.6,15.7,3.8,16.6]};
@@ -940,6 +1024,10 @@ function pcSalCmp(d,B){
 /* Único sustantivo del motor que se refiere a la persona: hay que declinarlo.
    El resto del texto usa participios (has salido, has sostenido), que no llevan género. */
 function ESTILISTA(){return sexFilter==="M"?"un buen estilista":"una buena estilista";}
+/* Segundo sustantivo referido a la PERSONA, así que hay que declinarlo igual que ESTILISTA()
+   (ago-2026). Si se añade otro, va por aquí — con participios y con adjetivos que concuerdan con
+   sustantivos ("la salida", "la carrera") no hace falta. */
+function NADADOR(){return sexFilter==="M"?"cada nadador":"cada nadadora";}
 function pcT(sc,a){const r=Math.round(sc);return r>=90?a[0]:r>=70?a[1]:r>=50?a[2]:r>=30?a[3]:a[4];}
 const PC_T100={
   Libre:["Has sostenido la técnica y el segundo largo no se te ha ido.",
@@ -1003,7 +1091,7 @@ function pc50Txt(prueba,tiempo,nadadora,fecha){
   const dif=dc<100?"<b>"+dc+" centésimas</b>":"<b>"+nc((dc/100).toFixed(2))+" s</b>";
   if(t<m)return "¡Mejor marca! Le has quitado "+dif+" a tu "+pr+": de "+fmtClock(m)+" a <b>"+fmtClock(t)+"</b>.";
   if(d<PC_50_U)return "Casi: a "+dif+" de tu mejor marca ("+fmtClock(m)+"). La tienes al alcance.";
-  return dif+" por encima de tu mejor marca ("+fmtClock(m)+")."+(prueba.indexOf("50 ")===0?" En un 50 la salida y el viraje pesan muchísimo: es donde más rápido se recupera.":"");
+  return dif+" más lento que tu mejor marca ("+fmtClock(m)+")."+(prueba.indexOf("50 ")===0?" En un 50 la salida y el viraje pesan muchísimo: es donde más rápido se recupera.":"");
 }
 function pcPrevTxt(prueba,parciales,nadadora,fecha){
   const tpl=bestShape(nadadora,prueba,fecha);
@@ -1057,7 +1145,8 @@ function pcSalTxt(sal,fin,dist,sc,resc,tra,finFuera){
     if(resc&&resc.resto)return fin>=70
       ? " Has salido más fuerte de lo habitual y la carrera lo ha sostenido: has enganchado el ritmo de crucero sin escalón y no lo has pagado después. La salida fue acertada."
       : " Has salido más fuerte de lo habitual y has enganchado el ritmo de crucero sin escalón, aunque el tramo final sí lo ha notado.";
-    if(resc)return " Has salido más fuerte de lo habitual y el segundo largo se ha quedado dentro de lo normal: la salida fue acertada.";
+    /* ⚠️ La rama del rescate del 100 vivía aquí y se retiró con la vuelta (ago-2026). Hoy `resc`
+       solo llega desde 200/fondo, siempre con `resto:true`. */
     /* Guardarraíl de arriba, simétrico al sc<30: si la nota de salida es casi perfecta es que
        el exceso fue mínimo. No se le puede decir que salió fuerte y lo pagó. */
     /* Math.round: la pastilla se pinta con la nota redondeada (pcNivel), así que el guardarraíl
@@ -1075,7 +1164,7 @@ function pcSalTxt(sal,fin,dist,sc,resc,tra,finFuera){
      El fin>=70 acota el arreglo a lo que estaba ROTO: con nota baja el texto de siempre ya decía
      la verdad ("aun así el final se ha caído") y no se toca. Solo cambian las 14 carreras en las
      que una nota buena hacía decir lo contrario de lo que enseñaba el número. */
-  if(finFuera&&fin>=70)return " Has salido con freno y aun así la caída se te ha ido por encima de lo normal: el margen está en la resistencia, no en salir más fuerte.";
+  if(finFuera&&fin>=70)return " Has salido con freno y aun así el segundo largo se te ha caído más de lo normal: el margen está en la resistencia, no en salir más fuerte.";
   return fin>=70?" Has salido con freno y te ha sobrado depósito al final: te queda margen para arrancar más firme."
     :" Has salido con freno y aun así el final se ha caído: el margen está en la resistencia, no en salir más fuerte.";
 }
@@ -1091,14 +1180,14 @@ const PC_TCRU200=[" Lo mantienes justo donde más cuesta.",
   " En un 200 esos dos largos deberían ir casi calcados. Series largas a ritmo fijo es lo que más te va a dar."];
 const PC_TFIN200=[" Te quedaba depósito y lo has usado.",
   " Cierre firme: el último largo se ha mantenido pegado al crucero.",
-  " Casi todas cierran por debajo de su crucero: ahí tienes décimas fáciles.",
+  " Casi todo el mundo cierra más rápido que su crucero: ahí tienes décimas fáciles.",
   " Lo habitual es acelerar en el último largo, y esta vez no ha salido.",
-  " Lo habitual en un 200 es cerrar por debajo del crucero y aquí no ha podido ser. Series largas a ritmo constante es lo que más lo mejora."];
+  " Lo habitual en un 200 es cerrar más rápido que el crucero y aquí no ha podido ser. Series largas a ritmo constante es lo que más lo mejora."];
 const PC_TFINF=[" Te quedaba depósito para el final.",
   " Buen cierre para la distancia.",
   " Se te ha ido un poco el ritmo en el último largo.",
-  " El último largo se ha ido por encima del ritmo que llevabas.",
-  " El final se ha ido bastante por encima del ritmo que llevabas: es donde más tiempo se pierde."];
+  " El último largo ha sido más lento que el ritmo que llevabas.",
+  " El final ha sido bastante más lento que el ritmo que llevabas: es donde más tiempo se pierde."];
 function pcAnalyse(prueba,parc,nadadora,fecha){
   const est=prueba.split(" ")[1],dist=parseInt(prueba,10)||0;
   const slots=String(parc||"").split(";").map(x=>x.trim());
@@ -1170,7 +1259,8 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       const sDer=der<=PC_DER[0]?100:pcOut(der-PC_DER[0],PC_DER[1]-PC_DER[0],PC_DER[2]-PC_DER[0],30,0);
       /* el crucero falla si falla la dispersión O la tendencia: se queda con la peor lectura */
       const gcv=Math.min(gcvDisp,sDer);
-      const sal=step===50?pcSalida(prueba,cs[0],nadadora,fecha):null;
+      const salR=step===50?pcSalida(prueba,cs[0],nadadora,fecha):null;
+      const sal=(salR&&!salR.inval)?salR:null, inval=(salR&&salR.inval)?salR:null;
       const last=cs[cs.length-1];
       const tr=step===50?pcTrans(prueba,cs[0],m):null;
       /* ⚠️ SEGUNDO REORDEN DEL BLOQUE (ago-2026). `tr` ya se había subido en jul-2026 por encima de
@@ -1191,7 +1281,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       }
       cs.forEach((c,i)=>{
         if(i===0){
-          rows.push(pcRow(((i+1)*step)+"m",vals[i],"Salida",sal?pcSalNiv(sal,sSal):{sc:"–",lab:"Sin 50 de referencia",key:"na"},bw(c)));
+          rows.push(pcRow(((i+1)*step)+"m",vals[i],"Salida",sal?pcSalNiv(sal,sSal):{sc:"–",lab:inval?"Sin referencia fiable":"Sin 50 de referencia",key:"na"},bw(c)));
           return;
         }
         const dv=(c-m)/m*100,sc=pcScore1(dv,B[0],B[1],B[2]);
@@ -1199,6 +1289,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       });
       if(sal)notes.push({k:pcNivel(sSal).key,m:step+" m · Salida",t:`Has pasado el primer ${step} ${pcSalCmp(sal.d,sal.B)} tu mejor 50${pcRefF(sal,fecha)} (en esta distancia lo normal es ${nc(sal.B[0])}–${nc(sal.B[1])}%).`+
         pcSalTxt(sal,gcv,dist,sSal,salResc,tr)});
+      else if(inval)notes.push({k:"na",m:step+" m · Salida",t:`Ya has nadado el primer largo de un 100 más rápido que tu mejor 50 de ${est.toLowerCase()} (<b>${fmtClock(inval.b50)}</b>${pcRefF(inval,fecha)}), así que esa marca se ha quedado corta y la salida no lleva nota. La regularidad y el escalón hasta el ritmo de crucero sí se valoran igual.`});
       // 65% regularidad + 20% Salida + 15% Transición, normalizado a lo disponible
       const parts=[[gcv,.65]];
       if(sal)parts.push([sSal,.20]);
@@ -1206,7 +1297,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       let g=Math.round(parts.reduce((a,p)=>a+p[0]*p[1],0)/parts.reduce((a,p)=>a+p[1],0));
       if(last<m)g=Math.min(100,g+5);
       const tnota=pcTraNota(tr,!!sal);if(tnota)notes.push(tnota);
-      const cvTxt=`Los largos de crucero se han movido entre sí un <b>${nc(cv.toFixed(cv>B[1]&&cv.toFixed(1)===B[1].toFixed(1)?2:1))}%</b>: ${cv<=B[0]?"por debajo del "+nc(B[0])+"% que se considera un crucero impecable":cv<=B[1]?"dentro del "+nc(B[1])+"% que se considera un ritmo regular":"por encima del "+nc(B[1])+"% que marca el límite de un ritmo regular"}.`;
+      const cvTxt=`Los largos de crucero se han movido entre sí un <b>${nc(cv.toFixed(cv>B[1]&&cv.toFixed(1)===B[1].toFixed(1)?2:1))}%</b>: ${cv<=B[0]?"menos del "+nc(B[0])+"% que se considera un crucero impecable":cv<=B[1]?"dentro del "+nc(B[1])+"% que se considera un ritmo regular":"más del "+nc(B[1])+"% que marca el límite de un ritmo regular"}.`;
       /* Si la tendencia es la que falla hay que decirlo: "se han movido poco entre sí" es verdad y a
          la vez engañoso cuando cada largo es más lento que el anterior. */
       const derTxt=der>PC_DER[0]
@@ -1217,9 +1308,9 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       const dLast=(last-m)/m*100, sLast=last<m?100:pcOut(dLast,B[0],B[1],40,0);
       notes.push({k:pcNivel(sLast).key,m:dist+" m · Final",
         t:last<m?(der>PC_DER[0]
-            ?`Has cerrado el último ${step} un <b>${dec(Math.abs(dLast))}%</b> por debajo de tu ritmo medio de crucero, pero ojo: ese ritmo medio va inflado porque los largos se iban cayendo. Frente al último largo de crucero (${fmtClock(mid[nMid-1])}) el cierre sí ha sido más rápido.`
-            :`Has cerrado el último ${step} un <b>${dec(Math.abs(dLast))}%</b> por debajo de tu ritmo de crucero: te quedaba depósito. Eso es dosificar bien.`)
-                :`El último ${step} va un <b>${dec(dLast)}%</b> por encima de tu ritmo de crucero.`+pcT(sLast,PC_TFINF)});
+            ?`Has cerrado el último ${step} un <b>${dec(Math.abs(dLast))}%</b> más rápido que tu ritmo medio de crucero, pero ojo: ese ritmo medio va inflado porque los largos se iban cayendo. Frente al último largo de crucero (${fmtClock(mid[nMid-1])}) el cierre sí ha sido más rápido.`
+            :`Has cerrado el último ${step} un <b>${dec(Math.abs(dLast))}%</b> más rápido que tu ritmo de crucero: te quedaba depósito. Eso es dosificar bien.`)
+                :`El último ${step} ha sido un <b>${dec(dLast)}%</b> más lento que tu ritmo de crucero.`+pcT(Math.min(sLast,89),PC_TFINF)});
       const n=pcNivel(g);
       const glob=(der>PC_DER[0]?(g>=70?"El tempo se ha sostenido en lo grueso, pero se va cayendo largo tras largo: el último largo de crucero ya no va como el primero. En fondo el tiempo está justo ahí."
                                       :"El ritmo se ha ido soltando por el camino, cada largo un poco más lento que el anterior. Salir un punto más suave y sostener el tempo da tiempos mejores.")
@@ -1238,8 +1329,9 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
   if(dist===100&&cs.length===2){
     const B=PC_100[est]||PC_100.Libre,d=(cs[1]-cs[0])/cs[0]*100;
     // Salida: contra su MMP de 50 (la decisión de salida). Final: la caída (la resistencia).
-    const sal=pcSalida(prueba,cs[0],nadadora,fecha);
-    let s1=sal?sal.sc:null;
+    const salR=pcSalida(prueba,cs[0],nadadora,fecha);
+    const sal=(salR&&!salR.inval)?salR:null, inval=(salR&&salR.inval)?salR:null;
+    const s1=sal?sal.sc:null;
     let s2=d<=B[1]?100:pcOut(d-B[1],B[3]-B[1],B[5]-B[1],30,0);
     /* SALIDA CONDICIONADA (jul-2026). Salir fuerte no es un error por sí mismo: en los datos
        de esta app la salida agresiva va asociada a MEJORES carreras (z FINA intra-sujeto +0,09
@@ -1265,53 +1357,58 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
        Final" al lado de una pastilla de 75, que es cambiar una contradicción por otra. */
     const scTxt=()=>caidaFuera?Math.min(s2,69):s2;
     if(tpl!=null&&d<B[5]&&d-tpl<=2.8)s2=Math.max(s2,75);
-    /* ¿PAGÓ la salida fuerte? Se mira el 2º largo contra su mejor 50 (la vuelta), NO la caída.
-       La caída no sirve de juez aquí: al llevar el 1er largo en el denominador, sube sola
-       cuando se sale más rápido aunque el 2º largo sea idéntico. Medido: dos carreras de la
-       misma nadadora con el 2º largo en 45,53 y 45,48 daban caídas de 4,7% y 11,9%. */
-    const V=PC_VUE[est];
-    /* Guardarraíl simétrico al de la caída: si el 1er largo se sale del 5% más extremo
-       (sal.d < B[4]) la referencia de 50 no es fiable —hay quien nada el 1er largo de un
-       100 más rápido que su mejor 50 suelto— y no se rescata. Ni se premia ni se castiga
-       una medición que no sostiene el peso. */
-    /* Y el rescate NO se aplica si el Final se ha desfondado (s2<=30, caída pasado el p95).
-       Aunque la vuelta diga que no lo pagó, pcSalTxt escribe el texto de la Salida leyendo la
-       nota del Final: sin esta condición saldría una pastilla verde con un texto que dice
-       "el final lo ha acusado". Número y texto tienen que contar lo mismo. */
-    let resc=null;
-    if(sal&&sal.d<sal.B[0]&&sal.d>=sal.B[4]&&V&&sal.b50&&s2>30){
-      const vue=(cs[1]-sal.b50)/sal.b50*100;
-      if(vue<=V[1]){s1=100;resc={v:vue,l:V[1],e:est.toLowerCase()};}
-    }
+    /* ⚠️ AQUÍ VIVÍA EL RESCATE POR LA VUELTA — RETIRADO (ago-2026, decisión de Fran).
+       La vuelta era el 2º largo medido contra su mejor 50, y servía para preguntar "¿pagó la salida
+       fuerte?". Se quita entera: confundía al leerla (dos cifras del MISMO largo, la caída y la
+       vuelta, con veredictos distintos) y colgaba de la misma referencia de 50 que la Salida, así
+       que si ese 50 estaba viejo las dos iban infladas a la vez.
+       Ahora el 2º largo solo se juzga por LA CAÍDA, que compara los dos largos entre sí y no
+       depende de ninguna referencia externa. La constante PC_VUE se ha eliminado.
+       Coste medido: 75 salidas de 100 que iban rescatadas pasan a llevar la penalización. Es el
+       precio de que la Salida y el Final dejen de apoyarse en la misma vara.
+       ⚠️ NO REINTRODUCIR un rescate de la Salida del 100 apoyado en la caída: la caída lleva el 1er
+       largo en el denominador y sube sola al salir más rápido (r=−0,20; dos carreras de la misma
+       nadadora con el 2º largo en 45,53 y 45,48 daban caídas de 4,7% y 11,9%). */
     /* PESO 50/50 (jul-2026). Antes 40/60 sin justificación documentada. Cada mitad es la mitad
        de la carrera, y el 60% recaía en la medida más débil: la caída es un cociente que lleva el
        1er largo en el denominador, así que no es lectura independiente del 2º; la Salida sí lo es
        (referencia externa: su mejor 50). No ablanda: la mitad baja del semáforo se queda en el 23%
        con los dos pesos, solo se reparte con menos extremos. */
     const g=Math.round(s1==null?s2:(s1*0.5+s2*0.5));
-    rows.push(pcRow("50m",vals[0],"Salida",s1==null?{sc:"–",lab:"Sin 50 de referencia",key:"na"}:pcSalNiv(sal,s1),bw(cs[0])));
+    /* La fila distingue TRES estados, no dos: con nota, sin referencia porque nunca nadó un 50, y
+       sin referencia porque la suya quedó invalidada. Los dos últimos van en gris pero dicen cosas
+       distintas, y el texto lo explica. */
+    rows.push(pcRow("50m",vals[0],"Salida",s1==null?{sc:"–",lab:inval?"Sin referencia fiable":"Sin 50 de referencia",key:"na"}:pcSalNiv(sal,s1),bw(cs[0])));
     rows.push(pcRow("100m",vals[1],"Final",pcNivel(s2),bw(cs[1])));
+    /* SEGUNDA LECTURA (ago-2026): el planteamiento de hoy contra el de su mejor 100 anterior. Va en
+       todos los casos en que exista, tenga o no nota la Salida, porque es la única referencia que
+       queda cuando el 50 se invalida. Solo texto — ver el comentario de pcEstrat. */
+    const ES=pcEstrat(nadadora,est,fecha,cs[0],cs[1]);
+    /* Arranca por el complemento ("Comparado con…") a propósito: si empieza por el sujeto, "ese
+       mismo 50" queda sin antecedente claro entre "tu mejor 50" y "el primer 50 de hoy", que van
+       los dos en la frase anterior. Y "anterior" evita leer "tu mejor 100" como el de hoy cuando
+       la carrera que se está viendo ES la mejor. */
+    const esRef=ES?`tu mejor 100 anterior${ES.mes?" ("+ES.mes+")":""}`:"";
+    const esTxt=!ES?"":(` Comparado con ${esRef}, ese primer largo ha ido un <b>${nc(Math.abs(ES.p).toFixed(1))}%</b> ${ES.p<0?"más rápido":"más lento"}`
+      /* ⚠️ El signo: dPeso<0 = el primer largo ocupó MENOS fracción del total = fue relativamente
+         más rápido = se cargó más en la salida. Se dice así y no "más ofensivo / más conservador"
+         porque el adjetivo choca de frente con la cifra cuando el parcial fue más LENTO en bruto
+         pero más fuerte en reparto (Nekane Gastón, 100 Libre 7-mar: 6,0% más lento y aun así el
+         reparto cargó más en la salida, porque ese día estaba peor en todo). */
+      +(Math.abs(ES.dPeso)<0.5?", con un reparto prácticamente igual."
+        :ES.dPeso<0?", y el reparto cargó más en la salida que entonces."
+                   :", aunque el reparto cargó menos en la salida que entonces."));
     if(sal)notes.push({k:pcNivel(s1).key,m:"50 m · Salida",t:`Has pasado el primer 50 ${pcSalCmp(sal.d,sal.B)} tu mejor 50 de ${est.toLowerCase()}${pcRefF(sal,fecha)} (lo normal es ${nc(sal.B[0])}–${nc(sal.B[1])}%).`+
-      pcSalTxt(sal,s2,100,s1,resc,null,caidaFuera)});
-    else notes.push({k:"na",m:"50 m · Salida",t:`La salida no se puede valorar: aún no tienes ninguna marca de 50 ${est.toLowerCase()} con la que compararla.`});
-    /* Si la salida se rescató, la Salida dice "el segundo largo lo has aguantado" y aquí sale una
-       caída fuera de rango: son DOS preguntas distintas sobre el mismo largo. Se explica aquí. */
-    const chocan=resc&&s2<70;
+      esTxt+pcSalTxt(sal,s2,100,s1,null,null,caidaFuera)});
+    else if(inval)notes.push({k:"na",m:"50 m · Salida",t:`Ya has nadado el primer largo de un 100 más rápido que tu mejor 50 de ${est.toLowerCase()} (<b>${fmtClock(inval.b50)}</b>${pcRefF(inval,fecha)}), así que esa marca se ha quedado corta y la salida no lleva nota.`+
+      esTxt+pcSalSinRef(s2,caidaFuera,d,B,est)});
+    else notes.push({k:"na",m:"50 m · Salida",t:`La salida no se puede valorar: aún no tienes ninguna marca de 50 ${est.toLowerCase()} con la que compararla.`+esTxt+(ES?pcSalSinRef(s2,caidaFuera,d,B,est):"")});
+    /* ⚠️ Aquí había una aclaración larga que compaginaba la caída con la VUELTA cuando se
+       contradecían. Se cae con la vuelta (ago-2026): ya no hay dos cifras del mismo largo. */
     notes.push({k:pcNivel(s2).key,m:"100 m · Final",t:`Caída del 2º largo: <b>${fmtp(d)}</b> (el rango bueno en ${est.toLowerCase()} es ${nc(B[0])}–${nc(B[1])}%).`
-      /* ⚠️ Esta aclaración NO puede excusar el segundo largo. La vuelta se apoya en la misma
-         referencia de 50 que la Salida, así que si ese 50 está viejo las dos lecturas van infladas
-         a la vez y no son pruebas independientes. La caída, en cambio, compara los dos largos entre
-         sí y no depende de ninguna referencia. Se presentan las dos lecturas sin dar la razón a una. */
-      /* JERARQUÍA DE FIABILIDAD (jul-2026). La caída no depende de ninguna referencia externa: compara
-         los dos largos entre sí. La Salida y la vuelta dependen AMBAS del mismo mejor 50, así que si
-         ese 50 se ha quedado corto las dos van infladas a la vez y no son pruebas independientes.
-         Por eso, cuando discrepan, manda la caída — y cuanto peor es la caída, más claro se dice.
-         Medido: no hay forma de detectar qué referencias están viejas (progresión en otras pruebas
-         r=−0,02; antigüedad r=+0,13; TODAS se baten después un ~4% de media). Como no se puede
-         señalar a unas, se nombra la duda. */
-      +(chocan?(d>=B[3]
-        ? ` Aun así, ojo: contra tu mejor 50 el segundo largo (<b>${fmtClock(cs[1])}</b>) se queda en un ${dec(resc.v)}% y parece correcto, pero esa marca de 50 es tuya de hace tiempo y puede quedarse corta. Con una caída así, lo más probable es que el segundo largo <b>sí se haya resentido</b>.`
-        : ` Ojo a cómo se lee: la caída compara los dos largos <b>entre sí</b>, y hoy el primero ha sido rápido para ti. Medido contra tu mejor 50, el segundo largo (<b>${fmtClock(cs[1])}</b>) se queda en un ${dec(resc.v)}%, dentro de lo normal. Las dos cosas son ciertas a la vez: el segundo largo no ha sido malo en sí, pero se ha separado del primero más de lo habitual.`):"")+
+      /* La caída no depende de ninguna referencia externa: compara los dos largos entre sí. Por eso
+         es la ÚNICA lectura del 2º largo desde ago-2026, cuando se retiró la vuelta. Aquí había una
+         aclaración que compaginaba las dos cuando discrepaban; sin vuelta ya no hace falta. */
       /* Misma regla: la coletilla comenta la caída que se acaba de escribir dos palabras antes,
          así que NO puede decir "el segundo largo ha aguantado" si esa caída está fuera de banda.
          Con la caída fuera se usa siempre PC_TFIN100[4], que dice dónde está el margen y —esto
@@ -1319,8 +1416,12 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
          "Ahí baja la nota del Final" al lado de una pastilla que marcaba 75, o sea cambiar una
          contradicción por otra. La pastilla y la línea de "tu caída habitual" ya explican por qué
          la NOTA es buena; la coletilla se limita a describir el hecho. */
-      pcT(scTxt(),PC_TFIN100)});
-    const glob=(g>=90?(s1==null?"Carrera bien gestionada: el segundo largo aguanta como tiene que aguantar."
+      +pcT(scTxt(),PC_TFIN100)});
+    /* ⚠️ Con s1==null la global se apoya SOLO en el Final, así que esta frase afirmaba que el 2º
+       largo aguantó incluso con la caída fuera de banda (Xabier, 100 Braza 14-jun: caída 12,1% con
+       el rango hasta 11,7% y global 95). Se comprueba `caidaFuera` antes de elogiarlo. */
+    const glob=(g>=90?(s1==null?(caidaFuera?`Carrera bien resuelta, con el segundo largo cayendo más de lo que marca el rango bueno en ${est.toLowerCase()} (${nc(B[0])}–${nc(B[1])}%): ahí está el margen.`
+                                           :"Carrera bien gestionada: el segundo largo aguanta como tiene que aguantar.")
                               :"Carrera bien gestionada. En 100 se sale con cabeza y se vuelve con corazón, y eso es lo que has hecho.")
       :g>=70?"Buena gestión en conjunto, con un punto de mejora en el reparto. Estás muy cerca del 100 ideal."
       :g>=50?"100 correcto, pero el reparto entre salida y final se puede afinar bastante."
@@ -1341,7 +1442,8 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
     const B=PC_200[est]||PC_200.Libre,C=PC_CRU[est]||PC_CRU.Libre,F=PC_FIN[est]||PC_FIN.Libre;
     const fh=cs[0]+cs[1],sh=cs[2]+cs[3],d=(sh-fh)/fh*100;
     const cru=(cs[1]+cs[2])/2;                       // ritmo de crucero de la carrera
-    const sal=pcSalida(prueba,cs[0],nadadora,fecha);
+    const salR=pcSalida(prueba,cs[0],nadadora,fecha);
+    const sal=(salR&&!salR.inval)?salR:null, inval=(salR&&salR.inval)?salR:null;
     let sSal=sal?sal.sc:null;
     const scCru=c=>{const dv=Math.abs((c-cru)/cru*100);return pcOut(dv-C[0],C[1]-C[0],C[2]-C[0],30,10);};
     const s2=scCru(cs[1]),s3=scCru(cs[2]);
@@ -1380,12 +1482,13 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
     if(tr&&tr.sc!=null)parts.push([tr.sc,.20]);
     parts.push([(s2+s3)/2,.35]);parts.push([sFin,.25]);
     const g=Math.round(parts.reduce((a,p)=>a+p[0]*p[1],0)/parts.reduce((a,p)=>a+p[1],0));
-    rows.push(pcRow("50m",vals[0],"Salida",sSal==null?{sc:"–",lab:"Sin 50 de referencia",key:"na"}:pcSalNiv(sal,sSal),bw(cs[0])));
+    rows.push(pcRow("50m",vals[0],"Salida",sSal==null?{sc:"–",lab:inval?"Sin referencia fiable":"Sin 50 de referencia",key:"na"}:pcSalNiv(sal,sSal),bw(cs[0])));
     rows.push(pcRow("100m",vals[1],"Crucero",pcNivel(s2),bw(cs[1])));
     rows.push(pcRow("150m",vals[2],"Crucero",pcNivel(s3),bw(cs[2])));
     rows.push(pcRow("200m",vals[3],"Final",pcNivel(sFin),bw(cs[3])));
     if(sal)notes.push({k:pcNivel(sSal).key,m:"50 m · Salida",t:`Has pasado el primer 50 ${pcSalCmp(sal.d,sal.B)} tu mejor 50 de ${est.toLowerCase()}${pcRefF(sal,fecha)} (lo normal en un 200 es ${nc(sal.B[0])}–${nc(sal.B[1])}%).`+
       pcSalTxt(sal,sFin,200,sSal,salResc,tr)});
+    else if(inval)notes.push({k:"na",m:"50 m · Salida",t:`Ya has nadado el primer largo de un 100 más rápido que tu mejor 50 de ${est.toLowerCase()} (<b>${fmtClock(inval.b50)}</b>${pcRefF(inval,fecha)}), así que esa marca se ha quedado corta y la salida no lleva nota. El escalón hasta el ritmo de crucero, el crucero y el final sí se valoran igual.`});
     else notes.push({k:"na",m:"50 m · Salida",t:`La salida no se puede valorar: aún no tienes ninguna marca de 50 ${est.toLowerCase()} con la que compararla.`});
     const tnota=pcTraNota(tr,sSal!=null);if(tnota)notes.push(tnota);
     const dv2=Math.abs((cs[1]-cru)/cru*100), dv3=Math.abs((cs[2]-cru)/cru*100), dvm=Math.max(dv2,dv3);
@@ -1394,10 +1497,18 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       t:`Los dos largos centrales se separan como mucho un <b>${fmtp(dvm)}</b> de tu ritmo medio de crucero.`+pcT(sCru,PC_TCRU200)});
     /* Si el Crucero ya ha mandado series largas a ritmo fijo, el Final no lo repite: salían tres
        veces el mismo consejo entre las dos tarjetas y la valoración. */
-    const tFin=pcT(sFin,PC_TFIN200);
+    /* ⚠️ La coletilla NO puede contradecir la cifra que acaba de escribirse. `sFin` sale de una
+       banda cuyo 100 está en cerrar por DEBAJO de F[0], y F[0] puede ser positivo o negativo según
+       el estilo, así que la nota y el signo del cierre no van siempre de la mano. Sin este ajuste
+       salían 9 contradicciones reales: "va un N% más lento… te quedaba depósito y lo has usado" (2)
+       y "va un N% más rápido… casi todo el mundo cierra más rápido, ahí tienes décimas" (7).
+       Mismo patrón que `scTxt()` en el 100: la NOTA que se enseña no se toca, solo se acota la que
+       ELIGE el texto. Si aceleró, el texto no baja de 70 (nunca le reprocha no haber acelerado); si
+       cerró más lento, no llega a 90 (nunca le felicita por haberlo hecho). */
+    const tFin=pcT(df<0?Math.max(sFin,70):Math.min(sFin,89),PC_TFIN200);
     const yaDicho=notes.some(n=>/[Ss]eries largas a ritmo/.test(n.t))&&/[Ss]eries largas a ritmo/.test(tFin);
     notes.push({k:pcNivel(sFin).key,m:"200 m · Final",
-      t:`El último largo va un <b>${dec(Math.abs(df))}%</b> ${df>=0?"más lento":"más rápido"} que tu ritmo de crucero.`
+      t:`El último largo ha sido un <b>${dec(Math.abs(df))}%</b> ${df>=0?"más lento":"más rápido"} que tu ritmo de crucero.`
         +(yaDicho?tFin.replace(/\s*Series largas a ritmo (fijo|constante)[^.]*\./,""):tFin)});
     /* El tramo más flojo, para no mandar pulir "el tramo que flojea" sin decir cuál — y para no
        mandarlo cuando no hay ninguno por debajo de Buen ritmo. */
@@ -1865,7 +1976,7 @@ function render(){
   else if(view==="topfina"){LEG_HTML=fo?legs.topfinaFicha:(finaSel==="med"?legs.topfinaMed:/^\d+$/.test(finaSel)?legs.topfina:(["spr","mid","fon"].indexOf(finaSel)>=0?legs.topfinaSpec:legs.topfinaRey));}
   else{LEG_HTML=legs[view];}
   if(badgesFor){const bsx=((ALLRECS.find(r=>r.nadadora===badgesFor)||{}).sexo)||sexFilter;const nb=bsx==="M"?"nadador":"nadadora";LEG_HTML="🏅 <span style='font-weight:700'>Recuento de insignias.</span> Aquí se cuentan todas las insignias que ha conseguido en los resúmenes de las competiciones de esta temporada. Se gana una por cada podio (🥇🥈🥉) en estas categorías del resumen:<br>🏆 <b>Mejor "+nb+" del día</b>: suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br><b>Mejores marcas del día</b>: las marcas con más puntos FINA de la competición, por año.<br><b>Mayores progresiones del día</b>: quienes más puntos FINA ganaron respecto a su mejor marca anterior.<br><b>En forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br>El orden del medallero es olímpico: mandan los oros, luego las platas y luego los bronces.<br>⚠️ No son medallas reales: es simplemente un juego.";}
-  if(compsFor){LEG_HTML="🏊 <span style='font-weight:700'>Competiciones: cómo se mide el ritmo.</span> Cada prueba muestra sus <b>parciales</b> con una barra proporcional (cuanto más larga, más rápido fue ese tramo), una <b>nota de 0 a 100</b> por tramo y otra <b>global</b>. Nunca se compara con otras nadadoras: todo se mide contra tu propio ritmo."+"<div class='lgH'>1 · Con qué se compara cada tramo</div>"+"<table class='lgT'><tr><td>Salida</td><td style='text-align:left'>El 1er 50 frente a tu <b>mejor 50</b> de ese estilo <b>hasta esa fecha</b></td></tr><tr><td>Transición</td><td style='text-align:left'>El <b>escalón</b> entre el 1er 50 y el ritmo de crucero de esa misma carrera</td></tr><tr><td>Crucero</td><td style='text-align:left'>Cada largo intermedio frente a la <b>media</b> de los largos de crucero de esa carrera</td></tr><tr><td>Final</td><td style='text-align:left'>El último largo frente a esa misma media de crucero</td></tr></table>En el <b>100</b> no hay crucero: el 2º largo se compara con el 1º (la <b>caída</b>)."+"<div class='lgH'>2 · Margen de salida</div><b>margen = (1er 50 − tu mejor 50 hasta ese día) ÷ ese mejor 50</b>. La referencia es la que tenías <b>en ese momento</b>, nunca una marca posterior: así una carrera de octubre no se compara con el 50 que hiciste en junio. <b>Se dice de cuándo es</b>: la tarjeta escribe si esa marca de 50 es de esa misma competición o de qué mes, porque una vara de hace medio año no pesa lo mismo que una de ayer. Es solo el dato — que la referencia sea antigua <b>no significa</b> que se haya quedado corta, y no cambia la nota. Un margen <b>pequeño</b> significa que saliste casi a ritmo de 50 puro (arriesgado, se paga al final); uno <b>grande</b>, que saliste con freno. Rango óptimo:<table class='lgT'><tr><td>100 Libre</td><td>6–9,4%</td></tr><tr><td>100 Espalda</td><td>4,6–6%</td></tr><tr><td>100 Braza</td><td>1–4,2%</td></tr><tr><td>100 Mariposa</td><td>9,2–11,5%</td></tr><tr><td>200 Libre</td><td>10,8–13,3%</td></tr><tr><td>200 Espalda</td><td>7,2–10,8%</td></tr><tr><td>200 Braza</td><td>4,5–6,9%</td></tr><tr><td>200 Mariposa</td><td>12,8–16,5%</td></tr><tr><td>400 Libre</td><td>16,5–21,3%</td></tr><tr><td>800 Libre</td><td>15,8–22,1%</td></tr></table>En braza el margen es mínimo (el 50 no depende tanto de la velocidad pura) y en mariposa es enorme: salir cerca de tu 50 mariposa es insostenible."+"<div class='lgH'>3 · El escalón salida→crucero</div>El 1er largo sale de poyete y no lleva viraje de entrada, así que <b>siempre</b> es más rápido que los demás. Lo que se mide es <b>cuánto</b>: <b>escalón = (ritmo de crucero − 1er 50) ÷ 1er 50</b>. Un escalón <b>grande</b> significa que se salió por encima del ritmo que luego se puede sostener; uno <b>pequeño</b>, que se salió contenida o que el crucero es muy bueno. <b>Solo penaliza el escalón grande</b>: comparando cada nadador/a consigo mismo, en sus mejores carreras el escalón es <b>menor</b> que en sus peores, y los estudios de 400 libre describen lo mismo en las mejores nadadas de las plusmarquistas (primer largo más lento, último más rápido). Mide algo <b>distinto</b> del margen de salida: entre los dos la correlación es de solo 0,08. Rango habitual:<table class='lgT'><tr><td>200 Espalda</td><td>8,1–10,5%</td></tr><tr><td>200 Braza</td><td>10,6–14,4%</td></tr><tr><td>200 Libre</td><td>12,1–14,5%</td></tr><tr><td>400 Libre</td><td>12,4–14,2%</td></tr></table>El escalón más pequeño es el de espalda, porque <b>se sale del agua</b> y el primer largo no lleva la ventaja del poyete; el mayor es el de mariposa. En <b>200 Mariposa</b> y en <b>800</b> la nota aparece pero <b>no puntúa</b>: hay pocas carreras registradas para fijar un rango fiable, y las cifras publicadas no valen porque son de piscina de 50 m y de adultos de élite (en 800, un escalón de élite ronda el 7%; aquí la mediana es del 13,7%)."+"<div class='lgH'>4 · Caída del 2º largo (solo 100)</div>El 2º largo puede caer hasta este porcentaje sin restar nada; por encima baja la nota del <b>Final</b>:<table class='lgT'><tr><td>Libre</td><td>9,1%</td></tr><tr><td>Espalda</td><td>5,0%</td></tr><tr><td>Braza</td><td>11,7%</td></tr><tr><td>Mariposa</td><td>16,2%</td></tr></table>La espalda aguanta menos caída porque <b>se sale del agua</b>: sin impulso de poyete el 1er largo no lleva esa ventaja.<br><br><b>Salir fuerte solo resta si lo pagas.</b> Salir casi a ritmo de tu 50 no es un error por sí mismo: en esta app las salidas agresivas van con <b>mejores</b> carreras, no peores. Para saber si lo pagaste no se mira la caída, sino <b>tu segundo largo comparado con tu mejor 50</b> — la misma vara que se usa para el primero. Si ese segundo largo se queda en el rango de la categoría, la salida fue acertada y no resta. La caída no sirve de juez aquí porque lleva el primer largo dentro: sube sola cuando sales más rápido, aunque el segundo largo sea exactamente el mismo.<table><tr><th>Estilo</th><th>2º largo sobre tu mejor 50</th></tr><tr><td>Libre</td><td>hasta 16,7%</td></tr><tr><td>Espalda</td><td>hasta 12%</td></tr><tr><td>Braza</td><td>hasta 16,5%</td></tr><tr><td>Mariposa</td><td>hasta 32,7%</td></tr></table>Son cifras altas porque el segundo largo sale de viraje y con el depósito medio vacío. No se comparan con nada absoluto, sino con lo que hace el resto de la categoría en las mismas condiciones.<br><br><b>En 200, 400 y 800 pasa lo mismo, pero lo avala la carrera entera.</b> Ahí no hay un segundo largo que preguntar, así que quien responde si pagaste la salida son los demás tramos: si el <b>escalón hasta el ritmo de crucero</b> se queda dentro de lo normal —o sea, no saliste por encima del ritmo que puedes sostener— y ningún tramo se resiente, la Salida no puntúa por debajo de lo que demuestra el resto de la carrera. Si algún tramo se cae, no hay rescate: eso <i>es</i> haberlo pagado.<br><br><b>La línea gris: tú contra ti.</b> Cuando ya tienes <b>dos carreras anteriores</b> de esa prueba con parciales, debajo de las notas aparece una línea en gris que compara la caída de hoy con la de <b>tu mejor carrera</b> de esa prueba. Es solo información: <b>no cuenta para la nota</b>, ni cambia el color ni el puesto en el ranking. Por eso va en gris y no en el color del semáforo. Si la diferencia es menor de <b>2,5 puntos</b> no se nombra y dice que has repartido como sueles, porque tu caída se mueve sola unos <b>2,3 puntos</b> entre carreras y por debajo de eso no se distingue de tu vaivén normal.<br><br><b>Tu propio patrón manda.</b> Si ya tienes <b>dos carreras anteriores</b> de esa prueba con parciales, la referencia deja de ser la banda de la categoría y pasa a ser <b>tu caída en tu mejor carrera</b>. Repetirla (dentro de 2,8 puntos) cuenta como haber sostenido la forma, aunque tu caída sea mayor que la del resto: hay quien reparte así y le funciona. Solo se ignora si la caída entra en el 5% más extremo, que ya es un desfonde."+"<div class='lgH'>5 · Crucero y Final</div><b>Crucero:</b> cada largo puede separarse de tu ritmo de crucero sin restar hasta 1,3% en libre, 0,7% en espalda, 1,2% en braza y 1,1% en mariposa. A partir de ahí la nota baja, y toca suelo en el 2,3% (libre), 2,4% (espalda), 3,6% (braza) y 4,6% (mariposa).<br><b>Final:</b> lo normal es <b>cerrar más rápido</b> que el crucero (la mediana de la categoría está en −4%). Puntúa 100 si cierras por debajo de −1,5% en libre, −3,2% en espalda, −0,4% en braza o −2,2% en mariposa. El 92% de los 200 terminan más rápido que el 3er largo, por eso un final que sube penaliza."+"<div class='lgH'>6 · Fondo y Estilos</div><b>400 y 800:</b> no se mira la caída sino la <b>regularidad</b> (variación entre largos). Hasta 1,2% (400) y 1,3% (800) es un crucero impecable; desde 2,5% en el 400 y 3,3% en el 800 empieza a restar. La variación se mide <b>solo entre los largos de crucero</b>: sin el primero, que sale de poyete, y sin el último, que se acelera. Suma 5 puntos si cierras por debajo de tu ritmo de crucero.<br><b>Estilos:</b> cada estilo ocupa un porcentaje típico del total y se señala el que se pasa del suyo:<table class='lgT l3'><tr><td></td><td>200 IM</td><td>400 IM</td></tr><tr><td>Mariposa</td><td>23,1%</td><td>25,1%</td></tr><tr><td>Espalda</td><td>25,5%</td><td>25,0%</td></tr><tr><td>Braza</td><td>28,9%</td><td>28,1%</td></tr><tr><td>Libre</td><td>22,4%</td><td>21,9%</td></tr></table>"+"<div class='lgH'>7 · Cómo se convierte en nota</div>Dentro del rango óptimo son <b>100 puntos</b>. Fuera, la nota baja en proporción a lo lejos que queda, hasta valer unos <b>30</b> justo en el 5% más extremo de la categoría.<br><span class='pcV pcV-opt' style='font-size:10px'>Ritmo óptimo</span> 90-100 &nbsp;<span class='pcV pcV-gd' style='font-size:10px'>Buen ritmo</span> 70-89 &nbsp;<span class='pcV pcV-low' style='font-size:10px'>Pierde ritmo</span> 50-69 &nbsp;<span class='pcV pcV-wk' style='font-size:10px'>Se resiente</span> 30-49 &nbsp;<span class='pcV pcV-fat' style='font-size:10px'>Fatigado</span> 0-29<br><b>No penaliza igual todo:</b> salir con freno no baja de 50 porque es un error <b>táctico</b>; fundirse o salir muchísimo más fuerte de lo habitual sí puede llegar a 0, porque es un fallo <b>físico</b>.<br><br><b>La Salida tiene etiquetas propias.</b> En el primer largo, «Fatigado» no significa nada —nadie se fatiga al salir— y la misma nota baja puede venir de dos salidas contrarias. Por eso ahí la etiqueta dice <b>cómo saliste</b> y el color dice <b>cómo te fue</b>: <span class='pcV pcV-fat' style='font-size:10px'>Muy agresiva</span> <span class='pcV pcV-wk' style='font-size:10px'>Agresiva</span> <span class='pcV pcV-low' style='font-size:10px'>Fuerte</span> <span class='pcV pcV-opt' style='font-size:10px'>Medida</span> <span class='pcV pcV-gd' style='font-size:10px'>Contenida</span> <span class='pcV pcV-low' style='font-size:10px'>Frenada</span>. «Fuerte» en verde es una salida valiente que salió bien; «Fuerte» en ámbar es la misma salida pagada después."+"<div class='lgH'>8 · La nota global</div><table class='lgT'><tr><td>100</td><td style='text-align:left'>50% Salida + 50% Final</td></tr><tr><td>200</td><td style='text-align:left'>20% Salida + 20% Transición + 35% Crucero + 25% Final</td></tr><tr><td>400 / 800</td><td style='text-align:left'>65% regularidad + 20% Salida + 15% Transición (+5 si cierra fuerte)</td></tr><tr><td>Estilos</td><td style='text-align:left'>60% el estilo más descompensado + 40% el conjunto</td></tr></table>"+"<div class='lgH'>9 · Cuándo no se valora</div><b>En todas las pruebas</b>, encima del análisis aparece una línea gris con <b>tu marca frente a tu mejor marca anterior</b> de esa prueba, en segundos y centésimas. Es solo el dato del crono: <b>no tiene que ver con la nota de ritmo</b>, que mide cómo repartiste, no cuánto bajaste. En los <b>50</b> no hay tramos que comparar, así que esa línea es lo único que aparece. Si te quedas a menos del <b>2%</b> pone que la tienes al alcance, porque cuando no se baja marca la distancia habitual es del 1,7%. Tampoco cuenta para nada: es información. En el <b>100 estilos</b> cada 50 mezcla dos estilos, así que solo se muestran los parciales. Si el acta trae los parciales incompletos, se enseñan los que hay sin valorar el ritmo. Si el acta solo trae los parciales <b>cada 100</b> (pasa en algunos 800), no hay 1er 50 que medir y no se valoran ni la Salida ni la Transición. Y si <b>aún no habías nadado ningún 50 de ese estilo</b> antes de esa competición, la Salida aparece en gris como <i>sin referencia</i> y la global se calcula con el resto (pasa sobre todo al principio de temporada; según nadas 50s, se van valorando)."+"<div class='lgH'>10 · De dónde salen estos números</div><div class='lgF'>Los rangos son los <b>percentiles reales</b> de las marcas con parciales de esta misma app (alevín, piscina de 25 m), pero <b>no de todas</b>: de cada nadador/a se toma <b>su mejor carrera</b> en esa prueba, y solo cuenta la <b>mitad con mejor marca</b>. Así el listón no lo marca lo que hace la media, sino lo que hacen los mejores cuando les sale bien. Donde no quedaban al menos 12 marcas tras el filtro (mariposa de 200, el 800 y las de estilos) se mantienen los rangos calculados con todas. La <b>Salida</b> es la excepción a propósito: se compara con la mejor marca de 50 de cada nadador/a, así que ya mide contra uno mismo y no depende del nivel del grupo. El rango óptimo es el tramo central y el extremo marca el suspenso. Por eso miden lo que de verdad hace un alevín, no lo que hace un adulto de élite.<br><br>El modelo se apoya además en la literatura de <i>pacing</i>:<br>• <b>Menting y cols.</b>, <i>Pacing Behavior Development in Adolescent Swimmers</i> (3.498 nadadores en 100 y 2.230 en 200, de 12 a 24 años, cinco continentes): con la edad se aprende a contenerse en la salida para ir más fuerte por el medio, y el ritmo se vuelve más regular. Los perfiles juveniles son mucho más variables, y por eso aquí los márgenes son más anchos que en élite.<br>• <b><i>Pacing in World-Class Age Group Swimmers in 100 and 200 m Freestyle, Backstroke, Breaststroke and Butterfly</i></b> (IJERPH, 2020): las diferencias de ritmo entre estilos.<br>• <b><i>Pacing in World-Class Age Group Swimmers in 200 and 400 m Individual Medley</i></b> (Frontiers): el orden de los estilos dentro del IM —libre el más rápido, después mariposa, espalda y braza— que coincide exactamente con el reparto que sale en nuestros propios datos.</div>";}
+  if(compsFor){LEG_HTML="🏊 <span style='font-weight:700'>Competiciones: cómo se mide el ritmo.</span> Cada prueba muestra sus <b>parciales</b> con una barra proporcional (cuanto más larga, más rápido fue ese tramo), una <b>nota de 0 a 100</b> por tramo y otra <b>global</b>. Nunca se compara con otras nadadoras: todo se mide contra tu propio ritmo."+"<div class='lgH'>1 · Con qué se compara cada tramo</div>"+"<table class='lgT'><tr><td>Salida</td><td style='text-align:left'>El 1er 50 frente a tu <b>mejor 50</b> de ese estilo <b>hasta esa fecha</b></td></tr><tr><td>Transición</td><td style='text-align:left'>El <b>escalón</b> entre el 1er 50 y el ritmo de crucero de esa misma carrera</td></tr><tr><td>Crucero</td><td style='text-align:left'>Cada largo intermedio frente a la <b>media</b> de los largos de crucero de esa carrera</td></tr><tr><td>Final</td><td style='text-align:left'>El último largo frente a esa misma media de crucero</td></tr></table>En el <b>100</b> no hay crucero: el 2º largo se compara con el 1º (la <b>caída</b>)."+"<div class='lgH'>2 · Margen de salida</div><b>margen = (1er 50 − tu mejor 50 hasta ese día) ÷ ese mejor 50</b>. La referencia es la que tenías <b>en ese momento</b>, nunca una marca posterior: así una carrera de octubre no se compara con el 50 que hiciste en junio. <b>Se dice de cuándo es</b>: la tarjeta escribe si esa marca de 50 es de esa misma competición o de qué mes, porque una vara de hace medio año no pesa lo mismo que una de ayer. Es solo el dato — que la referencia sea antigua <b>no significa</b> que se haya quedado corta, y no cambia la nota.<br><br><b>Cuando el 50 se queda atrás, deja de usarse.</b> Si en algún 100 de ese estilo ya has nadado un <b>primer largo más rápido que tu mejor 50 suelto</b>, esa marca ha dejado de servir como vara: el primer largo de un 100 se nada dosificando, así que batirlo solo puede querer decir que el 50 se quedó antiguo. Pasa mucho a esta edad, cuando se mejora sin parar y se tarda meses en volver a competir un 50. En ese caso la Salida aparece en gris como <i>sin referencia fiable</i>, <b>no lleva nota</b> y la global se calcula con el resto — y en su lugar se compara tu primer parcial con el de <b>tu mejor 100</b> de ese estilo, que dice si hoy cargaste más o menos en la salida. El descarte vale para <b>todas las distancias</b>, no solo para el 100. Un margen <b>pequeño</b> significa que el primer 50 fue casi tan rápido como tu 50 puro (arriesgado, se paga al final); uno <b>grande</b>, que saliste con freno. Rango óptimo:<table class='lgT'><tr><td>100 Libre</td><td>6–9,4%</td></tr><tr><td>100 Espalda</td><td>4,6–6%</td></tr><tr><td>100 Braza</td><td>1–4,2%</td></tr><tr><td>100 Mariposa</td><td>9,2–11,5%</td></tr><tr><td>200 Libre</td><td>10,8–13,3%</td></tr><tr><td>200 Espalda</td><td>7,2–10,8%</td></tr><tr><td>200 Braza</td><td>4,5–6,9%</td></tr><tr><td>200 Mariposa</td><td>12,8–16,5%</td></tr><tr><td>400 Libre</td><td>16,5–21,3%</td></tr><tr><td>800 Libre</td><td>15,8–22,1%</td></tr></table>En braza el margen es mínimo (el 50 no depende tanto de la velocidad pura) y en mariposa es enorme: salir cerca de tu 50 mariposa es insostenible."+"<div class='lgH'>3 · El escalón salida→crucero</div>El 1er largo sale de poyete y no lleva viraje de entrada, así que <b>siempre</b> es más rápido que los demás. Lo que se mide es <b>cuánto</b>: <b>escalón = (ritmo de crucero − 1er 50) ÷ 1er 50</b>. Un escalón <b>grande</b> significa que se salió más rápido de lo que luego se puede sostener; uno <b>pequeño</b>, que se salió contenida o que el crucero es muy bueno. <b>Solo penaliza el escalón grande</b>: comparando cada nadador/a consigo mismo, en sus mejores carreras el escalón es <b>menor</b> que en sus peores, y los estudios de 400 libre describen lo mismo en las mejores nadadas de las plusmarquistas (primer largo más lento, último más rápido). Mide algo <b>distinto</b> del margen de salida: entre los dos la correlación es de solo 0,08. Rango habitual:<table class='lgT'><tr><td>200 Espalda</td><td>8,1–10,5%</td></tr><tr><td>200 Braza</td><td>10,6–14,4%</td></tr><tr><td>200 Libre</td><td>12,1–14,5%</td></tr><tr><td>400 Libre</td><td>12,4–14,2%</td></tr></table>El escalón más pequeño es el de espalda, porque <b>se sale del agua</b> y el primer largo no lleva la ventaja del poyete; el mayor es el de mariposa. En <b>200 Mariposa</b> y en <b>800</b> la nota aparece pero <b>no puntúa</b>: hay pocas carreras registradas para fijar un rango fiable, y las cifras publicadas no valen porque son de piscina de 50 m y de adultos de élite (en 800, un escalón de élite ronda el 7%; aquí la mediana es del 13,7%)."+"<div class='lgH'>4 · Caída del 2º largo (solo 100)</div>El 2º largo puede caer hasta este porcentaje sin restar nada; a partir de ahí baja la nota del <b>Final</b>:<table class='lgT'><tr><td>Libre</td><td>9,1%</td></tr><tr><td>Espalda</td><td>5,0%</td></tr><tr><td>Braza</td><td>11,7%</td></tr><tr><td>Mariposa</td><td>16,2%</td></tr></table>La espalda aguanta menos caída porque <b>se sale del agua</b>: sin impulso de poyete el 1er largo no lleva esa ventaja.<br><br><b>En el 100, el 2º largo se juzga solo por la caída.</b> Antes se comparaba además con tu mejor 50, y esa lectura se ha quitado: daba dos cifras del mismo largo con veredictos distintos, y colgaba de la misma marca de 50 que la Salida, así que si ese 50 estaba viejo las dos iban infladas a la vez. La caída, en cambio, compara los dos largos <b>entre sí</b> y no depende de ninguna referencia externa.<br><br><b>En 200, 400 y 800 la salida fuerte sí puede no restar, y lo avala la carrera entera.</b> Ahí hay más tramos, así que quien responde si pagaste la salida son los demás: si el <b>escalón hasta el ritmo de crucero</b> se queda dentro de lo normal —o sea, no saliste más rápido de lo que puedes sostener— y ningún tramo se resiente, la Salida no puntúa menos de lo que demuestra el resto de la carrera. Si algún tramo se cae, no hay rescate: eso <i>es</i> haberlo pagado.<br><br><b>La línea gris: tú contra ti.</b> Cuando ya tienes <b>dos carreras anteriores</b> de esa prueba con parciales, debajo de las notas aparece una línea en gris que compara la caída de hoy con la de <b>tu mejor carrera</b> de esa prueba. Es solo información: <b>no cuenta para la nota</b>, ni cambia el color ni el puesto en el ranking. Por eso va en gris y no en el color del semáforo. Si la diferencia es menor de <b>2,5 puntos</b> no se nombra y dice que has repartido como sueles, porque tu caída se mueve sola unos <b>2,3 puntos</b> entre carreras y por menos de eso no se distingue de tu vaivén normal.<br><br><b>Tu propio patrón manda.</b> Si ya tienes <b>dos carreras anteriores</b> de esa prueba con parciales, la referencia deja de ser la banda de la categoría y pasa a ser <b>tu caída en tu mejor carrera</b>. Repetirla (dentro de 2,8 puntos) cuenta como haber sostenido la forma, aunque tu caída sea mayor que la del resto: hay quien reparte así y le funciona. Solo se ignora si la caída entra en el 5% más extremo, que ya es un desfonde."+"<div class='lgH'>5 · Crucero y Final</div><b>Crucero:</b> cada largo puede separarse de tu ritmo de crucero sin restar hasta 1,3% en libre, 0,7% en espalda, 1,2% en braza y 1,1% en mariposa. A partir de ahí la nota baja, y toca suelo en el 2,3% (libre), 2,4% (espalda), 3,6% (braza) y 4,6% (mariposa).<br><b>Final:</b> lo normal es <b>cerrar más rápido</b> que el crucero (la mediana de la categoría está en un 4% más rápido). Puntúa 100 si el último largo es al menos un 1,5% más rápido que el crucero en libre, un 3,2% en espalda, un 0,4% en braza o un 2,2% en mariposa. El 92% de los 200 terminan más rápido que el 3er largo, por eso un final que sube penaliza."+"<div class='lgH'>6 · Fondo y Estilos</div><b>400 y 800:</b> no se mira la caída sino la <b>regularidad</b> (variación entre largos). Hasta 1,2% (400) y 1,3% (800) es un crucero impecable; desde 2,5% en el 400 y 3,3% en el 800 empieza a restar. La variación se mide <b>solo entre los largos de crucero</b>: sin el primero, que sale de poyete, y sin el último, que se acelera. Suma 5 puntos si cierras más rápido que tu ritmo de crucero.<br><b>Estilos:</b> cada estilo ocupa un porcentaje típico del total y se señala el que se pasa del suyo:<table class='lgT l3'><tr><td></td><td>200 IM</td><td>400 IM</td></tr><tr><td>Mariposa</td><td>23,1%</td><td>25,1%</td></tr><tr><td>Espalda</td><td>25,5%</td><td>25,0%</td></tr><tr><td>Braza</td><td>28,9%</td><td>28,1%</td></tr><tr><td>Libre</td><td>22,4%</td><td>21,9%</td></tr></table>"+"<div class='lgH'>7 · Cómo se convierte en nota</div>Dentro del rango óptimo son <b>100 puntos</b>. Fuera, la nota baja en proporción a lo lejos que queda, hasta valer unos <b>30</b> justo en el 5% más extremo de la categoría.<br><span class='pcV pcV-opt' style='font-size:10px'>Ritmo óptimo</span> 90-100 &nbsp;<span class='pcV pcV-gd' style='font-size:10px'>Buen ritmo</span> 70-89 &nbsp;<span class='pcV pcV-low' style='font-size:10px'>Pierde ritmo</span> 50-69 &nbsp;<span class='pcV pcV-wk' style='font-size:10px'>Se resiente</span> 30-49 &nbsp;<span class='pcV pcV-fat' style='font-size:10px'>Fatigado</span> 0-29<br><b>No penaliza igual todo:</b> salir con freno no baja de 50 porque es un error <b>táctico</b>; fundirse o salir muchísimo más fuerte de lo habitual sí puede llegar a 0, porque es un fallo <b>físico</b>.<br><br><b>La Salida tiene etiquetas propias.</b> En el primer largo, «Fatigado» no significa nada —nadie se fatiga al salir— y la misma nota baja puede venir de dos salidas contrarias. Por eso ahí la etiqueta dice <b>cómo saliste</b> y el color dice <b>cómo te fue</b>: <span class='pcV pcV-fat' style='font-size:10px'>Muy agresiva</span> <span class='pcV pcV-wk' style='font-size:10px'>Agresiva</span> <span class='pcV pcV-low' style='font-size:10px'>Fuerte</span> <span class='pcV pcV-opt' style='font-size:10px'>Medida</span> <span class='pcV pcV-gd' style='font-size:10px'>Contenida</span> <span class='pcV pcV-low' style='font-size:10px'>Frenada</span>. «Fuerte» en verde es una salida valiente que salió bien; «Fuerte» en ámbar es la misma salida pagada después."+"<div class='lgH'>8 · La nota global</div><table class='lgT'><tr><td>100</td><td style='text-align:left'>50% Salida + 50% Final</td></tr><tr><td>200</td><td style='text-align:left'>20% Salida + 20% Transición + 35% Crucero + 25% Final</td></tr><tr><td>400 / 800</td><td style='text-align:left'>65% regularidad + 20% Salida + 15% Transición (+5 si cierra fuerte)</td></tr><tr><td>Estilos</td><td style='text-align:left'>60% el estilo más descompensado + 40% el conjunto</td></tr></table>"+"<div class='lgH'>9 · Cuándo no se valora</div><b>En todas las pruebas</b>, encima del análisis aparece una línea gris con <b>tu marca frente a tu mejor marca anterior</b> de esa prueba, en segundos y centésimas. Es solo el dato del crono: <b>no tiene que ver con la nota de ritmo</b>, que mide cómo repartiste, no cuánto bajaste. En los <b>50</b> no hay tramos que comparar, así que esa línea es lo único que aparece. Si te quedas a menos del <b>2%</b> pone que la tienes al alcance, porque cuando no se baja marca la distancia habitual es del 1,7%. Tampoco cuenta para nada: es información. En el <b>100 estilos</b> cada 50 mezcla dos estilos, así que solo se muestran los parciales. Si el acta trae los parciales incompletos, se enseñan los que hay sin valorar el ritmo. Si el acta solo trae los parciales <b>cada 100</b> (pasa en algunos 800), no hay 1er 50 que medir y no se valoran ni la Salida ni la Transición. Y si <b>aún no habías nadado ningún 50 de ese estilo</b> antes de esa competición, la Salida aparece en gris como <i>sin referencia</i> y la global se calcula con el resto (pasa sobre todo al principio de temporada; según nadas 50s, se van valorando)."+"<div class='lgH'>10 · De dónde salen estos números</div><div class='lgF'>Los rangos son los <b>percentiles reales</b> de las marcas con parciales de esta misma app (alevín, piscina de 25 m), pero <b>no de todas</b>: de cada nadador/a se toma <b>su mejor carrera</b> en esa prueba, y solo cuenta la <b>mitad con mejor marca</b>. Así el listón no lo marca lo que hace la media, sino lo que hacen los mejores cuando les sale bien. Donde no quedaban al menos 12 marcas tras el filtro (mariposa de 200, el 800 y las de estilos) se mantienen los rangos calculados con todas. La <b>Salida</b> es la excepción a propósito: se compara con la mejor marca de 50 de cada nadador/a, así que ya mide contra uno mismo y no depende del nivel del grupo. El rango óptimo es el tramo central y el extremo marca el suspenso. Por eso miden lo que de verdad hace un alevín, no lo que hace un adulto de élite.<br><br>El modelo se apoya además en la literatura de <i>pacing</i>:<br>• <b>Menting y cols.</b>, <i>Pacing Behavior Development in Adolescent Swimmers</i> (3.498 nadadores en 100 y 2.230 en 200, de 12 a 24 años, cinco continentes): con la edad se aprende a contenerse en la salida para ir más fuerte por el medio, y el ritmo se vuelve más regular. Los perfiles juveniles son mucho más variables, y por eso aquí los márgenes son más anchos que en élite.<br>• <b><i>Pacing in World-Class Age Group Swimmers in 100 and 200 m Freestyle, Backstroke, Breaststroke and Butterfly</i></b> (IJERPH, 2020): las diferencias de ritmo entre estilos.<br>• <b><i>Pacing in World-Class Age Group Swimmers in 200 and 400 m Individual Medley</i></b> (Frontiers): el orden de los estilos dentro del IM —libre el más rápido, después mariposa, espalda y braza— que coincide exactamente con el reparto que sale en nuestros propios datos.</div>";}
 
   const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":"Ranking de la temporada";
   const sc=el("secdiv");if(sc&&sc.classList)sc.classList.toggle("fmode",fo);
@@ -2131,7 +2242,7 @@ function renderProfile(vw){
 }
 
 async function boot(){let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
-  ALLRECS=parseCSV(txt);_B50=null;_TPL=null;
+  ALLRECS=parseCSV(txt);_B50=null;_TPL=null;_T1=null;
   applySex();}
 function applySex(){
   initSeasons();applySeasonTables();
