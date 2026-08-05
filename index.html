@@ -1995,7 +1995,7 @@ function renderCompareInner(vw){
     const names=[...new Set(RECORDS.map(r=>r.nadadora))].filter(n=>n!==cmpA).sort();
     vw.innerHTML=`<div class="cmpCard tall"><div class="cmpHead">Comparar a <b>${esc(shortName(cmpA))}</b> con…</div><div style="padding:10px 13px 4px"><input id="cmpSearch" class="search" style="padding-left:14px" placeholder="Escribe el nombre del rival…" autocomplete="off"/></div><div class="cmpList">${names.map(n=>`<div class="cmpPick" data-n="${esc(n)}">${esc(n)}</div>`).join("")}</div></div>`;
     const inp=el("cmpSearch");
-    if(inp)inp.addEventListener("input",()=>{const q2=normName(inp.value);vw.querySelectorAll(".cmpPick").forEach(d=>{d.style.display=!q2||normName(d.dataset.n).includes(q2)?"block":"none";});});
+    if(inp)inp.addEventListener("input",()=>{const q2=normName(inp.value);vw.querySelectorAll(".cmpPick").forEach(d=>{d.style.display=!q2||normName(d.dataset.n).includes(q2)?"":"none";});});
     return;
   }
   const recB=RECORDS.find(r=>r.nadadora===cmpB);
