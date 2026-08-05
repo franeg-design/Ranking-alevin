@@ -272,7 +272,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .clubLogo.sm{width:34px;height:34px;margin-bottom:4px}
 .badgeBtn{position:absolute;top:40px;right:11px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer}
 .cmpBtn{position:absolute;top:11px;right:11px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer}
-.backFloat{min-height:44px;display:inline-flex;align-items:center;justify-content:center;position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:50;background:linear-gradient(160deg,var(--brand),var(--brand-deep));color:#fff;border:none;border-radius:999px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(11,42,58,.32);animation:vfade .25s ease-out}
+.backFloat{min-height:44px;display:inline-flex;align-items:center;justify-content:center;position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:50;background:linear-gradient(160deg,var(--brand),var(--brand-deep));color:#fff;border:none;border-radius:999px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(11,42,58,.32);animation:bfade .25s ease-out}
 .pRow.tog{cursor:pointer}
 .chev{font-size:9px;color:var(--muted);margin-left:5px;vertical-align:2px}
 .prueba .chev{font-size:13px;vertical-align:0;transition:transform .2s}
@@ -349,6 +349,10 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .secdiv::before,.secdiv::after{content:"";flex:1;height:7px;border-radius:6px;border:1px solid var(--line);background:repeating-linear-gradient(90deg,#e05252 0 9px,#fff 9px 15px,#2f7fb2 15px 24px,#fff 24px 30px);opacity:.95;transform:scaleX(1)}
 .syear{font-size:11px;font-weight:800;color:var(--brand-deep);margin-top:6px;letter-spacing:.05em}
 @keyframes vfade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+/* Igual que vfade, pero conservando el translateX(-50%) que centra la pastilla. Con vfade a
+   secas los keyframes PISAN el transform del elemento: entraba corrida media anchura a la
+   derecha y al acabar la animación saltaba al centro de golpe. */
+@keyframes bfade{from{opacity:0;transform:translateX(-50%) translateY(3px)}to{opacity:1;transform:translateX(-50%)}}
 #view>*, #summary>*{animation:vfade .18s ease-out}
 /* Modo ficha: sin cabecera azul ni buscador; el título del nadador es el principal */
 body.mfich .head{display:none}
@@ -2065,7 +2069,7 @@ function render(){
   const sc=el("secdiv");if(sc&&sc.classList)sc.classList.toggle("fmode",fo);
   const tbs=el("tabs");
   if(tbs&&tbs.querySelectorAll){const fo2=fo;const lbl=fo2?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
-  const bf=el("backFloat");if(bf)bf.style.display=(fo||cmpA||badgesFor||compsFor)?"block":"none";
+  const bf=el("backFloat");if(bf)bf.style.display=(fo||cmpA||badgesFor||compsFor)?"inline-flex":"none";
   const sIn=el("search");if(sIn)sIn.placeholder=(sexFilter==="M"?"Busca un nadador…":"Busca una nadadora…");
   const vw=el("view");
   if(compsFor){renderComps(vw,compsFor);return;}
