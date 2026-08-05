@@ -291,9 +291,9 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .cmpCard.tall{min-height:calc(100vh - 210px)}
 .cmpCard{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(11,42,58,.06),0 1px 2px rgba(11,42,58,.04)}
 .cmpTop{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:13px;position:relative}
-.cmpHead{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:13px 42px 13px 13px;font-size:14px;position:relative}
+.cmpHead{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:13px;font-size:14px;position:relative}
 .cmpClose{position:absolute;top:8px;right:8px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:50%;width:32px;height:32px;font-size:12px;cursor:pointer;line-height:1}
-.cmpNames{display:flex;align-items:center;gap:8px;padding-right:30px}
+.cmpNames{display:flex;align-items:center;gap:8px}
 .cn{flex:1;min-width:0}
 .cn b{display:block;font-size:13px;line-height:1.15}
 .cn span{font-size:11px;opacity:.85}
@@ -729,7 +729,10 @@ let PC_FIN={Libre:[-1.5,.7,1.1],Espalda:[-3.2,-2,.2],Braza:[-.4,2.8,3.5],Maripos
    Mide algo DISTINTO del margen de salida: sobre 143 carreras la correlación entre ambos es
    r = 0,08. Bandas [p35,p65,p15,p85,p5,p95] de percentiles reales de esta misma app.
    Escalón GRANDE = salió por encima del ritmo que puede sostener (se paga; baja hasta 0).
-   Escalón PEQUEÑO = salió contenida o tiene un crucero muy fuerte (ambiguo; no baja de 50). */
+   Escalón PEQUEÑO = salió contenida o tiene un crucero muy fuerte: NO resta, puntúa 100.
+   (Aquí decía "ambiguo; no baja de 50", de una versión anterior en la que el escalón pequeño
+   sí descontaba. Desde que `pcTrans` es de una sola cola, todo lo que quede en p65 o por
+   debajo vale 100: el 50 nunca llega a aplicarse.) */
 let PC_TRA={
   "200 Libre":[12.1,14.5,10.8,17.7,9.6,20.1],"200 Espalda":[8.1,10.5,6.4,12.2,5.4,13.6],
   "200 Braza":[10.6,14.4,8.1,15.7,7.2,18],"200 Mariposa":[18.3,26.3,16.1,27.5,13.5,27.9],
@@ -1986,7 +1989,7 @@ function renderCompareInner(vw){
   if(!recA){vw.innerHTML=`<div class="empty">No hay datos de <b>${esc(cmpA)}</b> en esta categoría. <button class="cmpClose" style="position:static;width:auto;border-radius:9px;padding:2px 10px;background:var(--chip);color:var(--brand-deep);border:1px solid var(--line)">Cerrar</button></div>`;return;}
   if(!cmpB){
     const names=[...new Set(RECORDS.map(r=>r.nadadora))].filter(n=>n!==cmpA).sort();
-    vw.innerHTML=`<div class="cmpCard tall"><div class="cmpHead">Comparar a <b>${esc(shortName(cmpA))}</b> con…<button class="cmpClose">✕</button></div><div style="padding:10px 13px 4px"><input id="cmpSearch" class="search" style="padding-left:14px" placeholder="Escribe el nombre del rival…" autocomplete="off"/></div><div class="cmpList">${names.map(n=>`<div class="cmpPick" data-n="${esc(n)}">${esc(n)}</div>`).join("")}</div></div>`;
+    vw.innerHTML=`<div class="cmpCard tall"><div class="cmpHead">Comparar a <b>${esc(shortName(cmpA))}</b> con…</div><div style="padding:10px 13px 4px"><input id="cmpSearch" class="search" style="padding-left:14px" placeholder="Escribe el nombre del rival…" autocomplete="off"/></div><div class="cmpList">${names.map(n=>`<div class="cmpPick" data-n="${esc(n)}">${esc(n)}</div>`).join("")}</div></div>`;
     const inp=el("cmpSearch");
     if(inp)inp.addEventListener("input",()=>{const q2=normName(inp.value);vw.querySelectorAll(".cmpPick").forEach(d=>{d.style.display=!q2||normName(d.dataset.n).includes(q2)?"block":"none";});});
     return;
@@ -2006,7 +2009,7 @@ function renderCompareInner(vw){
     (a&&b?rowsB:rowsO).push(`<div class="cmpRow${cls}"><span class="cA">${cell(a,rkA)}</span><span class="cP">${esc(p)}</span><span class="cB">${cell(b,rkB)}</span></div>`);
   });
   const rows=rowsB.concat(rowsO);
-  vw.innerHTML=`<div class="cmpCard"><div class="cmpTop"><button class="cmpClose">✕</button><div class="cmpNames"><div class="cn">${logoImg(recA.club,"sm")}<b>${esc(shortName(cmpA))}</b><span>${esc(recA.club)} · ${esc(recA.anio)}</span></div><div class="cmpScore">${wA} – ${wB}</div><div class="cn">${logoImg(recB.club,"sm")}<b>${esc(shortName(cmpB))}</b><span>${esc(recB.club)} · ${esc(recB.anio)}</span></div></div><div class="cmpFina">FINA en pruebas comunes: <b>${fA}</b> · <b>${fB}</b></div></div><div class="cmpBody">${rows.join("")||'<div class="empty">Sin pruebas que comparar.</div>'}</div><div class="cmpNote">El marcador cuenta solo las pruebas nadadas por ambos. — = prueba no nadada.</div></div>`;
+  vw.innerHTML=`<div class="cmpCard"><div class="cmpTop"><div class="cmpNames"><div class="cn">${logoImg(recA.club,"sm")}<b>${esc(shortName(cmpA))}</b><span>${esc(recA.club)} · ${esc(recA.anio)}</span></div><div class="cmpScore">${wA} – ${wB}</div><div class="cn">${logoImg(recB.club,"sm")}<b>${esc(shortName(cmpB))}</b><span>${esc(recB.club)} · ${esc(recB.anio)}</span></div></div><div class="cmpFina">FINA en pruebas comunes: <b>${fA}</b> · <b>${fB}</b></div></div><div class="cmpBody">${rows.join("")||'<div class="empty">Sin pruebas que comparar.</div>'}</div><div class="cmpNote">El marcador cuenta solo las pruebas nadadas por ambos. — = prueba no nadada.</div></div>`;
 }
 function scrollSec(){
   try{
@@ -2354,7 +2357,11 @@ function hideSug(){const b=el("searchSug");if(b){b.style.display="none";b.innerH
 el("search").addEventListener("input",e=>{el("clear").style.display=e.target.value.trim()?"block":"none";renderSug(e.target.value);});
 el("searchSug").addEventListener("click",e=>{const sp=e.target.closest?e.target.closest(".sugPick"):null;if(sp){hideSug();goProfile(sp.dataset.n);}});
 el("clear").addEventListener("click",()=>{query="";el("search").value="";el("clear").style.display="none";hideSug();badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;render();if(mode==="fichas")scrollSec();});
-el("backFloat").addEventListener("click",()=>{if(compFecha){compFecha=null;render();scrollSec();return;}if(compsFor){compsFor=null;render();scrollSec();return;}if(badgesFor){badgesFor=null;render();scrollSec();return;}if(cmpA){cmpA=null;cmpB=null;render();scrollSec();return;}mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();window.scrollTo({top:0,behavior:"smooth"});});
+el("backFloat").addEventListener("click",()=>{if(compFecha){compFecha=null;render();scrollSec();return;}if(compsFor){compsFor=null;render();scrollSec();return;}if(badgesFor){badgesFor=null;render();scrollSec();return;}
+  /* Comparaciones en dos pasos: desde el cara a cara se vuelve al buscador de rival (para
+     encadenar comparaciones sin salir), y solo el siguiente toque cierra el módulo. */
+  if(cmpB){cmpB=null;render();scrollSec();return;}
+  if(cmpA){cmpA=null;cmpB=null;render();scrollSec();return;}mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();window.scrollTo({top:0,behavior:"smooth"});});
 el("infoFab").addEventListener("click",()=>{const pop=el("legPop"),bd=el("legPopBody");if(pop&&bd){bd.innerHTML=(sumShown?sumLeg():"")+(LEG_HTML||"");pop.style.display="flex";}});
 el("summary").addEventListener("click",e=>{
   const t=e.target&&e.target.closest?e.target.closest:null;if(!t)return;
