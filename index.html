@@ -654,7 +654,7 @@ function medalTable(){
   fechas.forEach(F=>{
     const latest=RECORDS.filter(r=>r.fecha===F);if(!latest.length)return;
     const comp=latest[0].competi||"";
-    const pb={};RECORDS.forEach(r=>{if(r.fecha<F){const k=r.nadadora+"|"+r.prueba,c=toCs(r.tiempo);if(pb[k]===undefined||c<pb[k])pb[k]=c;}});
+    const pb={};latest.forEach(r=>{const k=r.nadadora+"|"+r.prueba;if(pb[k]===undefined){const b=bestBefore(r.nadadora,r.prueba,F);if(b!==null)pb[k]=b;}});
     const bests=[],gains=[];
     latest.forEach(r=>{const cs=toCs(r.tiempo),f=fina(r.prueba,cs),prev=pb[r.nadadora+"|"+r.prueba];
       bests.push({f:f,name:r.nadadora,prueba:r.prueba,anio:r.anio});
@@ -940,6 +940,28 @@ function bestShape(nad,prueba,fecha){
   if(prev.length<2)return null;
   let best=prev[0];prev.forEach(e=>{if(e[1]<best[1])best=e;});
   return best[2];
+}
+/* MEJOR MARCA ANTERIOR (ago-2026). Índice nadador|prueba -> [fecha, centésimas], ordenado por
+   fecha. Se construye con ALLRECS y NO filtra por temporada a propósito: "ÚLT. COMP." siempre ha
+   significado la diferencia contra su mejor marca anterior, y esa marca puede ser de la temporada
+   pasada. Antes se buscaba dentro de RECORDS (ya filtrado por temporada), así que en la primera
+   jornada de una temporada nueva no encontraba nada y no salía ni la pastilla ni las estrellas.
+   Mismo patrón que _B50: sin filtro de sexo (el nombre identifica a la persona) y se invalida en
+   boot(). Lo usan evolution(), newMin(), el resumen y el medallero. */
+let _PREVB=null;
+function prevBestIdx(){
+  if(_PREVB)return _PREVB;
+  _PREVB={};
+  ALLRECS.forEach(r=>{const k=r.nadadora+"|"+r.prueba;(_PREVB[k]=_PREVB[k]||[]).push([r.fecha,toCs(r.tiempo)]);});
+  Object.keys(_PREVB).forEach(k=>_PREVB[k].sort((x,y)=>x[0]<y[0]?-1:(x[0]>y[0]?1:0)));
+  return _PREVB;
+}
+/* Mejor marca ESTRICTAMENTE anterior a `fecha`, de cualquier temporada. null si no hay ninguna. */
+function bestBefore(nad,prueba,fecha){
+  const a=prevBestIdx()[nad+"|"+prueba];if(!a||!fecha)return null;
+  let m=Infinity;
+  for(let i=0;i<a.length;i++){if(a[i][0]>=fecha)break;if(a[i][1]<m)m=a[i][1];}
+  return isFinite(m)?m:null;
 }
 let _B50=null;
 /* Mejor 50 de ese estilo HASTA la fecha de la carrera (incluido el mismo día).
@@ -1681,7 +1703,9 @@ function renderSummary(fecha){
   const latest=RECORDS.filter(r=>r.fecha===FE);
   if(!latest.length){box.innerHTML="";return;}
   const comp=latest[0].competi||"Última competición";
-  const pb={};RECORDS.forEach(r=>{if(r.fecha<FE){const k=r.nadadora+"|"+r.prueba,c=toCs(r.tiempo);if(pb[k]===undefined||c<pb[k])pb[k]=c;}});
+  /* Mejor marca anterior SIN corte de temporada (ago-2026): así en la primera jornada de una
+     temporada nueva las estrellas y las mínimas nuevas comparan con la marca real del año pasado. */
+  const pb={};latest.forEach(r=>{const k=r.nadadora+"|"+r.prueba;if(pb[k]===undefined){const b=bestBefore(r.nadadora,r.prueba,FE);if(b!==null)pb[k]=b;}});
   const swimmers=new Set(latest.map(r=>r.nadadora));
   let mejoras=0;const bests=[],gains=[],newmin=[];
   latest.forEach(r=>{const cs=toCs(r.tiempo),f=fina(r.prueba,cs),k=r.nadadora+"|"+r.prueba,prev=pb[k];
@@ -1748,12 +1772,17 @@ function rankTime(recs,prueba){
 }
 function rankMap(arr){const m={};arr.forEach(x=>m[x.name]=x.rank);return m;}
 
-function evolution(name,prueba){const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===prueba);if(!sw.length)return null;const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);if(latest<MAXFECHA)return null;const before=sw.filter(s=>s.fecha<latest);if(!before.length)return null;const prev=Math.min(...before.map(s=>toCs(s.tiempo)));const lat=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));if(lat<prev)return{dir:"up",d:prev-lat,date:latest};if(lat>prev)return{dir:"down",d:lat-prev,date:latest};return null;}
+function evolution(name,prueba){const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===prueba);if(!sw.length)return null;const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);if(latest<MAXFECHA)return null;const prev=bestBefore(name,prueba,latest);if(prev===null)return null;const lat=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));if(lat<prev)return{dir:"up",d:prev-lat,date:latest};if(lat>prev)return{dir:"down",d:lat-prev,date:latest};return null;}
 
 function abbrev(p){const sp=p.split(" ");const st={"Libre":"L","Espalda":"E","Braza":"B","Mariposa":"M","Estilos":"Est"}[sp[1]]||sp[1];return sp[0]+" "+st;}
 function finaClass(recs,N){const R=poolRecs(recs);const names=[...new Set(R.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of R){if(r.nadadora!==n)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba])byP[r.prueba]=c;}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p]),p:p})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(list.length<N)return;const top=list.slice(0,N);const sum=top.reduce((a,b)=>a+b.f,0);const rec=R.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:top.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.sum===arr[i-1].sum)?arr[i-1].rank:i+1;});return arr;}
 
-function posTag(cur,prevMap){if(!(cur.name in prevMap))return '<div class="pos new">nuevo</div>';const d=prevMap[cur.name]-cur.rank;if(d>0)return `<div class="pos up">↑${d}</div>`;if(d<0)return `<div class="pos down">↓${-d}</div>`;return '<div class="pos eq">=</div>';}
+/* "nuevo" = primer registro en esta prueba, que es lo que promete la leyenda. Si no hay puesto
+   anterior CON EL QUE COMPARAR (primera jornada de una temporada) pero la persona ya nadó esta
+   prueba en otra temporada, la columna se deja VACÍA: poner "nuevo" ahí sería falso, y encima
+   contradiría a la pastilla ÚLT. COMP. de su misma fila. Los puestos con flecha no cruzan de
+   temporada a propósito: el ranking anterior tenía otra población (los mayores suben de categoría). */
+function posTag(cur,prevMap){if(!(cur.name in prevMap))return bestBefore(cur.name,cur.prueba,cur.fecha)===null?'<div class="pos new">nuevo</div>':"";const d=prevMap[cur.name]-cur.rank;if(d>0)return `<div class="pos up">↑${d}</div>`;if(d<0)return `<div class="pos down">↓${-d}</div>`;return '<div class="pos eq">=</div>';}
 function medal(rank){if(rank===1)return{rail:"var(--gold)",bg:"var(--gold)",ink:"#3b2a06"};if(rank===2)return{rail:"var(--silver)",bg:"var(--silver)",ink:"#20262b"};if(rank===3)return{rail:"var(--bronze)",bg:"var(--bronze)",ink:"#2e1808"};return{rail:"transparent",bg:"var(--chip)",ink:"var(--muted)"};}
 function gapTag(rec,tbl,lab,full){
   const tb=tbl[sexFilter]||{};const m=tb[rec.prueba]&&tb[rec.prueba][rec.anio];
@@ -1771,8 +1800,9 @@ function gapTag(rec,tbl,lab,full){
   const dd=toCs(rec.tiempo)-toCs(m);
   if(dd<=0)return`<span class="tag ok">${black} −${fmtClock(Math.abs(dd))}</span>`;
   return`<span class="tag no">${black} +${fmtClock(dd)}</span>`;}
-function newMin(rec,tbl){if(!hasMin(rec,tbl))return false;const b0=bestOf(BEFORE,rec.name,rec.prueba);return !b0||!hasMin(b0,tbl);}
-function hasMin(rec,tbl){const tb=tbl[sexFilter]||{};const m=tb[rec.prueba]&&tb[rec.prueba][rec.anio];if(!m)return false;return toCs(rec.tiempo)-toCs(m)<=0;}
+function newMin(rec,tbl){if(!hasMin(rec,tbl))return false;const p=bestBefore(rec.name,rec.prueba,MAXFECHA);return p===null||!hasMinCs(p,rec.prueba,rec.anio,tbl);}
+function hasMin(rec,tbl){return hasMinCs(toCs(rec.tiempo),rec.prueba,rec.anio,tbl);}
+function hasMinCs(cs,prueba,anio,tbl){const tb=tbl[sexFilter]||{};const m=tb[prueba]&&tb[prueba][anio];if(!m)return false;return cs-toCs(m)<=0;}
 function minsList(name){const esp=[],eh=[];PRUEBA_ORDER.forEach(p=>{const b=bestOf(RECORDS,name,p);if(!b)return;const cs=toCs(b.tiempo);const tE=(MIN_ESP[sexFilter]||{})[p];if(tE&&tE[b.anio]&&cs<=toCs(tE[b.anio]))esp.push(abbrev(p));const tH=(MIN_EH[sexFilter]||{})[p];if(tH&&tH[b.anio]&&cs<=toCs(tH[b.anio]))eh.push(abbrev(p));});return{esp:esp,eh:eh};}
 function goalPill(name){
   const cand=[];
@@ -2329,7 +2359,7 @@ function renderProfile(vw){
 }
 
 async function boot(){let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
-  ALLRECS=parseCSV(txt);_B50=null;_TPL=null;_T1=null;
+  ALLRECS=parseCSV(txt);_B50=null;_TPL=null;_T1=null;_PREVB=null;
   applySex();}
 function applySex(){
   initSeasons();applySeasonTables();
