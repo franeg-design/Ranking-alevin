@@ -1373,6 +1373,9 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
         const resto=rp.reduce((a,p)=>a+p[0]*p[1],0)/rp.reduce((a,p)=>a+p[1],0);
         if(Math.min.apply(null,otros)>=50&&resto>sSal){salResc={resto:true};sSal=Math.min(100,resto);}
       }
+      /* Igual que en 200 y 100: sin nota en la fila, no hay peso en la global. Ver el comentario
+         del bloque del 200. Aquí el `parts` de abajo pregunta por `sSal!=null`, no por `sal`. */
+      if(!pcSalPuntua(evSal))sSal=null;
       cs.forEach((c,i)=>{
         if(i===0){
           rows.push(pcRow(((i+1)*step)+"m",vals[i],"Salida",sal?pcSalNiv(sal,sSal,pcSalPuntua(evSal)):PC_NO_NOTA,bw(c)));
@@ -1386,7 +1389,7 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       else if(inval)notes.push({k:"na",m:step+" m · Salida",t:`Ya has nadado el primer largo de un 100 más rápido que tu mejor 50 de ${est.toLowerCase()} (<b>${fmtClock(inval.b50)}</b>${pcRefF(inval,fecha)}), así que esa marca se ha quedado corta y la salida no lleva nota. La regularidad y el escalón hasta el ritmo de crucero sí se valoran igual.`});
       // 65% regularidad + 20% Salida + 15% Transición, normalizado a lo disponible
       const parts=[[gcv,.65]];
-      if(sal)parts.push([sSal,.20]);
+      if(sSal!=null)parts.push([sSal,.20]);
       if(tr&&tr.sc!=null)parts.push([tr.sc,.15]);
       let g=Math.round(parts.reduce((a,p)=>a+p[0]*p[1],0)/parts.reduce((a,p)=>a+p[1],0));
       if(last<m)g=Math.min(100,g+5);
@@ -1580,13 +1583,20 @@ function pcAnalyse(prueba,parc,nadadora,fecha){
       const resto=rp.reduce((a,p)=>a+p[0]*p[1],0)/rp.reduce((a,p)=>a+p[1],0);
       if(Math.min.apply(null,otros)>=50&&resto>sSal){salResc={resto:true};sSal=Math.min(100,resto);}
     }
+    /* La Salida solo puntúa en CASO EVIDENTE, y eso incluye la GLOBAL: si la fila sale sin nota,
+       ese tramo no puede aportar el 20% de la valoración. Hasta ago-2026 el `sSal=null` iba DESPUÉS
+       de `g`, así que la global llevaba una nota de Salida que no se enseñaba en ninguna parte
+       (Nikko Moral, 200 Libre 14-jun: fila con guion y 90 puntos metidos en la global, 73 en vez
+       de 69). Mismo criterio que el 100, donde `s1` ya se anula antes de `g`.
+       ⚠️ El orden es OBLIGATORIO: tramos → tr → evSal → rescate → ANULACIÓN → g → filas. El rescate
+       tiene que ir antes porque solo actúa en el caso evidente, o sea cuando sSal sobrevive. */
+    if(!pcSalPuntua(evSal))sSal=null;
     // 20% Salida + 20% Transición + 35% Crucero + 25% Final, normalizado a los tramos disponibles
     const parts=[];
     if(sSal!=null)parts.push([sSal,.20]);
     if(tr&&tr.sc!=null)parts.push([tr.sc,.20]);
     parts.push([(s2+s3)/2,.35]);parts.push([sFin,.25]);
     const g=Math.round(parts.reduce((a,p)=>a+p[0]*p[1],0)/parts.reduce((a,p)=>a+p[1],0));
-    if(!pcSalPuntua(evSal))sSal=null;    // fuera del caso agresivo evidente la Salida no puntúa
     rows.push(pcRow("50m",vals[0],"Salida",sal?pcSalNiv(sal,sSal,pcSalPuntua(evSal)):PC_NO_NOTA,bw(cs[0])));
     rows.push(pcRow("100m",vals[1],"Crucero",pcNivel(s2),bw(cs[1])));
     rows.push(pcRow("150m",vals[2],"Crucero",pcNivel(s3),bw(cs[2])));
