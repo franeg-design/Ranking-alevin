@@ -351,6 +351,8 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 @keyframes sheen{from{background-position:100% 0}to{background-position:0 0}}
 .secdiv::before,.secdiv::after{content:"";flex:1;height:7px;border-radius:6px;border:1px solid var(--line);background:repeating-linear-gradient(90deg,#e05252 0 9px,#fff 9px 15px,#2f7fb2 15px 24px,#fff 24px 30px);opacity:.95;transform:scaleX(1)}
 .syear{font-size:11px;font-weight:800;color:var(--brand-deep);margin-top:6px;letter-spacing:.05em}
+.scat{font-size:12px;font-weight:700;color:var(--brand);margin-top:10px;padding-top:8px;border-top:1px solid var(--chip);letter-spacing:.02em}
+.scat:first-child{margin-top:2px;padding-top:0;border-top:none}
 @keyframes vfade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 /* Igual que vfade, pero conservando el translateX(-50%) que centra la pastilla. Con vfade a
    secas los keyframes PISAN el transform del elemento: entraba corrida media anchura a la
@@ -793,6 +795,25 @@ function medalTable(){
   MED_CACHE[ck]=arr;return arr;
 }
 function medalsOf(name){return medalTable().find(a=>a.name===name)||null;}
+/* AGRUPACIÓN VISUAL DEL RESUMEN (ago-2026). Los podios se reparten por AÑO DE NACIMIENTO y eso NO
+   se toca: es el reparto justo (un 2015 no compite por el oro contra un 2013) y es de donde salen
+   las insignias del medallero. ⚠️ Agrupar los podios POR CATEGORÍA habría dado 3 medallas por
+   categoría en vez de 3 por año: la mitad de insignias, y recalculadas hacia atrás en todo el
+   histórico. NO HACERLO NUNCA.
+   Lo único que cambia aquí es la PRESENTACIÓN: con dos categorías en la misma jornada saldrían
+   cuatro bloques de año sueltos (24 líneas entre las dos secciones); se les pone encima el nombre de
+   la categoría. Con una sola categoría no se pinta nada y el resumen queda idéntico a siempre. */
+function grupoAnios(anios,fecha){
+  const cs=[...new Set(anios.map(a=>catOf(a,fecha)).filter(Boolean))];
+  const multi=cs.length>1;
+  const orden=["alevin","infantil"].filter(c=>cs.indexOf(c)>=0);
+  const out=[];
+  (multi?orden:[null]).forEach(c=>{
+    const ys=anios.filter(a=>!c||catOf(a,fecha)===c).sort();
+    ys.forEach((y,i)=>out.push({anio:y,cab:(multi&&i===0)?CAT_LAB[c]:null}));
+  });
+  return out;
+}
 function summaryFechas(){return [...new Set(RECORDS.map(r=>r.fecha))].sort().reverse();}
 // ---- Parciales y pacing (ficha) ----
 /* ===== Análisis de ritmo (calibrado con datos reales alevín + literatura de pacing) =====
@@ -1861,15 +1882,15 @@ function renderSummary(fecha){
   // Mejor nadador/a del día: suma de FINA de todas sus pruebas (sin relevos), por año
   const totF={};latest.forEach(r=>{const k=r.nadadora;if(!totF[k])totF[k]={f:0,anio:r.anio,n:0};totF[k].f+=fina(r.prueba,toCs(r.tiempo),r.fecha);totF[k].n++;});
   const bestSw=Object.keys(totF).map(n=>({name:n,f:totF[n].f,anio:totF[n].anio,n:totF[n].n})).sort((a,b)=>b.f-a.f);
-  if(bestSw.length){const byB=[...new Set(bestSw.map(b=>b.anio))].sort();
-  h+=`<div class="sumline"><span class="lbl">Mejor ${sexFilter==="M"?"nadador":"nadadora"} del día <span style="text-transform:none;font-weight:600;color:var(--muted)">(suma de FINA de todas sus pruebas)</span></span>`+byB.map(y=>{
-    const top=bestSw.filter(b=>b.anio===y).slice(0,3);
-    return (byB.length>1?`<div class="syear">${esc(y)}</div>`:"")+top.map((b,i)=>`<div class="sitem">${md[i]} ${esc(shortName(b.name))} · <b>${b.f}</b><span class="pts">FINA</span> <span style="color:var(--muted)">(${b.n} prueba${b.n===1?"":"s"})</span></div>`).join("");
+  if(bestSw.length){const byB=grupoAnios([...new Set(bestSw.map(b=>b.anio))],FE);
+  h+=`<div class="sumline"><span class="lbl">Mejor ${sexFilter==="M"?"nadador":"nadadora"} del día <span style="text-transform:none;font-weight:600;color:var(--muted)">(suma de FINA de todas sus pruebas)</span></span>`+byB.map(gg=>{
+    const y=gg.anio,top=bestSw.filter(b=>b.anio===y).slice(0,3);
+    return (gg.cab?`<div class="scat">${esc(gg.cab)}</div>`:"")+(byB.length>1?`<div class="syear">${esc(y)}</div>`:"")+top.map((b,i)=>`<div class="sitem">${md[i]} ${esc(shortName(b.name))} · <b>${b.f}</b><span class="pts">FINA</span> <span style="color:var(--muted)">(${b.n} prueba${b.n===1?"":"s"})</span></div>`).join("");
   }).join("")+`</div>`;}
-  if(bests.length){const byY=[...new Set(bests.map(b=>b.anio))].sort();
-  h+=`<div class="sumline"><span class="lbl">Mejores marcas del día</span>`+byY.map(y=>{
-    const top=unoPorNadador(bests.filter(b=>b.anio===y)).slice(0,3);
-    return (byY.length>1?`<div class="syear">${esc(y)}</div>`:"")+top.map((b,i)=>`<div class="sitem">${md[i]} ${esc(shortName(b.name))} · <span class="pr ${stKlass(b.prueba)}">${esc(abbrev(b.prueba))}</span> · <span class="mono">${esc(b.tiempo)}</span> · <b>${b.f}</b><span class="pts">FINA</span></div>`).join("");
+  if(bests.length){const byY=grupoAnios([...new Set(bests.map(b=>b.anio))],FE);
+  h+=`<div class="sumline"><span class="lbl">Mejores marcas del día</span>`+byY.map(gg=>{
+    const y=gg.anio,top=unoPorNadador(bests.filter(b=>b.anio===y)).slice(0,3);
+    return (gg.cab?`<div class="scat">${esc(gg.cab)}</div>`:"")+(byY.length>1?`<div class="syear">${esc(y)}</div>`:"")+top.map((b,i)=>`<div class="sitem">${md[i]} ${esc(shortName(b.name))} · <span class="pr ${stKlass(b.prueba)}">${esc(abbrev(b.prueba))}</span> · <span class="mono">${esc(b.tiempo)}</span> · <b>${b.f}</b><span class="pts">FINA</span></div>`).join("");
   }).join("")+`</div>`;}
   if(gains.length)h+=`<div class="sumline"><span class="lbl">Mayores progresiones del día</span>`+unoPorNadador(gains).slice(0,3).map((g,i)=>`<div class="sitem">${md[i]} ${esc(shortName(g.name))} · <span class="pr ${stKlass(g.prueba)}">${esc(abbrev(g.prueba))}</span> · <b>+${g.g}</b><span class="pts">FINA</span> <span class="mono dlt">−${fmtClock(g.d)}</span></div>`).join("")+`</div>`;
   const forma=formaList(3,FE);
