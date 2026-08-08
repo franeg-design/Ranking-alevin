@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Ranking Álava</title>
-<meta name="description" content="Mejores marcas, puntos FINA y mínimas del Alevín femenino y masculino de Álava. Piscina de 25 m." />
+<meta name="description" content="Mejores marcas, puntos FINA y mínimas de la natación alevín e infantil de Álava, femenino y masculino. Piscina de 25 m." />
 <meta name="theme-color" content="#0e7c93" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -479,7 +479,7 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
     <div class="seg" id="segCat" style="display:none"></div>
 
     <div class="seg" id="segYear">
-      <button data-y="all" class="on">Alevín 13/14</button>
+      <button data-y="all" class="on">Alevín</button>
       <button data-y="2013">2013</button>
       <button data-y="2014">2014</button>
     </div>
@@ -533,6 +533,8 @@ function applySeasonTables(){const ks=Object.keys(TABLES).sort();const t=tablesF
    deja de leerse del global y se resuelve por la FECHA DE CADA MARCA con `tablesFor`. */
 const HIST="hist";
 /* Categoría de UNA MARCA: depende del año de nacimiento y de la temporada en que se nadó. */
+let _ANIO=null;
+function anioDe(nad){if(!_ANIO){_ANIO={};ALLRECS.forEach(r=>{if(_ANIO[r.nadadora]===undefined)_ANIO[r.nadadora]=r.anio;});}return _ANIO[nad];}
 function catOf(anio,fecha){const c=tablesAt(fecha).CAT;if(!c)return "";
   if((c.alevin||[]).indexOf(String(anio))>=0)return "alevin";
   if((c.infantil||[]).indexOf(String(anio))>=0)return "infantil";
@@ -1333,9 +1335,22 @@ const PC_TFINF=[" Te quedaba depósito para el final.",
    de entrar y las devuelve al salir pase lo que pase: `pcAnalyseIn` tiene varias salidas y dejar el
    estado global tocado contaminaría lo siguiente que se pinte. */
 function pcAnalyse(prueba,parc,nadadora,fecha){
+  /* ⚠️ Las 13 tablas `PC_*` están calibradas con marcas ALEVINES de 25 m. Aplicarlas a infantil
+     daría notas descalibradas: se muestran los parciales sin valorar hasta calibrar aparte al
+     cierre de la primera temporada infantil (MANUAL §4.2). NO quitar esto sin esa calibración. */
+  if(catOf(anioDe(nadadora),fecha)==="infantil")return pcSoloParciales(prueba,parc);
   if(!isHist())return pcAnalyseIn(prueba,parc,nadadora,fecha);
   applySeasonPace(seasonOf(fecha));
   try{return pcAnalyseIn(prueba,parc,nadadora,fecha);}finally{applySeasonPace();}
+}
+function pcSoloParciales(prueba,parc){
+  const dist=parseInt(prueba,10)||0;
+  const vals=String(parc||"").split(";").map(x=>x.trim()).filter(Boolean);
+  if(dist===50||vals.length<2)return null;
+  const cs=vals.map(toCs);if(cs.some(x=>!isFinite(x)))return null;
+  const step=dist/cs.length,mn=Math.min.apply(null,cs);
+  const rows=cs.map((c,i)=>pcRow(((i+1)*step)+"m",vals[i],pcNom(i,cs.length,true),PC_SIN_VAL,Math.max(6,mn/c*100)));
+  return {rows:rows,notes:[],glob:"Los rangos de ritmo están calibrados con marcas de alevín: en infantil se muestran los parciales sin valorar hasta tener muestra propia.",gkey:"opt",lab:"Parciales",score:null};
 }
 function pcAnalyseIn(prueba,parc,nadadora,fecha){
   const est=prueba.split(" ")[1],dist=parseInt(prueba,10)||0;
@@ -2462,7 +2477,7 @@ function renderProfile(vw){
 }
 
 async function boot(){let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
-  ALLRECS=parseCSV(txt);_B50=null;_TPL=null;_T1=null;_PREVB=null;
+  ALLRECS=parseCSV(txt);_B50=null;_TPL=null;_T1=null;_PREVB=null;_ANIO=null;
   applySex();}
 function applySex(){
   initSeasons();applySeasonTables();
