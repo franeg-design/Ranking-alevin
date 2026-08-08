@@ -547,8 +547,29 @@ const CAT_LAB={alevin:"Alevín",infantil:"Infantil"};
    promociones: "12 años" son todos los que pasaron por su primer año alevín, nacieran cuando
    nacieran. Por eso en Histórico el segmentado es por EDAD y en modo temporada sigue por AÑO. */
 function edadDe(anio,fecha){const s2=seasonOf(fecha);if(!s2||!anio)return "";return String((+s2.slice(0,4)+1)-(+anio));}
-/* La clave con la que filtra el segmentado: edad en Histórico, año de nacimiento en temporada. */
-function claveEdad(r){return isHist()?edadDe(r.anio,r.fecha):r.anio;}
+/* ORDEN dentro de la categoría. ⚠️ El PRIMER año son los MÁS PEQUEÑOS: dentro de una categoría, el
+   año de nacimiento MAYOR es el de 1.º. Confirmado por Fran (8-ago-2026):
+     Alevín 1.º = 11→12 años · Alevín 2.º = 12→13 · Infantil 1.º = 13→14 · Infantil 2.º = 14→15.
+   Sale de `CAT`, así que rueda solo cada septiembre. Devuelve "1" / "2" / "". */
+function ordenDe(anio,fecha){
+  const c=tablesAt(fecha).CAT;if(!c||!anio)return "";
+  const k=catOf(anio,fecha);if(!k)return "";
+  const ys=(c[k]||[]).slice().sort().reverse();   // mayor año primero = 1.º año
+  const i=ys.indexOf(String(anio));
+  return i<0?"":String(i+1);
+}
+const ORD_LAB={"1":"1.º año","2":"2.º año"};
+/* La clave del segmentado según el contexto:
+   · modo temporada          → año de nacimiento (solo hay dos cohortes, son las que se manejan)
+   · Histórico + categoría   → orden dentro de ella (1.º / 2.º): compara entre promociones a igualdad
+                               de edad, que es la tabla que da sentido al Histórico
+   · Histórico sin categoría → año de nacimiento otra vez, pero con otro significado: la promoción
+                               ENTERA, sus mejores marcas de siempre, crucen o no de categoría.
+   ⚠️ Aquí se descartó filtrar por EDAD (12/13/14/15 años). Lo pilló Fran: "Todas + 12 años" es
+   idéntico a "Alevín + 1.º año", porque los 12 años solo existen en alevín. No ofrecía nada que no
+   estuviera ya. NO REINTRODUCIR. */
+function claveEdad(r){return isHist()&&catFilter!=="all"?ordenDe(r.anio,r.fecha):r.anio;}
+function claveLab(v){return (isHist()&&catFilter!=="all")?(ORD_LAB[v]||v):v;}
 function isHist(){return season===HIST;}
 function seasonOf(f){const y=+String(f).slice(0,4),m=+String(f).slice(5,7);if(!y)return"";const st=m>=9?y:y-1;return st+"/"+String((st+1)%100).padStart(2,"0");}
 function initSeasons(){SEASONS=[...new Set(ALLRECS.map(r=>seasonOf(r.fecha)).filter(Boolean))].sort();
@@ -577,9 +598,9 @@ function fillCats(){
 }
 function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(catFilter==="all"||catOf(r.anio,r.fecha)===catFilter)).map(claveEdad).filter(Boolean))].sort();const ys=(only&&only.length)?only.slice().sort():all;if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
      de ser cierta: el botón absoluto pasa a llamarse "Todos". */
-  const lab=isHist()?"Todas las edades":(catFilter!=="all"?CAT_LAB[catFilter]:(catsPresent().length>1?"Todos":"Alevín"))+(all.length&&!isHist()?" "+all.map(y=>y.slice(2)).join("/"):"");
+  const lab=isHist()?"Todos":(catFilter!=="all"?CAT_LAB[catFilter]:(catsPresent().length>1?"Todos":"Alevín"))+(all.length?" "+all.map(y=>y.slice(2)).join("/"):"");
   seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>${lab}</button>`
-    +ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${isHist()?y+" años":y}</button>`).join("");if(seg.classList){seg.classList.toggle("wide",!!(only&&only.length));
+    +ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${claveLab(y)}</button>`).join("");if(seg.classList){seg.classList.toggle("wide",!!(only&&only.length));
     /* Con 4 años o más (pasa en Histórico desde 2026/27) los botones dejan de repartirse a partes
        iguales y la fila se desliza en horizontal: a 13 px, cinco botones no caben en un móvil. */
     seg.classList.toggle("scr",ys.length>=4||(isHist()&&ys.length>=3));}}
@@ -2426,7 +2447,7 @@ function renderProfile(vw){
         /* Edad = la que cumple en el año en que acaba esa temporada. Estaba cableado a 2013/2014
            y habría mentido en cuanto entrasen otras cohortes. */
         const TB=tablesAt(b.fecha);
-        const edad=String((+String(seasonOf(b.fecha)).slice(0,4)+1)-(+b.anio));
+        const edad=edadDe(b.anio,b.fecha);
         const ra=((TB.REC_ALAVA[sexFilter]||{})[p]||{})[b.anio];
         const rmT=fmtClock(Math.round(((TB.BASE[sexFilter]||{})[p]||0)*100));
         if(ra){
