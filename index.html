@@ -540,6 +540,15 @@ function catOf(anio,fecha){const c=tablesAt(fecha).CAT;if(!c)return "";
   if((c.infantil||[]).indexOf(String(anio))>=0)return "infantil";
   return "";}
 const CAT_LAB={alevin:"Alevín",infantil:"Infantil"};
+/* EDAD de una marca, con la MISMA convención que la ficha usa para los récords de Álava: la que se
+   cumple en el año en que ACABA esa temporada. Alevín → 12 y 13 · Infantil → 14 y 15.
+   ⚠️ En Histórico el año de nacimiento no sirve para filtrar: es una cohorte, y la lista crecería
+   una entrada por temporada hasta ser ilegible. La edad, en cambio, es fija y comparable entre
+   promociones: "12 años" son todos los que pasaron por su primer año alevín, nacieran cuando
+   nacieran. Por eso en Histórico el segmentado es por EDAD y en modo temporada sigue por AÑO. */
+function edadDe(anio,fecha){const s2=seasonOf(fecha);if(!s2||!anio)return "";return String((+s2.slice(0,4)+1)-(+anio));}
+/* La clave con la que filtra el segmentado: edad en Histórico, año de nacimiento en temporada. */
+function claveEdad(r){return isHist()?edadDe(r.anio,r.fecha):r.anio;}
 function isHist(){return season===HIST;}
 function seasonOf(f){const y=+String(f).slice(0,4),m=+String(f).slice(5,7);if(!y)return"";const st=m>=9?y:y-1;return st+"/"+String((st+1)%100).padStart(2,"0");}
 function initSeasons(){SEASONS=[...new Set(ALLRECS.map(r=>seasonOf(r.fecha)).filter(Boolean))].sort();
@@ -566,13 +575,14 @@ function fillCats(){
   seg.innerHTML=`<button data-c="all"${catFilter==="all"?' class="on"':''}>Todas</button>`
     +cs.map(c=>`<button data-c="${c}"${c===catFilter?' class="on"':''}>${CAT_LAB[c]}</button>`).join("");
 }
-function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(catFilter==="all"||catOf(r.anio,r.fecha)===catFilter)).map(r=>r.anio))].sort();const ys=(only&&only.length)?only.slice().sort():all;if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
+function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(catFilter==="all"||catOf(r.anio,r.fecha)===catFilter)).map(claveEdad).filter(Boolean))].sort();const ys=(only&&only.length)?only.slice().sort():all;if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
      de ser cierta: el botón absoluto pasa a llamarse "Todos". */
-  const lab=isHist()?"Todos":(catFilter!=="all"?CAT_LAB[catFilter]:(catsPresent().length>1?"Todos":"Alevín"))+(all.length&&!isHist()?" "+all.map(y=>y.slice(2)).join("/"):"");
-  seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>${lab}</button>`+ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${y}</button>`).join("");if(seg.classList){seg.classList.toggle("wide",!!(only&&only.length));
+  const lab=isHist()?"Todas las edades":(catFilter!=="all"?CAT_LAB[catFilter]:(catsPresent().length>1?"Todos":"Alevín"))+(all.length&&!isHist()?" "+all.map(y=>y.slice(2)).join("/"):"");
+  seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>${lab}</button>`
+    +ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${isHist()?y+" años":y}</button>`).join("");if(seg.classList){seg.classList.toggle("wide",!!(only&&only.length));
     /* Con 4 años o más (pasa en Histórico desde 2026/27) los botones dejan de repartirse a partes
        iguales y la fila se desliza en horizontal: a 13 px, cinco botones no caben en un móvil. */
-    seg.classList.toggle("scr",ys.length>=4);}}
+    seg.classList.toggle("scr",ys.length>=4||(isHist()&&ys.length>=3));}}
 const PRUEBA_ORDER=["50 Libre","100 Libre","200 Libre","400 Libre","800 Libre","50 Espalda","100 Espalda","200 Espalda","50 Braza","100 Braza","200 Braza","50 Mariposa","100 Mariposa","200 Mariposa","100 Estilos","200 Estilos","400 Estilos"];
 // Tiempos base FINA — World Aquatics SCM 2025 (25 m), femenino (segundos)
 const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo
@@ -1864,7 +1874,7 @@ function renderSummary(fecha){
   box.innerHTML=`<div class="topRow">${band}${phrase}</div>`+menu+cuerpo+`<div class="secdiv" id="secdiv"><span id="secTitle">${mode==="fichas"?"Fichas individuales":"Ranking de la temporada"}</span></div>`;
 }
 
-function poolRecs(recs){let out=recs;if(catFilter!=="all")out=out.filter(r=>catOf(r.anio,r.fecha)===catFilter);if(yearFilter!=="all")out=out.filter(r=>r.anio===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
+function poolRecs(recs){let out=recs;if(catFilter!=="all")out=out.filter(r=>catOf(r.anio,r.fecha)===catFilter);if(yearFilter!=="all")out=out.filter(r=>claveEdad(r)===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
 // Clase de color por estilo (misma paleta que los chips y las tarjetas de ritmo).
 /* Clase de color por estilo. Única fuente de la paleta: antes esta tabla estaba copiada
    cuatro veces (aquí, dos veces como stCls y una como stKl) y cambiar un color obligaba a
@@ -2547,7 +2557,7 @@ el("view").addEventListener("click",e=>{
 });
 el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;render();});
 el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sexFilter=b.dataset.s;el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
-el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;catFilter=b.dataset.c;badgesFor=null;cmpA=null;cmpB=null;fillCats();fillYears();render();});
+el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;catFilter=b.dataset.c;yearFilter="all";badgesFor=null;cmpA=null;cmpB=null;fillCats();fillYears();render();});
 el("segYear").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;yearFilter=b.dataset.y;el("segYear").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("segFina").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;finaN=+b.dataset.n;el("segFina").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("clubSel").addEventListener("change",e=>{clubFilter=e.target.value;render();});
