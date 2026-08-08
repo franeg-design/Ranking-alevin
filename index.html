@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Ranking Alevín</title>
+<title>Ranking Álava</title>
 <meta name="description" content="Mejores marcas, puntos FINA y mínimas del Alevín femenino y masculino de Álava. Piscina de 25 m." />
 <meta name="theme-color" content="#0e7c93" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -55,6 +55,9 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;back
 .tabs button.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.09)}
 .seg{display:flex;gap:6px;background:var(--chip);padding:4px;border-radius:16px;margin-bottom:8px}
 .seg.wide button{flex:1}
+.seg.scr{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.seg.scr::-webkit-scrollbar{display:none}
+.seg.scr button{flex:0 0 auto;white-space:nowrap;padding-left:13px;padding-right:13px}
 .seg button{flex:1;border:none;background:none;padding:7px 6px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
 .seg button.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .chipwrap{position:relative}
@@ -444,12 +447,12 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
   <header class="head">
     <div class="glow"></div>
     <div class="kickRow">
-      <div class="kicker">🌊 Natación · Álava</div>
+      <div class="kicker">🌊 Natación</div>
       <span class="seasonPill" id="seasonLabel"></span>
       <select class="seasonPill seasonSel" id="seasonSel" style="display:none"></select>
     </div>
     <div class="titleRow">
-      <h1 class="title" id="h1t">Ranking Alevín</h1>
+      <h1 class="title" id="h1t">Ranking Álava</h1>
       <div class="segSexH" id="segSex">
         <button data-s="F" class="on">Fem.</button>
         <button data-s="M">Masc.</button>
@@ -473,6 +476,8 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
       <button data-v="topfina">Top FINA</button>
     </div>
 
+    <div class="seg" id="segCat" style="display:none"></div>
+
     <div class="seg" id="segYear">
       <button data-y="all" class="on">Alevín 13/14</button>
       <button data-y="2013">2013</button>
@@ -489,7 +494,7 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 
     <div id="view"></div>
 
-    <div class="foot">© 2026 franeg-design · Diseño y desarrollo de Ranking Alevín<br>Contacto: <a href="mailto:libre-08.rueda@icloud.com">libre-08.rueda@icloud.com</a></div>
+    <div class="foot">© 2026 franeg-design · Diseño y desarrollo de Ranking Álava<br>Contacto: <a href="mailto:libre-08.rueda@icloud.com">libre-08.rueda@icloud.com</a></div>
 
     <button id="backFloat" class="backFloat" style="display:none">← Volver</button>
     <button id="infoFab" class="infoFab" aria-label="Leyenda">ⓘ</button>
@@ -501,12 +506,71 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 const CLUB_LOGOS={"CN Menditxo":"data:image/webp;base64,UklGRqQTAABXRUJQVlA4WAoAAAAQAAAAXwAAXwAAQUxQSFIEAAABDk/Utp2xtm1bciSXbdu27atn27bt62rbttG6emrZaNnXvObl67p7VUmORtVZsyo57qu97dmOfU9ETAD+S6bihoqER5hbJhhR1IwSDJpi6JwLrrzeusKVW8XQzFwAUiOAOdY48PoX3v/uj54n2VPpXrgea8yRAM7SZjEDsPxRT3xV+DFa+0S3PAB1zaECix338v88yaJvJSoZEAEsGkl2L+tiCTLXDCqw0e2/edKsrDhGgRnJ9vaNEqirX5oD7WOFp1nFCYoZae1GQJ7WTIE1HotkrDhxiWRs1wC0VobZr+jIgjU1spMWeX1Shy3f9eyzxpF8V+GkJgQu7Pl+xVpLZE8BV4sM8z3jpWTtIdT5kqwGhlU/9D3xDZSe/zDCJmZY/xffZ0MjdX3YhAw6zYKNNU4r8olkWH+aBRtsnFZkE1CsZ75go43T60HH5tLFvvYFG26Mi4kbk6i+7vtsfKSopuPJcSsjAxhpyMei2IeRQYzsoGNwXOK3EmEAWnOcmeJZXzCQxmehM1LsychgRiLRGYib49OqDAfk0zlcOlqO43xkQCMVNpLIHF9WZUggX86RyiiG433BoBo75KO47LMqNPKZuhEUu3tjYI2KbJSnGEMTKSM4LPGPr0IjjAY3LMcxvs/gRrawYYpnpAiPiSIbhrl+ooRH2M2FoYrNRBhgESQ6kONsH0MUeTZsQPFoqAQ6kOIDliECJUkBCBb63VchEv4ekQIOa1c+0GJwgGJPX4YJ3DPRgb1ZhMm490COU9kPU6TABi4PVzfs4nDJ/4suXN2A4ngWYTJ20IG9w7X3sF1YhgncZcBh9dIHGl3igBTz/eKrEAl1PqQABG+xDBHYJQIAGe5jDFGkIhvIcWKoToQNOKxbViESrJu4AWC2r3wZHrCdLRlueLCK4YnSwma1P4vwGOOsUiwwzTI0oEmSDkOOu9kPTSQSwywVW1RlaCAx0VnB4Q0pwmLyBhxGVOztQ8O9oaPA8T0pQmLyniNGzrGXDwsj8tGg6esswmGUVDETbFpaFQoxdMmMoLjZ90MReTMUM0517s+9hcGoyGRmUGxZmYRATBQZxqm4gP0QRF4AxXhzPMZe83q+hWHMqc7xpu83LVLnyGRccFjiEx+bFQlLHMZP2Kc+NilSDA6TVNgnPjYnEpYoJquwj9hrSs9Hg2LSivlfYlE2AcZu/kQxeQfc6Gn1MxIJHOqYEvtMeSvrBeNUlzhBTXMs+4xnv6qPRFINOeqbAQd/6RmlHhJJHJxAUWenmP+KKc9YTg6RnJIuUYeaK7CYTHlWsZwEopBTVyyWQFH/1IDFz/zAk1W/kHGIRSH5ARZPkKdopBiA7W/6nCSroh+thIgIYDGakKTe1CVAnqKxYgBm3/qqV37iGLt4lbQALEWzMwOA+TY+/ManXv/w+z9+p7YfylM4fOP5EgCWIYCpmsPwuRZs27bDcJoKgik0UwqGCtWMghDLUPy3BFZQOCAsDwAAMDkAnQEqYABgAD5ZII5FI6IhGc0W2DgFhLYAYIr6rl9IPx3m+V3+4/jPkTzPdxGSP1T+YBzmP2o/1XsA/ZP9nfe09Bv+j9QD+9/7frAPQA8tf92Pg8/c/9uvaY/+ucV/zP8AP1A8g/794Q+DPyZ7Vf2z/r+6Zhv6ZNTj5R9m/2X9o/bz1p/z3gD8Af6D1Avx3+Lf4L8u/at94/0vaxaZ/mf856gXrL9F/zX9z/cbzi/7f0D+uv+Z9wD9Tf8V+bH9p9qjwMPuH+P/Yf4Av5T/Uf9p/dP7r+zv0pfyn/X/xH5S+zX8x/t//H/x35M/YN/Jv6L/qv7n/jP/T/lP///7PuZ9en7VeyP+v//kdLgCyyhr8K5d9D/wWNK17Oibnb+nhDMWb0WuL8qksP8iC4TX9C+9PQm2TU5p7KqKiBbbl5QrHRecQt2fmyqrraA4nDaKbuQ+oSdC0sUPCso5PjlBv1fAOOwNyWcCK2tqDtxRJlNxoa2vcaglweFMcm10NED/nw7TlAUXAIkCF4vkvcl9vQ114yV/ARF+CRCmwf2Cd6364dzJbYYJ3fmwkmi12hPrszqMi9znmUXo7IraDBDVvL7xPpe5X0WfH4GheN29Sj64AAD+4YU//U6AHmAnem9fxq2IrKJtFb3LHhocJDklrLkCISjJrpfIvtkiXNZa6Dc99YsLyXCNkK/aXHAEwPpyua9/i3r6BuOmjuYzfmf+UNu1wQm6PxhWuX2SqQa+l5Tjd5ZEPAf4g6oZeBCkeA8ZNuCDcuWq/DChGEL735k5GLpajLI8eI++G/CDzmiKCo0LHGw2xfLSD+Mg6HWctasR5mDS/wJxKo3SB/pJcVqD/khhWZCobOvzORL2s/9SH57IPCGZ6kM8h+YjJ+ZB8vaG3+e/1WvtwRe7hL/iT8jdOsalOMhPMVazLIrj5OZYsgOejk2Aq1maMOdN3oyf7JD5lbfGQ2Zllp3lJKvFtiP8B5dST9pNQQcCDPW8yQTHz/uTSdg509uhwU3AiW+CH4N711Ud+M9/Yr1tDvl4PCQVPd4gWXf7OEu1k4CyG9VQcfSlKulZkmwnkdZ9lG7iEIrk+V4w2OII+ifq11mzT2nHeFE5+Sf6JCER+Emq3mPAMiTO8cV3od1OsoFTCTlL2lXHiLClfPi80yeFDF9xm33D5nUUXiAl/UVEiDvu5JdGnH+Fuu2aeWJvJPdXlZFsSXqFb04AlqFUBv9yzSQZnoXpXQ0oIUFooXDNcfgfzQzmav+JL//53J//niV//87lAhSQ6OTHYKIRxUG9zaNlU4MuUZQ9qxGhxtT9DfSKWX6PLD5I+S5yyf8s42cSAEUDwFbaJJl1f3/4l8FFXAX0lbMF/vqy8ixu5+eDJ/fu+6vCXvAazWY87hwr7GY0g9HFdh3/QCNL213uI40flCk5WsgUeZtLLycLrp2ifj+BgszD/PCzXUDBm59ChLd4jRh1qGvR8xjgYYbJoKI3sE4o5bgjLQRlwhK4CWMqPtd4IjzpXtwOmxxLQOFooAaX3J+qPUS2EtQRb1xMcbgxNs6MDnB1XwZqFFNoSSFbEyadHCl6B8Nc63fjliINHWBcHaj0XKWANOlCZMiwrwI+ZPsAUogbKetRuhHcBjcSPfqYUPyNhf0umjrNvHFnqRscj6VRM+yVzIg5lwAlIcQIFjKd5xRArCAUQZfNIkIp67n2h7HfzeLuHZ87RRizgeQn9U7lbm0mXjEcXDc8TDOCHofvEHIGjO9cGxbJw8dyvRwYa92nDINFICILNqwSeMYOdhVC5a/T/0gW3mNg5aV97psExG+L+FHxlg0z8qsH7Brm0bPDkYhCV8wEVqK6P7IUKZMkxI8dI1zZA1RbiB8X8lFWlUdhcfKi5CsHysv2qiL9S03uRRi0T23xWH9az3XKbPCbq/aa3wfKO7mPURUMx9BJ2Eu31bYBN3hzqBkkJiyEkImJnhKCgUY64nft++VZ6+2D083YqvRUnK7+cQogPzR4kEMK/WyMNcOsZyRouncRckydWRdf4HrKhT8INTb7a1e3BoUiZj8j69GI1eTf26qRgBoyv0R/Z5cMcVoGPTIrM/qGvTVfz5ivcXyy3ybB4J8WqWBDAIAGpOUjGx5QxRGfO1hNvQNHKwbG7+as7x+0gdf/Q4L7YRypNBHo8tuZemGRS+YtJZ2evbGfDp4S3aG/M+g+/8BTCU6AVoykBDlpOqbTjtGviCXSr6ZCJP2qANQIdxPr/+vgGMNd/WQ/OQ+V00jE24y01pIHCz/+FiMZ9RYeNPZUv+wstRvnvS2OPEaAV9REICiR6qgrwLiHVm/VsaMYHIqGrAxeYcvan4owtofyQ5c6/xBZYyg8irlr8rY0LcLC8PC8J+2B5giQDNg7k1/qLMC2Th+oUDjd/P/NfPlnVKvYexaChzejnpnHV039Iz5jkrQ6apnIQ7qpCtx1p9csgMqEoxnBVX7xmm6psnYRGnNET3UPYKHUJYeGvFBPDLz3Ccdo4mgk65XXTVa14hsVwp+UKxLXM7lDeqO2cwX/mEkR7phRN9WggahrDsH+Ac3I/PkWh81GGs2tc+hwEKor4DxMjBze82LwC6V2tqfIICbik2AbbEW8bRCXzawRojwRnb7X6/z1mdCtGVrWA0bsTSbBF3yLTWmDBmUZqgJYDyMCaZsJrRwHLka5+7lN0wugmThwprbE4PA7YbON4l0Q2cgJfG70aH+fHQh2P9PGBav3YrGOLSbpM98hhDk14skboGpH/TgGmHGSQMAmQ1TyaK6GoHhDc2UdU30/PIEAv5Yvc+pARA0SZonC3/qng9bWxFIG6zNxV1kiRpg6UxQvU5ja5eOcT0EY9fU18V8P7N6cHgkLTup+xuzthKle8NpecRZYkTLn7OZZGkcPc51XADdjEXsxEOg6/JG2hvlxgZH81ePGkwoEouU/gJdulxwW6gtHj4AOvDY/tYqPMRGSBqWNMG98vhWW9Pxcl20JcPtsw/7EEcDItOkmP+bxT1oyr+luTDEUZlMoJGbtBcCZ3XlJ/4hZVWFU3cqtpnougJ0UxRPitYf5SXxKWZqwELvmNssfAoGfJENQ8g3Ew41crcpsHOZUSsrwp42BR/VuG+OTHU70QG5f70L4eIsxxjoDa3NyDLLWbzXUNDJDrzeCCsLU9cSB1IBJTFM7yPg7iDuD53iGPULKmLqXB77SA/mboxT6WlQlobyQf8bb/wnvya/J+mXbfLKq9ZBeV0oO2tzRLarbKsAtyvfhDQFSk92ErFsicT6G2wftu0abTbmKQ70Ixbsq+yz6SC/ZLxvdCLGlPN37+Gzsz8/OAvayQQk0kGdaATNOvIKkTEiaHxWKLW1+O72zFXIQjwRO1M5ekXNm4xuoLLtdv3Rvvkp5+bpulwyhNCwiWGNWkn9q1C+1eleDXRD9DffioeGYmzgUWYKVzrMbHuYpCfbdJXXmVyBe2NQKuLYyBNDhQFEjPhiDVjRkp+yg5ZP8uDEtoSrrfhIj7JNOekpLcMNE3EyzrV9uHWYGYchetAzgGbii9Qc1fJLpbTs76PPeEGr7OyKphvVa6gmSDJ8mVHGRq3s7VgzG/LlrKz5PjX9h+YWqWrNlfpXqWV/44sj4RjqWckKm170M/2AJ5tunmar75olkKZYb4ytVVzNWuM4HinDsKbnwXmiAThA53gv3gZ819HGptjK1Mjv1eiwtmxcN/Gwilk/6JdCE82+nGLRPkWqGvkwXS51kXP421hb4ha/S+PYI6Vw7559GDpEKC9M0wXzJ2fUfcEVZ8PcnKe8VJBw3XIR8Ep3goAfWRSCsFuFvfR1INYAoImpTTkNrj/YcAVedsI9MgxFgYFNeabtbV6GJ2c5solUsGIpvQyD4L5dLAaFOM6DFEUTfOY+59XXcGO5eJflY4q3CtYFGBnyw+725ob1qkAFwQAH2v9DnAkt2SHHuAqq0TJ29NtYzUTdgB9W7o3pkaNmQdWciQBS0NnjegCd0mlzGzj3y1m7cg4DhvfqbNPkvQRN3qahn1CIX33Vck15PEkwRS81sWGjJV+GHJlF3RrrVKAjRT4gztV4kEBXvt6hfNwB/BMEvw5jd4zB8yTL2lZK2/s1+NtDm5/57VSsQfKV1lKO+ao8jr1w+o+1hlos1UTrg10BUwoDbyQTmxyaX+7KN6pBnIBXP2klCXQt+k6/6xyZtDGVKV0W9ZuebijlYLxn0A91XUlXbq5zXOHA2R9z/0jCVtZa1rI/lf+R0HPSnxbC4xl5rNLOQz9SfwTC/Ut0uKwjzZlAOJATA/+aEbz9n+w2DeyLDT9IyyCEol9YVoC6J229s+9Y/hi8/gSO+NEMi0ufcL6wn+8t2lJf4/K85SJl4NQL5ENtM0A6YWGPSsZLICTG6xCHql+OgNE5ttBKXXedGSQIb1ggp1/sy0YvpxB1FjUF4V++GJ0FkwvTHRxGJfFVtQQKFEAsyusIcq+xPLYA0eeyo67ojvUDQcaACo3N4cR1xt/dQKuLCeg3XeGbf3Q2sZJMK2m/Sht8u6w4Gb0aQ5x8Dxj52wDSyJre0fiS9moFSuJYJIOnKvspcThC4W1YjcuvWTs775+xr0tj/FP8846oUloQflaAG/Z9yxD9hqiSEcIyrTh1eUPkCYJG6TqXngewxLxXgi0Qy+lpN3Ar9WyepgyrDaSOAXV+nDZV+mu1aKs4I7/abFu5DkFYKndI4RDM1I9Itn5UngL2IwwZdi828grEynAbVC9io9oDCAWsILiRfQrwxDwpoEFqoLhvgedrg6UyNEzGJqWvAC3k3Y9J860Mv8dsQGgACZp8vDOKtaesbPCPOVn20RpvMkHN+cvcwA/2uZAoAiZuo7PeZRukCxVGPATnQ+fgZx8m9oMFJEcJrb6J35LV0Bv65argeB+Kue3rs6L+6OAPfjIdMKDrfErk4BMstAPz4/zCvEzxUkcIoyT25M0l7GWI5gdi913lOUMVmGjBcvUtIfGapsVG2iOsuK739T83zEVW90zwsnQ6IIoHSjeypmy6yBGgXG1W4U+zUL4yfvn0jLDae54VPCSfOPcZUYUAQqvN5p1KWl1mAPTAuSLXx6rMquozMguo9Mkc1rqgnQsAxquQRi06tyc1BzccXAy7KYM30XKSs9no6B2m4QzLUg0mDsaztCADaRoXBbYtF/JrEiAAAHLHgAAA=","CN Judizmendi":"data:image/webp;base64,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","CN Urgain":"data:image/webp;base64,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","CI Laudio":"data:image/webp;base64,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","CN Zadorra":"data:image/webp;base64,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"};
 function logoImg(club,cls){const src=CLUB_LOGOS[club];return src?`<img class="clubLogo${cls?" "+cls:""}" src="${src}" alt="">`:"";}
 const TABLES={"2025/26":{BASE:{F:{"50 Libre":22.83,"100 Libre":50.25,"200 Libre":110.31,"400 Libre":230.25,"800 Libre":477.42,"50 Espalda":25.23,"100 Espalda":54.02,"200 Espalda":118.04,"50 Braza":28.37,"100 Braza":62.36,"200 Braza":132.50,"50 Mariposa":23.94,"100 Mariposa":52.71,"200 Mariposa":119.32,"100 Estilos":55.11,"200 Estilos":121.63,"400 Estilos":255.48},M:{"50 Libre":19.90,"100 Libre":44.84,"200 Libre":98.61,"400 Libre":212.25,"800 Libre":440.46,"50 Espalda":22.11,"100 Espalda":48.33,"200 Espalda":105.63,"50 Braza":24.95,"100 Braza":55.28,"200 Braza":120.16,"50 Mariposa":21.32,"100 Mariposa":47.71,"200 Mariposa":106.85,"100 Estilos":49.28,"200 Estilos":108.88,"400 Estilos":234.81}},MIN_ESP:{F:{"50 Libre":{"2013":"28.35","2014":"29.85"},"100 Libre":{"2013":"1:02.15","2014":"1:05.70"},"200 Libre":{"2013":"2:17.65","2014":"2:24.50"},"400 Libre":{"2013":"4:48.00","2014":"5:04.35"},"800 Libre":{"2013":"9:58.35","2014":"10:37.50"},"50 Espalda":{"2013":"31.90","2014":"34.35"},"100 Espalda":{"2013":"1:09.35","2014":"1:13.30"},"200 Espalda":{"2013":"2:30.65","2014":"2:40.90"},"50 Braza":{"2013":"36.25","2014":"38.35"},"100 Braza":{"2013":"1:19.70","2014":"1:24.35"},"200 Braza":{"2013":"2:51.50","2014":"3:01.20"},"50 Mariposa":{"2013":"31.15","2014":"33.20"},"100 Mariposa":{"2013":"1:08.80","2014":"1:13.10"},"200 Mariposa":{"2013":"2:38.20","2014":"2:49.45"},"200 Estilos":{"2013":"2:33.35","2014":"2:42.05"},"400 Estilos":{"2013":"5:26.75","2014":"5:46.15"}},M:{"50 Libre":{"2013":"26.75","2014":"28.70"},"100 Libre":{"2013":"59.95","2014":"1:04.25"},"200 Libre":{"2013":"2:11.55","2014":"2:20.85"},"400 Libre":{"2013":"4:39.70","2014":"4:57.30"},"800 Libre":{"2013":"9:41.75","2014":"10:23.85"},"50 Espalda":{"2013":"31.15","2014":"33.75"},"100 Espalda":{"2013":"1:06.70","2014":"1:12.05"},"200 Espalda":{"2013":"2:25.95","2014":"2:35.75"},"50 Braza":{"2013":"34.90","2014":"37.90"},"100 Braza":{"2013":"1:17.80","2014":"1:23.60"},"200 Braza":{"2013":"2:46.65","2014":"2:55.30"},"50 Mariposa":{"2013":"29.60","2014":"32.30"},"100 Mariposa":{"2013":"1:07.45","2014":"1:12.60"},"200 Mariposa":{"2013":"2:32.95","2014":"2:44.70"},"200 Estilos":{"2013":"2:28.15","2014":"2:37.75"},"400 Estilos":{"2013":"5:22.25","2014":"5:41.55"}}},MIN_EH:{F:{"50 Libre":{"2013":"32.71","2014":"34.49"},"100 Libre":{"2013":"1:12.00","2014":"1:15.92"},"200 Libre":{"2013":"2:38.05","2014":"2:46.65"},"400 Libre":{"2013":"5:29.89","2014":"5:47.86"},"800 Libre":{"2013":"11:24.03","2014":"12:01.28"},"50 Espalda":{"2013":"39.28","2014":"42.12"},"100 Espalda":{"2013":"1:24.10","2014":"1:30.17"},"200 Espalda":{"2013":"3:03.77","2014":"3:17.04"},"50 Braza":{"2013":"42.86","2014":"45.65"},"100 Braza":{"2013":"1:34.21","2014":"1:40.35"},"200 Braza":{"2013":"3:20.18","2014":"3:33.21"},"50 Mariposa":{"2013":"37.51","2014":"40.28"},"100 Mariposa":{"2013":"1:22.59","2014":"1:28.68"},"200 Mariposa":{"2013":"3:06.95","2014":"3:20.74"},"200 Estilos":{"2013":"3:05.92","2014":"3:18.52"},"400 Estilos":{"2013":"6:30.51","2014":"6:56.98"}},M:{"50 Libre":{"2013":"30.98","2014":"33.22"},"100 Libre":{"2013":"1:09.81","2014":"1:14.85"},"200 Libre":{"2013":"2:33.52","2014":"2:44.60"},"400 Libre":{"2013":"5:30.44","2014":"5:54.30"},"800 Libre":{"2013":"11:25.74","2014":"12:15.24"},"50 Espalda":{"2013":"37.81","2014":"41.61"},"100 Espalda":{"2013":"1:22.64","2014":"1:30.96"},"200 Espalda":{"2013":"3:00.62","2014":"3:18.80"},"50 Braza":{"2013":"40.15","2014":"43.40"},"100 Braza":{"2013":"1:28.95","2014":"1:36.16"},"200 Braza":{"2013":"3:13.36","2014":"3:29.01"},"50 Mariposa":{"2013":"36.46","2014":"40.13"},"100 Mariposa":{"2013":"1:21.58","2014":"1:29.79"},"200 Mariposa":{"2013":"3:02.71","2014":"3:21.10"},"200 Estilos":{"2013":"2:57.71","2014":"3:12.84"},"400 Estilos":{"2013":"6:23.24","2014":"6:55.87"}}},REC_ALAVA:{"F":{"50 Libre":{"2013":"28.43","2014":"29.48"},"100 Libre":{"2013":"1:01.09","2014":"1:04.86"},"200 Libre":{"2013":"2:12.62","2014":"2:18.95"},"400 Libre":{"2013":"4:39.60","2014":"4:56.70"},"800 Libre":{"2013":"9:31.87","2014":"10:03.69"},"50 Espalda":{"2013":"33.23","2014":"34.47"},"100 Espalda":{"2013":"1:08.53","2014":"1:14.40"},"200 Espalda":{"2013":"2:26.77","2014":"2:38.80"},"50 Braza":{"2013":"35.88","2014":"37.43"},"100 Braza":{"2013":"1:14.07","2014":"1:18.97"},"200 Braza":{"2013":"2:44.71","2014":"2:50.86"},"50 Mariposa":{"2013":"31.73","2014":"32.73"},"100 Mariposa":{"2013":"1:08.43","2014":"1:11.21"},"200 Mariposa":{"2013":"2:31.12","2014":"2:50.86"},"100 Estilos":{"2013":"1:14.55","2014":"1:19.20"},"200 Estilos":{"2013":"2:26.20","2014":"2:38.22"},"400 Estilos":{"2013":"5:17.74","2014":"5:51.73"}},"M":{"50 Libre":{"2013":"26.70","2014":"28.44"},"100 Libre":{"2013":"59.11","2014":"1:01.45"},"200 Libre":{"2013":"2:07.67","2014":"2:18.37"},"400 Libre":{"2013":"4:29.60","2014":"4:49.26"},"800 Libre":{"2013":"9:19.26","2014":"10:12.06"},"50 Espalda":{"2013":"29.78","2014":"32.19"},"100 Espalda":{"2013":"1:01.99","2014":"1:09.15"},"200 Espalda":{"2013":"2:21.55","2014":"2:33.81"},"50 Braza":{"2013":"33.97","2014":"37.61"},"100 Braza":{"2013":"1:12.68","2014":"1:21.20"},"200 Braza":{"2013":"2:39.52","2014":"2:56.53"},"50 Mariposa":{"2013":"29.34","2014":"30.88"},"100 Mariposa":{"2013":"1:02.92","2014":"1:09.06"},"200 Mariposa":{"2013":"2:17.37","2014":"2:36.10"},"100 Estilos":{"2013":"1:10.28","2014":"1:16.19"},"200 Estilos":{"2013":"2:20.90","2014":"2:31.89"},"400 Estilos":{"2013":"5:09.80","2014":"5:34.51"}}}}};
-let BASE,MIN_ESP,MIN_EH,REC_ALAVA;
-function applySeasonTables(){const ks=Object.keys(TABLES).sort();const t=TABLES[season]||TABLES[ks[ks.length-1]];BASE=t.BASE;MIN_ESP=t.MIN_ESP;MIN_EH=t.MIN_EH;REC_ALAVA=t.REC_ALAVA;applySeasonPace();}
+/* CATEGORÍAS POR TEMPORADA (ago-2026). La categoría no está en el CSV: se deduce del año de
+   nacimiento y de la temporada de CADA MARCA. Así un 2013 es alevín en 25/26 e infantil en 26/27
+   sin tocar un solo dato, y en Histórico cada marca se clasifica por la categoría que tenía cuando
+   se nadó — que es lo que hace comparables cohortes distintas. */
+TABLES["2025/26"].CAT={alevin:["2013","2014"],infantil:[]};
+/* 2026/27 hereda BASE, mínimas y récords de 25/26 hasta que se registren los suyos (octubre 2026:
+   faltan mínimas EH/ESP infantiles y récords de Álava infantiles). Solo define lo que ya se sabe. */
+TABLES["2026/27"]={CAT:{alevin:["2014","2015"],infantil:["2012","2013"]}};
+let BASE,MIN_ESP,MIN_EH,REC_ALAVA,CAT;
+/* Herencia acumulativa: una temporada solo declara lo que cambia y arrastra el resto de las
+   anteriores. Evita duplicar el bloque BASE entero cada año. Con caché porque `fina()` la consulta
+   una vez por marca. */
+let _TBLC={};
+function tablesFor(sea){
+  if(_TBLC[sea])return _TBLC[sea];
+  const ks=Object.keys(TABLES).sort();let k=ks[0];
+  for(const x of ks) if(!sea||x<=sea) k=x;
+  let t={};for(const x of ks){if(x>k)break;t=Object.assign({},t,TABLES[x]);}
+  return (_TBLC[sea]=t);
+}
+function tablesAt(f){return tablesFor(seasonOf(f));}
+function applySeasonTables(){const ks=Object.keys(TABLES).sort();const t=tablesFor(isHist()?ks[ks.length-1]:season);BASE=t.BASE;MIN_ESP=t.MIN_ESP;MIN_EH=t.MIN_EH;REC_ALAVA=t.REC_ALAVA;CAT=t.CAT;applySeasonPace();}
+/* MODO HISTÓRICO (ago-2026). `season` puede valer el centinela HIST: entonces no se filtra por
+   temporada y el ranking es acumulado. Todo lo que dependa de la temporada (FINA, pacing, récords)
+   deja de leerse del global y se resuelve por la FECHA DE CADA MARCA con `tablesFor`. */
+const HIST="hist";
+/* Categoría de UNA MARCA: depende del año de nacimiento y de la temporada en que se nadó. */
+function catOf(anio,fecha){const c=tablesAt(fecha).CAT;if(!c)return "";
+  if((c.alevin||[]).indexOf(String(anio))>=0)return "alevin";
+  if((c.infantil||[]).indexOf(String(anio))>=0)return "infantil";
+  return "";}
+const CAT_LAB={alevin:"Alevín",infantil:"Infantil"};
+function isHist(){return season===HIST;}
 function seasonOf(f){const y=+String(f).slice(0,4),m=+String(f).slice(5,7);if(!y)return"";const st=m>=9?y:y-1;return st+"/"+String((st+1)%100).padStart(2,"0");}
-function initSeasons(){SEASONS=[...new Set(ALLRECS.map(r=>seasonOf(r.fecha)).filter(Boolean))].sort();if(!SEASONS.includes(season))season=SEASONS[SEASONS.length-1]||"";}
-function fillSeasons(){const multi=SEASONS.length>1;const sel=el("seasonSel");if(sel){sel.innerHTML=SEASONS.map(s2=>`<option value="${s2}"${s2===season?" selected":""}>Temporada ${s2}</option>`).join("");sel.style.display=multi?"":"none";}const lab=el("seasonLabel");if(lab){lab.textContent=season?("Temporada "+season):"";lab.style.display=multi?"none":"";}}
-function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>seasonOf(r.fecha)===season).map(r=>r.anio))].sort();const ys=(only&&only.length)?only.slice().sort():all;if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>Alevín${all.length?" "+all.map(y=>y.slice(2)).join("/"):""}</button>`+ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${y}</button>`).join("");if(seg.classList)seg.classList.toggle("wide",!!(only&&only.length));}
+function initSeasons(){SEASONS=[...new Set(ALLRECS.map(r=>seasonOf(r.fecha)).filter(Boolean))].sort();
+  /* Con una sola temporada el Histórico sería idéntico a ella: no se ofrece. */
+  if(isHist()){if(SEASONS.length<2)season=SEASONS[SEASONS.length-1]||"";}
+  else if(!SEASONS.includes(season))season=SEASONS[SEASONS.length-1]||"";}
+function fillSeasons(){const multi=SEASONS.length>1;const sel=el("seasonSel");
+  if(sel){sel.innerHTML=SEASONS.map(s2=>`<option value="${s2}"${s2===season?" selected":""}>Temporada ${s2}</option>`).join("")
+    +(multi?`<option value="${HIST}"${isHist()?" selected":""}>Histórico</option>`:"");sel.style.display=multi?"":"none";}
+  const lab=el("seasonLabel");if(lab){lab.textContent=isHist()?"Histórico":(season?("Temporada "+season):"");lab.style.display=multi?"none":"";}}
+/* El conmutador solo aparece cuando en lo que se está viendo conviven las dos categorías: en
+   2025/26 solo hay alevines, así que no se pinta y la app se ve exactamente igual que hasta ahora. */
+function catsPresent(){
+  const rs=ALLRECS.filter(r=>isHist()||seasonOf(r.fecha)===season);
+  const set=new Set();rs.forEach(r=>{const c=catOf(r.anio,r.fecha);if(c)set.add(c);});
+  return ["alevin","infantil"].filter(c=>set.has(c));
+}
+function fillCats(){
+  const seg=el("segCat");if(!seg)return;
+  const cs=catsPresent();
+  if(cs.length<2){catFilter="all";seg.style.display="none";seg.innerHTML="";return;}
+  if(catFilter!=="all"&&cs.indexOf(catFilter)<0)catFilter="all";
+  seg.style.display="flex";
+  seg.innerHTML=`<button data-c="all"${catFilter==="all"?' class="on"':''}>Todas</button>`
+    +cs.map(c=>`<button data-c="${c}"${c===catFilter?' class="on"':''}>${CAT_LAB[c]}</button>`).join("");
+}
+function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(catFilter==="all"||catOf(r.anio,r.fecha)===catFilter)).map(r=>r.anio))].sort();const ys=(only&&only.length)?only.slice().sort():all;if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
+     de ser cierta: el botón absoluto pasa a llamarse "Todos". */
+  const lab=isHist()?"Todos":(catFilter!=="all"?CAT_LAB[catFilter]:(catsPresent().length>1?"Todos":"Alevín"))+(all.length&&!isHist()?" "+all.map(y=>y.slice(2)).join("/"):"");
+  seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>${lab}</button>`+ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${y}</button>`).join("");if(seg.classList){seg.classList.toggle("wide",!!(only&&only.length));
+    /* Con 4 años o más (pasa en Histórico desde 2026/27) los botones dejan de repartirse a partes
+       iguales y la fila se desliza en horizontal: a 13 px, cinco botones no caben en un móvil. */
+    seg.classList.toggle("scr",ys.length>=4);}}
 const PRUEBA_ORDER=["50 Libre","100 Libre","200 Libre","400 Libre","800 Libre","50 Espalda","100 Espalda","200 Espalda","50 Braza","100 Braza","200 Braza","50 Mariposa","100 Mariposa","200 Mariposa","100 Estilos","200 Estilos","400 Estilos"];
 // Tiempos base FINA — World Aquatics SCM 2025 (25 m), femenino (segundos)
 const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo
@@ -578,7 +642,7 @@ const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo
 `;
 
 let ALLDSQ=[];
-let ALLRECS=[], RECORDS=[], BEFORE=[], MAXFECHA="", MINFECHA="", SEASONS=[], season="", sexFilter="F", view="marcas", yearFilter="all", clubFilter="all", finaN=3, query="", activePrueba="";
+let ALLRECS=[], RECORDS=[], BEFORE=[], MAXFECHA="", MINFECHA="", SEASONS=[], season="", sexFilter="F", view="marcas", yearFilter="all", catFilter="all", clubFilter="all", finaN=3, query="", activePrueba="";
 const el=id=>document.getElementById(id);
 
 function splitLine(line){const o=[];let c="",q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){c+='"';i++;}else q=false;}else c+=ch;}else{if(ch==='"')q=true;else if(ch===","){o.push(c);c="";}else c+=ch;}}o.push(c);return o;}
@@ -593,7 +657,10 @@ function parseCSV(t){const L=t.replace(/\r/g,"").split("\n").filter(x=>x.trim())
 function toCs(t){if(!t)return Infinity;const s=String(t).trim().replace(",",".");const p=s.split(":");let sec;if(p.length===3)sec=(+p[0])*3600+(+p[1])*60+parseFloat(p[2]);else if(p.length===2)sec=(+p[0])*60+parseFloat(p[1]);else sec=parseFloat(p[0]);return isNaN(sec)?Infinity:Math.round(sec*100);}
 function fmtGap(cs){return fmtClock(cs);}
 function fmtClock(cs){if(cs<6000)return(cs/100).toFixed(2);let s=Math.floor(cs/100),c=cs%100,m=Math.floor(s/60),ss=s%60;return m+":"+String(ss).padStart(2,"0")+"."+String(c).padStart(2,"0");}
-function fina(pr,cs){const b=(BASE[sexFilter]||BASE.F)[pr];if(!b||!isFinite(cs)||cs<=0)return 0;return Math.floor(1000*Math.pow(b/(cs/100),3));}
+/* Los tiempos base FINA cambian cada temporada. Si llega `f` (fecha de la marca) se puntúa con la
+   tabla de SU temporada, no con la vigente: si no, en Histórico las marcas viejas se recalcularían
+   solas cada año. En modo temporada el resultado es idéntico, porque todas las marcas son de ella. */
+function fina(pr,cs,f){const B=f?tablesAt(f).BASE:BASE;const b=(B[sexFilter]||B.F)[pr];if(!b||!isFinite(cs)||cs<=0)return 0;return Math.floor(1000*Math.pow(b/(cs/100),3));}
 function fmtDate(f){const p=f.split("-");if(p.length<3)return f;const mes=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][(+p[1])-1];return (+p[2])+" "+mes+" "+p[0].slice(2);}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function normName(s){return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/,/g," ").replace(/\s+/g," ").trim();}
@@ -615,7 +682,11 @@ function shortName(n){const p=String(n).split(",");const w=(p[0]||"").trim().spl
    el otro, o el resumen de pantalla y el medallero dejarían de coincidir. */
 function unoPorNadador(arr){const vistos=new Set();return arr.filter(x=>vistos.has(x.name)?false:(vistos.add(x.name),true));}
 function formaList(topN,upto){
-  const fechas=[...new Set(RECORDS.map(r=>r.fecha))].sort().filter(f=>!upto||f<=upto);
+  /* En Histórico las jornadas de todas las temporadas están juntas: sin acotar, "las 3 últimas"
+     de una competición de octubre serían las de junio anterior, con el verano en medio. La forma
+     se mide siempre dentro de la temporada de esa jornada. */
+  const lim=isHist()&&upto?seasonOf(upto):null;
+  const fechas=[...new Set(RECORDS.map(r=>r.fecha))].sort().filter(f=>(!upto||f<=upto)&&(!lim||seasonOf(f)===lim));
   /* RENDIMIENTO (jul-2026): esto era un RECORDS.some() DENTRO de otro RECORDS.some(), o sea
      releer la lista entera por cada fila y por cada fecha. Con 1.394 filas son ~9 millones de
      comparaciones por llamada, y medalTable() llama aquí una vez por jornada. El coste crece con
@@ -633,7 +704,7 @@ function formaList(topN,upto){
   const totals={};
   last3.forEach(f=>{
     const pb={};RECORDS.forEach(r=>{if(r.fecha<f){const k=r.nadadora+"|"+r.prueba,c=toCs(r.tiempo);if(pb[k]===undefined||c<pb[k])pb[k]=c;}});
-    const bg={};RECORDS.forEach(r=>{if(r.fecha===f){const prev=pb[r.nadadora+"|"+r.prueba];if(prev!==undefined){const g=fina(r.prueba,toCs(r.tiempo))-fina(r.prueba,prev);if(bg[r.nadadora]===undefined||g>bg[r.nadadora])bg[r.nadadora]=g;}}});
+    const bg={};RECORDS.forEach(r=>{if(r.fecha===f){const prev=pb[r.nadadora+"|"+r.prueba];if(prev!==undefined){const g=fina(r.prueba,toCs(r.tiempo),f)-fina(r.prueba,prev,f);if(bg[r.nadadora]===undefined||g>bg[r.nadadora])bg[r.nadadora]=g;}}});
     Object.keys(bg).forEach(n=>{totals[n]=(totals[n]||0)+Math.max(0,bg[n]);});
   });
   const arr=Object.keys(totals).map(n=>({name:n,total:totals[n]})).filter(x=>x.total>0).sort((a,b)=>b.total-a.total);
@@ -641,12 +712,15 @@ function formaList(topN,upto){
 }
 let MED_CACHE={};
 function medalTable(){
-  const ck=sexFilter+"|"+season;
+  const ck=sexFilter+"|"+catFilter+"|"+season;
   if(MED_CACHE[ck])return MED_CACHE[ck];
+  /* Una insignia pertenece a la categoría que se tenía el día que se ganó, no a la de hoy. */
+  const anioDe={};RECORDS.forEach(r=>{anioDe[r.nadadora]=r.anio;});
   const fechas=[...new Set(RECORDS.map(r=>r.fecha))].sort();
   const acc={};
   const add=(name,cat,pos,fecha,det)=>{
     if(!name||pos>2)return;
+    if(catFilter!=="all"&&catOf(anioDe[name],fecha)!==catFilter)return;
     const a=acc[name]||(acc[name]={name:name,g:0,s:0,b:0,cats:{mejor:[0,0,0],marcas:[0,0,0],prog:[0,0,0],forma:[0,0,0]},list:[]});
     a[["g","s","b"][pos]]++;a.cats[cat][pos]++;
     a.list.push({cat:cat,pos:pos,fecha:fecha,det:det||""});
@@ -656,12 +730,12 @@ function medalTable(){
     const comp=latest[0].competi||"";
     const pb={};latest.forEach(r=>{const k=r.nadadora+"|"+r.prueba;if(pb[k]===undefined){const b=bestBefore(r.nadadora,r.prueba,F);if(b!==null)pb[k]=b;}});
     const bests=[],gains=[];
-    latest.forEach(r=>{const cs=toCs(r.tiempo),f=fina(r.prueba,cs),prev=pb[r.nadadora+"|"+r.prueba];
+    latest.forEach(r=>{const cs=toCs(r.tiempo),f=fina(r.prueba,cs,r.fecha),prev=pb[r.nadadora+"|"+r.prueba];
       bests.push({f:f,name:r.nadadora,prueba:r.prueba,anio:r.anio});
-      if(prev!==undefined&&cs<prev)gains.push({g:f-fina(r.prueba,prev),name:r.nadadora,prueba:r.prueba});
+      if(prev!==undefined&&cs<prev)gains.push({g:f-fina(r.prueba,prev,r.fecha),name:r.nadadora,prueba:r.prueba});
     });
     // 0) Mejor nadador/a del día: suma de FINA de todas sus pruebas, por año
-    const totF={};latest.forEach(r=>{const k=r.nadadora;if(!totF[k])totF[k]={f:0,anio:r.anio,n:0};totF[k].f+=fina(r.prueba,toCs(r.tiempo));totF[k].n++;});
+    const totF={};latest.forEach(r=>{const k=r.nadadora;if(!totF[k])totF[k]={f:0,anio:r.anio,n:0};totF[k].f+=fina(r.prueba,toCs(r.tiempo),r.fecha);totF[k].n++;});
     const bsw=Object.keys(totF).map(n=>({name:n,f:totF[n].f,anio:totF[n].anio,n:totF[n].n}));
     [...new Set(bsw.map(b=>b.anio))].sort().forEach(y=>{
       bsw.filter(b=>b.anio===y).sort((a,b)=>b.f-a.f).slice(0,3).forEach((b,i)=>add(b.name,"mejor",i,F,comp+" · "+b.f+" FINA ("+b.n+" pruebas)"));
@@ -1063,10 +1137,13 @@ let PC_IMD={200:[.9,1.9,2.1],400:[.7,1.7,2.7]};
    sigue puntuando con las bandas del año anterior hasta que se calibre la suya, que es lo correcto
    —con dos competiciones no hay muestra— y no deja ningún hueco sin tabla. */
 const PC_TABLES={"2025/26":{PC_SAL,PC_CRU,PC_FIN,PC_TRA,PC_100,PC_200,PC_200C,PC_200F,PC_CV,PC_DER,PC_IM,PC_IM4,PC_IMD}};
-function applySeasonPace(){
+function applySeasonPace(sea){
+  /* `sea` permite pedir las bandas de una temporada concreta: en Histórico cada carrera se analiza
+     con las suyas, no con las vigentes. Sin argumento, las de `season` (y en Histórico, las últimas). */
+  const s=sea||(isHist()?"":season);
   const ks=Object.keys(PC_TABLES).sort();
   let k=ks[0];
-  for(const x of ks) if(!season||x<=season) k=x;   // la más reciente que no sea posterior
+  for(const x of ks) if(!s||x<=s) k=x;   // la más reciente que no sea posterior
   let t={};
   for(const x of ks){ if(x>k) break; t=Object.assign(t,PC_TABLES[x]); }  // herencia acumulativa
   PC_SAL=t.PC_SAL; PC_CRU=t.PC_CRU; PC_FIN=t.PC_FIN; PC_TRA=t.PC_TRA;
@@ -1252,7 +1329,15 @@ const PC_TFINF=[" Te quedaba depósito para el final.",
   " Se te ha ido un poco el ritmo en el último largo.",
   " El último largo ha sido más lento que el ritmo que llevabas.",
   " El final ha sido bastante más lento que el ritmo que llevabas: es donde más tiempo se pierde."];
+/* En Histórico cada carrera se juzga con las bandas de SU temporada. El envoltorio las pone antes
+   de entrar y las devuelve al salir pase lo que pase: `pcAnalyseIn` tiene varias salidas y dejar el
+   estado global tocado contaminaría lo siguiente que se pinte. */
 function pcAnalyse(prueba,parc,nadadora,fecha){
+  if(!isHist())return pcAnalyseIn(prueba,parc,nadadora,fecha);
+  applySeasonPace(seasonOf(fecha));
+  try{return pcAnalyseIn(prueba,parc,nadadora,fecha);}finally{applySeasonPace();}
+}
+function pcAnalyseIn(prueba,parc,nadadora,fecha){
   const est=prueba.split(" ")[1],dist=parseInt(prueba,10)||0;
   const slots=String(parc||"").split(";").map(x=>x.trim());
   const vals=slots.filter(Boolean);
@@ -1690,7 +1775,7 @@ function fichCompCard(name,FE){
   return h;
 }
 function renderComps(vw,name){
-  const sw=ALLRECS.filter(r=>r.nadadora===name&&seasonOf(r.fecha)===season);
+  const sw=ALLRECS.filter(r=>r.nadadora===name&&(isHist()||seasonOf(r.fecha)===season));
   const fechas=[...new Set(sw.map(r=>r.fecha))].sort((a,b)=>b.localeCompare(a));
   if(compFecha&&fechas.indexOf(compFecha)>=0){
     vw.innerHTML=fichCompCard(name,compFecha);
@@ -1718,9 +1803,9 @@ function renderSummary(fecha){
   const pb={};latest.forEach(r=>{const k=r.nadadora+"|"+r.prueba;if(pb[k]===undefined){const b=bestBefore(r.nadadora,r.prueba,FE);if(b!==null)pb[k]=b;}});
   const swimmers=new Set(latest.map(r=>r.nadadora));
   let mejoras=0;const bests=[],gains=[],newmin=[];
-  latest.forEach(r=>{const cs=toCs(r.tiempo),f=fina(r.prueba,cs),k=r.nadadora+"|"+r.prueba,prev=pb[k];
+  latest.forEach(r=>{const cs=toCs(r.tiempo),f=fina(r.prueba,cs,r.fecha),k=r.nadadora+"|"+r.prueba,prev=pb[k];
     bests.push({f:f,name:r.nadadora,prueba:r.prueba,tiempo:r.tiempo,anio:r.anio});
-    if(prev!==undefined&&cs<prev){mejoras++;gains.push({g:f-fina(r.prueba,prev),name:r.nadadora,prueba:r.prueba,d:prev-cs});}
+    if(prev!==undefined&&cs<prev){mejoras++;gains.push({g:f-fina(r.prueba,prev,r.fecha),name:r.nadadora,prueba:r.prueba,d:prev-cs});}
     [["ESP",MIN_ESP],["EH",MIN_EH]].forEach(pair=>{const tb=pair[1][sexFilter]||{};const m=tb[r.prueba]&&tb[r.prueba][r.anio];if(m){const mc=toCs(m);if(cs<=mc&&(prev===undefined||prev>mc))newmin.push({n:shortName(r.nadadora),p:r.prueba,t:pair[0]});}});
   });
   bests.sort((a,b)=>b.f-a.f);gains.sort((a,b)=>b.g-a.g);
@@ -1728,7 +1813,7 @@ function renderSummary(fecha){
   h+=`<div class="sumstats"><div class="sst"><span class="n">${swimmers.size}</span>${sexFilter==="M"?"nadadores":"nadadoras"}</div><div class="sst"><span class="n">${latest.length}</span>marcas</div><div class="sst"><span class="n">${mejoras}</span>mejoras ⭐</div><div class="sst"><span class="n">${newmin.length}</span>mínimas nuevas</div></div>`;
   const md=["🥇","🥈","🥉"];
   // Mejor nadador/a del día: suma de FINA de todas sus pruebas (sin relevos), por año
-  const totF={};latest.forEach(r=>{const k=r.nadadora;if(!totF[k])totF[k]={f:0,anio:r.anio,n:0};totF[k].f+=fina(r.prueba,toCs(r.tiempo));totF[k].n++;});
+  const totF={};latest.forEach(r=>{const k=r.nadadora;if(!totF[k])totF[k]={f:0,anio:r.anio,n:0};totF[k].f+=fina(r.prueba,toCs(r.tiempo),r.fecha);totF[k].n++;});
   const bestSw=Object.keys(totF).map(n=>({name:n,f:totF[n].f,anio:totF[n].anio,n:totF[n].n})).sort((a,b)=>b.f-a.f);
   if(bestSw.length){const byB=[...new Set(bestSw.map(b=>b.anio))].sort();
   h+=`<div class="sumline"><span class="lbl">Mejor ${sexFilter==="M"?"nadador":"nadadora"} del día <span style="text-transform:none;font-weight:600;color:var(--muted)">(suma de FINA de todas sus pruebas)</span></span>`+byB.map(y=>{
@@ -1743,7 +1828,7 @@ function renderSummary(fecha){
   if(gains.length)h+=`<div class="sumline"><span class="lbl">Mayores progresiones del día</span>`+unoPorNadador(gains).slice(0,3).map((g,i)=>`<div class="sitem">${md[i]} ${esc(shortName(g.name))} · <span class="pr ${stKlass(g.prueba)}">${esc(abbrev(g.prueba))}</span> · <b>+${g.g}</b><span class="pts">FINA</span> <span class="mono dlt">−${fmtClock(g.d)}</span></div>`).join("")+`</div>`;
   const forma=formaList(3,FE);
   h+=`<div class="sumline"><span class="lbl">${sexFilter==="M"?"Nadadores":"Nadadoras"} en forma 🔥 <span style="text-transform:none;font-weight:600;color:var(--muted)">(mayor progresión acumulada en las 3 últimas jornadas)</span></span>`+(forma?forma.list.map((x,i)=>`<div class="sitem">${md[i]} ${esc(shortName(x.name))} · <b>+${x.total}</b><span class="pts">FINA</span></div>`).join(""):"<div class='sitem' style='color:var(--muted)'>aún sin datos suficientes</div>")+`</div>`;
-  if(newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>`+newmin.map(x=>`<div class="sitem"><span class="mb ${x.t==="ESP"?"mbESP":"mbEH"}" style="margin-left:0">${esc(x.t)}</span> ${esc(x.n)} · ${esc(x.p)}</div>`).join("")+`</div>`;
+  if(minsOn()&&newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>`+newmin.map(x=>`<div class="sitem"><span class="mb ${x.t==="ESP"?"mbESP":"mbEH"}" style="margin-left:0">${esc(x.t)}</span> ${esc(x.n)} · ${esc(x.p)}</div>`).join("")+`</div>`;
   h+=`<button class="sumClose" id="sumClose">✕ Cerrar competi</button>`;
   h+=`</div>`;  // cierra .sumcard
   const fechas=summaryFechas();
@@ -1764,7 +1849,7 @@ function renderSummary(fecha){
   box.innerHTML=`<div class="topRow">${band}${phrase}</div>`+menu+cuerpo+`<div class="secdiv" id="secdiv"><span id="secTitle">${mode==="fichas"?"Fichas individuales":"Ranking de la temporada"}</span></div>`;
 }
 
-function poolRecs(recs){let out=recs;if(yearFilter!=="all")out=out.filter(r=>r.anio===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
+function poolRecs(recs){let out=recs;if(catFilter!=="all")out=out.filter(r=>catOf(r.anio,r.fecha)===catFilter);if(yearFilter!=="all")out=out.filter(r=>r.anio===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
 // Clase de color por estilo (misma paleta que los chips y las tarjetas de ritmo).
 /* Clase de color por estilo. Única fuente de la paleta: antes esta tabla estaba copiada
    cuatro veces (aquí, dos veces como stCls y una como stKl) y cambiar un color obligaba a
@@ -1774,7 +1859,7 @@ function stKlass(p){const w=String(p).split(" ");return ({Libre:"st-l",Espalda:"
 function bestOf(recs,name,prueba){let b=null,bc=Infinity;for(const r of recs){if(r.nadadora===name&&r.prueba===prueba){const c=toCs(r.tiempo);if(c<bc){bc=c;b=r;}}}return b;}
 let RT_CACHE=new WeakMap();
 function rankTime(recs,prueba){
-  const k=sexFilter+"|"+yearFilter+"|"+clubFilter+"|"+season+"|"+prueba;
+  const k=sexFilter+"|"+catFilter+"|"+yearFilter+"|"+clubFilter+"|"+season+"|"+prueba;
   let m=RT_CACHE.get(recs);if(!m){m=new Map();RT_CACHE.set(recs,m);}
   const hit=m.get(k);if(hit)return hit;
   const val=(function(){const rr=poolRecs(recs).filter(r=>r.prueba===prueba);const names=[...new Set(rr.map(r=>r.nadadora))];const arr=names.map(n=>{const b=bestOf(rr,n,prueba);return{name:n,prueba:prueba,club:b.club,anio:b.anio,cs:toCs(b.tiempo),tiempo:b.tiempo,fecha:b.fecha,competi:b.competi};});arr.sort((a,b)=>a.cs-b.cs||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.cs===arr[i-1].cs)?arr[i-1].rank:i+1;});return arr;})();
@@ -1785,7 +1870,7 @@ function rankMap(arr){const m={};arr.forEach(x=>m[x.name]=x.rank);return m;}
 function evolution(name,prueba){const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===prueba);if(!sw.length)return null;const latest=sw.reduce((m,s)=>s.fecha>m?s.fecha:m,sw[0].fecha);if(latest<MAXFECHA)return null;const prev=bestBefore(name,prueba,latest);if(prev===null)return null;const lat=Math.min(...sw.filter(s=>s.fecha===latest).map(s=>toCs(s.tiempo)));if(lat<prev)return{dir:"up",d:prev-lat,date:latest};if(lat>prev)return{dir:"down",d:lat-prev,date:latest};return null;}
 
 function abbrev(p){const sp=p.split(" ");const st={"Libre":"L","Espalda":"E","Braza":"B","Mariposa":"M","Estilos":"Est"}[sp[1]]||sp[1];return sp[0]+" "+st;}
-function finaClass(recs,N){const R=poolRecs(recs);const names=[...new Set(R.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of R){if(r.nadadora!==n)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba])byP[r.prueba]=c;}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p]),p:p})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(list.length<N)return;const top=list.slice(0,N);const sum=top.reduce((a,b)=>a+b.f,0);const rec=R.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:top.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.sum===arr[i-1].sum)?arr[i-1].rank:i+1;});return arr;}
+function finaClass(recs,N){const R=poolRecs(recs);const names=[...new Set(R.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of R){if(r.nadadora!==n)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba].cs)byP[r.prueba]={cs:c,f:r.fecha};}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p].cs,byP[p].f),p:p})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(list.length<N)return;const top=list.slice(0,N);const sum=top.reduce((a,b)=>a+b.f,0);const rec=R.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:top.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.sum===arr[i-1].sum)?arr[i-1].rank:i+1;});return arr;}
 
 /* "nuevo" = primer registro en esta prueba, que es lo que promete la leyenda. Si no hay puesto
    anterior CON EL QUE COMPARAR (primera jornada de una temporada) pero la persona ya nadó esta
@@ -1810,11 +1895,15 @@ function gapTag(rec,tbl,lab,full){
   const dd=toCs(rec.tiempo)-toCs(m);
   if(dd<=0)return`<span class="tag ok">${black} −${fmtClock(Math.abs(dd))}</span>`;
   return`<span class="tag no">${black} +${fmtClock(dd)}</span>`;}
-function newMin(rec,tbl){if(!hasMin(rec,tbl))return false;const p=bestBefore(rec.name,rec.prueba,MAXFECHA);return p===null||!hasMinCs(p,rec.prueba,rec.anio,tbl);}
+/* Las mínimas van por categoría y año de nacimiento, así que no significan nada en un ranking que
+   cruza temporadas: en Histórico no se pintan en ningún sitio. */
+function minsOn(){return !isHist();}
+function newMin(rec,tbl){if(!minsOn()||!hasMin(rec,tbl))return false;const p=bestBefore(rec.name,rec.prueba,MAXFECHA);return p===null||!hasMinCs(p,rec.prueba,rec.anio,tbl);}
 function hasMin(rec,tbl){return hasMinCs(toCs(rec.tiempo),rec.prueba,rec.anio,tbl);}
 function hasMinCs(cs,prueba,anio,tbl){const tb=tbl[sexFilter]||{};const m=tb[prueba]&&tb[prueba][anio];if(!m)return false;return cs-toCs(m)<=0;}
-function minsList(name){const esp=[],eh=[];PRUEBA_ORDER.forEach(p=>{const b=bestOf(RECORDS,name,p);if(!b)return;const cs=toCs(b.tiempo);const tE=(MIN_ESP[sexFilter]||{})[p];if(tE&&tE[b.anio]&&cs<=toCs(tE[b.anio]))esp.push(abbrev(p));const tH=(MIN_EH[sexFilter]||{})[p];if(tH&&tH[b.anio]&&cs<=toCs(tH[b.anio]))eh.push(abbrev(p));});return{esp:esp,eh:eh};}
+function minsList(name){const esp=[],eh=[];if(!minsOn())return{esp:esp,eh:eh};PRUEBA_ORDER.forEach(p=>{const b=bestOf(RECORDS,name,p);if(!b)return;const cs=toCs(b.tiempo);const tE=(MIN_ESP[sexFilter]||{})[p];if(tE&&tE[b.anio]&&cs<=toCs(tE[b.anio]))esp.push(abbrev(p));const tH=(MIN_EH[sexFilter]||{})[p];if(tH&&tH[b.anio]&&cs<=toCs(tH[b.anio]))eh.push(abbrev(p));});return{esp:esp,eh:eh};}
 function goalPill(name){
+  if(!minsOn())return "";
   const cand=[];
   PRUEBA_ORDER.forEach(p=>{const b=bestOf(RECORDS,name,p);if(!b)return;const cs=toCs(b.tiempo);
     [["EH",MIN_EH],["ESP",MIN_ESP]].forEach(pair=>{const tb=pair[1][sexFilter]||{};const m=tb[p]&&tb[p][b.anio];if(!m)return;const mc=toCs(m);if(cs>mc)cand.push({t:pair[0],p:p,d:cs-mc,rel:(cs-mc)/mc});});
@@ -2008,7 +2097,7 @@ function histBox(name,p){
   const rows=RECORDS.filter(r=>r.nadadora===name&&r.prueba===p).map(r=>({fecha:r.fecha,competi:r.competi,tiempo:r.tiempo,cs:toCs(r.tiempo)}));
   /* Las descalificaciones se cuelan aquí y SOLO aquí. No tienen tiempo, así que no pueden ser MMP
      ni afectar al mejor: se filtra el mismo sexo y temporada que RECORDS para no mezclar. */
-  const dsq=ALLDSQ.filter(r=>r.nadadora===name&&r.prueba===p&&r.sexo===sexFilter&&seasonOf(r.fecha)===season)
+  const dsq=ALLDSQ.filter(r=>r.nadadora===name&&r.prueba===p&&r.sexo===sexFilter&&(isHist()||seasonOf(r.fecha)===season))
     .map(r=>({fecha:r.fecha,competi:r.competi,dsq:true,motivo:r.motivo,cs:Infinity}));
   const all=rows.concat(dsq).sort((a,b)=>a.fecha<b.fecha?-1:(a.fecha>b.fecha?1:a.cs-b.cs));
   if(!all.length)return"";
@@ -2023,7 +2112,7 @@ function histBox(name,p){
 }
 function renderCompare(vw){
   const _ss=sexFilter,_sr=RECORDS,_sm=MAXFECHA;
-  const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  const SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
   const _a=SREC.find(r=>r.nadadora===cmpA);
   if(_a&&_a.sexo!==sexFilter){sexFilter=_a.sexo;RECORDS=SREC.filter(r=>r.sexo===sexFilter);MAXFECHA=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");}
   try{renderCompareInner(vw);}finally{sexFilter=_ss;RECORDS=_sr;MAXFECHA=_sm;}
@@ -2049,7 +2138,7 @@ function renderCompareInner(vw){
     const rl=rankTime(RECORDS,p);
     const rkA=a?(rl.find(x=>x.name===cmpA)||{}).rank:null,rkB=b?(rl.find(x=>x.name===cmpB)||{}).rank:null;
     let cls="";
-    if(a&&b){fA+=fina(p,ca);fB+=fina(p,cb);if(ca<cb){wA++;cls=" wa";}else if(cb<ca){wB++;cls=" wb";}}
+    if(a&&b){fA+=fina(p,ca,a.fecha);fB+=fina(p,cb,b.fecha);if(ca<cb){wA++;cls=" wa";}else if(cb<ca){wB++;cls=" wb";}}
     (a&&b?rowsB:rowsO).push(`<div class="cmpRow${cls}"><span class="cA">${cell(a,rkA)}</span><span class="cP">${esc(p)}</span><span class="cB">${cell(b,rkB)}</span></div>`);
   });
   const rows=rowsB.concat(rowsO);
@@ -2080,6 +2169,7 @@ function render(){
   try{document.body.classList.toggle("mfich",fo);}catch(e){}
   {const fn=fo?((query.trim()&&foundSwimmers()[0]||{}).name||""):"";const bk=fo?("f|"+fn):"r";if(bk!==BAND_KEY){BAND_KEY=bk;if(fo){sumOpen=false;sumShown=false;}renderSummary(sumFecha);}}
   el("tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===view));
+  if(isHist()&&view==="minimas")view="marcas";
   const perPrueba=(view==="marcas"||view==="minimas");
   el("segYear").style.display=(perPrueba||view==="topfina")?"flex":"none";
   el("segFina").style.display="none";
@@ -2108,7 +2198,7 @@ function render(){
   const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":"Ranking de la temporada";
   const sc=el("secdiv");if(sc&&sc.classList)sc.classList.toggle("fmode",fo);
   const tbs=el("tabs");
-  if(tbs&&tbs.querySelectorAll){const fo2=fo;const lbl=fo2?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
+  if(tbs&&tbs.querySelectorAll){const bm=tbs.querySelector('button[data-v="minimas"]');if(bm)bm.style.display=isHist()?"none":"";const fo2=fo;const lbl=fo2?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
   const bf=el("backFloat");if(bf)bf.style.display=(fo||cmpA||badgesFor||compsFor)?"inline-flex":"none";
   const sIn=el("search");if(sIn)sIn.placeholder=(sexFilter==="M"?"Busca un nadador…":"Busca una nadadora…");
   const vw=el("view");
@@ -2129,7 +2219,7 @@ function render(){
     const m=medal(r.rank);
     let right,badges="";
     if(view==="marcas"){
-      const f=fina(r.prueba,r.cs);const ev=evolution(r.name,r.prueba);const dt=deltaTag(ev,1);
+      const f=fina(r.prueba,r.cs,r.fecha);const ev=evolution(r.name,r.prueba);const dt=deltaTag(ev,1);
       const dstr=!/^Ranking /.test(r.competi||"")?`<span class="tdate">${fmtDate(r.fecha)}</span>`:"";
       if(newMin(r,MIN_EH))badges+='<span class="mb mbEH" style="margin-right:4px">EH</span>';
       if(newMin(r,MIN_ESP))badges+='<span class="mb mbESP" style="margin-right:4px">ESP</span>';
@@ -2170,8 +2260,8 @@ function render(){
   vw.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{activePrueba=c.dataset.p;render();});
 }
 
-function finaStyle(recs,stroke){const R=poolRecs(recs);const names=[...new Set(R.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of R){if(r.nadadora!==n||r.prueba.split(" ")[1]!==stroke)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba])byP[r.prueba]=c;}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p]),p:p,cs:byP[p]})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(!list.length)return;const sum=list.reduce((a,b)=>a+b.f,0);const rec=R.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:list.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.sum===arr[i-1].sum)?arr[i-1].rank:i+1;});return arr;}
-function finaSpec(recs,dA,dB){const R=poolRecs(recs);const names=[...new Set(R.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{let a=null,b=null;for(const r of R){if(r.nadadora!==n)continue;const d=r.prueba.split(" ")[0];if(d!==dA&&d!==dB)continue;const f=fina(r.prueba,toCs(r.tiempo));if(d===dA&&(!a||f>a.f))a={f:f,p:r.prueba};if(d===dB&&(!b||f>b.f))b={f:f,p:r.prueba};}if(!a||!b)return;const rec=R.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:a.f+b.f,pruebas:[abbrev(a.p),abbrev(b.p)]});});arr.sort((x,y)=>y.sum-x.sum||x.name.localeCompare(y.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.sum===arr[i-1].sum)?arr[i-1].rank:i+1;});return arr;}
+function finaStyle(recs,stroke){const R=poolRecs(recs);const names=[...new Set(R.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{const byP={};for(const r of R){if(r.nadadora!==n||r.prueba.split(" ")[1]!==stroke)continue;const c=toCs(r.tiempo);if(byP[r.prueba]===undefined||c<byP[r.prueba].cs)byP[r.prueba]={cs:c,f:r.fecha};}const list=Object.keys(byP).map(p=>({f:fina(p,byP[p].cs,byP[p].f),p:p,cs:byP[p].cs})).filter(x=>x.f>0).sort((a,b)=>b.f-a.f);if(!list.length)return;const sum=list.reduce((a,b)=>a+b.f,0);const rec=R.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:sum,ntot:list.length,pruebas:list.map(x=>abbrev(x.p))});});arr.sort((a,b)=>b.sum-a.sum||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.sum===arr[i-1].sum)?arr[i-1].rank:i+1;});return arr;}
+function finaSpec(recs,dA,dB){const R=poolRecs(recs);const names=[...new Set(R.map(r=>r.nadadora))];const arr=[];names.forEach(n=>{let a=null,b=null;for(const r of R){if(r.nadadora!==n)continue;const d=r.prueba.split(" ")[0];if(d!==dA&&d!==dB)continue;const f=fina(r.prueba,toCs(r.tiempo),r.fecha);if(d===dA&&(!a||f>a.f))a={f:f,p:r.prueba};if(d===dB&&(!b||f>b.f))b={f:f,p:r.prueba};}if(!a||!b)return;const rec=R.find(r=>r.nadadora===n);arr.push({name:n,club:rec.club,anio:rec.anio,sum:a.f+b.f,pruebas:[abbrev(a.p),abbrev(b.p)]});});arr.sort((x,y)=>y.sum-x.sum||x.name.localeCompare(y.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.sum===arr[i-1].sum)?arr[i-1].rank:i+1;});return arr;}
 function renderClass(vw,N){
   const strokes=["Libre","Espalda","Braza","Mariposa","Estilos"];
   const royal=sexFilter==="M"?"Rey":"Reina";
@@ -2232,14 +2322,14 @@ function renderClass(vw,N){
 
 function foundSwimmers(){
   const qtok=normName(query).split(" ").filter(Boolean);
-  const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  const SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
   const seen=new Set(),cand=[];
   SREC.forEach(r=>{if(seen.has(r.nadadora))return;seen.add(r.nadadora);cand.push({name:r.nadadora,sexo:r.sexo,anio:r.anio,club:r.club});});
   return cand.filter(c=>{const hay=normName(c.name+" "+c.club);return qtok.every(t=>hay.includes(t));});
 }
 function renderBadges(vw,name){
   const savedSex=sexFilter,savedRec=RECORDS,savedMax=MAXFECHA,savedClub=clubFilter,savedYear=yearFilter;
-  const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  const SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
   const own=(SREC.find(r=>r.nadadora===name)||{}).sexo||sexFilter;
   if(own!==sexFilter){sexFilter=own;RECORDS=SREC.filter(r=>r.sexo===sexFilter);MAXFECHA=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");}
   clubFilter="all";yearFilter="all";
@@ -2272,7 +2362,7 @@ function renderBadges(vw,name){
   clubFilter=savedClub;yearFilter=savedYear;sexFilter=savedSex;RECORDS=savedRec;MAXFECHA=savedMax;
 }
 function renderProfile(vw){
-  const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  const SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
   if(!query.trim()){vw.innerHTML=`<div class="empty tall">Escribe el nombre de ${sexFilter==="M"?"un nadador":"una nadadora"} o su club para ver su ficha, o vuelve al ranking con <b>← Volver</b>.</div>`;animateBars(vw);return;}
   const found=foundSwimmers();
   // SEGURO, no es código muerto: hoy es inalcanzable porque en fichas el buscador
@@ -2298,19 +2388,22 @@ function renderProfile(vw){
            solo para que el desplegable exista. Únicamente en la vista de marcas: en mínimas y en
            top FINA una fila sin tiempo no significa nada. */
         if(view!=="marcas")return"";
-        const nd=ALLDSQ.filter(r=>r.nadadora===name&&r.prueba===p&&r.sexo===sexFilter&&seasonOf(r.fecha)===season).length;
+        const nd=ALLDSQ.filter(r=>r.nadadora===name&&r.prueba===p&&r.sexo===sexFilter&&(isHist()||seasonOf(r.fecha)===season)).length;
         if(!nd)return"";
         const anim2=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
         return `<div class="pRow tog pRowDsq" style="${anim2}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Sin marca · ${nd} ${nd===1?"descalificación":"descalificaciones"}</div></div><div class="right"><div class="time dsqT">DSQ</div></div></div>`+histBox(name,p);
       }
       const cs=toCs(b.tiempo);const rkList=rankTime(RECORDS,p);const rk=rkList.find(x=>x.name===name);const ev=evolution(name,p);
       const dt=deltaTag(ev,0,1);const dstr=!/^Ranking /.test(b.competi||"")?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";
-      const f=fina(p,cs);
+      const f=fina(p,cs,b.fecha);
       let detail,recs="",stamp="";
       if(view==="topfina"){
-        const edad=b.anio==="2013"?"13":"12";
-        const ra=(REC_ALAVA[sexFilter][p]||{})[b.anio];
-        const rmT=fmtClock(Math.round((BASE[sexFilter][p]||0)*100));
+        /* Edad = la que cumple en el año en que acaba esa temporada. Estaba cableado a 2013/2014
+           y habría mentido en cuanto entrasen otras cohortes. */
+        const TB=tablesAt(b.fecha);
+        const edad=String((+String(seasonOf(b.fecha)).slice(0,4)+1)-(+b.anio));
+        const ra=((TB.REC_ALAVA[sexFilter]||{})[p]||{})[b.anio];
+        const rmT=fmtClock(Math.round(((TB.BASE[sexFilter]||{})[p]||0)*100));
         if(ra){
           const rcs=toCs(ra),dif=cs-rcs;
           detail=dif<=0
@@ -2338,7 +2431,7 @@ function renderProfile(vw){
           const ck=`${sexFilter}|${name}|${p}|${lab}`;
           return `${gapTag(b,tbl,lab,1)}<div class="mrow"><div class="mbar"><div class="mfill${got?" mok":""}" style="${bg}width:0%" data-pct="${pct.toFixed(1)}" data-ck="${esc(ck)}"></div></div><span class="mpct">0%</span></div>`;};
         detail=`<div class="pmin">${mline(MIN_EH,"EH")}${mline(MIN_ESP,"ESP")}</div>`;
-        const gEsp=hasMin(b,MIN_ESP),gEh=hasMin(b,MIN_EH);
+        const gEsp=minsOn()&&hasMin(b,MIN_ESP),gEh=minsOn()&&hasMin(b,MIN_EH);
         if(gEsp||gEh){
           const lab=gEsp?"ESP":"EH";
           const cel=pendingKey("sh:"+sexFilter+"|"+name+"|"+p+"|"+lab);
@@ -2373,14 +2466,14 @@ async function boot(){let txt=null;try{const res=await fetch("data.csv",{cache:"
   applySex();}
 function applySex(){
   initSeasons();applySeasonTables();
-  const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  const SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
   RECORDS=SREC.filter(r=>r.sexo===sexFilter);
   MAXFECHA=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");
   MINFECHA=SREC.reduce((m,r)=>r.fecha<m?r.fecha:m,SREC[0]?SREC[0].fecha:"");
   BEFORE=RECORDS.filter(r=>r.fecha<MAXFECHA);
   const fem=sexFilter!=="M";
   const s=el("search");if(s)s.placeholder=fem?"Busca una nadadora…":"Busca un nadador…";
-  fillYears();fillClubs();fillSeasons();
+  fillCats();fillYears();fillClubs();fillSeasons();
   renderSummary(sumFecha);
   render();}
 function fillClubs(){const cs=[...new Set(RECORDS.map(r=>r.club).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const sel=el("clubSel");if(!sel)return;sel.innerHTML='<option value="all">Todos los clubes</option>'+cs.map(c=>`<option value="${esc(c)}"${c===clubFilter?" selected":""}>${esc(c)}</option>`).join("");}
@@ -2389,7 +2482,7 @@ function renderSug(q){
   const box=el("searchSug");if(!box)return;
   const qn=normName(q);
   if(!qn){box.style.display="none";box.innerHTML="";return;}
-  const SREC=ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  const SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
   const seen={},list=[];
   SREC.forEach(r=>{if(seen[r.nadadora])return;if(normName(r.nadadora+" "+r.club).includes(qn)){seen[r.nadadora]=1;list.push(r);}});
   list.sort((a,b)=>(a.sexo===sexFilter?0:1)-(b.sexo===sexFilter?0:1)||a.nadadora.localeCompare(b.nadadora));
@@ -2439,10 +2532,11 @@ el("view").addEventListener("click",e=>{
 });
 el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;render();});
 el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sexFilter=b.dataset.s;el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
+el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;catFilter=b.dataset.c;badgesFor=null;cmpA=null;cmpB=null;fillCats();fillYears();render();});
 el("segYear").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;yearFilter=b.dataset.y;el("segYear").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("segFina").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;finaN=+b.dataset.n;el("segFina").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("clubSel").addEventListener("change",e=>{clubFilter=e.target.value;render();});
-el("seasonSel").addEventListener("change",e=>{season=e.target.value;yearFilter="all";clubFilter="all";query="";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s)s.value="";applySex();});
+el("seasonSel").addEventListener("change",e=>{season=e.target.value;catFilter="all";yearFilter="all";clubFilter="all";query="";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s)s.value="";applySex();});
 
 boot();
 try{
