@@ -1,7 +1,7 @@
 {
-  "name": "Ranking Alevín Femenino",
-  "short_name": "Ranking Nat.",
-  "description": "Mejores marcas por prueba — Alevín Femenino, Álava.",
+  "name": "Ranking Álava",
+  "short_name": "Ranking Álava",
+  "description": "Mejores marcas, puntos FINA y mínimas de la natación alevín e infantil de Álava, femenino y masculino. Piscina de 25 m.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
