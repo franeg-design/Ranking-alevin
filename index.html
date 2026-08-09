@@ -60,12 +60,17 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:8px 30px 8px 14
 .tabs{display:flex;gap:6px;background:var(--chip);padding:4px;border-radius:16px;margin-bottom:12px}
 .tabs button{flex:1;border:none;background:none;padding:9px 4px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .12s}
 .tabs button.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.09)}
-.seg{display:flex;gap:6px;background:var(--chip);padding:4px;border-radius:16px;margin-bottom:8px}
+/* align-items y min-height FIJOS: sin ellos, al activarse `.scr` (overflow-x) los botones pasan de
+   estirarse a medirse por contenido y la fila cambiaba de alto — se veía como un salto al tocar. */
+.seg{display:flex;align-items:center;gap:6px;background:var(--chip);padding:4px;border-radius:16px;margin-bottom:8px}
 .seg.wide button{flex:1}
+/* Separa «Promoción» de las categorías dentro del mismo grupo: siguen siendo excluyentes entre sí,
+   así que partirlos en dos píldoras haría pensar que se puede elegir uno de cada. */
+.segSep{flex:0 0 1px;align-self:center;height:17px;background:rgba(11,42,58,.14);margin:0 3px;border-radius:1px}
 .seg.scr{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .seg.scr::-webkit-scrollbar{display:none}
 .seg.scr button{flex:0 0 auto;white-space:nowrap;padding-left:13px;padding-right:13px}
-.seg button{flex:1;border:none;background:none;padding:7px 6px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer}
+.seg button{flex:1;display:flex;align-items:center;justify-content:center;min-height:31px;border:none;background:none;padding:7px 6px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;line-height:1.15}
 .seg button.on{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .chipwrap{position:relative}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:8px 2px 12px;margin-bottom:2px;scrollbar-width:none}
@@ -244,7 +249,11 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:8px 30px 8px 14
 .lgT.l3 td:nth-child(2){text-align:right;font-variant-numeric:tabular-nums}
 .lgF{font-size:11px;color:var(--muted);line-height:1.45;margin-top:4px}
 .sumBand{min-height:44px;position:relative;width:auto;display:flex;align-items:center;gap:10px;margin:0 0 0 -14px;padding:10px 16px 10px 22px;border:1px solid #2f6a90;border-left:none;border-radius:0 16px 16px 0;cursor:pointer;text-align:left;font-family:inherit;color:#f2d79b;background:linear-gradient(120deg,#15455f,#1c5878 55%,#236a8c);box-shadow:0 3px 12px rgba(9,34,50,.22);overflow:hidden}
-.sumBand::before{content:"";position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(100deg,transparent,rgba(246,216,155,.15),transparent);transform:skewX(-18deg);animation:sbShine 6.5s ease-in-out infinite}
+.sumBand::before{content:"";position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(100deg,transparent,rgba(246,216,155,.15),transparent);transform:skewX(-18deg);animation:sbShine 6.5s ease-in-out 6.5s infinite}
+/* ⚠️ El retardo de 6,5 s (= su duración) es lo que evita el destello dorado al repintar. La animación
+   es infinita, así que cada vez que el resumen se reconstruye el elemento es nuevo y el barrido
+   arrancaba desde el fotograma 0: al cambiar de categoría se veía un fogonazo en la banda. Con el
+   retardo, un resumen recién pintado espera su ciclo completo antes del primer barrido. */
 @keyframes sbShine{0%,80%{left:-60%}92%,100%{left:135%}}
 .sbIcon{font-size:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
 .sbTxt{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;letter-spacing:.11em;color:#f6d89f;text-shadow:0 1px 2px rgba(0,0,0,.25)}
@@ -366,6 +375,13 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:8px 30px 8px 14
    derecha y al acabar la animación saltaba al centro de golpe. */
 @keyframes bfade{from{opacity:0;transform:translateX(-50%) translateY(3px)}to{opacity:1;transform:translateX(-50%)}}
 #view>*, #summary>*{animation:vfade .18s ease-out}
+/* ⚠️ `upd` = el resumen se está ACTUALIZANDO, no apareciendo por primera vez. Sin esto, cambiar de
+   categoría reescribía la tarjeta y sus hijos entraban con el fundido desde opacidad 0: eso es el
+   parpadeo que se veía al pasar a Infantil (a Alevín no, porque allí el contenido salía idéntico y
+   ni se tocaba el DOM). Se apagan el fundido y el brillo de entrada; el barrido dorado de la banda
+   se mantiene, que ya lleva su propio retardo. */
+#summary.upd>*{animation:none!important}
+#summary.upd .fTop::after,#summary.upd .mfill::after{animation:none!important}
 /* Modo ficha: sin cabecera azul ni buscador; el título del nadador es el principal */
 body.mfich .head{display:none}
 body.mfich .searchwrap{display:none}
@@ -636,12 +652,13 @@ function fillCats(){
   if(ab){
     if(!hay||!isHist()){ab.style.display="none";ab.innerHTML="";}
     else{ab.style.display="flex";
-      ab.innerHTML=["all"].concat(cs).map(c=>`<button data-c="${c}"${c===catHist?' class="on"':''}>${c==="all"?"Todas":CAT_LAB[c]}</button>`).join("");}
+      ab.innerHTML=`<button data-c="all"${catHist==="all"?' class="on"':''}>Promoción</button><i class="segSep"></i>`
+        +cs.map(c=>`<button data-c="${c}"${c===catHist?' class="on"':''}>${CAT_LAB[c]}</button>`).join("");}
   }
 }
 function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||catOf(r.anio,r.fecha)===catFilter)).map(claveEdad).filter(Boolean))].sort();const ys=(only&&only.length)?only.slice().sort():all;if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
      de ser cierta: el botón absoluto pasa a llamarse "Todos". */
-  const lab=isHist()?"Todos":((CAT_LAB[catFilter]||"Alevín")+(all.length?" "+all.map(y=>y.slice(2)).join("/"):""));
+  const lab=isHist()?(catFilter==="all"?"Todas":"Todos"):((CAT_LAB[catFilter]||"Alevín")+(all.length?" "+all.map(y=>y.slice(2)).join("/"):""));
   seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>${lab}</button>`
     +ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${claveLab(y)}</button>`).join("");if(seg.classList){seg.classList.toggle("wide",!!(only&&only.length));
     /* Con 4 años o más (pasa en Histórico desde 2026/27) los botones dejan de repartirse a partes
@@ -1954,7 +1971,15 @@ function renderSummary(fecha){
   }else{
     phrase=`<div class="phrase" aria-hidden="true"><div class="phIn"><div class="phTxt">${PHR}</div></div><div class="phSign">${SIGN}</div></div>`;
   }
-  box.innerHTML=`<div class="topRow">${band}${phrase}</div>`+menu+cuerpo+`<div class="secdiv" id="secdiv"><span id="secTitle">${mode==="fichas"?"Fichas individuales":(isHist()?"Ranking histórico":"Ranking de la temporada")}</span></div>`;
+  const _h=`<div class="topRow">${band}${phrase}</div>`+menu+cuerpo+`<div class="secdiv" id="secdiv"><span id="secTitle">${mode==="fichas"?"Fichas individuales":(isHist()?"Ranking histórico":"Ranking de la temporada")}</span></div>`;
+  /* ⚠️ Reasignar innerHTML destruye y recrea la tarjeta aunque el contenido sea idéntico, y con ella
+     se reinician sus animaciones: ese era el fogonazo de la banda dorada al tocar cualquier filtro.
+     Si el HTML no ha cambiado, no se toca el DOM. */
+  if(box.innerHTML!==_h){
+    /* la clase va ANTES de insertar: si se pusiera después, los hijos ya habrían arrancado su fundido */
+    box.classList.toggle("upd",!!box.innerHTML);
+    box.innerHTML=_h;
+  }
 }
 
 function poolRecs(recs){let out=recs;if(yearFilter!=="all")out=out.filter(r=>claveEdad(r)===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
@@ -2613,7 +2638,8 @@ function applySex(){
   fillCats();fillYears();fillClubs();fillSeasons();
   renderSummary(sumFecha);
   render();}
-function fillClubs(){const cs=[...new Set(RECORDS.map(r=>r.club).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const sel=el("clubSel");if(!sel)return;sel.innerHTML='<option value="all">Todos los clubes</option>'+cs.map(c=>`<option value="${esc(c)}"${c===clubFilter?" selected":""}>${esc(c)}</option>`).join("");}
+function fillClubs(){const cs=[...new Set(RECORDS.map(r=>r.club).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const sel=el("clubSel");if(!sel)return;
+sel.innerHTML='<option value="all">Todos los clubes</option>'+cs.map(c=>`<option value="${esc(c)}"${c===clubFilter?" selected":""}>${esc(c)}</option>`).join("");}
 
 function renderSug(q){
   const box=el("searchSug");if(!box)return;
@@ -2674,7 +2700,18 @@ function cambiarCat(c,hist){
   if(hist){if(c===catHist)return;catHist=c;}else{if(c===catTemp)return;catTemp=c;}
   if(hist!==isHist()){fillCats();return;}   /* tocar el de arriba estando en Histórico: solo se anota
                                                para cuando vuelvas a la temporada, no recarga nada */
-  yearFilter="all";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;sumFecha=null;applySex();
+  /* ⚠️ CAUSA DEL PARPADEO, encontrada tras cuatro intentos fallidos: aquí se hacía
+     `compsFor=null; sumFecha=null`. Eso tira abajo el resumen de competición que estabas viendo y
+     lo vuelve a montar desde cero — se veía como si la tarjeta dorada y el carrusel de pruebas
+     desaparecieran y reaparecieran. El botón de Fem./Masc. nunca parpadeó porque NO los toca: se
+     limita a cambiar la variable y llamar a applySex().
+     Ahora se conserva lo que se estaba viendo y solo se suelta si deja de existir en el nuevo
+     ámbito (una competición donde esa categoría no nadó, o una ficha que ya no está). */
+  yearFilter="all";
+  const fechaPrev=sumFecha,compPrev=compsFor;
+  applySex();
+  if(fechaPrev&&summaryFechas().indexOf(fechaPrev)<0){sumFecha=null;render();}
+  if(compPrev&&!ALLRECS.some(r=>r.nadadora===compPrev&&r.sexo===sexFilter&&(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||catOf(r.anio,r.fecha)===catFilter))){compsFor=null;badgesFor=null;cmpA=null;cmpB=null;render();}
 }
 el("segCatH").addEventListener("click",e=>{const b=e.target.closest("button");if(b)cambiarCat(b.dataset.c,false);});
 el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(b)cambiarCat(b.dataset.c,true);});
