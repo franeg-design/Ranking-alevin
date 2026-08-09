@@ -754,7 +754,7 @@ function parseCSV(t){const L=t.replace(/\r/g,"").split("\n").filter(x=>x.trim())
        Solo se muestran en el desplegable de la prueba dentro de la ficha (histBox). */
     if(!r.prueba||!r.nadadora)continue;
     if(r.tiempo){out.push(r);continue;}
-    if(String(o.Estado||"").trim().toUpperCase()==="DSQ")ALLDSQ.push({prueba:r.prueba,nadadora:r.nadadora,club:r.club,fecha:r.fecha,competi:r.competi,sexo:r.sexo,motivo:(o.Motivo||"").trim()});
+    if(String(o.Estado||"").trim().toUpperCase()==="DSQ")ALLDSQ.push({prueba:r.prueba,nadadora:r.nadadora,anio:r.anio,club:r.club,fecha:r.fecha,competi:r.competi,sexo:r.sexo,motivo:(o.Motivo||"").trim()});
   }return out;}
 function toCs(t){if(!t)return Infinity;const s=String(t).trim().replace(",",".");const p=s.split(":");let sec;if(p.length===3)sec=(+p[0])*3600+(+p[1])*60+parseFloat(p[2]);else if(p.length===2)sec=(+p[0])*60+parseFloat(p[1]);else sec=parseFloat(p[0]);return isNaN(sec)?Infinity:Math.round(sec*100);}
 function fmtGap(cs){return fmtClock(cs);}
@@ -1923,7 +1923,10 @@ function fichCompCard(name,FE){
   return h;
 }
 function renderComps(vw,name){
-  const sw=ALLRECS.filter(r=>r.nadadora===name&&(isHist()||seasonOf(r.fecha)===season));
+  /* Por el ámbito, no por ALLRECS: en Histórico · Alevín la lista incluía también las jornadas
+     que esa persona nadó de infantil. Dentro de una temporada da lo mismo (año + temporada fijan la
+     categoría), pero cruzando temporadas no. */
+  const sw=scopeRecs().filter(r=>r.nadadora===name);
   const fechas=[...new Set(sw.map(r=>r.fecha))].sort((a,b)=>b.localeCompare(a));
   if(compFecha&&fechas.indexOf(compFecha)>=0){
     vw.innerHTML=fichCompCard(name,compFecha);
@@ -2191,7 +2194,8 @@ function maybeShine(el,pct,reduce){
   el.className=el.className+" shine";
 }
 let LEG_HTML="",LEG_OPEN=false;
-function sumLeg(){const nad=sexFilter==="M"?"nadador":"nadadora";if(mode==="fichas")return "<span style='font-weight:700'>Competición de la ficha — parciales y análisis de ritmo:</span><br>Cada prueba muestra sus <b>parciales</b> con los metros, una <b>puntuación de 0 a 100</b> por tramo y otra <b>global</b>, más una barra proporcional (cuanto más larga, más rápido fue ese tramo).<br>Niveles: <span class='pcV pcV-opt' style='font-size:10px'>Ritmo óptimo</span> <span class='pcV pcV-gd' style='font-size:10px'>Buen ritmo</span> <span class='pcV pcV-low' style='font-size:10px'>Pierde ritmo</span> <span class='pcV pcV-wk' style='font-size:10px'>Se resiente</span> <span class='pcV pcV-fat' style='font-size:10px'>Fatigado</span>.<br>Cada tramo se mide contra lo que le corresponde: la <b>Salida</b> contra tu mejor 50 de ese estilo <b>hasta esa fecha</b> (¿saliste bien dosificada?), el <b>Crucero</b> contra tu propio ritmo medio (¿lo sostienes?) y el <b>Final</b> contra ese crucero (¿te quedaba?). Los rangos están calibrados <b>por estilo y distancia</b> con datos reales de la categoría: 100 puntos dentro del rango habitual y baja en proporción según se aleja. Salir con freno resta menos que fundirse: lo primero es táctico y lo segundo, físico. En <b>400 y 800</b> manda la <b>regularidad</b> de los largos y en <b>Estilos</b>, cuánto pesa cada estilo. Si aún no habías nadado ningún 50 de ese estilo, la salida aparece sin valorar.<div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";return "<span style='font-weight:700'>Resumen de la competición — cómo se calcula cada premio:</span><br>🏆 <b>Mejor "+nad+" del día</b>: suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br><b>Mejores marcas del día</b>: las marcas con más puntos FINA de la competición, por año.<br><b>Mayores progresiones del día</b>: quienes más puntos FINA ganaron respecto a su mejor marca anterior; entre paréntesis, el tiempo que bajaron.<br><b>En forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br><b>Mínimas nuevas</b>: mínimas EH / ESP conseguidas en esa competición que antes no se tenían.<br>Las cifras de arriba cuentan participantes, marcas nadadas, mejoras ⭐ (marcas que baten la mejor marca previa) y mínimas nuevas.<br><span style='color:var(--muted)'>El resumen es de la <b>competición entera</b>: no le afectan los filtros de año y club de más abajo, que solo mueven el ranking.</span><div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";}
+function sumLeg(){const nad=sexFilter==="M"?"nadador":"nadadora";/* ⚠️ Aquí vivía una segunda leyenda para el modo ficha (`if(mode==="fichas")…`), 1.448 bytes que NUNCA se leían: el botón ⓘ solo antepone `sumLeg()` cuando `sumShown` es true, y al entrar en una ficha `render()` lo pone a false y ya no hay forma de reactivarlo (lo único que lo enciende es pulsar una competición de la lista, y esa lista no existe en modo ficha). La leyenda de ritmo la sirve `if(compsFor){…}`, que es la de los 10 apartados. Comprobado antes de borrar. */
+  return "<span style='font-weight:700'>Resumen de la competición — cómo se calcula cada premio:</span><br>🏆 <b>Mejor "+nad+" del día</b>: suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br><b>Mejores marcas del día</b>: las marcas con más puntos FINA de la competición, por año.<br><b>Mayores progresiones del día</b>: quienes más puntos FINA ganaron respecto a su mejor marca anterior; entre paréntesis, el tiempo que bajaron.<br><b>En forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br><b>Mínimas nuevas</b>: mínimas EH / ESP conseguidas en esa competición que antes no se tenían.<br>Las cifras de arriba cuentan participantes, marcas nadadas, mejoras ⭐ (marcas que baten la mejor marca previa) y mínimas nuevas.<br><span style='color:var(--muted)'>El resumen es de la <b>competición entera</b>: no le afectan los filtros de año y club de más abajo, que solo mueven el ranking.</span><div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";}
 let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking",badgesFor=null,sumOpen=false,sumFecha=null,sumShown=false,BAND_KEY=null,compsFor=null,compFecha=null;
 function fireBar(el){
   if(BAR_IO){try{BAR_IO.unobserve(el);}catch(e){}}
@@ -2258,11 +2262,21 @@ function animateTags(vw){
   Array.prototype.forEach.call(tags,el=>TAG_IO.observe(el));
 }
 function toggleHist(row){const c=row.nextElementSibling;if(!c||!c.classList||!c.classList.contains("histBox"))return;const open=c.style.display==="block";c.style.display=open?"none":"block";row.classList.toggle("open",!open);}
+/* DESCALIFICACIONES DEL ÁMBITO ACTUAL (ago-2026). Antes esta expresión estaba escrita dos veces
+   —en `histBox` para pintarlas y en `renderProfile` para contarlas— y a ninguna le llegaba el filtro
+   de categoría: en Histórico · Alevín se colaban las descalificaciones de infantil. Mismo problema
+   que tenía el ámbito de marcas y misma solución: una sola función. Si divergen, la fila diría
+   "3 descalificaciones" y el desplegable enseñaría otra cosa. */
+function dsqOf(name,prueba){
+  return ALLDSQ.filter(r=>r.nadadora===name&&r.prueba===prueba&&r.sexo===sexFilter
+    &&(isHist()||seasonOf(r.fecha)===season)
+    &&(!catFilter||catFilter==="all"||catOf(r.anio,r.fecha)===catFilter));
+}
 function histBox(name,p){
   const rows=RECORDS.filter(r=>r.nadadora===name&&r.prueba===p).map(r=>({fecha:r.fecha,competi:r.competi,tiempo:r.tiempo,cs:toCs(r.tiempo)}));
   /* Las descalificaciones se cuelan aquí y SOLO aquí. No tienen tiempo, así que no pueden ser MMP
      ni afectar al mejor: se filtra el mismo sexo y temporada que RECORDS para no mezclar. */
-  const dsq=ALLDSQ.filter(r=>r.nadadora===name&&r.prueba===p&&r.sexo===sexFilter&&(isHist()||seasonOf(r.fecha)===season))
+  const dsq=dsqOf(name,p)
     .map(r=>({fecha:r.fecha,competi:r.competi,dsq:true,motivo:r.motivo,cs:Infinity}));
   const all=rows.concat(dsq).sort((a,b)=>a.fecha<b.fecha?-1:(a.fecha>b.fecha?1:a.cs-b.cs));
   if(!all.length)return"";
@@ -2595,7 +2609,7 @@ function renderProfile(vw){
            solo para que el desplegable exista. Únicamente en la vista de marcas: en mínimas y en
            top FINA una fila sin tiempo no significa nada. */
         if(view!=="marcas")return"";
-        const nd=ALLDSQ.filter(r=>r.nadadora===name&&r.prueba===p&&r.sexo===sexFilter&&(isHist()||seasonOf(r.fecha)===season)).length;
+        const nd=dsqOf(name,p).length;
         if(!nd)return"";
         const anim2=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
         return `<div class="pRow tog pRowDsq" style="${anim2}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Sin marca · ${nd} ${nd===1?"descalificación":"descalificaciones"}</div></div><div class="right"><div class="time dsqT">DSQ</div></div></div>`+histBox(name,p);
