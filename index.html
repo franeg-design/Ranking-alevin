@@ -1916,7 +1916,7 @@ function renderSummary(fecha){
   box.innerHTML=`<div class="topRow">${band}${phrase}</div>`+menu+cuerpo+`<div class="secdiv" id="secdiv"><span id="secTitle">${mode==="fichas"?"Fichas individuales":"Ranking de la temporada"}</span></div>`;
 }
 
-function poolRecs(recs){let out=recs;if(catFilter!=="all")out=out.filter(r=>catOf(r.anio,r.fecha)===catFilter);if(yearFilter!=="all")out=out.filter(r=>claveEdad(r)===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
+function poolRecs(recs){let out=recs;if(yearFilter!=="all")out=out.filter(r=>claveEdad(r)===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
 // Clase de color por estilo (misma paleta que los chips y las tarjetas de ritmo).
 /* Clase de color por estilo. Única fuente de la paleta: antes esta tabla estaba copiada
    cuatro veces (aquí, dos veces como stCls y una como stKl) y cambiar un color obligaba a
@@ -2531,9 +2531,17 @@ function renderProfile(vw){
 async function boot(){let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
   ALLRECS=parseCSV(txt);_B50=null;_TPL=null;_T1=null;_PREVB=null;_ANIO=null;
   applySex();}
+/* ⚠️ LA CATEGORÍA ES ÁMBITO, NO FILTRO DE TABLA (ago-2026). Fran: "cuando entras en alevines estás
+   en alevines, con sus propios resúmenes; ninguno está afectado por el otro". Por eso `catFilter` se
+   aplica AQUÍ, junto al sexo, y no en `poolRecs` como el año o el club: así todo lo que cuelga de
+   `RECORDS` queda confinado a la categoría —resumen de competición entero, listado de competiciones,
+   ÚLT. COMP., medallero, buscador, clubes— sin tocar ni una de esas funciones.
+   `catsPresent()` mira ALLRECS a propósito: el conmutador debe seguir ofreciendo la otra categoría
+   aunque estés dentro de una. */
 function applySex(){
   initSeasons();applySeasonTables();
-  const SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  let SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  if(catFilter!=="all")SREC=SREC.filter(r=>catOf(r.anio,r.fecha)===catFilter);
   RECORDS=SREC.filter(r=>r.sexo===sexFilter);
   MAXFECHA=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");
   MINFECHA=SREC.reduce((m,r)=>r.fecha<m?r.fecha:m,SREC[0]?SREC[0].fecha:"");
@@ -2549,7 +2557,8 @@ function renderSug(q){
   const box=el("searchSug");if(!box)return;
   const qn=normName(q);
   if(!qn){box.style.display="none";box.innerHTML="";return;}
-  const SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  let SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
+  if(catFilter!=="all")SREC=SREC.filter(r=>catOf(r.anio,r.fecha)===catFilter);
   const seen={},list=[];
   SREC.forEach(r=>{if(seen[r.nadadora])return;if(normName(r.nadadora+" "+r.club).includes(qn)){seen[r.nadadora]=1;list.push(r);}});
   list.sort((a,b)=>(a.sexo===sexFilter?0:1)-(b.sexo===sexFilter?0:1)||a.nadadora.localeCompare(b.nadadora));
@@ -2599,7 +2608,7 @@ el("view").addEventListener("click",e=>{
 });
 el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;render();});
 el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sexFilter=b.dataset.s;el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
-el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;catFilter=b.dataset.c;yearFilter="all";badgesFor=null;cmpA=null;cmpB=null;fillCats();fillYears();render();});
+el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;catFilter=b.dataset.c;yearFilter="all";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;sumFecha=null;applySex();});
 el("segYear").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;yearFilter=b.dataset.y;el("segYear").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("segFina").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;finaN=+b.dataset.n;el("segFina").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("clubSel").addEventListener("change",e=>{clubFilter=e.target.value;render();});
