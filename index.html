@@ -27,18 +27,25 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .head::before,.pTop::before,.cmpTop::before,.cmpHead::before{content:"";position:absolute;left:0;right:0;bottom:0;height:72%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120'%3E%3Cpath d='M0 70 Q75 42 150 70 T300 70 T450 70 T600 70 V120 H0 Z' fill='%23ffffff' fill-opacity='.05'/%3E%3Cpath d='M0 92 Q75 64 150 92 T300 92 T450 92 T600 92 V120 H0 Z' fill='%23ffffff' fill-opacity='.05'/%3E%3C/svg%3E") bottom/620px 120px repeat-x;pointer-events:none}
 .cmpTop{overflow:hidden}.cmpHead{overflow:hidden}
 .head{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:calc(20px + env(safe-area-inset-top)) 20px 16px;position:relative;overflow:hidden}
-.glow{position:absolute;right:-40px;top:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%)}
-.kickRow{display:flex;align-items:center;gap:10px}
+/* ⚠️ pointer-events:none OBLIGATORIO. El resplandor es un div absoluto de 180x180 anclado arriba a
+   la derecha, o sea justo encima de la pastilla de temporada, y al estar posicionado se pinta por
+   delante del contenido: se tragaba los toques de la mitad derecha del selector. Solo respondía la
+   parte izquierda, la que sobresalía del círculo. */
+.glow{position:absolute;right:-40px;top:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%);pointer-events:none}
+/* Tres filas alineadas, cada una con su control pegado a la derecha:
+   NATACIÓN → temporada · Ranking Álava → Alevín|Infantil · Piscina 25 m → Fem.|Masc. */
+.kickRow{display:flex;align-items:center;gap:8px;position:relative;z-index:1}
 .kicker{display:flex;align-items:center;gap:7px;flex:1 1 auto;min-width:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.86;font-weight:600}
-.titleRow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:8px 0 2px}
+.titleRow{display:flex;align-items:center;gap:10px;margin:8px 0 2px;position:relative;z-index:1}
 .title{flex:0 1 auto;min-width:0;white-space:nowrap;font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:23px;line-height:1.06;margin:0;letter-spacing:-.01em}
 .seasonPill{flex:0 0 auto;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;white-space:nowrap}
 .segSexH{display:inline-flex;flex:0 0 auto;margin-left:auto;position:relative;z-index:2;gap:4px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:3px}
 .segSexH button{display:inline-flex;align-items:center;gap:4px;border:none;background:transparent;color:rgba(255,255,255,.72);font-family:inherit;font-weight:700;font-size:12px;border-radius:999px;padding:4px 12px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
 .segSexH button.on{background:rgba(255,255,255,.9);color:#123a52}
 
-select.seasonSel{appearance:none;-webkit-appearance:none;padding-right:26px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer}
-.sub{font-size:13px;opacity:.9}
+select.seasonSel{appearance:none;-webkit-appearance:none;padding:8px 30px 8px 14px;min-height:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer}
+.sub{font-size:13px;opacity:.9;flex:0 1 auto;min-width:0}
+.subRow{display:flex;align-items:center;gap:10px;position:relative;z-index:1;margin-top:2px}
 .clubsel{min-height:44px;width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:16px;background:var(--surface);font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px}
 .clubsel:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(14,124,147,.14)}
 .lane{display:flex;gap:7px;margin-top:14px}
@@ -455,12 +462,15 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
     </div>
     <div class="titleRow">
       <h1 class="title" id="h1t">Ranking Álava</h1>
+      <div class="segSexH" id="segCatH" style="display:none"></div>
+    </div>
+    <div class="subRow">
+      <div class="sub">Piscina 25 m</div>
       <div class="segSexH" id="segSex">
         <button data-s="F" class="on">Fem.</button>
         <button data-s="M">Masc.</button>
       </div>
     </div>
-    <div class="sub">Piscina 25 m</div>
     <div class="lane"><span></span><span></span><span></span><span></span></div>
   </header>
   <main class="body">
@@ -589,18 +599,49 @@ function catsPresent(){
   const set=new Set();rs.forEach(r=>{const c=catOf(r.anio,r.fecha);if(c)set.add(c);});
   return ["alevin","infantil"].filter(c=>set.has(c));
 }
-function fillCats(){
-  const seg=el("segCat");if(!seg)return;
+/* ⚠️ LA CATEGORÍA ES BINARIA Y SIEMPRE HAY UNA ACTIVA: Alevín o Infantil, nunca «Todas». Fran:
+   "es como un selector de sexo, es lo que va a segmentar todo". Va en la CABECERA junto al de
+   temporada y al de Fem./Masc., porque es de la misma naturaleza: define el ámbito, no filtra una
+   tabla. Sirve igual en temporada y en Histórico.
+   Mientras solo exista una categoría (2025/26) el control se oculta y `catFilter` toma esa: la app
+   se comporta exactamente como siempre. */
+function catDefault(){const cs=catsPresent();return cs.indexOf("alevin")>=0?"alevin":(cs[0]||"alevin");}
+/* ⚠️ DOS CONTROLES CON MEMORIA PROPIA. No son el mismo control en dos sitios: cada uno guarda su
+   selección y sirve a un modo distinto, así que cambiar uno no toca al otro.
+   · `catTemp` — pastilla de la CABECERA (#segCatH). SIEMPRE visible mientras haya dos categorías,
+     también en Histórico. Es binaria (Alevín | Infantil, una siempre activa) y decide qué categoría
+     ves al entrar en una temporada. Dentro de una temporada no cabe «Todas»: compiten por separado.
+   · `catHist` — segmentado de ABAJO (#segCat). Solo en Histórico, con Todas · Alevín · Infantil, y
+     arranca en «Todas» porque elegir Histórico ya significa todas las categorías. Con «Todas» los
+     botones de años son años de nacimiento; dentro de una categoría pasan a 1.º / 2.º año.
+   `catFilter` es el que aplica de verdad; lo recalcula `catSync()`, que hay que llamar ANTES de
+   construir RECORDS en `applySex()`.
+   En Histórico la pastilla de arriba se ve atenuada: sigue estando y se puede cambiar —para dejar
+   elegida la categoría con la que volverás a la temporada— pero allí no manda ella. */
+function catSync(){
   const cs=catsPresent();
-  if(cs.length<2){catFilter="all";seg.style.display="none";seg.innerHTML="";return;}
-  if(catFilter!=="all"&&cs.indexOf(catFilter)<0)catFilter="all";
-  seg.style.display="flex";
-  seg.innerHTML=`<button data-c="all"${catFilter==="all"?' class="on"':''}>Todas</button>`
-    +cs.map(c=>`<button data-c="${c}"${c===catFilter?' class="on"':''}>${CAT_LAB[c]}</button>`).join("");
+  if(cs.indexOf(catTemp)<0)catTemp=catDefault();
+  if(catHist!=="all"&&cs.indexOf(catHist)<0)catHist="all";
+  catFilter=isHist()?catHist:catTemp;
 }
-function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(catFilter==="all"||catOf(r.anio,r.fecha)===catFilter)).map(claveEdad).filter(Boolean))].sort();const ys=(only&&only.length)?only.slice().sort():all;if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
+function fillCats(){
+  const arr=el("segCatH"),ab=el("segCat");
+  const cs=catsPresent(),hay=cs.length>1;
+  catSync();
+  if(arr){
+    if(!hay){arr.style.display="none";arr.innerHTML="";}
+    else{arr.style.display="inline-flex";arr.style.opacity=isHist()?".45":"";
+      arr.innerHTML=cs.map(c=>`<button data-c="${c}"${c===catTemp?' class="on"':''}>${CAT_LAB[c]}</button>`).join("");}
+  }
+  if(ab){
+    if(!hay||!isHist()){ab.style.display="none";ab.innerHTML="";}
+    else{ab.style.display="flex";
+      ab.innerHTML=["all"].concat(cs).map(c=>`<button data-c="${c}"${c===catHist?' class="on"':''}>${c==="all"?"Todas":CAT_LAB[c]}</button>`).join("");}
+  }
+}
+function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||catOf(r.anio,r.fecha)===catFilter)).map(claveEdad).filter(Boolean))].sort();const ys=(only&&only.length)?only.slice().sort():all;if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
      de ser cierta: el botón absoluto pasa a llamarse "Todos". */
-  const lab=isHist()?"Todos":(catFilter!=="all"?CAT_LAB[catFilter]:(catsPresent().length>1?"Todos":"Alevín"))+(all.length?" "+all.map(y=>y.slice(2)).join("/"):"");
+  const lab=isHist()?"Todos":((CAT_LAB[catFilter]||"Alevín")+(all.length?" "+all.map(y=>y.slice(2)).join("/"):""));
   seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>${lab}</button>`
     +ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${claveLab(y)}</button>`).join("");if(seg.classList){seg.classList.toggle("wide",!!(only&&only.length));
     /* Con 4 años o más (pasa en Histórico desde 2026/27) los botones dejan de repartirse a partes
@@ -677,7 +718,7 @@ const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo
 `;
 
 let ALLDSQ=[];
-let ALLRECS=[], RECORDS=[], BEFORE=[], MAXFECHA="", MINFECHA="", SEASONS=[], season="", sexFilter="F", view="marcas", yearFilter="all", catFilter="all", clubFilter="all", finaN=3, query="", activePrueba="";
+let ALLRECS=[], RECORDS=[], BEFORE=[], MAXFECHA="", MINFECHA="", SEASONS=[], season="", sexFilter="F", view="marcas", yearFilter="all", catFilter="", catTemp="", catHist="all", clubFilter="all", finaN=3, query="", activePrueba="";
 const el=id=>document.getElementById(id);
 
 function splitLine(line){const o=[];let c="",q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){c+='"';i++;}else q=false;}else c+=ch;}else{if(ch==='"')q=true;else if(ch===","){o.push(c);c="";}else c+=ch;}}o.push(c);return o;}
@@ -755,7 +796,7 @@ function medalTable(){
   const acc={};
   const add=(name,cat,pos,fecha,det)=>{
     if(!name||pos>2)return;
-    if(catFilter!=="all"&&catOf(anioDe[name],fecha)!==catFilter)return;
+    if(catFilter&&catFilter!=="all"&&catOf(anioDe[name],fecha)!==catFilter)return;
     const a=acc[name]||(acc[name]={name:name,g:0,s:0,b:0,cats:{mejor:[0,0,0],marcas:[0,0,0],prog:[0,0,0],forma:[0,0,0]},list:[]});
     a[["g","s","b"][pos]]++;a.cats[cat][pos]++;
     a.list.push({cat:cat,pos:pos,fecha:fecha,det:det||""});
@@ -1913,7 +1954,7 @@ function renderSummary(fecha){
   }else{
     phrase=`<div class="phrase" aria-hidden="true"><div class="phIn"><div class="phTxt">${PHR}</div></div><div class="phSign">${SIGN}</div></div>`;
   }
-  box.innerHTML=`<div class="topRow">${band}${phrase}</div>`+menu+cuerpo+`<div class="secdiv" id="secdiv"><span id="secTitle">${mode==="fichas"?"Fichas individuales":"Ranking de la temporada"}</span></div>`;
+  box.innerHTML=`<div class="topRow">${band}${phrase}</div>`+menu+cuerpo+`<div class="secdiv" id="secdiv"><span id="secTitle">${mode==="fichas"?"Fichas individuales":(isHist()?"Ranking histórico":"Ranking de la temporada")}</span></div>`;
 }
 
 function poolRecs(recs){let out=recs;if(yearFilter!=="all")out=out.filter(r=>claveEdad(r)===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
@@ -2252,17 +2293,38 @@ function render(){
   if(fo)PREV_YRS=true;else{const cs=el("clubSel");if(cs)cs.style.display="";const sx=el("segSex");if(sx)sx.style.display="";const tb=el("tabs");if(tb)tb.style.display="";}
 
   // legend
-  const legs={marcas:"<span style='font-weight:700'>Ranking por MMP.</span> Cada nadador/a con su <b>mejor marca personal</b> de la temporada en la prueba elegida. <b>Nº</b> = puesto · <b>pts</b> = puntos FINA.<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Indicadores de la última competición.</span> <span style='color:var(--muted)'>Solo en marcas logradas en la última competición.</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ variación de puesto<br><span class='pos new' style='display:inline-block;margin-top:0;padding:0 5px;font-size:10px'>nuevo</span> primer registro en esta prueba</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Mínimas.</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de <b>Euskadi</b> / <b>España</b> conseguida. En la pestaña <b>Mínimas</b> se ven todas las de cada nadador/a.</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Fichas.</span><br>Toca un <b>nombre</b> de la lista (o búscalo) para abrir su ficha; <b>← Volver</b> regresa al ranking.</div><span style='display:block;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);color:var(--muted)'>El botón flotante ⓘ abre esta ventana con la explicación de lo que tengas seleccionado en cada momento: cambia según estés en Marcas, Mínimas, Top FINA o en una ficha.</span>",
+  const legs={marcas:"<span style='font-weight:700'>Ranking por MMP.</span> Cada nadador/a con su <b>mejor marca personal</b> "+(isHist()?"de todas las temporadas":"de la temporada")+" en la prueba elegida. <b>Nº</b> = puesto · <b>pts</b> = puntos FINA.<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Indicadores de la última competición.</span> <span style='color:var(--muted)'>Solo en marcas logradas en la última competición.</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ variación de puesto<br><span class='pos new' style='display:inline-block;margin-top:0;padding:0 5px;font-size:10px'>nuevo</span> primer registro en esta prueba</div>"+(minsOn()?"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Mínimas.</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de <b>Euskadi</b> / <b>España</b> conseguida. En la pestaña <b>Mínimas</b> se ven todas las de cada nadador/a.</div>":"")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Fichas.</span><br>Toca un <b>nombre</b> de la lista (o búscalo) para abrir su ficha; <b>← Volver</b> regresa al ranking.</div><span style='display:block;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);color:var(--muted)'>El botón flotante ⓘ abre esta ventana con la explicación de lo que tengas seleccionado en cada momento: cambia según estés en Marcas, Mínimas, Top FINA o en una ficha.</span>",
     marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos los tiempos de la temporada con fecha y competición.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b> (Alevín / 2013 / 2014): al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.<br><b>Distancia al líder</b>: lo que le falta para el Nº 1. <b>Progreso</b>: cuánto ha bajado desde su primera marca de la temporada.</div>"+"",
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>Euskal Herria</b> y <b style='color:var(--brand)'>España</b> (<b style='color:#0f9d6b'>−</b> en verde, conseguida · <b style='color:#c0392b'>+</b> en rojo, lo que falta).",
     topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Suma de las "+finaN+" mejores marcas de cada "+(sexFilter==="M"?"nadador":"nadadora")+". Aparecen "+(sexFilter==="M"?"los":"las")+" que tienen al menos "+finaN+" pruebas.",topfinaRey:(function(){const ra={Libre:"del",Espalda:"de la",Braza:"de la",Mariposa:"de la",Estilos:"de los"};const st=ra[finaSel]?finaSel:"";return "<span style='font-weight:700'>👑 "+(sexFilter==="M"?"Rey":"Reina")+" "+(st?ra[st]+" "+st.toLowerCase():"de cada estilo")+".</span> Suma de los puntos FINA de su mejor marca en cada distancia nadada "+(st?"en "+st.toLowerCase():"de ese estilo")+". No exige un número mínimo de pruebas."})(),topfinaMed:"🏅 <span style='font-weight:700'>Medallero de insignias.</span> Recuento de todas las insignias ganadas en los resúmenes de las competiciones de esta temporada: una por cada podio (🥇🥈🥉) en las cuatro categorías del resumen.<br>🏆 <b>Mejor del día</b>: mejor "+(sexFilter==="M"?"nadador":"nadadora")+" del día — suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br><b>Marcas</b>: mejores marcas del día — las de más puntos FINA de la competición, por año.<br><b>Progresión</b>: mayores progresiones del día — quienes más puntos FINA ganaron respecto a su mejor marca anterior.<br><b>Forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br>El orden del medallero es olímpico: mandan los oros, luego las platas y luego los bronces. La lista se filtra con los selectores de año y club.<br>⚠️ No son medallas reales: es simplemente un juego.",topfinaSpec:"<span style='font-weight:700'>🚀⏱️🌊 Especialistas.</span> Suma de los puntos FINA de sus dos mejores distancias: Velocista = mejor 50 + mejor 100 · Mediofondista = 200 + 400 · Fondista = 400 + 800. Solo aparece quien tiene marcas en ambas.",topfinaFicha:"La barra muestra lo cerca que está cada marca del récord de Álava de su edad; bajo cada marca, en tenue, el récord de Álava (alevín) y el mundial (absoluto)."};
+  /* En Histórico la leyenda de la vista no basta: hay que explicar el modo entero, porque cambian
+     el alcance, los filtros y lo que desaparece. Va delante y luego la de la pestaña. */
+  const HIST_LEG="<span style='font-weight:700'>Modo Histórico.</span> Aquí no se filtra por temporada: "
+   +"se juntan <b>todas</b>, y cada nadador/a aparece con su <b>mejor marca de siempre</b>. Cada marca puntúa "
+   +"con la tabla FINA de la temporada en que se nadó, así que los puntos de una marca antigua no cambian nunca."
+   +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'>"
+   +"<span style='font-weight:700'>Categoría.</span> Al elegir <b>Alevín</b> o <b>Infantil</b> entras en esa categoría y "
+   +"<b>todo</b> pasa a ser suyo: ranking, competiciones, resúmenes y medallero. Cada marca cuenta en la categoría que "
+   +"se tenía <b>el día que se nadó</b>, no en la de ahora: por eso alguien puede figurar en las dos."
+   +"<div style='margin-top:7px'><span style='font-weight:700'>Dentro de una categoría</span> puedes separar por "
+   +"<b>1.º año</b> y <b>2.º año</b>. Eso compara promociones distintas <b>a la misma edad</b>: en «Alevín · 1.º año» "
+   +"están todos los que pasaron por su primer año alevín, nacieran cuando nacieran.</div>"
+   +"<div style='margin-top:7px'><span style='font-weight:700'>En «Todas»</span> los botones son <b>años de nacimiento</b>: "
+   +"la promoción entera con sus mejores marcas, haya cambiado de categoría o no.</div></div>"
+   +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'>"
+   +"<span style='font-weight:700'>Qué no aparece.</span> Las <b>mínimas</b> se quedan fuera: van por categoría y año de "
+   +"nacimiento y no significan nada cruzando temporadas. En <b>infantil</b> el análisis de ritmo muestra los parciales "
+   +"<b>sin nota</b>, porque los rangos están calibrados con marcas de alevín."
+   +"<div style='margin-top:7px'>Los <b>indicadores de última competición</b> funcionan igual, pero aquí solo salen si esa "
+   +"marca es su mejor de siempre: el Histórico enseña la mejor, y si no la ha batido, no cambia.</div></div>";
   if(view==="marcas"){LEG_HTML=fo?legs.marcasFicha:legs.marcas;}
   else if(view==="topfina"){LEG_HTML=fo?legs.topfinaFicha:(finaSel==="med"?legs.topfinaMed:/^\d+$/.test(finaSel)?legs.topfina:(["spr","mid","fon"].indexOf(finaSel)>=0?legs.topfinaSpec:legs.topfinaRey));}
   else{LEG_HTML=legs[view];}
-  if(badgesFor){const bsx=((ALLRECS.find(r=>r.nadadora===badgesFor)||{}).sexo)||sexFilter;const nb=bsx==="M"?"nadador":"nadadora";LEG_HTML="🏅 <span style='font-weight:700'>Recuento de insignias.</span> Aquí se cuentan todas las insignias que ha conseguido en los resúmenes de las competiciones de esta temporada. Se gana una por cada podio (🥇🥈🥉) en estas categorías del resumen:<br>🏆 <b>Mejor "+nb+" del día</b>: suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br><b>Mejores marcas del día</b>: las marcas con más puntos FINA de la competición, por año.<br><b>Mayores progresiones del día</b>: quienes más puntos FINA ganaron respecto a su mejor marca anterior.<br><b>En forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br>El orden del medallero es olímpico: mandan los oros, luego las platas y luego los bronces.<br>⚠️ No son medallas reales: es simplemente un juego.";}
+  if(isHist()&&!fo&&!badgesFor)LEG_HTML=HIST_LEG+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'></div>"+LEG_HTML;
+  if(badgesFor){const bsx=((ALLRECS.find(r=>r.nadadora===badgesFor)||{}).sexo)||sexFilter;const nb=bsx==="M"?"nadador":"nadadora";LEG_HTML="🏅 <span style='font-weight:700'>Recuento de insignias.</span> Aquí se cuentan todas las insignias que ha conseguido en los resúmenes de las competiciones "+(isHist()?"de todas las temporadas":"de esta temporada")+". Se gana una por cada podio (🥇🥈🥉) en estas categorías del resumen:<br>🏆 <b>Mejor "+nb+" del día</b>: suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br><b>Mejores marcas del día</b>: las marcas con más puntos FINA de la competición, por año.<br><b>Mayores progresiones del día</b>: quienes más puntos FINA ganaron respecto a su mejor marca anterior.<br><b>En forma 🔥</b>: mayor progresión FINA acumulada en las 3 últimas jornadas.<br>El orden del medallero es olímpico: mandan los oros, luego las platas y luego los bronces.<br>⚠️ No son medallas reales: es simplemente un juego.";}
   if(compsFor){LEG_HTML="🏊 <span style='font-weight:700'>Competiciones: cómo se mide el ritmo.</span> Cada prueba muestra sus <b>parciales</b> con una barra proporcional (cuanto más larga, más rápido fue ese tramo), una <b>nota de 0 a 100</b> por tramo y otra <b>global</b>. Nunca se compara con otras nadadoras: todo se mide contra tu propio ritmo."+"<div class='lgH'>1 · Con qué se compara cada tramo</div>"+"<table class='lgT'><tr><td>Salida</td><td style='text-align:left'>El 1er 50 frente a tu <b>mejor 50</b> de ese estilo <b>hasta esa fecha</b></td></tr><tr><td>Transición</td><td style='text-align:left'>El <b>escalón</b> entre el 1er 50 y el ritmo de crucero de esa misma carrera</td></tr><tr><td>Crucero</td><td style='text-align:left'>Cada largo intermedio frente a la <b>media</b> de los largos de crucero de esa carrera</td></tr><tr><td>Final</td><td style='text-align:left'>El último largo frente a esa misma media de crucero</td></tr></table>En el <b>100</b> no hay crucero: el 2º largo se compara con el 1º (la <b>caída</b>)."+"<div class='lgH'>2 · Margen de salida</div><b>margen = (1er 50 − tu mejor 50 hasta ese día) ÷ ese mejor 50</b>. La referencia es la que tenías <b>en ese momento</b>, nunca una marca posterior: así una carrera de octubre no se compara con el 50 que hiciste en junio. <b>Se dice de cuándo es</b>: la tarjeta escribe si esa marca de 50 es de esa misma competición o de qué mes, porque una vara de hace medio año no pesa lo mismo que una de ayer. Es solo el dato — que la referencia sea antigua <b>no significa</b> que se haya quedado corta, y no cambia la nota.<br><br><b>Cuando el 50 se queda atrás, deja de usarse.</b> Si en algún 100 de ese estilo ya has nadado un <b>primer largo más rápido que tu mejor 50 suelto</b>, esa marca ha dejado de servir como vara: el primer largo de un 100 se nada dosificando, así que batirlo solo puede querer decir que el 50 se quedó antiguo. Pasa mucho a esta edad, cuando se mejora sin parar y se tarda meses en volver a competir un 50. En ese caso la Salida aparece en gris como <i>sin referencia fiable</i>, <b>no lleva nota</b> y la global se calcula con el resto — y en su lugar se compara tu primer parcial con el de <b>tu mejor 100</b> de ese estilo, que dice si hoy cargaste más o menos en la salida. El descarte vale para <b>todas las distancias</b>, no solo para el 100. Un margen <b>pequeño</b> significa que el primer 50 fue casi tan rápido como tu 50 puro (arriesgado, se paga al final); uno <b>grande</b>, que saliste con freno. Rango óptimo:<table class='lgT'><tr><td>100 Libre</td><td>6–9,4%</td></tr><tr><td>100 Espalda</td><td>4,6–6%</td></tr><tr><td>100 Braza</td><td>1–4,2%</td></tr><tr><td>100 Mariposa</td><td>9,2–11,5%</td></tr><tr><td>200 Libre</td><td>10,8–13,3%</td></tr><tr><td>200 Espalda</td><td>7,2–10,8%</td></tr><tr><td>200 Braza</td><td>4,5–6,9%</td></tr><tr><td>200 Mariposa</td><td>12,8–16,5%</td></tr><tr><td>400 Libre</td><td>16,5–21,3%</td></tr><tr><td>800 Libre</td><td>15,8–22,1%</td></tr></table>En braza el margen es mínimo (el 50 no depende tanto de la velocidad pura) y en mariposa es enorme: salir cerca de tu 50 mariposa es insostenible."+"<div class='lgH'>3 · El escalón salida→crucero</div>El 1er largo sale de <b>poyete</b> y, en piscina de 25, lleva <b>un viraje en vez de dos</b>, así que <b>siempre</b> es más rápido que los demás. Lo que se mide es <b>cuánto</b>: <b>escalón = (ritmo de crucero − 1er 50) ÷ 1er 50</b>. Un escalón <b>grande</b> significa que se salió más rápido de lo que luego se puede sostener; uno <b>pequeño</b>, que se salió contenida o que el crucero es muy bueno. <b>Solo penaliza el escalón grande</b>: comparando cada nadador/a consigo mismo, en sus mejores carreras el escalón es <b>menor</b> que en sus peores, y los estudios de 400 libre describen lo mismo en las mejores nadadas de las plusmarquistas (primer largo más lento, último más rápido). Mide algo <b>distinto</b> del margen de salida: entre los dos la correlación es de solo 0,08. Rango habitual:<table class='lgT'><tr><td>200 Espalda</td><td>8,1–10,5%</td></tr><tr><td>200 Braza</td><td>10,6–14,4%</td></tr><tr><td>200 Libre</td><td>12,1–14,5%</td></tr><tr><td>400 Libre</td><td>12,4–14,2%</td></tr></table>El escalón más pequeño es el de espalda, porque <b>se sale del agua</b> y el primer largo no lleva la ventaja del poyete; el mayor es el de mariposa. En <b>200 Mariposa</b> y en <b>800</b> la nota aparece pero <b>no puntúa</b>: hay pocas carreras registradas para fijar un rango fiable, y las cifras publicadas no valen porque son de piscina de 50 m y de adultos de élite (en 800, un escalón de élite ronda el 7%; aquí la mediana es del 13,7%)."+"<div class='lgH'>4 · Caída del 2º largo (solo 100)</div>El 2º largo puede caer hasta este porcentaje sin restar nada; a partir de ahí baja la nota del <b>Final</b>:<table class='lgT'><tr><td>Libre</td><td>9,1%</td></tr><tr><td>Espalda</td><td>5,0%</td></tr><tr><td>Braza</td><td>11,7%</td></tr><tr><td>Mariposa</td><td>16,2%</td></tr></table>La espalda aguanta menos caída porque <b>se sale del agua</b>: sin impulso de poyete el 1er largo no lleva esa ventaja.<br><br><b>En el 100, el 2º largo se juzga solo por la caída.</b> Antes se comparaba además con tu mejor 50, y esa lectura se ha quitado: daba dos cifras del mismo largo con veredictos distintos, y colgaba de la misma marca de 50 que la Salida, así que si ese 50 estaba viejo las dos iban infladas a la vez. La caída, en cambio, compara los dos largos <b>entre sí</b> y no depende de ninguna referencia externa.<br><br><b>En 200, 400 y 800 la salida fuerte sí puede no restar, y lo avala la carrera entera.</b> Ahí hay más tramos, así que quien responde si pagaste la salida son los demás: si el <b>escalón hasta el ritmo de crucero</b> se queda dentro de lo normal —o sea, no saliste más rápido de lo que puedes sostener— y ningún tramo se resiente, la Salida no puntúa menos de lo que demuestra el resto de la carrera. Si algún tramo se cae, no hay rescate: eso <i>es</i> haberlo pagado.<br><br><b>La línea gris: tú contra ti.</b> Cuando ya tienes <b>dos carreras anteriores</b> de esa prueba con parciales, debajo de las notas aparece una línea en gris que compara la caída de hoy con la de <b>tu mejor carrera</b> de esa prueba. Es solo información: <b>no cuenta para la nota</b>, ni cambia el color ni el puesto en el ranking. Por eso va en gris y no en el color del semáforo. Si la diferencia es menor de <b>2,5 puntos</b> no se nombra y dice que has repartido como sueles, porque tu caída se mueve sola unos <b>2,3 puntos</b> entre carreras y por menos de eso no se distingue de tu vaivén normal.<br><br><b>Tu propio patrón manda.</b> Si ya tienes <b>dos carreras anteriores</b> de esa prueba con parciales, la referencia deja de ser la banda de la categoría y pasa a ser <b>tu caída en tu mejor carrera</b>. Repetirla (dentro de 2,8 puntos) cuenta como haber sostenido la forma, aunque tu caída sea mayor que la del resto: hay quien reparte así y le funciona. Solo se ignora si la caída entra en el 5% más extremo, que ya es un desfonde."+"<div class='lgH'>5 · Crucero y Final</div><b>Crucero:</b> cada largo puede separarse de tu ritmo de crucero sin restar hasta 1,3% en libre, 0,7% en espalda, 1,2% en braza y 1,1% en mariposa. A partir de ahí la nota baja, y toca suelo en el 2,3% (libre), 2,4% (espalda), 3,6% (braza) y 4,6% (mariposa).<br><b>Final:</b> lo normal es <b>cerrar más rápido</b> que el crucero (la mediana de la categoría está en un 4% más rápido). Puntúa 100 si el último largo es al menos un 1,5% más rápido que el crucero en libre, un 3,2% en espalda, un 0,4% en braza o un 2,2% en mariposa. El 92% de los 200 terminan más rápido que el 3er largo, por eso un final que sube penaliza."+"<div class='lgH'>6 · Fondo y Estilos</div><b>400 y 800:</b> no se mira la caída sino la <b>regularidad</b> (variación entre largos). Hasta 1,2% (400) y 1,3% (800) es un crucero impecable; desde 2,5% en el 400 y 3,3% en el 800 empieza a restar. La variación se mide <b>solo entre los largos de crucero</b>: sin el primero, que sale de poyete, y sin el último, que se acelera. Suma 5 puntos si cierras más rápido que tu ritmo de crucero.<br><b>Estilos:</b> cada estilo ocupa un porcentaje típico del total y se señala el que se pasa del suyo:<table class='lgT l3'><tr><td></td><td>200 IM</td><td>400 IM</td></tr><tr><td>Mariposa</td><td>23,1%</td><td>25,1%</td></tr><tr><td>Espalda</td><td>25,5%</td><td>25,0%</td></tr><tr><td>Braza</td><td>28,9%</td><td>28,1%</td></tr><tr><td>Libre</td><td>22,4%</td><td>21,9%</td></tr></table>"+"<div class='lgH'>7 · Cómo se convierte en nota</div>Dentro del rango óptimo son <b>100 puntos</b>. Fuera, la nota baja en proporción a lo lejos que queda, hasta valer unos <b>30</b> justo en el 5% más extremo de la categoría.<br><span class='pcV pcV-opt' style='font-size:10px'>Ritmo óptimo</span> 90-100 &nbsp;<span class='pcV pcV-gd' style='font-size:10px'>Buen ritmo</span> 70-89 &nbsp;<span class='pcV pcV-low' style='font-size:10px'>Pierde ritmo</span> 50-69 &nbsp;<span class='pcV pcV-wk' style='font-size:10px'>Se resiente</span> 30-49 &nbsp;<span class='pcV pcV-fat' style='font-size:10px'>Fatigado</span> 0-29<br><b>No penaliza igual todo:</b> salir con freno no baja de 50 porque es un error <b>táctico</b>; fundirse o salir muchísimo más fuerte de lo habitual sí puede llegar a 0, porque es un fallo <b>físico</b>.<br><br><b>La Salida no se puntúa casi nunca, y es a propósito.</b> Enseña los datos —cuánto te separas de tu mejor 50, cuál es el rango normal, cómo se compara con tu mejor 100— pero <b>no dice si saliste fuerte o con freno</b>. El motivo es que la frontera no es tan fina: hay salidas que se pasan del rango por una décima, y llamar «agresiva» a una y «medida» a la de al lado sería inventar una diferencia que los datos no sostienen. Solo cuando el arranque se va del <b>5% más extremo</b> <i>y además</i> la carrera lo acusa, la Salida recibe nota y color. En todo lo demás juzgan el <b>Final</b>, el <b>crucero</b> y la <b>regularidad</b>, que sí miden lo que pasó dentro de la carrera."+"<div class='lgH'>8 · La nota global</div><table class='lgT'><tr><td>100</td><td style='text-align:left'>50% Salida + 50% Final</td></tr><tr><td>200</td><td style='text-align:left'>20% Salida + 20% Transición + 35% Crucero + 25% Final</td></tr><tr><td>400 / 800</td><td style='text-align:left'>65% regularidad + 20% Salida + 15% Transición (+5 si cierra fuerte)</td></tr><tr><td>Estilos</td><td style='text-align:left'>60% el estilo más descompensado + 40% el conjunto</td></tr></table>"+"<div class='lgH'>9 · Cuándo no se valora</div><b>En todas las pruebas</b>, encima del análisis aparece una línea gris con <b>tu marca frente a tu mejor marca anterior</b> de esa prueba, en segundos y centésimas. Es solo el dato del crono: <b>no tiene que ver con la nota de ritmo</b>, que mide cómo repartiste, no cuánto bajaste. En los <b>50</b> no hay tramos que comparar, así que esa línea es lo único que aparece. Si te quedas a menos del <b>2%</b> pone que la tienes al alcance, porque cuando no se baja marca la distancia habitual es del 1,7%. Tampoco cuenta para nada: es información. En el <b>100 estilos</b> cada 50 mezcla dos estilos, así que solo se muestran los parciales. Si el acta trae los parciales incompletos, se enseñan los que hay sin valorar el ritmo. Si el acta solo trae los parciales <b>cada 100</b> (pasa en algunos 800), no hay 1er 50 que medir y no se valoran ni la Salida ni la Transición. Y si <b>aún no habías nadado ningún 50 de ese estilo</b> antes de esa competición, la Salida aparece en gris como <i>sin referencia</i> y la global se calcula con el resto (pasa sobre todo al principio de temporada; según nadas 50s, se van valorando)."+"<div class='lgH'>10 · De dónde salen estos números</div><div class='lgF'>Los rangos son los <b>percentiles reales</b> de las marcas con parciales de esta misma app (alevín, piscina de 25 m), pero <b>no de todas</b>: de cada nadador/a se toma <b>su mejor carrera</b> en esa prueba, y solo cuenta la <b>mitad con mejor marca</b>. Así el listón no lo marca lo que hace la media, sino lo que hacen los mejores cuando les sale bien. Donde no quedaban al menos 12 marcas tras el filtro (mariposa de 200, el 800 y las de estilos) se mantienen los rangos calculados con todas. La <b>Salida</b> es la excepción a propósito: se compara con la mejor marca de 50 de cada nadador/a, así que ya mide contra uno mismo y no depende del nivel del grupo. El rango óptimo es el tramo central y el extremo marca el suspenso. Por eso miden lo que de verdad hace un alevín, no lo que hace un adulto de élite.<br><br>El modelo se apoya además en la literatura de <i>pacing</i>:<br>• <b>Menting y cols.</b>, <i>Pacing Behavior Development in Adolescent Swimmers</i> (3.498 nadadores en 100 y 2.230 en 200, de 12 a 24 años, cinco continentes): con la edad se aprende a contenerse en la salida para ir más fuerte por el medio, y el ritmo se vuelve más regular. Los perfiles juveniles son mucho más variables, y por eso aquí los márgenes son más anchos que en élite.<br>• <b><i>Pacing in World-Class Age Group Swimmers in 100 and 200 m Freestyle, Backstroke, Breaststroke and Butterfly</i></b> (IJERPH, 2020): las diferencias de ritmo entre estilos. <b>Ojo con el título</b>: ese <i>age group</i> no son categorías juveniles, sino <b>másters de 25 a 99 años</b>, y además en piscina de <b>50 m</b>. Por eso de aquí se toma solo la <b>comparación entre estilos</b> —que la braza reparta distinto que el libre es cosa de la brazada, no de la edad— y <b>nunca los valores</b>, que salen de nuestros propios datos alevines en 25 m.<br>• <b><i>Pacing in World-Class Age Group Swimmers in 200 and 400 m Individual Medley</i></b> (Frontiers): el orden de los estilos dentro del IM —libre el más rápido, después mariposa, espalda y braza— que coincide exactamente con el reparto que sale en nuestros propios datos.</div>";}
 
-  const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":"Ranking de la temporada";
+  const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":(isHist()?"Ranking histórico":"Ranking de la temporada");
   const sc=el("secdiv");if(sc&&sc.classList)sc.classList.toggle("fmode",fo);
   const tbs=el("tabs");
   if(tbs&&tbs.querySelectorAll){const bm=tbs.querySelector('button[data-v="minimas"]');if(bm)bm.style.display=isHist()?"none":"";const fo2=fo;const lbl=fo2?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
@@ -2539,9 +2601,9 @@ async function boot(){let txt=null;try{const res=await fetch("data.csv",{cache:"
    `catsPresent()` mira ALLRECS a propósito: el conmutador debe seguir ofreciendo la otra categoría
    aunque estés dentro de una. */
 function applySex(){
-  initSeasons();applySeasonTables();
+  initSeasons();applySeasonTables();catSync();
   let SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
-  if(catFilter!=="all")SREC=SREC.filter(r=>catOf(r.anio,r.fecha)===catFilter);
+  if(catFilter&&catFilter!=="all")SREC=SREC.filter(r=>catOf(r.anio,r.fecha)===catFilter);
   RECORDS=SREC.filter(r=>r.sexo===sexFilter);
   MAXFECHA=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");
   MINFECHA=SREC.reduce((m,r)=>r.fecha<m?r.fecha:m,SREC[0]?SREC[0].fecha:"");
@@ -2558,7 +2620,7 @@ function renderSug(q){
   const qn=normName(q);
   if(!qn){box.style.display="none";box.innerHTML="";return;}
   let SREC=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
-  if(catFilter!=="all")SREC=SREC.filter(r=>catOf(r.anio,r.fecha)===catFilter);
+  if(catFilter&&catFilter!=="all")SREC=SREC.filter(r=>catOf(r.anio,r.fecha)===catFilter);
   const seen={},list=[];
   SREC.forEach(r=>{if(seen[r.nadadora])return;if(normName(r.nadadora+" "+r.club).includes(qn)){seen[r.nadadora]=1;list.push(r);}});
   list.sort((a,b)=>(a.sexo===sexFilter?0:1)-(b.sexo===sexFilter?0:1)||a.nadadora.localeCompare(b.nadadora));
@@ -2608,11 +2670,18 @@ el("view").addEventListener("click",e=>{
 });
 el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;render();});
 el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sexFilter=b.dataset.s;el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
-el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;catFilter=b.dataset.c;yearFilter="all";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;sumFecha=null;applySex();});
+function cambiarCat(c,hist){
+  if(hist){if(c===catHist)return;catHist=c;}else{if(c===catTemp)return;catTemp=c;}
+  if(hist!==isHist()){fillCats();return;}   /* tocar el de arriba estando en Histórico: solo se anota
+                                               para cuando vuelvas a la temporada, no recarga nada */
+  yearFilter="all";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;sumFecha=null;applySex();
+}
+el("segCatH").addEventListener("click",e=>{const b=e.target.closest("button");if(b)cambiarCat(b.dataset.c,false);});
+el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(b)cambiarCat(b.dataset.c,true);});
 el("segYear").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;yearFilter=b.dataset.y;el("segYear").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("segFina").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;finaN=+b.dataset.n;el("segFina").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("clubSel").addEventListener("change",e=>{clubFilter=e.target.value;render();});
-el("seasonSel").addEventListener("change",e=>{season=e.target.value;catFilter="all";yearFilter="all";clubFilter="all";query="";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s)s.value="";applySex();});
+el("seasonSel").addEventListener("change",e=>{season=e.target.value;yearFilter="all";clubFilter="all";query="";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s)s.value="";applySex();});
 
 boot();
 try{
