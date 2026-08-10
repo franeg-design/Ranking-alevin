@@ -14,7 +14,7 @@
 <link rel="icon" type="image/png" href="./icon-192.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
 :root{--bg:#eef6f8;--surface:#fff;--ink:#0b2a3a;--muted:#4e6d7c;--brand:#0e7c93;--brand-deep:#0b3d5c;
 --line:#d8e8ee;--chip:#e7f1f4;--gold:#e0ad3f;--silver:#a9b6bf;--bronze:#c07f43;--good:#0f9d6b;--warn:#61737f;--amber:#b26a00;
@@ -35,18 +35,29 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 /* Tres filas alineadas, cada una con su control pegado a la derecha:
    NATACIÓN → temporada · Ranking Álava → Alevín|Infantil · Piscina 25 m → Fem.|Masc. */
 .kickRow{display:flex;align-items:center;gap:8px;position:relative;z-index:1}
-/* ⚠️ «Natación» en MINÚSCULA, Space Grotesk 500 a 16px (Fran, 10-ago-2026, tras ver una muestra de
-   12 tipografías en la cabecera real). Antes era Inter 600 a 15px en MAYÚSCULA con tracking .14em y
-   una ola delante. Lo que cambió el aire no fue la familia —a 15px, en mayúscula y tan separada,
-   casi todas las palo seco se parecen— sino el tratamiento: minúscula y sin tracking.
+/* ⚠️ «Natación» en MINÚSCULA, Space Grotesk 700 a 19px, SIN ola (Fran, 10-ago-2026, tras ver una
+   muestra de 12 tipografías en la cabecera real). Antes era Inter 600 a 15px en MAYÚSCULA con
+   tracking .14em y una ola delante. Lo que cambió el aire no fue la familia —a 15px, en mayúscula y
+   tan separada, casi todas las palo seco se parecen— sino el tratamiento: minúscula y sin tracking.
+   Se probó el peso 500 y se cambió a 700 para no descargar una cara más.
+   ⚠️ NO DEVOLVER LA OLA. Se probó delante (original), se quitó, se puso detrás y se quitó otra vez.
+   Estado final: sin ola. Los 🌊 que quedan en el archivo son de Fondista y Especialistas.
+   ⚠️ Los 19px caben porque la palabra va en minúscula y sin tracking: pide ~88px de los 159 de
+   presupuesto. Los 23px que se rechazaron en su día lo fueron por ANCHO, y aquello era MAYÚSCULA
+   con tracking .14em y ola. Hoy el techo ya no es el ancho, es no competir con el título de 23px.
    ⚠️ NO REINTRODUCIR la mayúscula con tracking .14em ni los 23px (se probaron y se rechazaron: a
    23px había que bajar el tracking a .04em, meter la ola en un span de tamaño fijo y poner nowrap).
    ⚠️ Esta fila comparte línea con el selector de temporada; sobre 360px de pantalla quedan 320px
    útiles y el desplegable ocupa 153px, así que el presupuesto del texto es de 159px. Medido en
    móvil real: la versión actual pide 70px, la fila entera se queda en 231px. Antes: 117px y 286px.
-   ⚠️ El peso 500 hay que pedirlo en el `<link>` de Google Fonts (`Space+Grotesk:wght@500;600;700`);
-   antes solo se cargaban 600 y 700. Si alguien recorta esa petición, la palabra cae a otro peso. */
-.kicker{display:flex;align-items:center;gap:7px;flex:1 1 auto;min-width:0;font-family:'Space Grotesk',system-ui,sans-serif;font-size:16px;letter-spacing:.01em;opacity:.86;font-weight:500}
+   ⚠️ COSTE CERO en descarga: la 700 es una cara que la app ya bajaba, así que el kicker no añade
+   ningún woff2. Si algún día se vuelve al 500, HAY QUE pedirlo en el `<link>` o la palabra cae al
+   peso más cercano.
+   ⚠️ NO QUITAR el 600 de `Space+Grotesk` de la petición: lo usa `.bdgRank span` por HERENCIA (la
+   familia la declara `.bdgRank`, el peso lo pide el hijo). Se quitó por error el 10-ago-2026 y se
+   repuso; era el mismo fallo ya documentado el 31-jul-2026. Para saber si un peso sobra hay que
+   mirar los HIJOS de las reglas que declaran la familia, no solo esas reglas. */
+.kicker{display:flex;align-items:center;gap:7px;flex:1 1 auto;min-width:0;font-family:'Space Grotesk',system-ui,sans-serif;font-size:19px;letter-spacing:.01em;opacity:.86;font-weight:700}
 .titleRow{display:flex;align-items:center;gap:10px;margin:8px 0 2px;position:relative;z-index:1}
 .title{flex:0 1 auto;min-width:0;white-space:nowrap;font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:23px;line-height:1.06;margin:0;letter-spacing:-.01em}
 /* ⚠️ Los TRES controles de la columna derecha miden 30,5px: temporada, Alevín|Infantil y
