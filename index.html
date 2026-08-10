@@ -35,15 +35,29 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 /* Tres filas alineadas, cada una con su control pegado a la derecha:
    NATACIÓN → temporada · Ranking Álava → Alevín|Infantil · Piscina 25 m → Fem.|Masc. */
 .kickRow{display:flex;align-items:center;gap:8px;position:relative;z-index:1}
-.kicker{display:flex;align-items:center;gap:7px;flex:1 1 auto;min-width:0;font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.86;font-weight:600}
+/* ⚠️ «NATACIÓN» a 15px (Fran, 10-ago-2026). Se probó a 23px, los mismos que el título, y quedaba
+   DEMASIADO GRANDE: no reintroducir. A 15px sigue siendo una etiqueta y conserva su tracking de
+   .14em, que a 23px había que bajar a .04em para que la fila cupiera. Ojo si algún día se vuelve a
+   tocar: esta fila comparte línea con el selector de temporada, y sobre 360px de pantalla quedan
+   320px útiles. A 15px la fila pide 117px y con el desplegable de temporada suma 286px; a 23px
+   pedía 179px y se iba a 349px. */
+.kicker{display:flex;align-items:center;gap:7px;flex:1 1 auto;min-width:0;font-size:15px;letter-spacing:.14em;text-transform:uppercase;opacity:.86;font-weight:600}
 .titleRow{display:flex;align-items:center;gap:10px;margin:8px 0 2px;position:relative;z-index:1}
 .title{flex:0 1 auto;min-width:0;white-space:nowrap;font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:23px;line-height:1.06;margin:0;letter-spacing:-.01em}
-.seasonPill{flex:0 0 auto;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+/* ⚠️ Los TRES controles de la columna derecha miden 30,5px: temporada, Alevín|Infantil y
+   Fem.|Masc. (Fran, 10-ago-2026). La pastilla llega ahí con `padding:7px 12px`; el desplegable,
+   que reaprovecha esta clase, se ajusta aparte en `select.seasonSel`. Tocar uno = medir los tres. */
+.seasonPill{flex:0 0 auto;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;white-space:nowrap}
 .segSexH{display:inline-flex;flex:0 0 auto;margin-left:auto;position:relative;z-index:2;gap:4px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:3px}
 .segSexH button{display:inline-flex;align-items:center;gap:4px;border:none;background:transparent;color:rgba(255,255,255,.72);font-family:inherit;font-weight:700;font-size:12px;border-radius:999px;padding:4px 12px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
 .segSexH button.on{background:rgba(255,255,255,.9);color:#123a52}
 
-select.seasonSel{appearance:none;-webkit-appearance:none;padding:8px 30px 8px 14px;min-height:34px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer}
+/* ⚠️ Altura atada a la de `.segSexH` (Fran, 10-ago-2026): el desplegable de temporada tiene debajo,
+   en la misma columna derecha, Alevín|Infantil y Fem.|Masc., y los tres se leen como una pila. Los
+   dos de abajo miden 30,5px (línea de 12px + 4 de botón + 3 de contenedor + borde). Este tenía
+   `min-height:34px` y sobresalía 3,5px, y con 30px de padding derecho era además 8px más ancho de lo
+   necesario. Si se cambia el tamaño de uno, medir los tres. */
+select.seasonSel{appearance:none;-webkit-appearance:none;padding:7px 24px 7px 12px;min-height:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;cursor:pointer}
 .sub{font-size:13px;opacity:.9;flex:0 1 auto;min-width:0}
 .subRow{display:flex;align-items:center;gap:10px;position:relative;z-index:1;margin-top:2px}
 .clubsel{min-height:44px;width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:16px;background:var(--surface);font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px}
