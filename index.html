@@ -665,11 +665,11 @@ function fillCats(){
         +cs.map(c=>`<button data-c="${c}"${c===catHist?' class="on"':''}>${CAT_LAB[c]}</button>`).join("");}
   }
 }
-function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||catOf(r.anio,r.fecha)===catFilter)).map(claveEdad).filter(Boolean))].sort();const ys=(only&&only.length)?only.slice().sort():all;if(yearFilter!=="all"&&!ys.includes(yearFilter))yearFilter="all";/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
+function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||catOf(r.anio,r.fecha)===catFilter)).map(claveEdad).filter(Boolean))].sort();const ys=(only&&only.length)?only.slice().sort():all;yearFilter=yearFilter.filter(y=>ys.includes(y));/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
      de ser cierta: el botón absoluto pasa a llamarse "Todos". */
   const lab=isHist()?(catFilter==="all"?"Todas":"Todos"):((CAT_LAB[catFilter]||"Alevín")+(all.length?" "+all.map(y=>y.slice(2)).join("/"):""));
-  seg.innerHTML=`<button data-y="all"${yearFilter==="all"?' class="on"':''}>${lab}</button>`
-    +ys.map(y=>`<button data-y="${y}"${y===yearFilter?' class="on"':''}>${claveLab(y)}</button>`).join("");if(seg.classList){seg.classList.toggle("wide",!!(only&&only.length));
+  seg.innerHTML=`<button data-y="all"${yearAll()?' class="on"':''}>${lab}</button>`
+    +ys.map(y=>`<button data-y="${y}"${yearOn(y)?' class="on"':''}>${claveLab(y)}</button>`).join("");if(seg.classList){seg.classList.toggle("wide",!!(only&&only.length));
     /* Con 4 años o más (pasa en Histórico desde 2026/27) los botones dejan de repartirse a partes
        iguales y la fila se desliza en horizontal: a 13 px, cinco botones no caben en un móvil. */
     seg.classList.toggle("scr",ys.length>=4||(isHist()&&ys.length>=3));}}
@@ -744,7 +744,18 @@ const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo
 `;
 
 let ALLDSQ=[];
-let ALLRECS=[], RECORDS=[], BEFORE=[], MAXFECHA="", MINFECHA="", SEASONS=[], season="", sexFilter="F", view="marcas", yearFilter="all", catFilter="", catTemp="", catHist="all", clubFilter="all", finaN=3, query="", activePrueba="";
+/* ⚠️ `yearFilter` es una LISTA de claves, no una cadena. Lista vacía = "todas" (antes era el
+   centinela "all"). Se hizo lista para poder marcar VARIAS promociones a la vez en el Histórico
+   (Fran, ago-2026): "2013 + 2014" es un ranking conjunto que antes no existía.
+   ⚠️ Las claves NO son siempre años de nacimiento: dentro de una categoría del Histórico son
+   "1"/"2" (1.º y 2.º año), las mismas que devuelve `claveEdad`. Por eso se resetea al cambiar de
+   categoría o de temporada: no son intercambiables. */
+let ALLRECS=[], RECORDS=[], BEFORE=[], MAXFECHA="", MINFECHA="", SEASONS=[], season="", sexFilter="F", view="marcas", yearFilter=[], catFilter="", catTemp="", catHist="all", clubFilter="all", finaN=3, query="", activePrueba="";
+function yearAll(){return !yearFilter.length;}
+function yearOn(k){return yearFilter.indexOf(k)>=0;}
+/* La multiselección es SOLO del Histórico. En modo temporada hay dos años y marcarlos los dos
+   sería idéntico al botón "Alevín 13/14": no aporta nada y se comporta como siempre (uno u otro). */
+function multiYear(){return isHist();}
 const el=id=>document.getElementById(id);
 
 function splitLine(line){const o=[];let c="",q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){c+='"';i++;}else q=false;}else c+=ch;}else{if(ch==='"')q=true;else if(ch===","){o.push(c);c="";}else c+=ch;}}o.push(c);return o;}
@@ -2017,7 +2028,7 @@ function renderSummary(fecha){
   }
 }
 
-function poolRecs(recs){let out=recs;if(yearFilter!=="all")out=out.filter(r=>claveEdad(r)===yearFilter);if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
+function poolRecs(recs){let out=recs;if(!yearAll())out=out.filter(r=>yearOn(claveEdad(r)));if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
 // Clase de color por estilo (misma paleta que los chips y las tarjetas de ritmo).
 /* Clase de color por estilo. Única fuente de la paleta: antes esta tabla estaba copiada
    cuatro veces (aquí, dos veces como stCls y una como stKl) y cambiar un color obligaba a
@@ -2027,7 +2038,9 @@ function stKlass(p){const w=String(p).split(" ");return ({Libre:"st-l",Espalda:"
 function bestOf(recs,name,prueba){let b=null,bc=Infinity;for(const r of recs){if(r.nadadora===name&&r.prueba===prueba){const c=toCs(r.tiempo);if(c<bc){bc=c;b=r;}}}return b;}
 let RT_CACHE=new WeakMap();
 function rankTime(recs,prueba){
-  const k=sexFilter+"|"+catFilter+"|"+yearFilter+"|"+clubFilter+"|"+season+"|"+prueba;
+  /* ⚠️ La lista se ORDENA para la clave: marcar 2014 y luego 2013 da el mismo ranking que al revés,
+     y sin ordenar se guardarían dos entradas distintas para lo mismo. */
+  const k=sexFilter+"|"+catFilter+"|"+yearFilter.slice().sort().join("+")+"|"+clubFilter+"|"+season+"|"+prueba;
   let m=RT_CACHE.get(recs);if(!m){m=new Map();RT_CACHE.set(recs,m);}
   const hit=m.get(k);if(hit)return hit;
   const val=(function(){const rr=poolRecs(recs).filter(r=>r.prueba===prueba);const names=[...new Set(rr.map(r=>r.nadadora))];const arr=names.map(n=>{const b=bestOf(rr,n,prueba);return{name:n,prueba:prueba,club:b.club,anio:b.anio,cs:toCs(b.tiempo),tiempo:b.tiempo,fecha:b.fecha,competi:b.competi};});arr.sort((a,b)=>a.cs-b.cs||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.cs===arr[i-1].cs)?arr[i-1].rank:i+1;});return arr;})();
@@ -2385,8 +2398,11 @@ function render(){
    +"<div style='margin-top:7px'><span style='font-weight:700'>Dentro de una categoría</span> puedes separar por "
    +"<b>1.º año</b> y <b>2.º año</b>. Eso compara promociones distintas <b>a la misma edad</b>: en «Alevín · 1.º año» "
    +"están todos los que pasaron por su primer año alevín, nacieran cuando nacieran.</div>"
-   +"<div style='margin-top:7px'><span style='font-weight:700'>En «Todas»</span> los botones son <b>años de nacimiento</b>: "
-   +"la promoción entera con sus mejores marcas, haya cambiado de categoría o no.</div></div>"
+   +"<div style='margin-top:7px'><span style='font-weight:700'>En «Promoción»</span> los botones son <b>años de nacimiento</b>: "
+   +"la promoción entera con sus mejores marcas, haya cambiado de categoría o no.</div>"
+   +"<div style='margin-top:7px'><span style='font-weight:700'>Varias a la vez.</span> Aquí puedes marcar <b>más de un botón</b> "
+   +"y ver un ranking conjunto (por ejemplo <b>2013 + 2014</b>); se pulsa otra vez para quitarlo. El primero "
+   +"(<b>Todas</b> / <b>Todos</b>) va solo: al pulsarlo se apagan los demás, y si quitas el último vuelve él.</div></div>"
    +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'>"
    +"<span style='font-weight:700'>Qué no aparece.</span> Las <b>mínimas</b> se quedan fuera: van por categoría y año de "
    +"nacimiento y no significan nada cruzando temporadas. En <b>infantil</b> el análisis de ritmo muestra los parciales "
@@ -2488,9 +2504,9 @@ function renderClass(vw,N){
        insignias de sus DOS años de alevín, así que no basta con filtrar: hay que recontar sus
        medallas quedándose con las del año que se pide, y volver a ordenar. */
     const porOrden=isHist()&&catFilter!=="all";
-    if(yearFilter!=="all"&&porOrden){
+    if(!yearAll()&&porOrden){
       t=t.map(a=>{
-        const list=a.list.filter(x=>ordenDe(a.anio,x.fecha)===yearFilter);
+        const list=a.list.filter(x=>yearOn(ordenDe(a.anio,x.fecha)));
         if(!list.length)return null;
         const cats={mejor:[0,0,0],marcas:[0,0,0],prog:[0,0,0],forma:[0,0,0]};
         let g=0,s2=0,b=0;
@@ -2498,10 +2514,10 @@ function renderClass(vw,N){
         return Object.assign({},a,{list:list,cats:cats,g:g,s:s2,b:b,total:list.length});
       }).filter(Boolean).sort((x,y)=>y.g-x.g||y.s-x.s||y.b-x.b||x.name.localeCompare(y.name));
     }
-    else if(yearFilter!=="all")t=t.filter(a=>a.anio===yearFilter);
+    else if(!yearAll())t=t.filter(a=>yearOn(a.anio));
     if(clubFilter!=="all")t=t.filter(a=>a.club===clubFilter);
-    if(yearFilter!=="all"||clubFilter!=="all"){t=t.map(a=>Object.assign({},a));let rk=0,pg=null,ps=null,pb2=null;t.forEach((a,i)=>{if(a.g!==pg||a.s!==ps||a.b!==pb2){rk=i+1;pg=a.g;ps=a.s;pb2=a.b;}a.rank=rk;});}
-    body=!t.length?`<div class="empty">Aún no hay insignias${isHist()?"":" esta temporada"}${yearFilter!=="all"?" con este filtro":""}.</div>`:
+    if(!yearAll()||clubFilter!=="all"){t=t.map(a=>Object.assign({},a));let rk=0,pg=null,ps=null,pb2=null;t.forEach((a,i)=>{if(a.g!==pg||a.s!==ps||a.b!==pb2){rk=i+1;pg=a.g;ps=a.s;pb2=a.b;}a.rank=rk;});}
+    body=!t.length?`<div class="empty">Aún no hay insignias${isHist()?"":" esta temporada"}${!yearAll()?" con este filtro":""}.</div>`:
       `<div class="list">`+t.map(a=>{const m=medal(a.rank);
         return `<div class="row medrow" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${a.rank}</div></div><div class="mid"><div class="name" data-n="${esc(a.name)}">${esc(a.name)}</div><div class="club">${esc(a.club)} · ${esc(a.anio)}</div><div class="medcats">${[["Mejor del día","mejor"],["Marcas","marcas"],["Progresión","prog"],["Forma 🔥","forma"]].map(cc=>{const c=a.cats[cc[1]];if(!(c[0]+c[1]+c[2]))return "";return `<span class="mcn">${cc[0]}</span><span class="mcv">${c[0]?`<b><span class="me">🥇</span>${c[0]}</b>`:""}${c[1]?`<b><span class="me">🥈</span>${c[1]}</b>`:""}${c[2]?`<b><span class="me">🥉</span>${c[2]}</b>`:""}</span>`;}).join("")}</div></div><div class="right"><div class="medline">${a.g?`<span class="mdc"><span class="me">🥇</span>${a.g}</span>`:""}${a.s?`<span class="mdc"><span class="me">🥈</span>${a.s}</span>`:""}${a.b?`<span class="mdc"><span class="me">🥉</span>${a.b}</span>`:""}</div><div class="medtot">${a.total} insignia${a.total===1?"":"s"}</div></div></div>`;
       }).join("")+`</div>`;
@@ -2549,15 +2565,20 @@ function foundSwimmers(){
   return cand.filter(c=>{const hay=normName(c.name+" "+c.club);return qtok.every(t=>hay.includes(t));});
 }
 function renderBadges(vw,name){
-  const savedSex=sexFilter,savedRec=RECORDS,savedMax=MAXFECHA,savedClub=clubFilter,savedYear=yearFilter;
+  /* ⚠️ `.slice()`: `yearFilter` es una lista y se muta al alternar pastillas; guardar la referencia
+     dejaría el "saved" apuntando a la misma lista y no restauraría nada. */
+  const savedSex=sexFilter,savedRec=RECORDS,savedMax=MAXFECHA,savedClub=clubFilter,savedYear=yearFilter.slice();
   const SREC=scopeRecs();
   const own=(SREC.find(r=>r.nadadora===name)||{}).sexo||sexFilter;
   if(own!==sexFilter){sexFilter=own;RECORDS=SREC.filter(r=>r.sexo===sexFilter);MAXFECHA=RECORDS.reduce((m,r)=>r.fecha>m?r.fecha:m,RECORDS[0]?RECORDS[0].fecha:"");}
-  clubFilter="all";yearFilter="all";
+  clubFilter="all";yearFilter=[];
   const a=medalsOf(name);
   const rec0=RECORDS.find(r=>r.nadadora===name)||ALLRECS.find(r=>r.nadadora===name)||{};
   const tot=medalTable().length;
-  const ySel=(savedYear!=="all"&&savedYear===rec0.anio)?savedYear:"all";
+  /* El "Nº del medallero de su año" solo tiene sentido con UNA promoción marcada y siendo la suya:
+     con dos marcadas el medallero que hay detrás está mezclado, y dar el puesto dentro de una sola
+     sería un número que no aparece en ninguna pantalla. */
+  const ySel=(savedYear.length===1&&savedYear[0]===rec0.anio)?savedYear[0]:"all";
   let bRank=a?a.rank:0,bTot=tot;
   if(a&&ySel!=="all"){const sub=medalTable().filter(x=>x.anio===ySel);let rk=0,pg=null,ps=null,pb2=null;sub.forEach((x,i)=>{if(x.g!==pg||x.s!==ps||x.b!==pb2){rk=i+1;pg=x.g;ps=x.s;pb2=x.b;}if(x.name===name)bRank=rk;});bTot=sub.length;}
   const CAT={mejor:"Mejor "+(sexFilter==="M"?"nadador":"nadadora")+" del día",marcas:"Mejores marcas del día",prog:"Mayores progresiones del día",forma:"En forma 🔥"};
@@ -2772,7 +2793,7 @@ function cambiarCat(c,hist){
      limita a cambiar la variable y llamar a applySex().
      Ahora se conserva lo que se estaba viendo y solo se suelta si deja de existir en el nuevo
      ámbito (una competición donde esa categoría no nadó, o una ficha que ya no está). */
-  yearFilter="all";
+  yearFilter=[];
   const fechaPrev=sumFecha,compPrev=compsFor;
   applySex();
   if(fechaPrev&&summaryFechas().indexOf(fechaPrev)<0){sumFecha=null;render();}
@@ -2780,10 +2801,21 @@ function cambiarCat(c,hist){
 }
 el("segCatH").addEventListener("click",e=>{const b=e.target.closest("button");if(b)cambiarCat(b.dataset.c,false);});
 el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(b)cambiarCat(b.dataset.c,true);});
-el("segYear").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;yearFilter=b.dataset.y;el("segYear").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
+/* Reglas del segmentado de años (Fran, ago-2026):
+   · "Todas" apaga las demás · en Histórico cada pastilla alterna (se pulsa otra vez para quitarla)
+   · quitar la última equivale a "Todas": lista vacía, nunca un ranking en blanco
+   · en modo temporada sigue siendo excluyente, como toda la vida.
+   ⚠️ Se repintan las clases a mano, no con fillYears(): en el ranking `render()` NO reconstruye este
+   segmentado (solo lo hace con una ficha abierta), y rehacer el innerHTML aquí haría parpadear la fila. */
+el("segYear").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;const y=b.dataset.y;
+  if(y==="all")yearFilter=[];
+  else if(!multiYear())yearFilter=[y];
+  else{const i=yearFilter.indexOf(y);if(i>=0)yearFilter.splice(i,1);else yearFilter.push(y);}
+  el("segYear").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.y==="all"?yearAll():yearOn(x.dataset.y)));
+  render();});
 el("segFina").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;finaN=+b.dataset.n;el("segFina").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));render();});
 el("clubSel").addEventListener("change",e=>{clubFilter=e.target.value;render();});
-el("seasonSel").addEventListener("change",e=>{season=e.target.value;yearFilter="all";clubFilter="all";query="";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s)s.value="";applySex();});
+el("seasonSel").addEventListener("change",e=>{season=e.target.value;yearFilter=[];clubFilter="all";query="";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s)s.value="";applySex();});
 
 boot();
 try{
