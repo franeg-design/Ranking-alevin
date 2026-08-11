@@ -1360,7 +1360,15 @@ let PC_IMD={200:[.9,1.9,2.1],400:[.7,1.7,2.7]};
    sigue puntuando con las bandas del año anterior hasta que se calibre la suya, que es lo correcto
    —con dos competiciones no hay muestra— y no deja ningún hueco sin tabla. */
 const PC_TABLES={"2025/26":{PC_SAL,PC_CRU,PC_FIN,PC_TRA,PC_100,PC_200,PC_200C,PC_200F,PC_CV,PC_DER,PC_IM,PC_IM4,PC_IMD}};
-function applySeasonPace(sea){
+/* TABLAS DE RITMO POR CATEGORÍA (11-ago-2026). Las de arriba son ALEVINES. Infantil tiene las
+   suyas, calibradas con el MISMO método (mejor carrera de cada nadador/a → mitad con mejor marca →
+   percentiles; ver §4.15) sobre sus 862 carreras con parciales cada 50.
+   ⚠️ Solo van las celdas con n>=12. Lo que no esté aquí NO hereda la banda alevín: la prueba se
+   queda sin nota (`pcCal`). Prestar la banda alevín seria descalibrar, no aproximar — en PC_FIN
+   Libre el alevin cierra mas rapido que su crucero (-1,5) y el infantil mas lento (+0,3).
+   ⚠️ ALEVÍN NO SE TOCA: sus tablas y sus notas publicadas quedan exactamente como estaban. */
+const PC_CAT={infantil:{PC_SAL:{"100 Libre":[5.1,6.4,3.6,8.8,2,10],"100 Espalda":[3.7,5.3,1.8,8.5,1.6,11.1],"100 Braza":[2.7,4,0.9,5.7,0.7,8],"100 Mariposa":[3.8,7.4,2.7,10.8,1.2,12.9],"200 Libre":[9.9,10.8,7.3,13.2,6.9,19.8],"400 Libre":[13.7,16.3,10,17.9,7.5,24.8]},PC_100:{Libre:[6.5,7.9,4.9,9.1,3.8,9.8],Espalda:[5.1,6.4,3.8,7.3,3,9],Braza:[10.1,11.7,9,12.9,8.7,14.7],Mariposa:[15.4,17.6,11.5,20,10.2,22.9]},PC_CRU:{Libre:[0.7,2,2.3],Espalda:[1,2.4,2.6],Braza:[1.2,1.7,1.7]},PC_FIN:{Libre:[0.3,1.7,2.9]},PC_200:{Libre:[4.9,6.3,3.6,8.4,1.9,9.2]},PC_TRA:{"200 Libre":[10.8,11.4,10.3,12.5,7.6,14],"400 Libre":[12.2,13.8,9.4,15.1,8.7,16.2]},PC_CV:{400:[1.3,2.5,3.2]},PC_IMD:{200:[1.5,1.8,2.3]},PC_DER:[0.4,1,1.4],PC_IM:{Mariposa:22.1,Espalda:25.9,Braza:29.8,Libre:22.8}}};
+function applySeasonPace(sea,cat){
   /* `sea` permite pedir las bandas de una temporada concreta: en Histórico cada carrera se analiza
      con las suyas, no con las vigentes. Sin argumento, las de `season` (y en Histórico, las últimas). */
   const s=sea||(isHist()?"":season);
@@ -1372,6 +1380,28 @@ function applySeasonPace(sea){
   PC_SAL=t.PC_SAL; PC_CRU=t.PC_CRU; PC_FIN=t.PC_FIN; PC_TRA=t.PC_TRA;
   PC_100=t.PC_100; PC_200=t.PC_200; PC_200C=t.PC_200C; PC_200F=t.PC_200F;
   PC_CV=t.PC_CV; PC_DER=t.PC_DER; PC_IM=t.PC_IM; PC_IM4=t.PC_IM4; PC_IMD=t.PC_IMD;
+  /* La categoría se superpone DESPUÉS de la temporada y solo donde tiene tabla propia. */
+  const c=cat&&PC_CAT[cat];
+  if(c){
+    if(c.PC_SAL)PC_SAL=c.PC_SAL; if(c.PC_CRU)PC_CRU=c.PC_CRU; if(c.PC_FIN)PC_FIN=c.PC_FIN;
+    if(c.PC_TRA)PC_TRA=c.PC_TRA; if(c.PC_100)PC_100=c.PC_100; if(c.PC_200)PC_200=c.PC_200;
+    if(c.PC_CV)PC_CV=c.PC_CV; if(c.PC_DER)PC_DER=c.PC_DER; if(c.PC_IM)PC_IM=c.PC_IM;
+    if(c.PC_IM4)PC_IM4=c.PC_IM4; if(c.PC_IMD)PC_IMD=c.PC_IMD;
+  }
+}
+/* ¿Tiene esta prueba TODAS las tablas que necesita su fórmula? Se pregunta a las tablas ya
+   resueltas, no a una lista escrita a mano: al añadir una celda nueva a PC_CAT la prueba se
+   enciende sola, y si algún día se quita, se apaga sola. */
+function pcCal(prueba){
+  const est=prueba.split(" ")[1],dist=parseInt(prueba,10)||0;
+  if(dist===50||est==="Estilos"&&dist===100)return true;   // no se valoran nunca
+  if(est==="Estilos"){
+    const R=dist===200?PC_IM:PC_IM4;
+    return !!(R&&R.Mariposa&&R.Espalda&&R.Braza&&R.Libre&&PC_IMD&&PC_IMD[dist]);
+  }
+  if(dist===100)return !!(PC_100||{})[est];
+  if(dist===200)return !!((PC_200||{})[est]&&(PC_CRU||{})[est]&&(PC_FIN||{})[est]&&(PC_TRA||{})[prueba]);
+  return !!((PC_CV||{})[dist]&&PC_DER&&(PC_TRA||{})[prueba]);
 }
 const IM_LEGS=["Mariposa","Espalda","Braza","Libre"];
 function pcRow(met,tiempo,nom,n,w){
@@ -1556,13 +1586,15 @@ const PC_TFINF=[" Te quedaba depósito para el final.",
    de entrar y las devuelve al salir pase lo que pase: `pcAnalyseIn` tiene varias salidas y dejar el
    estado global tocado contaminaría lo siguiente que se pinte. */
 function pcAnalyse(prueba,parc,nadadora,fecha){
-  /* ⚠️ Las 13 tablas `PC_*` están calibradas con marcas ALEVINES de 25 m. Aplicarlas a infantil
-     daría notas descalibradas: se muestran los parciales sin valorar hasta calibrar aparte al
-     cierre de la primera temporada infantil (MANUAL §4.2). NO quitar esto sin esa calibración. */
-  if(catOf(anioDe(nadadora),fecha)==="infantil")return pcSoloParciales(prueba,parc);
-  if(!isHist())return pcAnalyseIn(prueba,parc,nadadora,fecha);
-  applySeasonPace(seasonOf(fecha));
-  try{return pcAnalyseIn(prueba,parc,nadadora,fecha);}finally{applySeasonPace();}
+  /* ⚠️ Cada carrera se juzga con las bandas de SU temporada y de SU categoría. El bloqueo total de
+     infantil (ago-2026) se levanta el 11-ago-2026 SOLO donde hay tabla propia calibrada: lo que no
+     la tenga sigue mostrando los parciales sin nota. Ver §4.15. */
+  const cat=catOf(anioDe(nadadora),fecha);
+  applySeasonPace(seasonOf(fecha),cat);
+  try{
+    if(!pcCal(prueba))return pcSoloParciales(prueba,parc);
+    return pcAnalyseIn(prueba,parc,nadadora,fecha);
+  }finally{applySeasonPace();}
 }
 function pcSoloParciales(prueba,parc){
   const dist=parseInt(prueba,10)||0;
