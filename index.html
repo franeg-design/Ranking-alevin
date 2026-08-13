@@ -1245,6 +1245,7 @@ function bestShape(nad,prueba,fecha){
     ALLRECS.forEach(r=>{
       const p=String(r.prueba);
       if(p.indexOf("100 ")!==0||p.indexOf("Estilos")>=0)return;
+      if(es50(r.competi))return;   /* referencia solo de piscina corta, ver §4.22 */
       const v=String(r.parciales||"").split(";").map(x=>x.trim()).filter(Boolean);
       if(v.length!==2)return;
       const a=toCs(v[0]),b=toCs(v[1]);
@@ -1326,7 +1327,12 @@ function best50E(nad,est,fecha){
        salía con 0,0%, leído como salida suicida). No se arregla restringiendo el suelo a quien ya
        tiene un 50 suelto: la circularidad sigue, solo se disfraza. Movía 89 carreras >=5 puntos
        para corregir 22. Volver a intentarlo solo si se recalibra `PC_SAL` sobre la escala nueva. */
-    ALLRECS.forEach(r=>{if(String(r.prueba).indexOf("50 ")!==0)return;const k=r.nadadora+"|"+r.prueba.split(" ")[1];(_B50[k]=_B50[k]||[]).push([r.fecha,toCs(r.tiempo),0,null]);});
+    /* ⚠️ Las tres referencias del motor (_B50, _TPL, _T1) SE SALTAN las marcas de piscina larga.
+     Si no, una carrera de 25 m puede acabar juzgada contra una referencia de 50 m. Hoy pasaba
+     en un caso real (el 100 Braza de Daquanno del 14-jun tomaba la plantilla del Getxo), y
+     pasaba poco solo porque en larga se nada más lento y casi nunca es la mejor marca. Es
+     casualidad, no un diseño: el filtro va explícito. */
+    ALLRECS.forEach(r=>{if(String(r.prueba).indexOf("50 ")!==0||es50(r.competi))return;const k=r.nadadora+"|"+r.prueba.split(" ")[1];(_B50[k]=_B50[k]||[]).push([r.fecha,toCs(r.tiempo),0,null]);});
     /* e[2] = mejor marca hasta esa fecha · e[3] = FECHA de esa mejor marca (ago-2026). La fecha no
        cuesta ninguna pasada extra: se rellena en el mismo recorrido que ya calculaba el mínimo. */
     Object.keys(_B50).forEach(k=>{const a=_B50[k];a.sort((x,y)=>x[0]<y[0]?-1:(x[0]>y[0]?1:0));let m=Infinity,mf=null;a.forEach(e=>{if(e[1]<m){m=e[1];mf=e[0];}e[2]=m;e[3]=mf;});});
@@ -1347,6 +1353,7 @@ function _t1Init(){
   ALLRECS.forEach(r=>{
     const est=String(r.prueba).split(" ").slice(1).join(" ");
     if(!est||est==="Estilos")return;
+    if(es50(r.competi))return;   /* referencia solo de piscina corta, ver §4.22 */
     const dist=parseInt(r.prueba,10);
     if(!dist||dist<100)return;
     const v=String(r.parciales||"").split(";").map(s=>s.trim()).filter(Boolean);
@@ -1535,7 +1542,9 @@ const PC_50_U=2.0;
    marca en el 79% de los casos y un "Ritmo óptimo" en el 78%: decir "gracias a tu buena gestión
    has bajado marca" sería falso. Lo único que se sostiene es que desfondarse sí cuesta crono
    (58% frente a ~78%), y eso ya lo dice la propia nota. */
-function pc50Txt(prueba,tiempo,nadadora,fecha){
+/* ⚠️ Mismo motivo que pcAnalyse: el comentario compara contra la mejor marca del nadador y esa
+   comparación no vale cruzando piscinas. Sin comentario en carreras largas. */
+function pc50Txt(prueba,tiempo,nadadora,fecha,competi){if(es50(competi))return "";
   if(prueba.indexOf("50 ")!==0&&!/^(100|200|400|800) /.test(prueba))return "";
   const t=toCs(tiempo);
   if(!isFinite(t)||t<=0)return "";
@@ -1553,7 +1562,7 @@ function pc50Txt(prueba,tiempo,nadadora,fecha){
   if(d<PC_50_U)return "Casi: a "+dif+" de tu mejor marca ("+fmtClock(m)+"). La tienes al alcance.";
   return dif+" más lento que tu mejor marca ("+fmtClock(m)+")."+(prueba.indexOf("50 ")===0?" En un 50 la salida y el viraje pesan muchísimo: es donde más rápido se recupera.":"");
 }
-function pcPrevTxt(prueba,parciales,nadadora,fecha){
+function pcPrevTxt(prueba,parciales,nadadora,fecha,competi){if(es50(competi))return "";
   const tpl=bestShape(nadadora,prueba,fecha);
   if(tpl==null)return "";
   const v=String(parciales||"").split(";").map(x=>x.trim()).filter(Boolean);
@@ -1641,10 +1650,14 @@ const PC_TFINF=[" Te quedaba depósito para el final.",
 /* En Histórico cada carrera se juzga con las bandas de SU temporada. El envoltorio las pone antes
    de entrar y las devuelve al salir pase lo que pase: `pcAnalyseIn` tiene varias salidas y dejar el
    estado global tocado contaminaría lo siguiente que se pinte. */
-function pcAnalyse(prueba,parc,nadadora,fecha){
+function pcAnalyse(prueba,parc,nadadora,fecha,competi){
   /* ⚠️ Cada carrera se juzga con las bandas de SU temporada y de SU categoría. El bloqueo total de
      infantil (ago-2026) se levanta el 11-ago-2026 SOLO donde hay tabla propia calibrada: lo que no
-     la tenga sigue mostrando los parciales sin nota. Ver §4.15. */
+     la tenga sigue mostrando los parciales sin nota. Ver §4.15.
+     ⚠️ Y NUNCA se puntúa una carrera nadada en piscina de 50 m: las once tablas están calibradas
+     sobre carreras de 25 m y la forma de la carrera es otra (un 200 largo tiene 3 virajes en vez
+     de 7). Se enseñan los parciales y nada más. Ver §4.22. */
+  if(es50(competi))return pcSoloParciales(prueba,parc);
   const cat=catOf(anioDe(nadadora),fecha);
   applySeasonPace(seasonOf(fecha),cat);
   try{
@@ -2092,18 +2105,18 @@ function fichCompCard(name,FE){
   let h=`<div class="ccCard"><div class="ccHead">${esc(comp)} · ${fmtDate(jorD(FE))}</div>`;
   h+=`<div class="pcList">`;
   sw.forEach(r=>{
-    const an=pcAnalyse(r.prueba,r.parciales,r.nadadora,r.fecha);
+    const an=pcAnalyse(r.prueba,r.parciales,r.nadadora,r.fecha,r.competi);
     const badge=an?`<span class="pcV pcV-${an.gkey}">${an.lab}${an.score!=null?` · ${an.score}`:""}</span>`:"";
     let body;
     if(!an){
-      const c50=pc50Txt(r.prueba,r.tiempo,r.nadadora,r.fecha);
+      const c50=pc50Txt(r.prueba,r.tiempo,r.nadadora,r.fecha,r.competi);
       body=c50?`<div class="pcPrev">${c50}</div>`:`<div class="pcnp">sin parciales</div>`;
     }
     else{
-      const cM=pc50Txt(r.prueba,r.tiempo,r.nadadora,r.fecha);
+      const cM=pc50Txt(r.prueba,r.tiempo,r.nadadora,r.fecha,r.competi);
       body=(cM?`<div class="pcPrev">${cM}</div>`:"")+`<div class="pcBars">${an.rows.join("")}</div>`;
       if(an.notes.length)body+=`<div class="pcNotes">${an.notes.map(n=>`<div class="pcN pcN-${n.k}">${n.m?`<span class="pcNm">${n.m}</span>`:""}${n.t}</div>`).join("")}</div>`;
-      const prev=pcPrevTxt(r.prueba,r.parciales,r.nadadora,r.fecha);
+      const prev=pcPrevTxt(r.prueba,r.parciales,r.nadadora,r.fecha,r.competi);
       if(prev)body+=`<div class="pcPrev">${prev}</div>`;
       if(an.glob)body+=`<div class="pcGlob pcN-${an.gkey}"><b>Valoración:</b> ${an.glob}</div>`;
     }
