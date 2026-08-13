@@ -147,6 +147,9 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:7px 24px 7px 12
     /* Distintivo de piscina larga. Mismo molde que .mbEH/.mbESP, en gris apagado: informa,
        no alerta. Solo aparece en filas de UNA marca, nunca sobre una suma de varias. */
     .mb50{color:var(--muted);border:1px solid var(--line);margin-left:0;margin-right:2px}
+    .pis50{display:inline-block;margin-left:7px;padding:1px 6px;border:1px solid var(--line);border-radius:6px;
+      font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+      color:var(--muted);vertical-align:2px;line-height:1.6;white-space:nowrap}
     .mmin i.mp50{margin-left:2px;color:var(--muted)}
 .club{font-size:12px;color:var(--muted);margin-top:2px}
 .mmpPrev{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3;white-space:nowrap}
@@ -2140,7 +2143,7 @@ function renderSummary(fecha){
       const m=minDe(pair[1],r);if(!m)return;
       if(cs>toCs(m))return;
       const antes=RECORDS.filter(x=>x.nadadora===r.nadadora&&x.prueba===r.prueba&&x.fecha<FD);
-      const rt=antes.length?bestRoute(r.nadadora,r.prueba,pair[1],antes):null;
+      const rt=antes.length?minRow(pair[1],marcaFila(r.nadadora,r.prueba,antes)):null;
       if(!rt||!rt.got)newmin.push({n:shortName(r.nadadora),p:r.prueba,t:pair[0]});});
   });
   bests.sort((a,b)=>b.f-a.f);gains.sort((a,b)=>b.g-a.g);
@@ -2230,22 +2233,24 @@ function posTag(cur,prevMap){if(!(cur.name in prevMap))return bestBefore(cur.nam
 function medal(rank){if(rank===1)return{rail:"var(--gold)",bg:"var(--gold)",ink:"#3b2a06"};if(rank===2)return{rail:"var(--silver)",bg:"var(--silver)",ink:"#20262b"};if(rank===3)return{rail:"var(--bronze)",bg:"var(--bronze)",ink:"#2e1808"};return{rail:"transparent",bg:"var(--chip)",ink:"var(--muted)"};}
 function gapTag(rec,par,lab,full){
   const nm=rec.name||rec.nadadora;
-  const rt=bestRoute(nm,rec.prueba,par);
+  const rt=minRow(par,marcaFila(nm,rec.prueba));
   const m=rt?rt.min:null;
   if(full){
+    /* Sin "50 m" ni "con X" dentro de la pastilla: la piscina la dice el rótulo de la cabecera
+       y el tiempo es el de la propia fila, así que la línea vuelve a leerse sola. */
     const L=`<span class="mlab">${lab}</span>`;
     if(!m)return`${L}<span class="tag na">sin mínima</span>`;
-    /* Si la vía no es la marca que la fila enseña arriba, hay que decir CON CUÁL. Sin esto la
-       línea ponía "mín. 29.00 −0.14" al lado de un 28.06 y los números no cuadraban a la vista. */
-    const mejor=bestOf(RECORDS,nm,rec.prueba);
-    const otra=(mejor&&rt.rec!==mejor)?`<i class="mp50">con ${esc(rt.rec.tiempo)}</i>`:"";
-    const mt=`<span class="mmin"><i>mín.</i><span class="mono">${esc(m)}</span>${rt.largo?'<i class="mp50">50 m</i>':""}${otra}</span>`;
+    const mt=`<span class="mmin"><i>mín.</i><span class="mono">${esc(m)}</span></span>`;
     const d=rt.cs-rt.mc;
     return d<=0?`${L}${mt}<span class="tag ok mono">−${fmtClock(-d)}</span>`
                :`${L}${mt}<span class="tag no mono">+${fmtClock(d)}</span>`;}
   // sin ✓: el verde de .tag.ok ya dice que está conseguida, y así los números
   // de EH y ESP quedan alineados sin necesidad de reservar carril para nada.
-  const black='<b style="color:#0b2a3a;font-weight:700">'+lab+'</b>'+(rt&&rt.largo?p50Pill():"");
+  /* En el ranking no hay rótulo ni cabe el tiempo: si la fila usa una marca distinta a la que se
+     ve (14 filas en toda la app), se marca con la pastilla corta para que el número no aparezca
+     de la nada. Aquí la mínima no se enseña, así que no hay nada que se contradiga. */
+  const otra=rt&&rt.rec&&rt.rec!==bestOf(RECORDS,nm,rec.prueba);
+  const black='<b style="color:#0b2a3a;font-weight:700">'+lab+'</b>'+(otra?p50Pill():"");
   if(!m)return`<span class="tag na">${black} —</span>`;
   const dd=rt.cs-rt.mc;
   if(dd<=0)return`<span class="tag ok">${black} −${fmtClock(Math.abs(dd))}</span>`;
@@ -2260,9 +2265,9 @@ function newMin(rec,par){if(!minsOn()||!hasMin(rec,par))return false;
   const nm=rec.name||rec.nadadora;
   const antes=RECORDS.filter(r=>r.nadadora===nm&&r.prueba===rec.prueba&&r.fecha<MAXFECHA);
   if(!antes.length)return true;
-  const rt=bestRoute(nm,rec.prueba,par,antes);return !(rt&&rt.got);}
+  const rt=minRow(par,marcaFila(nm,rec.prueba,antes));return !(rt&&rt.got);}
 function hasMin(rec,par){const nm=rec.name||rec.nadadora;
-  const rt=bestRoute(nm,rec.prueba,par);return !!(rt&&rt.got);}
+  const rt=minRow(par,marcaFila(nm,rec.prueba));return !!(rt&&rt.got);}
 /* ===== MINIMAS POR PISCINA =====================================================
    `par` es SIEMPRE [tabla25, tabla50]. minTbl() elige por la competicion de la marca.
    Si la celda larga no existe, cae a la de 25 m: preferimos comportarnos como antes
@@ -2276,33 +2281,65 @@ function minDe(par,rec){const tb=minTbl(par,rec)[sexFilter]||{};
 /* MEJOR VIA hacia una minima: de todas las marcas de esa prueba, la que menos lejos queda
    del liston de SU piscina. No es la marca mas rapida: un 28.86 en larga puede estar mas
    cerca de la minima que un 28.06 en corta, porque el liston largo es otro. */
-function bestRoute(name,prueba,par,recs){
-  const src=recs||RECORDS;let best=null;
-  for(const r of src){if(r.nadadora!==name||r.prueba!==prueba)continue;
-    const m=minDe(par,r);if(!m)continue;
-    const cs=toCs(r.tiempo),mc=toCs(m),rel=(cs-mc)/mc;
-    if(!best||rel<best.rel)best={rec:r,min:m,cs:cs,mc:mc,rel:rel,got:cs<=mc,largo:es50(r.competi)};}
-  return best;}
+/* ===== UNA SOLA MARCA POR FILA (decisión de Fran, 13-ago-2026) ==================
+   La fila de Mínimas enseña SIEMPRE una única marca, y todo —tiempo grande, fecha, puntos,
+   las dos líneas de mínima y las dos barras— sale de ella. Regla:
+
+     · por defecto, su mejor marca;
+     · si la mejor NO da la mínima y su mejor marca de piscina larga SÍ, la fila entera
+       pasa a la de larga y se rotula «Piscina 50 m» junto al nombre de la prueba.
+
+   ⚠️ NO volver a la versión anterior, que elegía una "vía" distinta para cada línea y añadía
+   "con 28.86" dentro de la pastilla de la mínima. Era correcta pero ilegible: la fila enseñaba
+   un tiempo arriba y las líneas hablaban de otro. Esta regla toca 14 filas en vez de 183 líneas
+   y no necesita explicar nada dentro de la línea.
+   ⚠️ Comprobado que el cambio nunca PIERDE la otra mínima (0 casos sobre 1.435 filas): si algún
+   día apareciera uno, habría que decidir cuál de las dos manda, y hoy esa decisión no existe. */
+function marcaFila(name,prueba,recs){
+  const src=recs||RECORDS;
+  const b=bestOf(src,name,prueba);if(!b)return null;
+  const largas=src.filter(r=>r.nadadora===name&&r.prueba===prueba&&es50(r.competi));
+  if(!largas.length)return b;
+  let b50=largas[0];for(const r of largas)if(toCs(r.tiempo)<toCs(b50.tiempo))b50=r;
+  if(b50===b)return b;
+  const da=(r,par)=>{const m=minDe(par,r);return !!(m&&toCs(r.tiempo)<=toCs(m));};
+  const desbloquea=(par)=>da(b50,par)&&!da(b,par);
+  return (desbloquea(PAR_EH)||desbloquea(PAR_ESP))?b50:b;}
+/* Datos de una línea de mínima PARA LA MARCA DE LA FILA. Nada de vías. */
+function minRow(par,rec){
+  if(!rec)return null;
+  const m=minDe(par,rec);if(!m)return null;
+  const cs=toCs(rec.tiempo),mc=toCs(m);
+  return{rec:rec,min:m,cs:cs,mc:mc,got:cs<=mc,largo:es50(rec.competi)};}
+/* Rótulo de piscina larga. Junto al NOMBRE DE LA PRUEBA, no junto a los puntos: ahí hay sitio
+   para escribirlo entero y se entiende que califica a TODA la fila, no solo a la cifra que
+   tenga al lado. La pastilla corta `.mb50` se queda para el ranking, donde no cabe. */
 function p50Pill(){return '<span class="mb mb50">50m</span>';}
+function pisPill(){return '<span class="pis50">Piscina 50 m</span>';}
 function hasMinCs(cs,prueba,anio,tbl){const tb=tbl[sexFilter]||{};const m=tb[prueba]&&tb[prueba][anio];if(!m)return false;return cs-toCs(m)<=0;}
 function minsList(name){const esp=[],eh=[];if(!minsOn())return{esp:esp,eh:eh};
   PRUEBA_ORDER.forEach(p=>{if(!bestOf(RECORDS,name,p))return;
-    const rE=bestRoute(name,p,PAR_ESP);if(rE&&rE.got)esp.push(abbrev(p));
-    const rH=bestRoute(name,p,PAR_EH);if(rH&&rH.got)eh.push(abbrev(p));});
+    const mf=marcaFila(name,p);
+    const rE=minRow(PAR_ESP,mf);if(rE&&rE.got)esp.push(abbrev(p));
+    const rH=minRow(PAR_EH,mf);if(rH&&rH.got)eh.push(abbrev(p));});
   return{esp:esp,eh:eh};}
 function goalPill(name){
   if(!minsOn())return "";
   const cand=[];
   PRUEBA_ORDER.forEach(p=>{if(!bestOf(RECORDS,name,p))return;
-    [["EH",PAR_EH],["ESP",PAR_ESP]].forEach(pair=>{const rt=bestRoute(name,p,pair[1]);
-      if(rt&&!rt.got)cand.push({t:pair[0],p:p,d:rt.cs-rt.mc,rel:rt.rel,largo:rt.largo});});
+    const mf=marcaFila(name,p);
+    [["EH",PAR_EH],["ESP",PAR_ESP]].forEach(pair=>{const rt=minRow(pair[1],mf);
+      if(rt&&!rt.got)cand.push({t:pair[0],p:p,d:rt.cs-rt.mc,rel:(rt.cs-rt.mc)/rt.mc,largo:rt.largo});});
   });
   if(!cand.length)return"";
   cand.sort((a,b)=>a.rel-b.rel);
   const hot=cand.filter(x=>x.rel<=0.02).slice(0,3);
-  if(hot.length)return `<div class="goalStrip hot">🎯 A tiro: ${hot.map(x=>x.t+" "+abbrev(x.p)+" (a "+fmtClock(x.d)+")").join(" · ")}</div>`;
+  /* El "(a X)" sale de la mejor vía, que puede ser una marca de piscina larga. Sin decirlo, el
+     número no se puede reconstruir desde la marca que se ve en la fila de esa prueba. */
+  const gp=x=>x.t+" "+abbrev(x.p)+" (a "+fmtClock(x.d)+(x.largo?" en 50 m":"")+")";
+  if(hot.length)return `<div class="goalStrip hot">🎯 A tiro: ${hot.map(gp).join(" · ")}</div>`;
   const c=cand[0];
-  return `<div class="goalStrip">🎯 Objetivo más cercano: ${c.t} ${abbrev(c.p)} (a ${fmtClock(c.d)})</div>`;
+  return `<div class="goalStrip">🎯 Objetivo más cercano: ${gp(c)}</div>`;
 }
 function profileStat(name){
   if(view!=="minimas")return"";
@@ -2905,9 +2942,9 @@ function renderProfile(vw){
         if(new Set(sw.map(r=>r.fecha)).size>1&&gain>0)ps+=`<div class="pstat pgain"><span class="psL">Progreso</span><span class="psV mono">−${fmtGap(gain)}</span></div>`;
         if(ps)detail=`<div class="pstats">${ps}</div>`;
       }else{
-        /* La barra mide la MEJOR VIA, no la mejor marca: si no, un ✓ verde podia salir encima
-           de un "+0.46" rojo cuando la minima se logro en la otra piscina. */
-        const mline=(tbl,lab)=>{const rt=bestRoute(name,p,tbl);if(!rt)return "";
+        /* Una sola marca manda en toda la fila: tiempo, fecha, puntos, líneas y barras. */
+        const mf=marcaFila(name,p)||b;
+        const mline=(tbl,lab)=>{const rt=minRow(tbl,mf);if(!rt)return "";
           const m=rt.min,mc=rt.mc,got=rt.got,pct=got?100:Math.max(3,Math.min(99,mc/rt.cs*100));
           const bg=got?"":`background-size:${Math.round(100/pct*100)}% 100%;`;
           const ck=`${sexFilter}|${name}|${p}|${lab}`;
@@ -2929,9 +2966,14 @@ function renderProfile(vw){
         if(N>=5&&pct>=80){const bd=pct>=95?['<span class="emo eo">🫍</span>',"TOP 5%","pb5"]:(pct>=90?['<span class="emo">🦈</span>',"TOP 10%","pb10"]:['<span class="emo">🐬</span>',"TOP 20%","pb20"]);pctBadge=`<div class="pctline">${bd[0]}<span class="pctb ${bd[2]}">${bd[1]}</span></div>`;}
       }
       const anim=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
-      if(view==="minimas")
-        return `<div class="pRow tog mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${es50(b.competi)?p50Pill()+" ":""}${f} pts</div></div><div class="time mono">${dstr}${esc(b.tiempo)}</div></div>${detail}</div>`+histBox(name,p);
-      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${es50(b.competi)?p50Pill()+" ":""}${f} pts${pctTxt}</div>${detail}</div><div class="right"><div class="time mono">${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}${pctBadge}</div></div>`+histBox(name,p);
+      if(view==="minimas"){
+        /* La fila entera habla de la marca elegida por marcaFila(): tiempo, fecha y puntos
+           incluidos. `Nº` no: ese es su puesto en el ranking y no depende de esta fila. */
+        const mf=marcaFila(name,p)||b;
+        const fMF=fina(p,toCs(mf.tiempo),mf.fecha);
+        const dMF=!/^Ranking /.test(mf.competi||"")?`<span class="tdate">${fmtDate(mf.fecha)}</span>`:"";
+        return `<div class="pRow tog mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span>${es50(mf.competi)?pisPill():""}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${fMF} pts</div></div><div class="time mono">${dMF}${esc(mf.tiempo)}</div></div>${detail}</div>`+histBox(name,p);}
+      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span>${es50(b.competi)?pisPill():""}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div><div class="right"><div class="time mono">${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}${pctBadge}</div></div>`+histBox(name,p);
     }).join("");
     /* La cabecera solo existe si tiene algo dentro: con la EH callada (ver profileStat) podía
        quedar un .pMinHead vacío metiendo 14 px de aire muerto encima de la primera prueba. */
