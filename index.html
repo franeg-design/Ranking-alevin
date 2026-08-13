@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Ranking Álava</title>
-<meta name="description" content="Mejores marcas, puntos FINA y mínimas de la natación alevín e infantil de Álava, femenino y masculino. Piscina de 25 m." />
+<meta name="description" content="Mejores marcas, puntos FINA y mínimas de la natación alevín e infantil de Álava, femenino y masculino. Piscinas de 25 y 50 m." />
 <meta name="theme-color" content="#0e7c93" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -33,7 +33,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
    parte izquierda, la que sobresalía del círculo. */
 .glow{position:absolute;right:-40px;top:-50px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%);pointer-events:none}
 /* Tres filas alineadas, cada una con su control pegado a la derecha:
-   NATACIÓN → temporada · Ranking Álava → Alevín|Infantil · Piscina 25 m → Fem.|Masc. */
+   NATACIÓN → temporada · Ranking Álava → Alevín|Infantil · Piscinas 25 y 50 m → Fem.|Masc. */
 .kickRow{display:flex;align-items:center;gap:8px;position:relative;z-index:1}
 /* ⚠️ «Natación» en MINÚSCULA, Space Grotesk 500 a 16px, SIN ola (Fran, 10-ago-2026, tras ver una
    muestra de 12 tipografías en la cabecera real). Antes era Inter 600 a 15px en MAYÚSCULA con
@@ -527,7 +527,9 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
       <div class="segSexH" id="segCatH" style="display:none"></div>
     </div>
     <div class="subRow">
-      <div class="sub">Piscina 25 m</div>
+      <!-- La app cubre las dos piscinas desde ago-2026: seis competiciones de 50 m en el CSV, con
+           récords, mínimas y puntos FINA propios de cada una. Ver §4.23. -->
+      <div class="sub">Piscinas de 25 y 50 m</div>
       <div class="segSexH" id="segSex">
         <button data-s="F" class="on">Fem.</button>
         <button data-s="M">Masc.</button>
