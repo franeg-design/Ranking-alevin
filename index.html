@@ -537,9 +537,17 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
       <div class="segSexH" id="segCatH" style="display:none"></div>
     </div>
     <div class="subRow">
-      <!-- La app cubre las dos piscinas desde ago-2026: seis competiciones de 50 m en el CSV, con
-           récords, mínimas y puntos FINA propios de cada una. Ver §4.23. -->
-      <div class="sub">Piscinas de 25 y 50 m</div>
+      <!-- ⚠️ ANTES ponía «Piscinas de 25 y 50 m», y antes «Piscina 25 m» (§4.23). Fran lo cambió el
+           14-ago-2026: dejó de ser información útil en cuanto pasó a decir «las dos», y donde la
+           piscina importa de verdad la app ya lo avisa con su propio rótulo `Piscina 50 m`. Este
+           renglón es ahora la única línea con voz de toda la cabecera; se eligió sobre una lista
+           larga por su doble lectura: la centésima es la unidad de la que vive la app (marcas,
+           mínimas y puntos se deciden por centésimas) y «en su sitio» es literalmente lo que hace,
+           colocar cada marca en su puesto. Ver §4.25.
+           ⚠️ SIN COMA («Cada centésima en su sitio»), decisión expresa. No «corregir».
+           ⚠️ El `<meta name="description">` SIGUE diciendo las dos piscinas y eso es correcto: es lo
+           que se ve al compartir el enlace y ahí sí hace falta el dato. No unificarlos. -->
+      <div class="sub">Cada centésima en su sitio</div>
       <div class="segSexH" id="segSex">
         <button data-s="F" class="on">Fem.</button>
         <button data-s="M">Masc.</button>
