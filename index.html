@@ -66,20 +66,30 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);bac
 .kicker{display:flex;align-items:center;gap:7px;flex:1 1 auto;min-width:0;font-family:'Space Grotesk',system-ui,sans-serif;font-size:16px;letter-spacing:.01em;opacity:.86;font-weight:500}
 .titleRow{display:flex;align-items:center;gap:10px;margin:8px 0 2px;position:relative;z-index:1}
 .title{flex:0 1 auto;min-width:0;white-space:nowrap;font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:23px;line-height:1.06;margin:0;letter-spacing:-.01em}
-/* ⚠️ Los TRES controles de la columna derecha miden 30,5px: temporada, Alevín|Infantil y
-   Fem.|Masc. (Fran, 10-ago-2026). La pastilla llega ahí con `padding:7px 12px`; el desplegable,
-   que reaprovecha esta clase, se ajusta aparte en `select.seasonSel`. Tocar uno = medir los tres. */
-.seasonPill{flex:0 0 auto;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:700;white-space:nowrap}
-.segSexH{display:inline-flex;flex:0 0 auto;margin-left:auto;position:relative;z-index:2;gap:4px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:3px}
-.segSexH button{display:inline-flex;align-items:center;gap:4px;border:none;background:transparent;color:rgba(255,255,255,.72);font-family:inherit;font-weight:700;font-size:12px;border-radius:999px;padding:4px 12px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
+/* ⚠️ Los TRES controles de la columna derecha miden 26,5px: temporada, Alevín|Infantil y
+   Fem.|Masc. (Fran, 14-ago-2026; antes 30,5px desde el 10-ago). La pastilla llega ahí con
+   `padding:5px 12px`; el desplegable, que reaprovecha esta clase, se ajusta aparte en
+   `select.seasonSel`. Tocar uno = medir los tres.
+   ⚠️ POR QUÉ SE BAJARON. A 30,5px el control era MÁS ALTO que la caja del título (23px × 1.06 =
+   24,4px), o sea el elemento de letra pequeña pesaba más que el grande, y la fila del título iba
+   además al 98% del ancho útil (~314 de 320 en un móvil de 360). Se descartó bajar el título: su
+   proporción con el kicker (16/23 = 0,70) está elegida a conciencia en §4.9. Fran eligió esta
+   altura sobre una muestra de tres (30,5 · 28,5 · 26,5) vista en su móvil.
+   ⚠️ El ANCHO no cambió: solo se tocó el relleno vertical. Los paddings laterales (12px) y el
+   font-size (12px) se quedan como estaban. */
+.seasonPill{flex:0 0 auto;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;white-space:nowrap}
+.segSexH{display:inline-flex;flex:0 0 auto;margin-left:auto;position:relative;z-index:2;gap:4px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:2px}
+.segSexH button{display:inline-flex;align-items:center;gap:4px;border:none;background:transparent;color:rgba(255,255,255,.72);font-family:inherit;font-weight:700;font-size:12px;border-radius:999px;padding:3px 12px;cursor:pointer;white-space:nowrap;transition:background .2s,color .2s}
 .segSexH button.on{background:rgba(255,255,255,.9);color:#123a52}
 
-/* ⚠️ Altura atada a la de `.segSexH` (Fran, 10-ago-2026): el desplegable de temporada tiene debajo,
-   en la misma columna derecha, Alevín|Infantil y Fem.|Masc., y los tres se leen como una pila. Los
-   dos de abajo miden 30,5px (línea de 12px + 4 de botón + 3 de contenedor + borde). Este tenía
-   `min-height:34px` y sobresalía 3,5px, y con 30px de padding derecho era además 8px más ancho de lo
-   necesario. Si se cambia el tamaño de uno, medir los tres. */
-select.seasonSel{appearance:none;-webkit-appearance:none;padding:7px 24px 7px 12px;min-height:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;cursor:pointer}
+/* ⚠️ Altura atada a la de `.segSexH` (Fran, 10-ago-2026; recalibrada el 14-ago-2026): el desplegable
+   de temporada tiene debajo, en la misma columna derecha, Alevín|Infantil y Fem.|Masc., y los tres
+   se leen como una pila. Los dos de abajo miden 26,5px (línea de 12px + 3 de botón + 2 de contenedor
+   + borde). Este tenía `min-height:34px` y sobresalía 3,5px, y con 30px de padding derecho era
+   además 8px más ancho de lo necesario. Si se cambia el tamaño de uno, medir los tres.
+   ⚠️ El `min-height` tiene que ir POR DEBAJO de la altura que da el padding (26,5px) o manda él y
+   el desplegable vuelve a sobresalir sobre los otros dos. Solo se ve con dos temporadas o más. */
+select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12px;min-height:26px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fff' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;cursor:pointer}
 .sub{font-size:13px;opacity:.9;flex:0 1 auto;min-width:0}
 .subRow{display:flex;align-items:center;gap:10px;position:relative;z-index:1;margin-top:2px}
 .clubsel{min-height:44px;width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:16px;background:var(--surface);font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px}
