@@ -168,6 +168,18 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
        la mayúscula se pone por CSS, como en `.pis50`, y no cambiando el texto (§4.31).
        Lo demás NO se toca: el peso 800 y el tracking .02em son los de `.mbEH`/`.mbESP`, su familia. */
     .mb50{color:var(--muted);border:1px solid var(--line);margin-left:0;margin-right:2px;text-transform:uppercase}
+    /* La MISMA pastilla corta, en el hueco que en la pestaña de Marcas ocupa la fecha (§4.35).
+       Ninguna de estas cuatro declaraciones es cosmética:
+       ⚠️ `font-family` y `font-variant-numeric` son OBLIGATORIAS. Aquí el padre es `.time.mono`,
+       o sea Space Mono con cifras tabulares, y `.mb` nunca declaró familia porque hasta ahora
+       siempre vivió rodeada de Inter (cápsula de puntos, nombre, leyenda). Sin esto la pastilla
+       sale CON OTRAS LETRAS y deja de ser la misma pastilla. Es exactamente la razón por la que
+       `.pis50` declara su Inter propia.
+       ⚠️ `vertical-align:2px`: la subida de 1 px de `.mb` está calibrada contra texto de 11 px
+       (§4.34); aquí el vecino es un número de 16 px. Los 2 px son los que `.pis50` ya usaba para
+       ese tamaño, medidos igual.
+       ⚠️ Los márgenes imitan a `.tdate`, que es lo que ocupa este hueco en Marcas. */
+    .time .mb50{font-family:'Inter',sans-serif;font-variant-numeric:normal;vertical-align:2px;margin-left:0;margin-right:5px}
     .pis50{display:inline-block;margin-left:4px;padding:1px 5px;border:1px solid var(--line);border-radius:6px;
       font-family:'Inter',sans-serif;font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
       color:var(--muted);vertical-align:2px;line-height:1.6;white-space:nowrap}
@@ -2928,17 +2940,21 @@ function render(){
        errata. Dos versiones porque el ranking y la ficha NO se comportan igual: en el ranking el
        tiempo grande es su mejor marca (es la que ordena la lista) y por eso puede haber dos; en la
        ficha manda `marcaFila()` y la fila entera habla de una sola. Si algún día se unifican las
-       dos vistas, aquí quedan dos textos que dejarían de ser ciertos. */
+       dos vistas, aquí quedan dos textos que dejarían de ser ciertos.
+       ⚠️ Desde §4.35 la de `minimas` es la ÚNICA leyenda que nombra las DOS pastillas, y no por
+       gusto: en esa pestaña la corta va delante del tiempo y la larga baja bajo el club en las 14
+       filas donde la marca medida no es la que se ve. Si algún día la pastilla vuelve a un solo
+       sitio, este texto sobra por la mitad. */
     minimas:"Distancia a la mínima de <b style='color:var(--brand)'>Euskal Herria</b> y <b style='color:var(--brand)'>España</b> (<b style='color:#0c7c55'>−</b> en verde, conseguida · <b style='color:#c0392b'>+</b> en rojo, lo que falta)."
      +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m.</span><br>"
-     +"La pastilla "+pisPill()+" avisa de que la marca contra la que se mide la mínima <b>se nadó en piscina larga</b>, "
+     +"La pastilla "+p50Pill()+" delante del tiempo avisa de que la marca contra la que se mide la mínima <b>se nadó en piscina larga</b>, "
      +"así que se compara con la tabla de 50 m, que pide tiempos distintos de la de 25.</div>"
-     +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>El segundo tiempo, junto a la pastilla.</span><br>"
+     +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Cuando la mínima no sale del tiempo que se ve.</span><br>"
      +"El tiempo grande de la derecha es siempre su <b>mejor marca</b>, porque es la que ordena esta lista. "
      +"A veces la mínima no sale de ella: su mejor marca de 50 m es más lenta, pero cumple el listón de piscina larga, "
-     +"que es otro. Cuando pasa eso, <b>ese es el tiempo que aparece junto a la pastilla</b>, para que se vea de dónde salen "
-     +"las diferencias de EH y ESP.<br>Si al lado de la pastilla no hay ningún tiempo, es que la mínima se mide contra la "
-     +"marca que ya se está viendo a la derecha.</div>",
+     +"que es otro. Cuando pasa eso la pastilla <b>no puede ir junto al tiempo</b>, porque hablaría de otra marca: baja "
+     +"bajo el club, entera ("+pisPill()+"), con <b>el tiempo con el que sí se miden EH y ESP</b> al lado.<br>"
+     +"En los dos casos la pastilla está pegada a la marca de la que habla.</div>",
     minimasFicha:"Distancia a la mínima de <b style='color:var(--brand)'>Euskal Herria</b> y <b style='color:var(--brand)'>España</b> (<b style='color:#0c7c55'>−</b> en verde, conseguida · <b style='color:#c0392b'>+</b> en rojo, lo que falta)."
      +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m.</span><br>"
      +"La pastilla "+pisPill()+" junto al nombre de la prueba avisa de que esa fila <b>habla de una marca de piscina larga</b>, "
@@ -3029,11 +3045,19 @@ function render(){
          del de su propia fila. Esta vive fuera, junto al aviso de piscina que ya la justifica, y
          solo en las filas donde de verdad hay dos marcas en juego. */
       const mfR=marcaFila(r.name,r.prueba);
+      /* DÓNDE VA LA PASTILLA (§4.35). La regla es una y se enuncia así: la pastilla SIEMPRE toca la
+         marca de la que habla. Si la marca medida es la que se ve a la derecha —156 filas de 170—,
+         va delante de ese tiempo, en el hueco que en Marcas ocupa la fecha. Si no lo es —las 14—,
+         no puede ir ahí sin mentir sobre el tiempo grande, así que baja bajo el club, entera y con
+         el tiempo largo al lado, exactamente como estaba.
+         ⚠️ La pastilla NO se condiciona, solo cambia de sitio: se enciende siempre que la marca
+         medida es de piscina larga (§4.32). Encenderla a veces sería el fallo del §4.20. */
+      let preT="";
       if(mfR&&es50(mfR.competi)){
-        const dif=mfR.tiempo!==r.tiempo?`<span class="pisT mono">${esc(mfR.tiempo)}</span>`:"";
-        sub=`<div class="pisLine">${pisPill()}${dif}</div>`;
+        if(mfR.tiempo===r.tiempo)preT=p50Pill();
+        else sub=`<div class="pisLine">${pisPill()}<span class="pisT mono">${esc(mfR.tiempo)}</span></div>`;
       }
-      right=`<div class="time mono">${esc(r.tiempo)}</div><div>${gapTag(r,PAR_EH,"EH")}</div><div>${gapTag(r,PAR_ESP,"ESP")}</div>`;
+      right=`<div class="time mono">${preT}${esc(r.tiempo)}</div><div>${gapTag(r,PAR_EH,"EH")}</div><div>${gapTag(r,PAR_ESP,"ESP")}</div>`;
     }
     return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}${badges}</div>${sub}</div><div class="right">${right}</div></div>`;
   }).join("");
