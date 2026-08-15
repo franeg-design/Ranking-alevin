@@ -151,7 +151,14 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .name{font-weight:600;font-size:14px;line-height:1.22}
 .row .name{cursor:pointer;-webkit-tap-highlight-color:rgba(14,124,147,.12)}
 .row .name:active{color:var(--brand)}
-.mb{display:inline-block;margin-left:4px;padding:0 3.5px;border-radius:6px;font-size:9px;font-weight:800;letter-spacing:.02em;vertical-align:1.5px;line-height:1.5}
+/* ⚠️ `vertical-align:1px` y `line-height:12.5px` son DOS NÚMEROS MEDIDOS, no redondeos feos (§4.34).
+   La subida coloca las LETRAS: 1 px es el mismo desplazamiento que `.tagL` y `.tagO`, así que `ESP`
+   queda a la misma altura que `ÚLT. COMP.`, que era el descuadre visible. El interlineado coloca el
+   RECUADRO alrededor de esas letras: a 12,5 px la pastilla mide 14,5 px de alto y asoma por debajo
+   de la línea base exactamente lo mismo que antes, así que la fila NO crece ni un píxel.
+   Van en pareja: quien devuelva el interlineado a 1.5 sin tocar la subida estira 0,5 px cada fila
+   con pastilla, y quien suba la subida a 1,5 vuelve a descolgar el `ESP`. */
+.mb{display:inline-block;margin-left:4px;padding:0 3.5px;border-radius:6px;font-size:9px;font-weight:800;letter-spacing:.02em;vertical-align:1px;line-height:12.5px}
 .mbEH{color:var(--good);border:1px solid var(--good)}
 .mbESP{color:#c0392b;border:1px solid #c0392b}
     /* Distintivo de piscina larga. Mismo molde que .mbEH/.mbESP, en gris apagado: informa,
