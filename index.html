@@ -3242,7 +3242,12 @@ function renderProfile(vw){
         const fMF=finaR(mf);
         const dMF=!/^Ranking /.test(mf.competi||"")?`<span class="tdate">${fmtDate(mf.fecha)}</span>`:"";
         return `<div class="pRow tog mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span>${es50(mf.competi)?pisPill():""}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${fMF} pts</div></div><div class="time mono">${dMF}${esc(mf.tiempo)}</div></div>${detail}</div>`+histBox(name,p);}
-      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div><div class="right"><div class="time mono">${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}${pctBadge}</div></div>`+histBox(name,p);
+      /* Rótulo de piscina larga en MARCAS (MMP/progreso). Se pregunta por `b`, la marca que
+         ESTA fila enseña (la mejor), NO por marcaFila(): mínimas puede estar enseñando otra.
+         Caso real: quien tiene su mejor 100 en 25 m pero consigue la mínima por la vía larga ve
+         `Piscina 50 m` en Mínimas y no aquí, y es correcto: cada pestaña rotula SU marca.
+         En topfina no va: lo dice el selector de piscina (§4.20). */
+      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span>${(view==="marcas"&&es50(b.competi))?pisPill():""}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div><div class="right"><div class="time mono">${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}${pctBadge}</div></div>`+histBox(name,p);
     }).join("");
     /* La cabecera solo existe si tiene algo dentro: con la EH callada (ver profileStat) podía
        quedar un .pMinHead vacío metiendo 14 px de aire muerto encima de la primera prueba. */
