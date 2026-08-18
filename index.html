@@ -18,6 +18,9 @@
 <style>
 :root{--bg:#eef6f8;--surface:#fff;--ink:#0b2a3a;--muted:#4e6d7c;--brand:#0e7c93;--brand-deep:#0b3d5c;
 --line:#d8e8ee;--chip:#e7f1f4;--gold:#e0ad3f;--silver:#a9b6bf;--bronze:#c07f43;--good:#0c7c55;--warn:#61737f;--amber:#b26a00;
+/* Verde oscuro SOLO para "a X de la de delante" y su rayita en la parrilla (§4.38). Es más oscuro
+   que --good a propósito: a 11 px y a 9 px de grosor, --good se lava sobre blanco. */
+--good-deep:#0b5c40;
 --violet:#6d4bc4;--violet-deep:#5b3fa8;--ink-soft:#3c5a68;}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
@@ -455,13 +458,49 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .pctb.pb5{color:#0b6b48}
 .pctb.pb10{color:#14507f}
 .pctb.pb20{color:#4b3a8f}
-.pstats{display:flex;gap:6px;margin-top:7px}
-.pstat{flex:0 1 auto;min-width:0;position:relative;display:flex;flex-direction:column;gap:1px;background:var(--chip);border-radius:6px;padding:4px 8px}
-.psL{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.psV{font-size:14px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.15}
-.pstat.pgain{background:rgba(109,75,196,.10)}
-.pstat.pgain .psL{color:var(--violet-deep)}
-.pstat.pgain .psV{color:var(--violet)}
+/* ===== MMP/PROGRESO: DOS GRÁFICOS POR PRUEBA (18-ago-2026, §4.38) =====
+   Sustituyen a las pastillas `DISTANCIA AL LÍDER` y `PROGRESO`. El motivo no era estético: la
+   distancia al líder solo sirve arriba del ranking y el 55,7% de las filas son del puesto 11 para
+   abajo, con una mediana de 13,80 s. Lo que se enseña ahora es la de delante (mediana 0,92 s).
+   ⚠️ Los dos gráficos van a lo ancho de la fila ENTERA, fuera de .pCols. No confundir con las
+   pastillas a línea completa que se descartaron en su día: aquellas añadían dos renglones. */
+.pmRow{display:block}
+.pCols{display:flex;align-items:flex-start;gap:10px}
+/* Rótulo de gráfico. Es el nivel de letra que ya existe en .tagO, .pis50 y `mín.`: 9 px, 800,
+   versalita espaciada. No se abre un tamaño nuevo. */
+.gtRow{margin-bottom:5px}
+.gt{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* --- barra de progreso de la temporada --- */
+.pg{margin-top:9px}
+.pgBar{position:relative;height:8px;background:var(--chip);border-radius:6px;box-shadow:inset 0 1px 2px rgba(11,42,58,.09)}
+.pgFill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,#a48ade 0%,#6d4bc4 100%)}
+.pgTxt{display:flex;justify-content:space-between;gap:10px;margin-top:4px;font-size:11px;line-height:1.35;color:var(--violet-deep)}
+.pgTxt span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pgTxt .v{font-weight:800;color:var(--violet)}
+.pgTxt .b{flex:0 0 auto;text-align:right;font-weight:700}
+.pgTxt.solo{color:var(--muted)}
+/* --- parrilla: una raya por nadadora, la 1ª a la DERECHA ---
+   Radio 1px, que es el único valor fino que la app ya usaba (.segSep). En rayas de 2 a 3,5 px de
+   ancho el navegador recorta el radio a la mitad del lado menor, así que 6px (el token de caja)
+   se vería EXACTAMENTE igual: no se abre un valor nuevo, se reutiliza el que había. */
+.pa{margin-top:11px}
+.paPista{position:relative;height:15px;margin:0 2px}
+.paBase{position:absolute;left:0;right:0;bottom:0;height:2px;border-radius:1px;background:var(--chip)}
+.paT{position:absolute;bottom:2px;width:2px;height:7px;border-radius:1px;background:#c3d6de;transform:translateX(-50%)}
+.paT.lid{background:var(--brand);height:12px;opacity:.8}
+.paT.ant{background:var(--good-deep);height:10px;width:2.5px}
+.paT.yo{background:var(--ink);height:15px;width:3.5px;border-radius:1px}
+.paTxt{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:6px;font-size:11px;line-height:1.35;color:var(--muted)}
+.paTxt span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.paTxt .v{font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}
+.paTxt .sig{color:var(--good-deep)}
+.paTxt .sig .v{color:var(--good-deep)}
+.paTxt .b{flex:0 0 auto;text-align:right}
+.paUna{margin-top:6px;font-size:11px;color:var(--muted);text-align:right}
+/* La insignia TOP se muda al lado del nombre de la prueba. Solo el 4,0% de las filas juntan
+   nombre + `Piscina 50m` + insignia, y en ese caso se deja partir el renglón: la insignia va
+   `nowrap` para caer entera a la línea de abajo y no romperse por dentro. */
+.pctline.pctIn{display:inline-block;margin:0 0 0 6px;vertical-align:1px}
 .raline.rabeat{color:var(--good);font-weight:800}
 .rmfill.rfbeat{background:linear-gradient(90deg,#8fdcc0,var(--good))}
 .recFaint{color:#6d8c9c;font-weight:400}
@@ -2845,6 +2884,61 @@ function deltaTag(ev,pop,corto){if(!ev)return"";
   if(ev.dir==="up")return`<span class="tag up${pop?" ultc":""}">${L}<span class="mono">−${fmtClock(ev.d)}</span></span>`;
   return`<span class="tag down">${L}<span class="mono">+${fmtClock(ev.d)}</span></span>`;}
 
+/* ===== LOS DOS GRÁFICOS DE MMP/PROGRESO (18-ago-2026, §4.38) =====
+   Sustituyen a las pastillas `DISTANCIA AL LÍDER` y `PROGRESO`. Ver §4.38 para el porqué: la
+   distancia al líder solo informa arriba del ranking, y el 55,7% de las filas son del puesto 11
+   para abajo. Lo que se destaca ahora es la de delante, que tiene mediana 0,92 s frente a 13,80. */
+function mmpProg(name,p,cs){
+  /* La MEJOR marca de cada día: dos series el mismo día no son dos momentos de la temporada. */
+  const dias={};
+  RECORDS.filter(r=>r.nadadora===name&&r.prueba===p).forEach(r=>{
+    const c=toCs(r.tiempo);if(!dias[r.fecha]||c<dias[r.fecha])dias[r.fecha]=c;});
+  const fs=Object.keys(dias).sort();
+  const rot=`<div class="gtRow"><span class="gt">Progreso ${isHist()?"registrado":"de la temporada"}</span></div>`;
+  const mudo=t=>`<div class="pg">${rot}<div class="pgBar"></div><div class="pgTxt solo"><span>${t}</span></div></div>`;
+  /* ⚠️ Sin tramo violeta NO se escribe "0%" en ninguna parte: el 43,4% de las filas son pruebas
+     nadadas una sola vez, así que no es que no haya mejorado, es que no hay recorrido que dibujar. */
+  if(fs.length<2)return mudo("Una sola competición en esta prueba");
+  const t0=dias[fs[0]],g=t0-cs;
+  if(g<=0)return mudo("Aún sin bajar su marca de partida");
+  /* Eje FIJO al 20% de la marca de partida. Con ese tope se sale de escala el 0,1% de las filas, y
+     lo que se gana es que dos pruebas distintas se puedan comparar: con una escala por fila, la
+     longitud de la barra no significaría nada. */
+  const pc=g/t0*100,w=Math.max(0,Math.min(100,pc/20*100));
+  return `<div class="pg">${rot}<div class="pgBar"><div class="pgFill" style="width:${w.toFixed(1)}%"></div></div>`+
+    `<div class="pgTxt"><span><span class="v mono">−${fmtGap(g)}</span> desde ${fmtDate(fs[0])}</span>`+
+    `<span class="b">${pc.toFixed(1).replace(".",",")}% más rápida</span></div></div>`;
+}
+function mmpPar(name,p,cs,rk,rkList){
+  if(!rk)return "";
+  /* ⚠️ Su posición se busca por NOMBRE, no con rk.rank-1: con empates delante el puesto ya no
+     coincide con el índice de la lista y la raya negra se pintaba sobre otra nadadora. Pasa en 6
+     filas de 1.492, pero pasa. */
+  const N=rkList.length,iYo=rkList.findIndex(x=>x.name===name);
+  if(iYo<0)return "";
+  const iAnt=iYo-1;
+  let t='<div class="paBase"></div>';
+  for(let i=0;i<N;i++){
+    const x=(N===1)?100:(100-(i/(N-1))*100);
+    let c="paT";
+    /* Precedencia: ella > la 1ª > la de delante. Si va segunda la de delante ES la 1ª, y sin este
+       orden el verde le robaba el azul a la raya de la primera. */
+    if(i===iAnt)c="paT ant";
+    if(i===0)c="paT lid";
+    if(i===iYo)c="paT yo";
+    t+=`<div class="${c}" style="left:${x.toFixed(2)}%"></div>`;
+  }
+  const rot=`<div class="gtRow"><span class="gt">Su sitio en la prueba</span></div>`;
+  const pista=`<div class="paPista">${t}</div>`;
+  if(iAnt<0)return `<div class="pa">${rot}${pista}<div class="paUna">Nadie por delante</div></div>`;
+  const ant=rkList[iAnt],d=cs-ant.cs;
+  /* Con empate, "a 0.00 de X" se lee como un error de cuentas. Se dice lo que es. */
+  const izq=d<=0?`<span class="sig">empatada con ${esc(shortName(ant.name))}</span>`
+    :`<span class="sig">a <span class="v mono">${fmtGap(d)}</span> de ${esc(shortName(ant.name))}</span>`;
+  return `<div class="pa">${rot}${pista}<div class="paTxt">${izq}`+
+    `<span class="b">a <span class="v mono">${fmtGap(cs-rkList[0].cs)}</span> de la 1ª</span></div></div>`;
+}
+
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
 
 /* ===== LEYENDA DE RITMO GENERADA DESDE LAS TABLAS (14-ago-2026) =====
@@ -3356,15 +3450,9 @@ function renderProfile(vw){
           recs=`<div class="time mono recFaint rm2"><span class="recL">World Record</span>${rmT}</div>`;
         }
       }else if(view==="marcas"){
+        /* Los dos gráficos se montan aparte y NO van en `detail`: `detail` cae dentro de .mid y
+           estos van a lo ancho de la fila entera. Ver el `return` de más abajo. */
         detail="";
-        let ps="";
-        if(rk&&rk.rank>1)ps+=`<div class="pstat"><span class="psL">Distancia al líder</span><span class="psV mono">${fmtGap(cs-rkList[0].cs)}</span></div>`;
-        const sw=RECORDS.filter(r=>r.nadadora===name&&r.prueba===p);
-        const d0=sw.reduce((m,r)=>r.fecha<m?r.fecha:m,sw[0].fecha);
-        let first=Infinity;sw.forEach(r=>{if(r.fecha===d0){const c=toCs(r.tiempo);if(c<first)first=c;}});
-        const gain=first-cs;
-        if(new Set(sw.map(r=>r.fecha)).size>1&&gain>0)ps+=`<div class="pstat pgain"><span class="psL">Progreso</span><span class="psV mono">−${fmtGap(gain)}</span></div>`;
-        if(ps)detail=`<div class="pstats">${ps}</div>`;
       }else{
         /* Una sola marca manda en toda la fila: tiempo, fecha, puntos, líneas y barras. */
         const mf=marcaFila(name,p)||b;
@@ -3387,7 +3475,7 @@ function renderProfile(vw){
         const N=rkList.length;
         const pct=N>1?Math.round((N-rk.rank)/(N-1)*100):100;
         pctTxt=` · Percentil ${pct}`;
-        if(N>=5&&pct>=80){const bd=pct>=95?['<span class="emo eo">🫍</span>',"TOP 5%","pb5"]:(pct>=90?['<span class="emo">🦈</span>',"TOP 10%","pb10"]:['<span class="emo">🐬</span>',"TOP 20%","pb20"]);pctBadge=`<div class="pctline">${bd[0]}<span class="pctb ${bd[2]}">${bd[1]}</span></div>`;}
+        if(N>=5&&pct>=80){const bd=pct>=95?['<span class="emo eo">🫍</span>',"TOP 5%","pb5"]:(pct>=90?['<span class="emo">🦈</span>',"TOP 10%","pb10"]:['<span class="emo">🐬</span>',"TOP 20%","pb20"]);pctBadge=`<span class="pctline pctIn">${bd[0]}<span class="pctb ${bd[2]}">${bd[1]}</span></span>`;}
       }
       const anim=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
       if(view==="minimas"){
@@ -3402,7 +3490,17 @@ function renderProfile(vw){
          Caso real: quien tiene su mejor 100 en 25 m pero consigue la mínima por la vía larga ve
          `Piscina 50m` en Mínimas y no aquí, y es correcto: cada pestaña rotula SU marca.
          En topfina no va: lo dice el selector de piscina (§4.20). */
-      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span>${(view==="marcas"&&es50(b.competi))?pisPill():""}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div><div class="right"><div class="time mono">${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}${pctBadge}</div></div>`+histBox(name,p);
+      const der=`<div class="right"><div class="time mono">${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}</div>`;
+      if(view==="marcas"){
+        /* La insignia TOP se muda al lado del nombre de la prueba y los dos gráficos van a lo ancho
+           de la fila entera, fuera de .pCols. `pmRow` devuelve la fila a display:block: .pRow es
+           flex y con los gráficos dentro se habrían colocado como tercera columna. */
+        return `<div class="pRow tog pmRow" style="${anim}">${stamp}<div class="pCols"><div class="mid">`+
+          `<div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span>${es50(b.competi)?pisPill():""}${pctBadge}</div>`+
+          `<div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div></div>${der}</div>`+
+          mmpProg(name,p,cs)+mmpPar(name,p,cs,rk,rkList)+`</div>`+histBox(name,p);
+      }
+      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div>${der}</div>`+histBox(name,p);
     }).join("");
     /* La cabecera solo existe si tiene algo dentro: con la EH callada (ver profileStat) podía
        quedar un .pMinHead vacío metiendo 14 px de aire muerto encima de la primera prueba. */
