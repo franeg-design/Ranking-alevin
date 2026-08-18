@@ -252,9 +252,31 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .pTop{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:15px;position:relative;overflow:hidden}
 .pName{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;line-height:1.15}
 .pClub{opacity:.9;font-size:13px;margin-top:3px}
-.goalStrip{margin:10px 13px 4px;border-radius:16px;padding:8px 12px;font-size:12px;color:#9a5a12;background:linear-gradient(160deg,#fce3c9,#fdf5ea);border:1px solid #f0d5ad;box-shadow:0 1px 3px rgba(11,42,58,.06)}
-.goalStrip.hot{background:linear-gradient(160deg,#fdecec,#fdf6f6);border-color:#f2d3d3;color:#7c2d2d}
-.pStat{display:inline-block;margin-top:0;margin-right:5px;background:#e4f5ec;border:1px solid #bfe6d1;color:#0f7d53;border-radius:10px;padding:4px 11px;font-size:12px;font-weight:700;line-height:1.6}
+/* Cabecera de la pestaña Mínimas de la ficha: UNA sola caja para lo conseguido y el objetivo
+   (Fran, 18-ago-2026). Antes eran tres recuadros de colores distintos —dos pastillas verdes que
+   acababan cada una donde le tocaba y una tira naranja con 26 px de sangrado contra los 13 de las
+   verdes, así que ni empezaban ni acababan a la misma altura. Ver §4.37.
+   ⚠️ El recuento va DELANTE: el logro es «13 mínimas», no la ristra de abreviaturas, que a 13
+   pruebas ocupa tres líneas en un móvil y no la lee nadie entera. */
+.mhBox{border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:#fbfdfe}
+.mhRow{display:flex;align-items:flex-start;gap:9px}
+/* Raya DISCONTINUA entre EH y ESP y CONTINUA antes del objetivo: la primera separa dos cosas del
+   mismo tipo, la segunda separa lo conseguido de lo que falta. */
+.mhRow+.mhRow{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)}
+/* 19 px, no 21: la escala de la app tiene 8 tamaños (9·11·12·13·14·16·19·23) y 21 no es uno.
+   La muestra que aprobó Fran iba a 21; se baja al escalón de al lado en vez de abrir un tamaño
+   nuevo. Radio 10, que es el token de «cajas internas»; 12 tampoco existía (§6). */
+.mhNum{flex:0 0 auto;font-size:19px;font-weight:800;line-height:1.15;color:var(--good);min-width:23px;text-align:right;font-variant-numeric:tabular-nums}
+.mhNum.esp{color:#c0392b}
+.mhMid{min-width:0}
+.mhTit{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em;line-height:1.25}
+.mhList{font-size:12px;line-height:1.45;color:var(--ink);font-weight:600;margin-top:3px}
+.mhGoal{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:12px;line-height:1.45;color:var(--amber);font-weight:600}
+.mhGoal b{font-weight:800}
+.mhGoal.hot{color:#a3403a}
+/* Sin nada conseguido (53% de las fichas, medido) el objetivo es lo único que hay: no puede
+   arrastrar la raya ni el hueco de un bloque que no existe. */
+.mhGoal.solo{margin-top:0;padding-top:0;border-top:0}
 .pRow{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;border-top:1px solid var(--line);position:relative;overflow:hidden}
 .pRow>.mid,.pRow>.right{position:relative;z-index:1}
 .prueba{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;line-height:1.2}
@@ -496,7 +518,7 @@ body.mfich .body{padding-top:calc(10px + env(safe-area-inset-top))}
 .ccCard{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(11,42,58,.06),0 1px 2px rgba(11,42,58,.04)}
 .ccHead{background:linear-gradient(160deg,var(--brand) 0%,var(--brand-deep) 100%);color:#fff;padding:11px 15px;font-weight:700;font-size:14px}
 .ccCard .pcList{padding:11px}
-.pMinHead{padding:12px 13px 2px}
+.pMinHead{padding:12px 13px 4px}
 /* Parciales + pacing en la ficha */
 .pcList{position:relative;z-index:2;display:flex;flex-direction:column;gap:8px;margin-top:4px}
 .pcSwim{background:#f7fbfc;border:1px solid var(--line);border-radius:16px;padding:8px 11px}
@@ -2515,7 +2537,8 @@ function minsList(name){const esp=[],eh=[];if(!minsOn())return{esp:esp,eh:eh};
     const rE=minRow(PAR_ESP,mf);if(rE&&rE.got)esp.push(abbrev(p));
     const rH=minRow(PAR_EH,mf);if(rH&&rH.got)eh.push(abbrev(p));});
   return{esp:esp,eh:eh};}
-function goalPill(name){
+/* `vacio` lo pasa quien llama: dice si encima no hay ningún bloque de mínimas conseguidas. */
+function goalPill(name,vacio){
   if(!minsOn())return "";
   const cand=[];
   PRUEBA_ORDER.forEach(p=>{if(!bestOf(RECORDS,name,p))return;
@@ -2529,18 +2552,26 @@ function goalPill(name){
   /* El "(a X)" sale de la mejor vía, que puede ser una marca de piscina larga. Sin decirlo, el
      número no se puede reconstruir desde la marca que se ve en la fila de esa prueba. */
   const gp=x=>x.t+" "+abbrev(x.p)+" (a "+fmtClock(x.d)+(x.largo?" en 50 m":"")+")";
-  if(hot.length)return `<div class="goalStrip hot">🎯 A tiro: ${hot.map(gp).join(" · ")}</div>`;
+  /* `solo` = no hay nada conseguido encima, así que esta línea no lleva raya ni hueco de separación.
+     El rótulo va en negrita y el contenido no: es la misma jerarquía que usan las demás líneas. */
+  const solo=arg=>arg?" solo":"";
+  if(hot.length)return `<div class="mhGoal hot${solo(vacio)}">🎯 <b>A tiro:</b> ${hot.map(gp).join(" · ")}</div>`;
   const c=cand[0];
-  return `<div class="goalStrip">🎯 Objetivo más cercano: ${gp(c)}</div>`;
+  return `<div class="mhGoal${solo(vacio)}">🎯 <b>Objetivo más cercano:</b> ${gp(c)}</div>`;
 }
 function profileStat(name){
   if(view!=="minimas")return"";
   /* Solo se enseña lo CONSEGUIDO. Antes, sin ninguna mínima, la EH pintaba "✓ EH: —" en
      pastilla verde, que se leía como "conseguido: nada". La ESP ya se callaba cuando no había;
-     ahora la EH hace lo mismo y, si no hay ninguna de las dos, no se pinta nada. */
+     ahora la EH hace lo mismo y, si no hay ninguna de las dos, no se pinta nada.
+     ⚠️ El número NO va en Space Mono: no es un tiempo, es un recuento, y la regla de las cifras
+     (§6) habla de cifras de tiempo. Inter 800 es además el único peso con el que se puede pintar
+     a 21 px sin negrita falsa. */
   const m=minsList(name);
-  return [["EH",m.eh],["ESP",m.esp]].filter(x=>x[1].length)
-    .map(x=>`<div class="pStat">✓ ${x[0]}: ${x[1].join(" · ")}</div>`).join(" ");
+  return [["EH",m.eh,""],["ESP",m.esp," esp"]].filter(x=>x[1].length)
+    .map(x=>`<div class="mhRow"><div class="mhNum${x[2]}">${x[1].length}</div><div class="mhMid">`
+      +`<div class="mhTit">MÍNIMAS ${x[0]} CONSEGUIDAS</div>`
+      +`<div class="mhList">${x[1].join(" · ")}</div></div></div>`).join("");
 }
 let phraseWritten=false,cmpA=null,cmpB=null,chipScrollPos=0,chipAnim=false,finaSel="3",finaChipPos=0,finaChipAnim=false;
 function whenAwake(fn){
@@ -3375,10 +3406,13 @@ function renderProfile(vw){
     }).join("");
     /* La cabecera solo existe si tiene algo dentro: con la EH callada (ver profileStat) podía
        quedar un .pMinHead vacío metiendo 14 px de aire muerto encima de la primera prueba. */
-    const mh=view==="minimas"?(profileStat(name)+goalPill(name)):"";
+    /* Lo conseguido y el objetivo comparten UNA caja: son la misma historia (lo que ya tiene y lo
+       que le falta), y hasta hoy iban en recuadros distintos y ni siquiera alineados entre sí. */
+    const mhSt=view==="minimas"?profileStat(name):"";
+    const mh=view==="minimas"?(mhSt+goalPill(name,!mhSt)):"";
     /* Sin esto, quien no haya nadado nunca en largo veria un panel en blanco sin explicacion. */
     if(_P50&&!rows)return `<div class="profile"><div class="pRow"><div class="mid"><div class="puesto">Sin marcas en piscina de 50 m.</div></div></div></div>`;
-    return `<div class="profile">${mh?`<div class="pMinHead">${mh}</div>`:""}${rows}</div>`;
+    return `<div class="profile">${mh?`<div class="pMinHead"><div class="mhBox">${mh}</div></div>`:""}${rows}</div>`;
   }).join("");
   _P50=false;
   clubFilter=savedClub;sexFilter=savedSex;RECORDS=savedRec;MAXFECHA=savedMax;MAXJOR=savedJor;
