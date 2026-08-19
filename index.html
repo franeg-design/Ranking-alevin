@@ -3183,7 +3183,13 @@ function render(){
   el("tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===view));
   if(isHist()&&view==="minimas")view="marcas";
   const perPrueba=(view==="marcas"||view==="minimas");
-  el("segYear").style.display=(perPrueba||view==="topfina")?"flex":"none";
+  /* ⚠️ En ABSOLUTO no hay selector de años: la fila entera se oculta (decisión de Fran,
+     20-ago-2026). La categoría es abierta —«2005 y anterior»— y su cohorte es tan corta y tan
+     dispersa que el botón agregado salía con once años pegados («Absoluto 89/90/92/96/98/…»),
+     ilegible y sin utilidad: ya se sabe que se está en absoluto. `yearFilter` se vacía al cambiar
+     de categoría, así que ocultarla no puede dejar un filtro activo e invisible. */
+  const sinAnios=(catFilter==="absoluto");
+  el("segYear").style.display=(!sinAnios&&(perPrueba||view==="topfina"))?"flex":"none";
   el("segFina").style.display="none";
   {const sp=el("segPool");if(sp)sp.style.display="none";}
   const q=query.trim().toLowerCase();
@@ -3191,7 +3197,7 @@ function render(){
   if(fo){["segSex","segFina","clubSel"].forEach(id=>{const e2=el(id);if(e2)e2.style.display="none";});
     const sub=badgesFor||cmpA||compsFor;
     {const tb=el("tabs");if(tb)tb.style.display=sub?"none":"";}
-    el("segYear").style.display=(cmpA||compsFor)?"none":"flex";
+    el("segYear").style.display=(sinAnios||cmpA||compsFor)?"none":"flex";
     /* Solo en la ficha y solo en Top FINA: es donde viven los records. */
     {const sp=el("segPool");if(sp)sp.style.display=(view==="topfina"&&!cmpA&&!compsFor&&!badgesFor)?"flex":"none";}
     /* ⚠️ Los botones tienen que hablar el MISMO idioma que el ranking (`claveEdad`): en Histórico
