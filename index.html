@@ -159,7 +159,14 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .pos.up{color:var(--good)} .pos.down{color:var(--warn)} .pos.eq{color:#b9c9d0} .pos.new{color:var(--brand)}
 .mid{flex:1;min-width:0}
 .name{font-weight:600;font-size:14px;line-height:1.22}
-.row .name{cursor:pointer;-webkit-tap-highlight-color:rgba(14,124,147,.12)}
+/* ⚠️ ZONA DE TOQUE DEL NOMBRE (21-ago-2026). Horizontalmente ya ocupaba toda la columna central
+   (es un div de bloque dentro de `.mid`); lo que se quedaba corto era el ALTO: 14 × 1,22 = 17,08px,
+   muy por debajo de los 44 que recomienda Apple. Se agranda con un `::after` en posición absoluta
+   —no ocupa sitio, así que la fila NO se mueve ni un píxel— hasta 17 + 7 + 7 = 31px.
+   Se queda dentro de `.mid`, así que no le roba el toque ni al dorsal ni a la columna derecha, y
+   lo único que solapa es la línea de club, que no es pulsable. */
+.row .name{position:relative;cursor:pointer;-webkit-tap-highlight-color:rgba(14,124,147,.12)}
+.row .name::after{content:"";position:absolute;left:0;right:0;top:-7px;bottom:-7px}
 .row .name:active{color:var(--brand)}
 /* ⚠️ `vertical-align:1px` y `line-height:12.5px` son DOS NÚMEROS MEDIDOS, no redondeos feos (§4.34).
    La subida coloca las LETRAS: 1 px es el mismo desplazamiento que `.tagL` y `.tagO`, así que `ESP`
@@ -414,10 +421,23 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .badgeBtn{position:absolute;top:40px;right:11px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer}
 .cmpBtn{position:absolute;top:11px;right:11px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer}
 .backFloat{min-height:44px;display:inline-flex;align-items:center;justify-content:center;position:fixed;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:50;background:linear-gradient(160deg,var(--brand),var(--brand-deep));color:#fff;border:none;border-radius:999px;padding:11px 22px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(11,42,58,.32);animation:bfade .25s ease-out}
-.pRow.tog{cursor:pointer}
 .chev{font-size:9px;color:var(--muted);margin-left:5px;vertical-align:2px}
 .prueba .chev{font-size:13px;vertical-align:0;transition:transform .2s}
 .pRow.open .prueba .chev{transform:rotate(180deg)}
+/* PASTILLA «Historial» (21-ago-2026, petición de Fran). Antes el desplegable se abría tocando
+   CUALQUIER punto de la fila: no se veía que la opción existiera, y ese modelo ya había obligado a
+   un parche en el manejador (`if(cl(".cur"))return;`) para que arrastrar el punto de la curva no
+   abriera además el historial. Con la pastilla el toque tiene un solo dueño y ese parche sobra.
+   ⚠️ NO CRECE LA FILA: 11px sobre interlineado 13px + 2px de borde = 15px de alto, y la línea de
+   `.prueba` mide 16 × 1,2 = 19,2px. Es el mismo razonamiento medido de `.mb` (§4.34), que cabía en
+   una línea de 13px.
+   ⚠️ El área de toque se agranda con `::after` en posición ABSOLUTA, que no ocupa sitio en la
+   maquetación: 15px de dibujo, ~31px de dedo. Misma técnica que `.row .name`. */
+.hPill{display:inline-block;position:relative;margin-left:6px;padding:0 7px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;line-height:13px;letter-spacing:.01em;vertical-align:2px;cursor:pointer;-webkit-tap-highlight-color:rgba(14,124,147,.12)}
+.hPill::after{content:"";position:absolute;left:-7px;right:-7px;top:-8px;bottom:-8px}
+.hPill:active{background:var(--chip);color:var(--brand-deep);border-color:var(--brand)}
+.hPill .chev{font-size:10px;margin-left:4px;vertical-align:0;color:inherit}
+.pRow.open .hPill{background:var(--chip);color:var(--brand-deep);border-color:var(--brand)}
 .histBox{display:none;padding:4px 13px 10px;border-top:1px dashed var(--line);background:#f7fbfc;animation:vfade .18s ease-out}
 .histRow{display:flex;gap:8px;align-items:baseline;font-size:12px;color:var(--ink);padding:3px 0}
 .histRow .hd{color:var(--muted);min-width:62px}
@@ -2518,7 +2538,20 @@ function renderSummary(fecha){
   const box=el("summary");if(!box)return;
   if(mode==="fichas"){renderFichSummary(box);return;}
   if(!RECORDS.length){box.innerHTML="";return;}
-  const FE=fecha||MAXJOR;
+  /* ⚠️ LA JORNADA ELEGIDA PUEDE DEJAR DE EXISTIR AL CAMBIAR DE ÁMBITO (21-ago-2026).
+     Categoría, sexo, temporada e Histórico rehacen `RECORDS`, y la competición que estabas viendo
+     puede no tener ni una fila en el ámbito nuevo: medido sobre el `data.csv` real, el 50,9 % de
+     los cambios de categoría con un resumen abierto caen aquí (34 jornadas y ninguna categoría las
+     nada todas).
+     Antes eso hacía `box.innerHTML=""`, y en esa caja no vive solo el resumen: viven también la
+     BANDA «COMPETICIONES», la frase de Phelps y el rótulo «Ranking de la temporada». Los tres
+     desaparecían. Y no volvían, porque `render()` solo llama aquí cuando cambia `BAND_KEY`, o sea
+     al entrar o salir de una ficha: en modo ranking no se repinta.
+     Ahora se repliega a la última jornada del ámbito nuevo y se cierra el cuerpo del resumen.
+     Es el guardarraíl único: cubre también el cambio de sexo y —importante para septiembre— el de
+     temporada, donde la jornada vieja NUNCA existe en la nueva. */
+  let FE=fecha||MAXJOR;
+  if(FE&&!RECORDS.some(r=>jorK(r)===FE)){FE=MAXJOR;sumFecha=null;sumShown=false;sumOpen=false;}
   const FD=jorD(FE);
   const latest=RECORDS.filter(r=>jorK(r)===FE);
   if(!latest.length){box.innerHTML="";return;}
@@ -2970,15 +3003,33 @@ function dsqOf(name,prueba){
     &&(isHist()||seasonOf(r.fecha)===season)
     &&(!catFilter||catFilter==="all"||grupoDe(r.anio,r.fecha)===catFilter));
 }
-function histBox(name,p){
+/* CONTENIDO DEL DESPLEGABLE, EN UN SOLO SITIO (21-ago-2026). Lo piden DOS funciones: `histBox`
+   para pintarlo y `histPill` para saber si hay algo que abrir y cuántas filas tiene. Si cada una
+   se lo calculara por su cuenta acabaría pasando lo de `dsqOf` (§ago-2026): la pastilla diría
+   "4 marcas" y el desplegable enseñaría otra cosa. Regla §0.6 del manual. */
+function histRows(name,p){
   const rows=RECORDS.filter(r=>r.nadadora===name&&r.prueba===p).map(r=>({fecha:r.fecha,competi:r.competi,tiempo:r.tiempo,cs:toCs(r.tiempo)}));
   /* Las descalificaciones se cuelan aquí y SOLO aquí. No tienen tiempo, así que no pueden ser MMP
      ni afectar al mejor: se filtra el mismo sexo y temporada que RECORDS para no mezclar. */
   const dsq=dsqOf(name,p)
     .map(r=>({fecha:r.fecha,competi:r.competi,dsq:true,motivo:r.motivo,cs:Infinity}));
-  const all=rows.concat(dsq).sort((a,b)=>a.fecha<b.fecha?-1:(a.fecha>b.fecha?1:a.cs-b.cs));
+  return rows.concat(dsq).sort((a,b)=>a.fecha<b.fecha?-1:(a.fecha>b.fecha?1:a.cs-b.cs));
+}
+/* La pastilla que abre el desplegable. Va DENTRO de `.prueba`, en el sitio exacto donde estaba el
+   ▾ suelto, así que las cuatro clases de fila (MMP/progreso, Mínimas, Récords y la de solo
+   descalificaciones) la reciben con un único cambio y hablan el mismo idioma.
+   ⚠️ Devuelve "" si no hay nada que desplegar: `histBox` también devuelve "" en ese caso y una
+   pastilla sin `.histBox` hermano sería un botón que no hace nada (`toggleHist` sale sin tocar
+   nada, pero el usuario no lo sabría). */
+function histPill(name,p){
+  const n=histRows(name,p).length;
+  if(!n)return"";
+  return `<button type="button" class="hPill">Historial<span class="chev">▾</span></button>`;
+}
+function histBox(name,p){
+  const all=histRows(name,p);
   if(!all.length)return"";
-  const best=rows.length?Math.min(...rows.map(r=>r.cs)):Infinity;
+  const best=all.reduce((m,r)=>(!r.dsq&&r.cs<m)?r.cs:m,Infinity);
   return `<div class="histBox">`+all.map(r=>{
     if(r.dsq){
       const c=[esc(r.competi||""),r.motivo?esc(r.motivo.toLowerCase()):""].filter(Boolean).join(" · ");
@@ -3287,7 +3338,7 @@ function render(){
 
   // legend
   const legs={marcas:"<span style='font-weight:700'>Ranking por MMP.</span> Cada nadador/a con su <b>mejor marca personal</b> "+(isHist()?"de todas las temporadas"+scopeTxt():"de la temporada")+" en la prueba elegida. <b>Nº</b> = puesto · <b>pts</b> = puntos FINA, que sirven para comparar marcas de pruebas distintas: cuantos más puntos, mejor la marca."+((isHist()||SEASONS.indexOf(season)<1)?"":"<br><span style='font-weight:600;letter-spacing:.02em;margin-right:5px'>MMP</span>bajo el club: su mejor marca de <b>temporadas anteriores</b>, con su fecha. Solo aparece mientras la de esta temporada sea más lenta; al superarla desaparece. No cuenta para el puesto ni para los puntos.")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Indicadores de la última competición.</span> <span style='color:var(--muted)'>Solo en marcas logradas en la última competición.</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ variación de puesto<br><span class='pos new' style='display:inline-block;margin-top:0;padding:0 5px;font-size:10px'>nuevo</span> primer registro en esta prueba</div>"+(minsOn()?"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Mínimas.</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de <b>Euskadi</b> / <b>España</b> conseguida. En la pestaña <b>Mínimas</b> se ven todas las de cada nadador/a.</div>":"")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m.</span><br>La pastilla "+p50Pill()+" junto a los puntos avisa de que esa marca <b>se nadó en piscina larga</b>. El ranking <b>no separa por piscina</b>: esas marcas compiten en la misma lista y se ordenan por tiempo, igual que las demás.<br>Los <b>puntos</b> sí distinguen: cada marca puntúa contra la tabla de su propia piscina. Por eso una marca de 50 m puede tener <b>más puntos</b> que otra de 25 m que es más rápida.</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Fichas.</span><br>Toca un <b>nombre</b> de la lista (o búscalo) para abrir su ficha; <b>← Volver</b> regresa al ranking.</div><span style='display:block;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);color:var(--muted)'>El botón flotante ⓘ abre esta ventana con la explicación de lo que tengas seleccionado en cada momento: cambia según estés en Marcas, Mínimas, Top FINA o en una ficha.</span>",
-    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos sus tiempos "+(isHist()?"registrados"+scopeTxt():"de la temporada")+", con fecha y competición.<br>En <b>Su sitio en la prueba</b>, arrastra el dedo sobre la montaña: sale un punto con el tiempo de esa posición del eje —el del eje, no la marca de nadie— y se va solo al soltar.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b>: al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Los dos gráficos de cada prueba:</span><br><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>PROGRESO "+(isHist()?"REGISTRADO":"DE LA TEMPORADA")+"</span> cuánto ha bajado desde su primera marca "+(isHist()?"registrada"+scopeTxt():"de la temporada")+", en segundos y en porcentaje. <b>La barra se llena del todo con un 20% de mejora</b>, así que el largo se puede comparar entre pruebas distintas: bajar un 5% en una temporada ya es bastante y la mitad de las mejoras se quedan por debajo de esa cifra. Si solo ha nadado esa prueba una vez, va vacía y lo dice: no es que no haya mejorado, es que todavía no hay con qué comparar.<div style='margin-top:7px'><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>SU SITIO EN LA PRUEBA</span> el reparto de <b>todas las marcas</b> de esa prueba, ordenadas por tiempo con "+(sexFilter==="M"?"el líder":"la líder")+" a la <b>derecha</b>. <b>Donde la montaña sube hay más "+(sexFilter==="M"?"nadadores":"nadadoras")+" juntos</b>, y donde baja están más sueltos: por eso se ve de un vistazo si está metido en el pelotón o si tiene hueco alrededor.<br>El <b>punto negro</b> es su marca, posado sobre la montaña. La zona <b>coloreada a su izquierda</b> son "+(sexFilter==="M"?"los que ya tiene por detrás":"las que ya tiene por detrás")+", así que de un vistazo se ve qué parte de la prueba ha dejado atrás. Debajo, lo que le separa de "+(sexFilter==="M"?"quien tiene justo delante":"quien tiene justo delante")+" —que es el puesto que puede ganar— y "+(sexFilter==="M"?"del líder":"de la líder")+".<br><span style='color:var(--muted)'>Si "+(sexFilter==="M"?"algún nadador va muy rezagado":"alguna nadadora va muy rezagada")+", queda fuera del dibujo para que el grueso del grupo se siga viendo, y el borde izquierdo aparece <b>desvanecido</b> para avisarlo. Pasa con 3 de cada 100 marcas, y nunca con la suya.</span></div></div>"+"<div style='margin-top:7px;padding-top:7px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m:</span><br>La pastilla "+pisPill()+" junto al nombre de la prueba avisa de que su mejor marca en esa prueba <b>se nadó en piscina larga</b>, y de que sus puntos salen de la tabla de 50 m.<br>En la pestaña <b>Mínimas</b> esa misma prueba puede enseñar <b>otra marca</b>: allí manda la que consigue la mínima, y aquí la más rápida.</div>",
+    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, cada prueba lleva una pastilla <span style='display:inline-block;padding:0 6px;border:1px solid var(--line);border-radius:999px;font-size:10px;font-weight:700;color:var(--muted)'>Historial ▾</span> que despliega todos sus tiempos "+(isHist()?"registrados"+scopeTxt():"de la temporada")+", con fecha y competición.<br>En <b>Su sitio en la prueba</b>, arrastra el dedo sobre la montaña: sale un punto con el tiempo de esa posición del eje —el del eje, no la marca de nadie— y se va solo al soltar.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b>: al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Los dos gráficos de cada prueba:</span><br><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>PROGRESO "+(isHist()?"REGISTRADO":"DE LA TEMPORADA")+"</span> cuánto ha bajado desde su primera marca "+(isHist()?"registrada"+scopeTxt():"de la temporada")+", en segundos y en porcentaje. <b>La barra se llena del todo con un 20% de mejora</b>, así que el largo se puede comparar entre pruebas distintas: bajar un 5% en una temporada ya es bastante y la mitad de las mejoras se quedan por debajo de esa cifra. Si solo ha nadado esa prueba una vez, va vacía y lo dice: no es que no haya mejorado, es que todavía no hay con qué comparar.<div style='margin-top:7px'><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>SU SITIO EN LA PRUEBA</span> el reparto de <b>todas las marcas</b> de esa prueba, ordenadas por tiempo con "+(sexFilter==="M"?"el líder":"la líder")+" a la <b>derecha</b>. <b>Donde la montaña sube hay más "+(sexFilter==="M"?"nadadores":"nadadoras")+" juntos</b>, y donde baja están más sueltos: por eso se ve de un vistazo si está metido en el pelotón o si tiene hueco alrededor.<br>El <b>punto negro</b> es su marca, posado sobre la montaña. La zona <b>coloreada a su izquierda</b> son "+(sexFilter==="M"?"los que ya tiene por detrás":"las que ya tiene por detrás")+", así que de un vistazo se ve qué parte de la prueba ha dejado atrás. Debajo, lo que le separa de "+(sexFilter==="M"?"quien tiene justo delante":"quien tiene justo delante")+" —que es el puesto que puede ganar— y "+(sexFilter==="M"?"del líder":"de la líder")+".<br><span style='color:var(--muted)'>Si "+(sexFilter==="M"?"algún nadador va muy rezagado":"alguna nadadora va muy rezagada")+", queda fuera del dibujo para que el grueso del grupo se siga viendo, y el borde izquierdo aparece <b>desvanecido</b> para avisarlo. Pasa con 3 de cada 100 marcas, y nunca con la suya.</span></div></div>"+"<div style='margin-top:7px;padding-top:7px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m:</span><br>La pastilla "+pisPill()+" junto al nombre de la prueba avisa de que su mejor marca en esa prueba <b>se nadó en piscina larga</b>, y de que sus puntos salen de la tabla de 50 m.<br>En la pestaña <b>Mínimas</b> esa misma prueba puede enseñar <b>otra marca</b>: allí manda la que consigue la mínima, y aquí la más rápida.</div>",
     /* ⚠️ Las CUATRO leyendas que pueden ver una pastilla de piscina la explican: `marcas` y
        `marcasFicha` arriba, `minimas` y `minimasFicha` aquí abajo. Y todas la pintan llamando a
        `p50Pill()` / `pisPill()`, nunca copiando el HTML: así un cambio de texto o de estilo se
@@ -3633,7 +3684,7 @@ function renderProfile(vw){
         const nd=dsqOf(name,p).length;
         if(!nd)return"";
         const anim2=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
-        return `<div class="pRow tog pRowDsq" style="${anim2}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Sin marca · ${nd} ${nd===1?"descalificación":"descalificaciones"}</div></div><div class="right"><div class="time dsqT">DSQ</div></div></div>`+histBox(name,p);
+        return `<div class="pRow tog pRowDsq" style="${anim2}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}${histPill(name,p)}</div><div class="puesto">Sin marca · ${nd} ${nd===1?"descalificación":"descalificaciones"}</div></div><div class="right"><div class="time dsqT">DSQ</div></div></div>`+histBox(name,p);
       }
       const cs=toCs(b.tiempo);const rkList=rankTime(RECORDS,p);const rk=rkList.find(x=>x.name===name);const ev=evolution(name,p);
       const dt=deltaTag(ev,0,1);const dstr=!/^Ranking /.test(b.competi||"")?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";
@@ -3693,7 +3744,7 @@ function renderProfile(vw){
         const mf=marcaFila(name,p)||b;
         const fMF=finaR(mf);
         const dMF=!/^Ranking /.test(mf.competi||"")?`<span class="tdate">${fmtDate(mf.fecha)}</span>`:"";
-        return `<div class="pRow tog mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span>${es50(mf.competi)?pisPill():""}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${fMF} pts</div></div><div class="time mono">${dMF}${esc(mf.tiempo)}</div></div>${detail}</div>`+histBox(name,p);}
+        return `<div class="pRow tog mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}${histPill(name,p)}${es50(mf.competi)?pisPill():""}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${fMF} pts</div></div><div class="time mono">${dMF}${esc(mf.tiempo)}</div></div>${detail}</div>`+histBox(name,p);}
       /* Rótulo de piscina larga en MARCAS (MMP/progreso). Se pregunta por `b`, la marca que
          ESTA fila enseña (la mejor), NO por marcaFila(): mínimas puede estar enseñando otra.
          Caso real: quien tiene su mejor 100 en 25 m pero consigue la mínima por la vía larga ve
@@ -3705,11 +3756,11 @@ function renderProfile(vw){
            de la fila entera, fuera de .pCols. `pmRow` devuelve la fila a display:block: .pRow es
            flex y con los gráficos dentro se habrían colocado como tercera columna. */
         return `<div class="pRow tog pmRow" style="${anim}">${stamp}<div class="pCols"><div class="mid">`+
-          `<div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span>${es50(b.competi)?pisPill():""}${pctBadge}</div>`+
+          `<div class="prueba ${stKlass(p)}">${esc(p)}${histPill(name,p)}${es50(b.competi)?pisPill():""}${pctBadge}</div>`+
           `<div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div></div>${der}</div>`+
           mmpProg(name,p,cs)+mmpCurva(name,p,cs,rk,rkList)+`</div>`+histBox(name,p);
       }
-      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="chev">▾</span></div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div>${der}</div>`+histBox(name,p);
+      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}${histPill(name,p)}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div>${der}</div>`+histBox(name,p);
     }).join("");
     /* La cabecera solo existe si tiene algo dentro: con la EH callada (ver profileStat) podía
        quedar un .pMinHead vacío metiendo 14 px de aire muerto encima de la primera prueba. */
@@ -3800,9 +3851,13 @@ el("view").addEventListener("click",e=>{
   const cb=cl(".cmpBtn");if(cb){cmpA=cb.dataset.n;cmpB=null;render();scrollSec();return;}
   const cp=cl(".cmpPick");if(cp){cmpB=cp.dataset.n;render();scrollSec();return;}
   const cc=cl(".cmpClose");if(cc){cmpA=null;cmpB=null;render();return;}
-  /* El gráfico se queda el toque: si no, arrastrar el punto desplegaría además el historial. */
-  if(cl(".cur"))return;
-  const pr=cl(".pRow.tog");if(pr){toggleHist(pr);return;}
+  /* EL HISTORIAL SOLO SE ABRE DESDE SU PASTILLA (21-ago-2026, petición de Fran). Antes valía
+     `cl(".pRow.tog")`, o sea cualquier punto de la fila, y eso obligaba a un parche justo aquí
+     —`if(cl(".cur"))return;`— para que arrastrar el dedo por la montaña de «Su sitio en la prueba»
+     (§4.44) no desplegara además el historial al soltar. Al acotar el toque a `.hPill`, ese parche
+     deja de hacer falta y se retira: la fila entera vuelve a ser inerte y cada gesto tiene dueño.
+     ⚠️ Si algún día se vuelve al "toca donde sea", hay que reponer el guardarraíl de `.cur`. */
+  const hp=cl(".hPill");if(hp){const pr=hp.closest(".pRow");if(pr)toggleHist(pr);return;}
   const t=cl(".name");if(t&&t.dataset&&t.dataset.n)goProfile(t.dataset.n);
 });
 /* ===== PUNTO QUE SIGUE AL DEDO EN «SU SITIO EN LA PRUEBA» (§4.44) =========================
@@ -3887,9 +3942,23 @@ function cambiarCat(c,hist){
      Ahora se conserva lo que se estaba viendo y solo se suelta si deja de existir en el nuevo
      ámbito (una competición donde esa categoría no nadó, o una ficha que ya no está). */
   yearFilter=[];
-  const fechaPrev=sumFecha,compPrev=compsFor;
+  /* EL RESUMEN ABIERTO SE CIERRA (21-ago-2026, petición de Fran). Un resumen es el de UNA
+     competición vista DESDE UNA categoría: al cambiar de ámbito deja de ser el mismo documento.
+     Antes sobrevivía cuando esa jornada existía también en la categoría nueva (el 49,1 % de los
+     casos) y se llevaba por delante la banda cuando no (el 50,9 %): dos comportamientos para el
+     mismo gesto. Ahora siempre se cierra, y la banda se queda como estaba.
+     ⚠️ `sumFecha` NO se toca aquí a propósito: si esa competición sigue existiendo en la categoría
+     nueva, al desplegar la banda la encuentras marcada con el ✓ donde la dejaste. Y si no existe,
+     la suelta el guardarraíl de `renderSummary`. Ponerlo a `null` aquí era, además, la mitad de la
+     causa del parpadeo que se cazó en su día (ver el aviso de abajo). */
+  sumShown=false;sumOpen=false;
+  const compPrev=compsFor;
   applySex();
-  if(fechaPrev&&summaryFechas().indexOf(fechaPrev)<0){sumFecha=null;render();}
+  /* Aquí había un `if(fechaPrev&&summaryFechas().indexOf(fechaPrev)<0){sumFecha=null;render();}`.
+     Se retira: soltaba la jornada huérfana DESPUÉS de que `applySex()` ya hubiera llamado a
+     `renderSummary` con ella —o sea, después del estropicio— y encima forzaba un segundo `render()`.
+     El guardarraíl vive ahora dentro de `renderSummary`, que es el único sitio donde se sabe si la
+     jornada tiene filas, y desde allí cubre también el cambio de sexo y el de temporada. */
   if(compPrev&&!ALLRECS.some(r=>r.nadadora===compPrev&&r.sexo===sexFilter&&(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||grupoDe(r.anio,r.fecha)===catFilter))){compsFor=null;badgesFor=null;cmpA=null;cmpB=null;render();}
 }
 el("segCatH").addEventListener("change",e=>{cambiarCat(e.target.value,false);});
