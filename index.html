@@ -428,16 +428,21 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
    CUALQUIER punto de la fila: no se veía que la opción existiera, y ese modelo ya había obligado a
    un parche en el manejador (`if(cl(".cur"))return;`) para que arrastrar el punto de la curva no
    abriera además el historial. Con la pastilla el toque tiene un solo dueño y ese parche sobra.
-   ⚠️ NO CRECE LA FILA: 11px sobre interlineado 13px + 2px de borde = 15px de alto, y la línea de
-   `.prueba` mide 16 × 1,2 = 19,2px. Es el mismo razonamiento medido de `.mb` (§4.34), que cabía en
-   una línea de 13px.
+   ⚠️ VIVE EN LA COLUMNA DERECHA, la última: debajo del tiempo y, cuando la hay, debajo de la
+   etiqueta `ÚLT. COMP.` (Fran, 21-ago-2026; una primera versión la puso junto al nombre de la
+   prueba y se movió de sitio). Va detrás de elementos de bloque, así que abre renglón propio sola,
+   y `.right` ya es `text-align:right`: queda alineada con el tiempo sin fijar anchos.
    ⚠️ El área de toque se agranda con `::after` en posición ABSOLUTA, que no ocupa sitio en la
    maquetación: 15px de dibujo, ~31px de dedo. Misma técnica que `.row .name`. */
-.hPill{display:inline-block;position:relative;margin-left:6px;padding:0 7px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;line-height:13px;letter-spacing:.01em;vertical-align:2px;cursor:pointer;-webkit-tap-highlight-color:rgba(14,124,147,.12)}
-.hPill::after{content:"";position:absolute;left:-7px;right:-7px;top:-8px;bottom:-8px}
+.hPill{display:inline-block;position:relative;margin-top:5px;padding:0 7px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;font-family:'Inter',sans-serif;font-size:11px;font-weight:700;line-height:13px;letter-spacing:.01em;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:rgba(14,124,147,.12)}
+.hPill::after{content:"";position:absolute;left:-9px;right:-9px;top:-8px;bottom:-8px}
 .hPill:active{background:var(--chip);color:var(--brand-deep);border-color:var(--brand)}
-.hPill .chev{font-size:10px;margin-left:4px;vertical-align:0;color:inherit}
+.hPill .chev{font-size:10px;margin-left:4px;vertical-align:0;color:inherit;display:inline-block;transition:transform .2s}
 .pRow.open .hPill{background:var(--chip);color:var(--brand-deep);border-color:var(--brand)}
+.pRow.open .hPill .chev{transform:rotate(180deg)}
+/* En Mínimas `.right` cuelga de `.mHead`, no de `.pRow`: sin esto el relleno de 6px se sumaría al
+   `gap:10px` del flex y estrecharía la columna del nombre de la prueba. */
+.mHead>.right{padding-left:0}
 .histBox{display:none;padding:4px 13px 10px;border-top:1px dashed var(--line);background:#f7fbfc;animation:vfade .18s ease-out}
 .histRow{display:flex;gap:8px;align-items:baseline;font-size:12px;color:var(--ink);padding:3px 0}
 .histRow .hd{color:var(--muted);min-width:62px}
@@ -3684,7 +3689,7 @@ function renderProfile(vw){
         const nd=dsqOf(name,p).length;
         if(!nd)return"";
         const anim2=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
-        return `<div class="pRow tog pRowDsq" style="${anim2}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}${histPill(name,p)}</div><div class="puesto">Sin marca · ${nd} ${nd===1?"descalificación":"descalificaciones"}</div></div><div class="right"><div class="time dsqT">DSQ</div></div></div>`+histBox(name,p);
+        return `<div class="pRow tog pRowDsq" style="${anim2}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}</div><div class="puesto">Sin marca · ${nd} ${nd===1?"descalificación":"descalificaciones"}</div></div><div class="right"><div class="time dsqT">DSQ</div>${histPill(name,p)}</div></div>`+histBox(name,p);
       }
       const cs=toCs(b.tiempo);const rkList=rankTime(RECORDS,p);const rk=rkList.find(x=>x.name===name);const ev=evolution(name,p);
       const dt=deltaTag(ev,0,1);const dstr=!/^Ranking /.test(b.competi||"")?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";
@@ -3744,23 +3749,32 @@ function renderProfile(vw){
         const mf=marcaFila(name,p)||b;
         const fMF=finaR(mf);
         const dMF=!/^Ranking /.test(mf.competi||"")?`<span class="tdate">${fmtDate(mf.fecha)}</span>`:"";
-        return `<div class="pRow tog mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}${histPill(name,p)}${es50(mf.competi)?pisPill():""}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${fMF} pts</div></div><div class="time mono">${dMF}${esc(mf.tiempo)}</div></div>${detail}</div>`+histBox(name,p);}
+        /* ⚠️ En Mínimas el tiempo era hijo directo de `.mHead`, que es un flex con
+           `justify-content:space-between`. Colgar la pastilla ahí como TERCER hijo habría repartido
+           los tres a lo ancho. Se envuelve tiempo + pastilla en la misma `.right` que usan las otras
+           tres filas, así que `.mHead` sigue teniendo dos hijos y la columna derecha se escribe
+           igual en toda la ficha. Aquí no hay `ÚLT. COMP.` (no lo lleva esta pestaña). */
+        return `<div class="pRow tog mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}${es50(mf.competi)?pisPill():""}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${fMF} pts</div></div><div class="right"><div class="time mono">${dMF}${esc(mf.tiempo)}</div>${histPill(name,p)}</div></div>${detail}</div>`+histBox(name,p);}
       /* Rótulo de piscina larga en MARCAS (MMP/progreso). Se pregunta por `b`, la marca que
          ESTA fila enseña (la mejor), NO por marcaFila(): mínimas puede estar enseñando otra.
          Caso real: quien tiene su mejor 100 en 25 m pero consigue la mínima por la vía larga ve
          `Piscina 50m` en Mínimas y no aquí, y es correcto: cada pestaña rotula SU marca.
          En topfina no va: lo dice el selector de piscina (§4.20). */
-      const der=`<div class="right"><div class="time mono">${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}</div>`;
+      /* ⚠️ LA PASTILLA VA LA ÚLTIMA DE LA COLUMNA DERECHA (Fran, 21-ago-2026): debajo del tiempo y,
+         cuando aparece `ÚLT. COMP.`, debajo de eso. `dt` ya es lo último, así que basta con
+         añadirla detrás. `der` lo usan DOS filas —MMP/progreso y Récords—, así que un solo cambio
+         cubre las dos. */
+      const der=`<div class="right"><div class="time mono">${dstr}${esc(b.tiempo)}</div>${recs}${(!tf&&dt)?("<div>"+dt+"</div>"):""}${histPill(name,p)}</div>`;
       if(view==="marcas"){
         /* La insignia TOP se muda al lado del nombre de la prueba y los dos gráficos van a lo ancho
            de la fila entera, fuera de .pCols. `pmRow` devuelve la fila a display:block: .pRow es
            flex y con los gráficos dentro se habrían colocado como tercera columna. */
         return `<div class="pRow tog pmRow" style="${anim}">${stamp}<div class="pCols"><div class="mid">`+
-          `<div class="prueba ${stKlass(p)}">${esc(p)}${histPill(name,p)}${es50(b.competi)?pisPill():""}${pctBadge}</div>`+
+          `<div class="prueba ${stKlass(p)}">${esc(p)}${es50(b.competi)?pisPill():""}${pctBadge}</div>`+
           `<div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div></div>${der}</div>`+
           mmpProg(name,p,cs)+mmpCurva(name,p,cs,rk,rkList)+`</div>`+histBox(name,p);
       }
-      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}${histPill(name,p)}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div>${der}</div>`+histBox(name,p);
+      return `<div class="pRow tog" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div>${der}</div>`+histBox(name,p);
     }).join("");
     /* La cabecera solo existe si tiene algo dentro: con la EH callada (ver profileStat) podía
        quedar un .pMinHead vacío metiendo 14 px de aire muerto encima de la primera prueba. */
