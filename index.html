@@ -494,12 +494,30 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
    azul es la del líder. NO se dibuja la de quien va justo delante: ya va escrita debajo con su
    nombre, y una tercera línea en un dibujo de 34 px solo ensuciaba (Fran, 18-ago-2026). */
 .pa{margin-top:11px}
-.cur{position:relative;height:34px;margin:0 2px}
+.cur{position:relative;height:34px;margin:0 2px;touch-action:pan-y}
 .cur svg{display:block;width:100%;height:34px;overflow:visible}
 /* Un solo punto, posado SOBRE la línea, a la altura que le toque. Antes eran dos barritas
    verticales (la suya y la del líder) con una bola encima; Fran las quitó las dos: el líder no
    necesita marca porque siempre está en el extremo derecho por construcción (19-ago-2026). */
 .curPt{position:absolute;width:5.5px;height:5.5px;border-radius:50%;background:var(--ink);transform:translate(-50%,-50%);z-index:2}
+/* --- punto que sigue al dedo sobre la montaña (§4.44) ---
+   ⚠️ `.scrub` va a `inset:0` porque sus hijos se colocan en %: sin caja propia el % se calcula
+   sobre 0 px de ancho y el punto y la etiqueta se amontonan en el borde izquierdo. Fue el fallo
+   de la primera muestra.
+   ⚠️ `.pRow` recorta (`overflow:hidden`): el globo NO puede salirse de los 34 px del gráfico. En
+   vez de saltar arriba y abajo, SUBE HASTA EL TECHO Y SE QUEDA ahí (tope en JS): así casi nunca
+   se mueve en vertical. Solo baja bajo el punto en los picos, donde arriba ya no cabe, y con
+   histéresis para que no parpadee al cruzar el umbral. La transición es del `top`, nunca del
+   `left`: el globo tiene que seguir al dedo en horizontal sin retraso. */
+.scrub{position:absolute;inset:0;z-index:3;pointer-events:none;opacity:0;transition:opacity .28s ease}
+.scrub.on{opacity:1}
+.sPt{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--surface);
+  border:2px solid var(--brand);transform:translate(-50%,-50%)}
+.sLab{position:absolute;white-space:nowrap;transform:translate(-50%,-100%);background:var(--ink);
+  color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px}
+.sLab.baja{transform:translate(-50%,0)}
+.sLab.desliza{transition:top .16s cubic-bezier(.22,.61,.36,1)}
+@media(prefers-reduced-motion:reduce){.sLab.desliza{transition:none}}
 /* Borde izquierdo desvanecido cuando alguien queda fuera del corte. Sin raya de corte: se probó
    y ensuciaba. Es el gesto de «el eje sigue por aquí» y nada más. */
 .curFade{position:absolute;left:0;top:0;bottom:0;width:26px;z-index:1;pointer-events:none;
@@ -827,7 +845,7 @@ function claveMed(anio,fecha){const c=tablesAt(fecha).CAT||{};const k=catOf(anio
    ⚠️ Es la misma familia de fallos del §4.7 punto 5 del manual. Al añadir cualquier texto que hable
    de "todas las temporadas", pasarlo por aquí. */
 function scopeTxt(){return (isHist()&&catFilter&&catFilter!=="all"&&CAT_LAB[catFilter])?" como "+CAT_LAB[catFilter].toLowerCase():"";}
-const CAT_LAB={alevin:"Alevín",infantil:"Infantil",junior:"Júnior",absjov:"Abs Jov",absoluto:"Absoluto"};
+const CAT_LAB={alevin:"Alevín",infantil:"Infantil",junior:"Júnior",absjov:"Abs Jov",absoluto:"Absoluto",absoluta:"Absoluta"};
 /* EDAD de una marca, con la MISMA convención que la ficha usa para los récords de Álava: la que se
    cumple en el año en que ACABA esa temporada. Alevín → 12 y 13 · Infantil → 14 y 15.
    ⚠️ En Histórico el año de nacimiento no sirve para filtrar: es una cohorte, y la lista crecería
@@ -859,9 +877,17 @@ const ORD_LAB={"1":"1.º año","2":"2.º año","3":"3.º año"};
    ⚠️ Aquí se descartó filtrar por EDAD (12/13/14/15 años). Lo pilló Fran: "Todas + 12 años" es
    idéntico a "Alevín + 1.º año", porque los 12 años solo existen en alevín. No ofrecía nada que no
    estuviera ya. NO REINTRODUCIR. */
-function claveEdad(r){if(isHist()&&catFilter!=="all"){const o=ordenDe(r.anio,r.fecha);if(o)return o;}
+function claveEdad(r){
+  /* Dentro de Absoluta la cohorte no es el año de nacimiento —serían doce botones, del 1983 al
+     2005— sino: «abs» para los absolutos y el año para los dos de abs joven. También en Histórico:
+     el «1.º año» de una cohorte abierta no significa nada. */
+  if(catGrupo(catOf(r.anio,r.fecha))==="absoluta")
+    return catOf(r.anio,r.fecha)==="absjov"?String(r.anio):"abs";
+  if(isHist()&&catFilter!=="all"){const o=ordenDe(r.anio,r.fecha);if(o)return o;}
   return r.anio;}   /* sin orden (absoluto) se vuelve al año, o los botones saldrían vacíos */
-function claveLab(v){return (isHist()&&catFilter!=="all")?(ORD_LAB[v]||v):v;}
+const ABS_LAB={abs:"Absolutos","2006":"Abs. Joven 06","2007":"Abs. Joven 07","0607":"Abs. Joven"};
+function claveLab(v){if(catFilter==="absoluta")return ABS_LAB[v]||v;
+  return (isHist()&&catFilter!=="all")?(ORD_LAB[v]||v):v;}
 function isHist(){return season===HIST;}
 function seasonOf(f){const y=+String(f).slice(0,4),m=+String(f).slice(5,7);if(!y)return"";const st=m>=9?y:y-1;return st+"/"+String((st+1)%100).padStart(2,"0");}
 function initSeasons(){SEASONS=[...new Set(ALLRECS.map(r=>seasonOf(r.fecha)).filter(Boolean))].sort();
@@ -880,13 +906,30 @@ function fillSeasons(){const multi=SEASONS.length>1;const sel=el("seasonSel");
    es ÁMBITO, no filtro). Una sola función para que no puedan volver a divergir. */
 function scopeRecs(){
   let s=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
-  if(catFilter&&catFilter!=="all")s=s.filter(r=>catOf(r.anio,r.fecha)===catFilter);
+  if(catFilter&&catFilter!=="all")s=s.filter(r=>grupoDe(r.anio,r.fecha)===catFilter);
   return s;
 }
+/* ===== «ABSOLUTA»: UNA CATEGORÍA POR FUERA, DOS TABLAS POR DENTRO (§4.45) ==================
+   Fran, 21-ago-2026: `absjov` y `absoluto` se presentan como una sola categoría «Absoluta».
+   ⚠️ La fusión es DE AGRUPACIÓN, NUNCA DE TABLAS. Por dentro siguen existiendo las dos claves de
+   `CAT`, y con ellas SUS mínimas y SUS récords, que se buscan por año de nacimiento (`keyAnio`).
+   Si se fusionaran metiendo el 06 y el 07 en la categoría abierta, `keyAnio` devolvería «abs» para
+   ellos y perderían su mínima propia —28.96 pasaría a exigirles 28.57 en 50 libre—. NO HACERLO.
+   Manda el grupo en: encabezado, ámbito del ranking, selector de cohorte y reparto de insignias.
+   Manda la categoría real en: mínimas, récords, `keyAnio`, `ordenDe`. */
+const GRUPO={absjov:"absoluta",absoluto:"absoluta"};
+function catGrupo(k){return GRUPO[k]||k||"";}
+function grupoDe(anio,fecha){return catGrupo(catOf(anio,fecha));}
+function esClaveCat(a,C){return (C&&C[a]!==undefined)||a==="absoluta";}
 function catsPresent(){
   const rs=ALLRECS.filter(r=>isHist()||seasonOf(r.fecha)===season);
-  const set=new Set();rs.forEach(r=>{const c=catOf(r.anio,r.fecha);if(c)set.add(c);});
-  return catKeys(tablesFor(isHist()?season:season).CAT||CAT).filter(c=>set.has(c));
+  const set=new Set();rs.forEach(r=>{const c=grupoDe(r.anio,r.fecha);if(c)set.add(c);});
+  /* el orden lo sigue marcando `catKeys` (del año más nuevo al más viejo); al agrupar,
+     `absjov` y `absoluto` caen en el mismo sitio y hay que quitar el duplicado. */
+  const out=[];
+  catKeys(tablesFor(isHist()?season:season).CAT||CAT).map(catGrupo)
+    .forEach(c=>{if(set.has(c)&&out.indexOf(c)<0)out.push(c);});
+  return out;
 }
 /* ⚠️ LA CATEGORÍA ES BINARIA Y SIEMPRE HAY UNA ACTIVA: Alevín o Infantil, nunca «Todas». Fran:
    "es como un selector de sexo, es lo que va a segmentar todo". Va en la CABECERA junto al de
@@ -932,7 +975,7 @@ function fillCats(){
         +cs.map(c=>`<button data-c="${c}"${c===catHist?' class="on"':''}>${CAT_LAB[c]}</button>`).join("");}
   }
 }
-function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||catOf(r.anio,r.fecha)===catFilter)).map(claveEdad).filter(Boolean))].sort();const ys=(only&&only.length)?only.slice().sort():all;yearFilter=yearFilter.filter(y=>ys.includes(y));/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
+function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||grupoDe(r.anio,r.fecha)===catFilter)).map(claveEdad).filter(Boolean))].sort();const ys=(only&&only.length)?only.slice().sort():all;yearFilter=yearFilter.filter(y=>ys.includes(y));/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
      de ser cierta: el botón absoluto pasa a llamarse "Todos". */
   const lab=isHist()?(catFilter==="all"?"Todas":"Todos"):((CAT_LAB[catFilter]||"Alevín")+(all.length?" "+all.map(y=>y.slice(2)).join("/"):""));
   seg.innerHTML=`<button data-y="all"${yearAll()?' class="on"':''}>${lab}</button>`
@@ -2813,8 +2856,11 @@ function legPodios(nad,corto,progExtra){
   const L=corto?["Mejor del día","Marcas","Progresión","Forma 🔥"]
                :["Mejor "+nad+" del día","Mejores marcas del día","Mayores progresiones del día","En forma 🔥"];
   const g=corto?[" — mejor "+nad+" del día"," — mejores marcas del día"," — mayores progresiones del día",""]:["","","",""];
-  return "🏆 <b>"+L[0]+"</b>"+g[0]+": suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); podio por año.<br>"
-   +"<b>"+L[1]+"</b>"+g[1]+": las marcas con más puntos FINA de la competición, por año.<br>"
+  /* ⚠️ En Absoluta el podio NO es por año (§4.45): si la leyenda siguiera diciéndolo, mentiría. */
+  const pAnio=(catFilter==="absoluta")?"podio para toda la categoría":"podio por año";
+  const pAnio2=(catFilter==="absoluta")?"de toda la categoría":"por año";
+  return "🏆 <b>"+L[0]+"</b>"+g[0]+": suma de los puntos FINA de todas sus pruebas de esa competición (sin relevos); "+pAnio+".<br>"
+   +"<b>"+L[1]+"</b>"+g[1]+": las marcas con más puntos FINA de la competición, "+pAnio2+".<br>"
    +"<b>"+L[2]+"</b>"+g[2]+": quienes más puntos FINA ganaron respecto a su mejor marca anterior"+(progExtra||"")+".<br>"
    +"<b>"+L[3]+"</b>"+g[3]+": mayor progresión FINA acumulada en las 3 últimas jornadas.";}
 function legOlimpico(){return "El orden del medallero es olímpico: mandan los oros, luego las platas y luego los bronces.<br>⚠️ No son medallas reales: es simplemente un juego.";}
@@ -2901,7 +2947,7 @@ function dsqOf(name,prueba){
   return ALLDSQ.filter(r=>r.nadadora===name&&r.prueba===prueba&&r.sexo===sexFilter
     &&(!_P50||es50(r.competi))
     &&(isHist()||seasonOf(r.fecha)===season)
-    &&(!catFilter||catFilter==="all"||catOf(r.anio,r.fecha)===catFilter));
+    &&(!catFilter||catFilter==="all"||grupoDe(r.anio,r.fecha)===catFilter));
 }
 function histBox(name,p){
   const rows=RECORDS.filter(r=>r.nadadora===name&&r.prueba===p).map(r=>({fecha:r.fecha,competi:r.competi,tiempo:r.tiempo,cs:toCs(r.tiempo)}));
@@ -3055,7 +3101,10 @@ function mmpCurva(name,p,cs,rk,rkList){
   const xy=X(cs),gid="cg"+(++CURVA_N);
   /* Relleno partido en su posición, con el tono fuerte a la IZQUIERDA: las que ya tiene detrás.
      Así el relleno deja de ser adorno y dice qué porción del campo ha dejado atrás. */
-  return `<div class="pa">${rot}<div class="cur">`+
+  /* El gesto necesita dos cosas que solo se saben aquí: la escala del eje (lid/corte, en
+     centésimas) y la altura de la silueta en las 48 casillas, para posar el punto SOBRE la línea. */
+  return `<div class="pa">${rot}<div class="cur" data-lid="${lid}" data-corte="${corte}" `+
+    `data-h="${P.map(q=>q[1].toFixed(1)).join(",")}">`+
     `<svg viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true"><defs>`+
     `<linearGradient id="${gid}" x1="0" x2="1"><stop offset="0" stop-color="#a8d3e2"/><stop offset="1" stop-color="#cde5ed"/></linearGradient>`+
     `<clipPath id="c${gid}"><rect x="0" y="0" width="${xy.toFixed(2)}" height="34"/></clipPath></defs>`+
@@ -3064,6 +3113,7 @@ function mmpCurva(name,p,cs,rk,rkList){
     `<path d="${linea}" fill="none" stroke="#7fb6c9" stroke-width="0.8" vector-effect="non-scaling-stroke"/></svg>`+
     (fuera?`<div class="curFade"></div>`:"")+
     `<div class="curPt" style="left:${xy.toFixed(2)}%;top:${P[Math.round(xy/100*(NB-1))][1].toFixed(1)}px"></div>`+
+    `<div class="scrub"><div class="sPt"></div><div class="sLab mono"></div></div>`+
     `</div>${pie}</div>`;
 }
 
@@ -3212,7 +3262,7 @@ function render(){
 
   // legend
   const legs={marcas:"<span style='font-weight:700'>Ranking por MMP.</span> Cada nadador/a con su <b>mejor marca personal</b> "+(isHist()?"de todas las temporadas"+scopeTxt():"de la temporada")+" en la prueba elegida. <b>Nº</b> = puesto · <b>pts</b> = puntos FINA, que sirven para comparar marcas de pruebas distintas: cuantos más puntos, mejor la marca."+((isHist()||SEASONS.indexOf(season)<1)?"":"<br><span style='font-weight:600;letter-spacing:.02em;margin-right:5px'>MMP</span>bajo el club: su mejor marca de <b>temporadas anteriores</b>, con su fecha. Solo aparece mientras la de esta temporada sea más lenta; al superarla desaparece. No cuenta para el puesto ni para los puntos.")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Indicadores de la última competición.</span> <span style='color:var(--muted)'>Solo en marcas logradas en la última competición.</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ variación de puesto<br><span class='pos new' style='display:inline-block;margin-top:0;padding:0 5px;font-size:10px'>nuevo</span> primer registro en esta prueba</div>"+(minsOn()?"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Mínimas.</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de <b>Euskadi</b> / <b>España</b> conseguida. En la pestaña <b>Mínimas</b> se ven todas las de cada nadador/a.</div>":"")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m.</span><br>La pastilla "+p50Pill()+" junto a los puntos avisa de que esa marca <b>se nadó en piscina larga</b>. El ranking <b>no separa por piscina</b>: esas marcas compiten en la misma lista y se ordenan por tiempo, igual que las demás.<br>Los <b>puntos</b> sí distinguen: cada marca puntúa contra la tabla de su propia piscina. Por eso una marca de 50 m puede tener <b>más puntos</b> que otra de 25 m que es más rápida.</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Fichas.</span><br>Toca un <b>nombre</b> de la lista (o búscalo) para abrir su ficha; <b>← Volver</b> regresa al ranking.</div><span style='display:block;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);color:var(--muted)'>El botón flotante ⓘ abre esta ventana con la explicación de lo que tengas seleccionado en cada momento: cambia según estés en Marcas, Mínimas, Top FINA o en una ficha.</span>",
-    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos sus tiempos "+(isHist()?"registrados"+scopeTxt():"de la temporada")+", con fecha y competición.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b>: al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Los dos gráficos de cada prueba:</span><br><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>PROGRESO "+(isHist()?"REGISTRADO":"DE LA TEMPORADA")+"</span> cuánto ha bajado desde su primera marca "+(isHist()?"registrada"+scopeTxt():"de la temporada")+", en segundos y en porcentaje. <b>La barra se llena del todo con un 20% de mejora</b>, así que el largo se puede comparar entre pruebas distintas: bajar un 5% en una temporada ya es bastante y la mitad de las mejoras se quedan por debajo de esa cifra. Si solo ha nadado esa prueba una vez, va vacía y lo dice: no es que no haya mejorado, es que todavía no hay con qué comparar.<div style='margin-top:7px'><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>SU SITIO EN LA PRUEBA</span> el reparto de <b>todas las marcas</b> de esa prueba, ordenadas por tiempo con "+(sexFilter==="M"?"el líder":"la líder")+" a la <b>derecha</b>. <b>Donde la montaña sube hay más "+(sexFilter==="M"?"nadadores":"nadadoras")+" juntos</b>, y donde baja están más sueltos: por eso se ve de un vistazo si está metido en el pelotón o si tiene hueco alrededor.<br>El <b>punto negro</b> es su marca, posado sobre la montaña. La zona <b>coloreada a su izquierda</b> son "+(sexFilter==="M"?"los que ya tiene por detrás":"las que ya tiene por detrás")+", así que de un vistazo se ve qué parte de la prueba ha dejado atrás. Debajo, lo que le separa de "+(sexFilter==="M"?"quien tiene justo delante":"quien tiene justo delante")+" —que es el puesto que puede ganar— y "+(sexFilter==="M"?"del líder":"de la líder")+".<br><span style='color:var(--muted)'>Si "+(sexFilter==="M"?"algún nadador va muy rezagado":"alguna nadadora va muy rezagada")+", queda fuera del dibujo para que el grueso del grupo se siga viendo, y el borde izquierdo aparece <b>desvanecido</b> para avisarlo. Pasa con 3 de cada 100 marcas, y nunca con la suya.</span></div></div>"+"<div style='margin-top:7px;padding-top:7px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m:</span><br>La pastilla "+pisPill()+" junto al nombre de la prueba avisa de que su mejor marca en esa prueba <b>se nadó en piscina larga</b>, y de que sus puntos salen de la tabla de 50 m.<br>En la pestaña <b>Mínimas</b> esa misma prueba puede enseñar <b>otra marca</b>: allí manda la que consigue la mínima, y aquí la más rápida.</div>",
+    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, toca una <b>prueba</b> (▾) para desplegar su historial: todos sus tiempos "+(isHist()?"registrados"+scopeTxt():"de la temporada")+", con fecha y competición.<br>En <b>Su sitio en la prueba</b>, arrastra el dedo sobre la montaña: sale un punto con el tiempo de esa posición del eje —el del eje, no la marca de nadie— y se va solo al soltar.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b>: al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Los dos gráficos de cada prueba:</span><br><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>PROGRESO "+(isHist()?"REGISTRADO":"DE LA TEMPORADA")+"</span> cuánto ha bajado desde su primera marca "+(isHist()?"registrada"+scopeTxt():"de la temporada")+", en segundos y en porcentaje. <b>La barra se llena del todo con un 20% de mejora</b>, así que el largo se puede comparar entre pruebas distintas: bajar un 5% en una temporada ya es bastante y la mitad de las mejoras se quedan por debajo de esa cifra. Si solo ha nadado esa prueba una vez, va vacía y lo dice: no es que no haya mejorado, es que todavía no hay con qué comparar.<div style='margin-top:7px'><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>SU SITIO EN LA PRUEBA</span> el reparto de <b>todas las marcas</b> de esa prueba, ordenadas por tiempo con "+(sexFilter==="M"?"el líder":"la líder")+" a la <b>derecha</b>. <b>Donde la montaña sube hay más "+(sexFilter==="M"?"nadadores":"nadadoras")+" juntos</b>, y donde baja están más sueltos: por eso se ve de un vistazo si está metido en el pelotón o si tiene hueco alrededor.<br>El <b>punto negro</b> es su marca, posado sobre la montaña. La zona <b>coloreada a su izquierda</b> son "+(sexFilter==="M"?"los que ya tiene por detrás":"las que ya tiene por detrás")+", así que de un vistazo se ve qué parte de la prueba ha dejado atrás. Debajo, lo que le separa de "+(sexFilter==="M"?"quien tiene justo delante":"quien tiene justo delante")+" —que es el puesto que puede ganar— y "+(sexFilter==="M"?"del líder":"de la líder")+".<br><span style='color:var(--muted)'>Si "+(sexFilter==="M"?"algún nadador va muy rezagado":"alguna nadadora va muy rezagada")+", queda fuera del dibujo para que el grueso del grupo se siga viendo, y el borde izquierdo aparece <b>desvanecido</b> para avisarlo. Pasa con 3 de cada 100 marcas, y nunca con la suya.</span></div></div>"+"<div style='margin-top:7px;padding-top:7px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m:</span><br>La pastilla "+pisPill()+" junto al nombre de la prueba avisa de que su mejor marca en esa prueba <b>se nadó en piscina larga</b>, y de que sus puntos salen de la tabla de 50 m.<br>En la pestaña <b>Mínimas</b> esa misma prueba puede enseñar <b>otra marca</b>: allí manda la que consigue la mínima, y aquí la más rápida.</div>",
     /* ⚠️ Las CUATRO leyendas que pueden ver una pastilla de piscina la explican: `marcas` y
        `marcasFicha` arriba, `minimas` y `minimasFicha` aquí abajo. Y todas la pintan llamando a
        `p50Pill()` / `pisPill()`, nunca copiando el HTML: así un cambio de texto o de estilo se
@@ -3725,9 +3775,79 @@ el("view").addEventListener("click",e=>{
   const cb=cl(".cmpBtn");if(cb){cmpA=cb.dataset.n;cmpB=null;render();scrollSec();return;}
   const cp=cl(".cmpPick");if(cp){cmpB=cp.dataset.n;render();scrollSec();return;}
   const cc=cl(".cmpClose");if(cc){cmpA=null;cmpB=null;render();return;}
+  /* El gráfico se queda el toque: si no, arrastrar el punto desplegaría además el historial. */
+  if(cl(".cur"))return;
   const pr=cl(".pRow.tog");if(pr){toggleHist(pr);return;}
   const t=cl(".name");if(t&&t.dataset&&t.dataset.n)goProfile(t.dataset.n);
 });
+/* ===== PUNTO QUE SIGUE AL DEDO EN «SU SITIO EN LA PRUEBA» (§4.44) =========================
+   Delegado en #view: los gráficos se repintan enteros en cada render(), así que unos manejadores
+   colgados de cada <div class="cur"> se perderían en el primer repintado.
+   El tiempo que enseña es el de ESA VERTICAL DEL EJE, no la marca de nadie: el eje es continuo y
+   puede caer en un hueco donde no nadó nadie (decisión de Fran, 21-ago-2026). */
+let SCRUB=null,SCRUB_T=null;
+function scrubMover(cur,cx){
+  const sc=cur.querySelector(".scrub");if(!sc)return;
+  const pt=sc.querySelector(".sPt"),lab=sc.querySelector(".sLab");
+  const H=(cur.dataset.h||"").split(",").map(Number);if(H.length<2)return;
+  const lid=+cur.dataset.lid,corte=+cur.dataset.corte;
+  const r=cur.getBoundingClientRect();if(!r.width)return;
+  const x=Math.max(0,Math.min(100,((cx-r.left)/r.width)*100));
+  const f=x/100*(H.length-1),i=Math.floor(f),j=Math.min(H.length-1,i+1);
+  const y=H[i]+(H[j]-H[i])*(f-i);
+  pt.style.left=x.toFixed(2)+"%";pt.style.top=y.toFixed(1)+"px";
+  lab.textContent=fmtClock(Math.round(lid+(100-x)/100*(corte-lid)));
+  lab.style.left=Math.max(12,Math.min(88,x)).toFixed(2)+"%";
+  /* ALTO DEL GLOBO ≈ 17 px (11 px de letra + 2+2 de relleno). Va pegado al punto, pero con TOPE:
+     al llegar al techo del gráfico se queda ahí en vez de seguir subiendo, así que en la mayor
+     parte del recorrido no se mueve en vertical. Solo se pone debajo en los picos —donde arriba
+     ya no cabe— y con histéresis (baja por debajo de 12, vuelve a subir por encima de 16) para
+     que no parpadee yendo y viniendo en el umbral. */
+  const ALTO=17,SEP=8;
+  /* COLOCACIÓN DEL GLOBO — dos reglas, en este orden:
+     1) NUNCA tapa el punto. Se consigue no recortando: el globo se queda siempre a SEP píxeles
+        del punto (8 > 4,5 del radio), arriba o abajo. Fue el recorte contra el techo lo que lo
+        hacía montarse encima en las alturas intermedias.
+     2) De los dos lados se elige EL QUE MENOS SE SALE del gráfico, y solo se cambia de lado si el
+        otro mejora por más de 4 px. Ese margen es la histéresis: con un umbral seco, una silueta
+        de varias jorobas hacía cambiar de lado hasta nueve veces en un barrido. */
+  /* El LADO se decide con la altura SUAVIZADA (media de ±6 casillas, ≈12 % del eje), no con la
+     instantánea: en una silueta de peine, cada diente hacía cambiar de lado. La POSICIÓN, en
+     cambio, usa la altura real, que es lo que mantiene los 8 px de separación con el punto. */
+  let suma=0,cuenta=0;
+  for(let k=-6;k<=6;k++){const q=i+k;if(q>=0&&q<H.length){suma+=H[q];cuenta++;}}
+  const ySuave=suma/cuenta;
+  const sobraArriba=Math.max(0,ALTO+SEP-ySuave), sobraAbajo=Math.max(0,ySuave+SEP+ALTO-34);
+  let baja=lab.classList.contains("baja");
+  if(baja?(sobraArriba+4<sobraAbajo):(sobraAbajo+4<sobraArriba))baja=!baja;
+  /* Tope duro: en la cresta de un pico alto el lado suavizado se saldría hasta 21 px por arriba,
+     encima del rótulo. Si el lado elegido se sale más de 12 px y el otro cabe mejor, se cambia
+     aunque la suavizada dijera lo contrario. Pasa solo en la cresta y devuelve dos cambios. */
+  const fueraA=Math.max(0,ALTO+SEP-y), fueraB=Math.max(0,y+SEP+ALTO-34);
+  if(baja?(fueraB>12&&fueraA<fueraB):(fueraA>12&&fueraB<fueraA))baja=!baja;
+  lab.classList.toggle("baja",baja);
+  const top=baja?y+SEP:y-SEP;
+  /* la primera colocación no se anima: aparecería viajando desde donde quedó la vez anterior */
+  if(!sc.classList.contains("on")){lab.classList.remove("desliza");lab.style.top=top.toFixed(1)+"px";
+    requestAnimationFrame(()=>lab.classList.add("desliza"));}
+  else lab.style.top=top.toFixed(1)+"px";
+  sc.classList.add("on");clearTimeout(SCRUB_T);
+}
+function scrubSoltar(){
+  if(!SCRUB)return;const sc=SCRUB.querySelector(".scrub");SCRUB=null;
+  clearTimeout(SCRUB_T);SCRUB_T=setTimeout(()=>{if(sc&&sc.classList)sc.classList.remove("on");},5000);
+}
+el("view").addEventListener("touchstart",e=>{
+  const c=e.target&&e.target.closest?e.target.closest(".cur"):null;if(!c)return;
+  SCRUB=c;scrubMover(c,e.touches[0].clientX);},{passive:true});
+el("view").addEventListener("touchmove",e=>{
+  if(!SCRUB)return;scrubMover(SCRUB,e.touches[0].clientX);e.preventDefault();},{passive:false});
+["touchend","touchcancel"].forEach(t=>el("view").addEventListener(t,scrubSoltar));
+el("view").addEventListener("mousedown",e=>{
+  const c=e.target&&e.target.closest?e.target.closest(".cur"):null;if(!c)return;
+  SCRUB=c;scrubMover(c,e.clientX);});
+window.addEventListener("mousemove",e=>{if(SCRUB)scrubMover(SCRUB,e.clientX);});
+window.addEventListener("mouseup",scrubSoltar);
 el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;render();});
 el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sexFilter=b.dataset.s;el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
 function cambiarCat(c,hist){
@@ -3745,7 +3865,7 @@ function cambiarCat(c,hist){
   const fechaPrev=sumFecha,compPrev=compsFor;
   applySex();
   if(fechaPrev&&summaryFechas().indexOf(fechaPrev)<0){sumFecha=null;render();}
-  if(compPrev&&!ALLRECS.some(r=>r.nadadora===compPrev&&r.sexo===sexFilter&&(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||catOf(r.anio,r.fecha)===catFilter))){compsFor=null;badgesFor=null;cmpA=null;cmpB=null;render();}
+  if(compPrev&&!ALLRECS.some(r=>r.nadadora===compPrev&&r.sexo===sexFilter&&(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||grupoDe(r.anio,r.fecha)===catFilter))){compsFor=null;badgesFor=null;cmpA=null;cmpB=null;render();}
 }
 el("segCatH").addEventListener("change",e=>{cambiarCat(e.target.value,false);});
 el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(b)cambiarCat(b.dataset.c,true);});
