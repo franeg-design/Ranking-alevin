@@ -519,25 +519,6 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .pgTxt span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pgTxt .v{font-weight:800;color:var(--violet)}
 .pgTxt .b{flex:0 0 auto;text-align:right;font-weight:700}
-/* ===== RENGLÓN «MARCA TU OBJETIVO» (21-ago-2026) ========================================
-   ⚠️ SÍ AÑADE ALTO, y a propósito: ~27px por prueba, y la mediana de una ficha son 11 pruebas
-   (máximo medido 17), así que la pestaña Marcas crece unos 300px. Fran lo eligió sabiéndolo,
-   frente a la alternativa de esconderlo tras una pastilla 🎯.
-   El campo se confirma al salir o con Intro, NUNCA en cada tecla: `render()` repinta la ficha
-   entera y el campo perdería el foco a la primera letra escrita. */
-.objRow{display:flex;align-items:center;gap:6px;margin-top:7px}
-.objL{flex:0 0 auto;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
-.objI{flex:1 1 auto;min-width:0;width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:4px 8px;font-size:13px;font-weight:700;color:var(--violet-deep);text-align:right;-webkit-appearance:none;appearance:none}
-.objI::placeholder{color:var(--muted);font-weight:400}
-.objI:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 2px rgba(109,75,196,.14)}
-.objX{flex:0 0 auto;position:relative;border:none;background:var(--chip);color:var(--muted);border-radius:999px;width:22px;height:22px;line-height:1;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:rgba(14,124,147,.12)}
-.objX::after{content:"";position:absolute;left:-7px;right:-7px;top:-7px;bottom:-7px}
-.objX:active{background:var(--violet);color:#fff}
-/* La barra con objetivo va en OTRO COLOR porque está en OTRA ESCALA: la de eje fijo se compara
-   entre pruebas y esta no. Verla igual sería invitar a compararlas (§4.38). */
-.pg.obj .pgFill{background:linear-gradient(90deg,#f0a63d 0%,#d9741a 100%)}
-.pg.obj .pgTxt{color:#8a4a0b}
-.pg.obj .pgTxt .v{color:#c2650f}
 .pgTxt.solo{color:var(--muted)}
 /* --- la curva: el reparto del campo por TIEMPO, con el líder a la DERECHA ---
    Donde hay más nadadoras la montaña sube. La línea negra con bolita es la marca de la ficha y la
@@ -3165,75 +3146,18 @@ function deltaTag(ev,pop,corto){if(!ev)return"";
    Sustituyen a las pastillas `DISTANCIA AL LÍDER` y `PROGRESO`. Ver §4.38 para el porqué: la
    distancia al líder solo informa arriba del ranking, y el 55,7% de las filas son del puesto 11
    para abajo. Lo que se destaca ahora es la de delante, que tiene mediana 0,92 s frente a 13,80. */
-/* ===== OBJETIVO POR PRUEBA (21-ago-2026, petición de Fran) ==============================
-   Un tiempo que la persona se marca a mano y que convierte la barra de progreso en «camino al
-   objetivo»: 0 % = su marca de partida de la temporada, 100 % = el tiempo escrito.
-   ⚠️ VIVE EN ESE MÓVIL Y SOLO EN ESE. La app no tiene servidor, así que lo único que puede
-   recordarlo es `localStorage`. Consecuencias que hay que tener presentes:
-     · no se comparte con nadie que abra la página, ni entre el navegador y otro navegador;
-     · **«borrar los datos del sitio» se los lleva todos** — y eso es justo lo que se recomienda
-       para saltarse la caché de la PWA. Decidido así por Fran conociendo el choque.
-   La clave lleva la PISCINA porque un objetivo de 25 m no es un objetivo de 50 m.
-   ⚠️ Todo acceso va envuelto en `try`: en navegación privada de iOS `localStorage` lanza. */
-function objKey(name,p){return "obj|"+(_P50?"50":"25")+"|"+name+"|"+p;}
-function objRaw(name,p){try{return localStorage.getItem(objKey(name,p))||"";}catch(e){return "";}}
-/* ⚠️ LA VALIDACIÓN VIVE AQUÍ, no en el manejador del campo. Estaba fuera y el sondeo guardó
-   "pepito" llamando a `objSet` directamente: el campo lo enseñaba y salía su ✕, pero la barra
-   volvía a la de eje fijo. Un objetivo que no se entiende NO se guarda, y punto. */
-function objSet(name,p,txt){
-  const c=txt?toCs(String(txt).trim()):0;const ok=isFinite(c)&&c>0;
-  /* Se guarda NORMALIZADO con `fmtClock`, el mismo formato con el que la app escribe todos los
-     tiempos. Así el campo, el texto de la izquierda y el resto de la ficha dicen `2:27.87` y no
-     conviven tres grafías según lo que tocara escribir cada teclado. Se admite entrar `33,44`,
-     `33.44` o `1:23,45`: eso lo resuelve `toCs`. */
-  try{if(ok)localStorage.setItem(objKey(name,p),fmtClock(c));else localStorage.removeItem(objKey(name,p));}catch(e){}
-}
-/* Devuelve el objetivo en centésimas, o 0 si no hay o no se entiende. `toCs` ya admite `33,00`,
-   `33.00` y `1:23,45`, así que no se reinventa aquí el análisis del tiempo. */
-function objCs(name,p){const t=objRaw(name,p);if(!t)return 0;const c=toCs(t);return isFinite(c)&&c>0?c:0;}
-function objFila(name,p){
-  const t=objRaw(name,p);
-  return `<div class="objRow"><span class="objL">Marca tu objetivo</span>`+
-    `<input class="objI mono" type="text" inputmode="decimal" enterkeyhint="done" placeholder="—" value="${esc(t)}" data-n="${esc(name)}" data-p="${esc(p)}">`+
-    (t?`<button type="button" class="objX" data-n="${esc(name)}" data-p="${esc(p)}" aria-label="Borrar objetivo">✕</button>`:"")+
-    `</div>`;
-}
 function mmpProg(name,p,cs){
   /* La MEJOR marca de cada día: dos series el mismo día no son dos momentos de la temporada. */
   const dias={};
   RECORDS.filter(r=>r.nadadora===name&&r.prueba===p).forEach(r=>{
     const c=toCs(r.tiempo);if(!dias[r.fecha]||c<dias[r.fecha])dias[r.fecha]=c;});
   const fs=Object.keys(dias).sort();
-  const obj=objCs(name,p);
-  const pie=objFila(name,p);
-  const rotTxt=obj?"Camino al objetivo":("Progreso "+(isHist()?"registrado":"de la temporada"));
-  const rot=`<div class="gtRow"><span class="gt">${rotTxt}</span></div>`;
-  const mudo=t=>`<div class="pg">${rot}<div class="pgBar"></div><div class="pgTxt solo"><span>${t}</span></div>${pie}</div>`;
-  const t0=fs.length?dias[fs[0]]:cs,g=t0-cs;
-  /* ===== MODO OBJETIVO ==================================================================
-     El 100 % es el tiempo escrito y el 0 % la marca de partida, así que lo lleno es lo andado y
-     lo vacío lo que le queda. Se resuelve ANTES que los dos casos mudos a propósito: una prueba
-     nadada una sola vez no tiene recorrido que dibujar —el 40,4 % de las filas— pero sí tiene
-     distancia hasta el objetivo, así que con objetivo deja de estar muda.
-     ⚠️ ESTA FILA QUEDA EN SU PROPIA ESCALA y eso rompe la comparación entre pruebas que defiende
-     §4.38. Por eso cambia el rótulo Y el color: tiene que ser imposible confundirla con una barra
-     de eje fijo puesta al lado. */
-  if(obj){
-    if(cs<=obj) return `<div class="pg obj">${rot}<div class="pgBar"><div class="pgFill" style="width:100%"></div></div>`+
-      `<div class="pgTxt"><span>Objetivo <span class="v mono">${fmtClock(obj)}</span></span>`+
-      `<span class="b">¡conseguido!</span></div>${pie}`+`</div>`;
-    /* ⚠️ Aquí había una rama para "el objetivo es más lento que la marca de partida". Es
-       INALCANZABLE y se retiró: la MMP nunca es más lenta que la marca de partida, así que un
-       objetivo por encima de la partida ya lo está también por encima de la MMP y lo caza el
-       "conseguido" de arriba. Lo cazó el sondeo, no la lectura. */
-    const w=Math.max(0,Math.min(100,g/(t0-obj)*100));
-    return `<div class="pg obj">${rot}<div class="pgBar"><div class="pgFill" style="width:${w.toFixed(1)}%"></div></div>`+
-      `<div class="pgTxt"><span>Objetivo <span class="v mono">${fmtClock(obj)}</span> · a <span class="v mono">${fmtGap(cs-obj)}</span></span>`+
-      `<span class="b">le falta un ${(100-w).toFixed(1).replace(".",",")}%</span></div>${pie}`+`</div>`;
-  }
+  const rot=`<div class="gtRow"><span class="gt">Progreso ${isHist()?"registrado":"de la temporada"}</span></div>`;
+  const mudo=t=>`<div class="pg">${rot}<div class="pgBar"></div><div class="pgTxt solo"><span>${t}</span></div></div>`;
   /* ⚠️ Sin tramo violeta NO se escribe "0%" en ninguna parte: el 43,4% de las filas son pruebas
      nadadas una sola vez, así que no es que no haya mejorado, es que no hay recorrido que dibujar. */
   if(fs.length<2)return mudo("Una sola competición en esta prueba");
+  const t0=dias[fs[0]],g=t0-cs;
   if(g<=0)return mudo("Aún sin bajar su marca de partida");
   /* Eje FIJO al 10% de la marca de partida (era 20 hasta el 21-ago-2026). Medido sobre el CSV real:
      la mejora mediana es del 3,95%, así que con el eje al 20 la barra mediana se llenaba un 19,8%
@@ -3244,7 +3168,7 @@ function mmpProg(name,p,cs){
   const pc=g/t0*100,w=Math.max(0,Math.min(100,pc/10*100));
   return `<div class="pg">${rot}<div class="pgBar"><div class="pgFill" style="width:${w.toFixed(1)}%"></div></div>`+
     `<div class="pgTxt"><span><span class="v mono">−${fmtGap(g)}</span> desde ${fmtDate(fs[0])}</span>`+
-    `<span class="b">${pc.toFixed(1).replace(".",",")}% más ${sexFilter==="M"?"rápido":"rápida"}</span></div>${pie}</div>`;
+    `<span class="b">${pc.toFixed(1).replace(".",",")}% más ${sexFilter==="M"?"rápido":"rápida"}</span></div></div>`;
 }
 /* Contador para el id del degradado: dos <svg> con el mismo id se pisan y todas las curvas
    saldrían con el degradado de la primera. Sube y no se reinicia: basta con que no se repita. */
@@ -3470,7 +3394,7 @@ function render(){
 
   // legend
   const legs={marcas:"<span style='font-weight:700'>Ranking por MMP.</span> Cada nadador/a con su <b>mejor marca personal</b> "+(isHist()?"de todas las temporadas"+scopeTxt():"de la temporada")+" en la prueba elegida. <b>Nº</b> = puesto · <b>pts</b> = puntos FINA, que sirven para comparar marcas de pruebas distintas: cuantos más puntos, mejor la marca."+((isHist()||SEASONS.indexOf(season)<1)?"":"<br><span style='font-weight:600;letter-spacing:.02em;margin-right:5px'>MMP</span>bajo el club: su mejor marca de <b>temporadas anteriores</b>, con su fecha. Solo aparece mientras la de esta temporada sea más lenta; al superarla desaparece. No cuenta para el puesto ni para los puntos.")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Indicadores de la última competición.</span> <span style='color:var(--muted)'>Solo en marcas logradas en la última competición.</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ variación de puesto<br><span class='pos new' style='display:inline-block;margin-top:0;padding:0 5px;font-size:10px'>nuevo</span> primer registro en esta prueba</div>"+(minsOn()?"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Mínimas.</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de <b>Euskadi</b> / <b>España</b> conseguida. En la pestaña <b>Mínimas</b> se ven todas las de cada nadador/a.</div>":"")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m.</span><br>La pastilla "+p50Pill()+" junto a los puntos avisa de que esa marca <b>se nadó en piscina larga</b>. El ranking <b>no separa por piscina</b>: esas marcas compiten en la misma lista y se ordenan por tiempo, igual que las demás.<br>Los <b>puntos</b> sí distinguen: cada marca puntúa contra la tabla de su propia piscina. Por eso una marca de 50 m puede tener <b>más puntos</b> que otra de 25 m que es más rápida.</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Fichas.</span><br>Toca un <b>nombre</b> de la lista (o búscalo) para abrir su ficha; <b>← Volver</b> regresa al ranking.</div><span style='display:block;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);color:var(--muted)'>El botón flotante ⓘ abre esta ventana con la explicación de lo que tengas seleccionado en cada momento: cambia según estés en Marcas, Mínimas, Top FINA o en una ficha.</span>",
-    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, cada prueba lleva una pastilla <span style='display:inline-block;padding:0 6px;border:1px solid var(--line);border-radius:999px;font-size:10px;font-weight:700;color:var(--muted)'>Historial ▾</span> que despliega todos sus tiempos "+(isHist()?"registrados"+scopeTxt():"de la temporada")+", con fecha y competición.<br>En <b>Su sitio en la prueba</b>, arrastra el dedo sobre la montaña: sale un punto con el tiempo de esa posición del eje —el del eje, no la marca de nadie— y se va solo al soltar.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b>: al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Los dos gráficos de cada prueba:</span><br><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>PROGRESO "+(isHist()?"REGISTRADO":"DE LA TEMPORADA")+"</span> cuánto ha bajado desde su primera marca "+(isHist()?"registrada"+scopeTxt():"de la temporada")+", en segundos y en porcentaje. <b>La barra se llena del todo con un 10% de mejora</b>, así que el largo se puede comparar entre pruebas distintas: la mitad de las mejoras se quedan por debajo del 4% y solo 1 de cada 17 pasa del 10%.<br>Debajo, <b>Marca tu objetivo</b>: si escribes ahí un tiempo, esa prueba cambia a <span style='color:#c2650f;font-weight:700'>naranja</span> y pasa a medir otra cosa —el <b>100% es tu objetivo</b> y lo que falta por llenar es lo que le queda para llegar—, así que <b>esa barra ya no se puede comparar con las demás</b>. El objetivo se guarda <b>en este móvil</b> hasta que lo borres con la ✕. Si solo ha nadado esa prueba una vez, va vacía y lo dice: no es que no haya mejorado, es que todavía no hay con qué comparar.<div style='margin-top:7px'><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>SU SITIO EN LA PRUEBA</span> el reparto de <b>todas las marcas</b> de esa prueba, ordenadas por tiempo con "+(sexFilter==="M"?"el líder":"la líder")+" a la <b>derecha</b>. <b>Donde la montaña sube hay más "+(sexFilter==="M"?"nadadores":"nadadoras")+" juntos</b>, y donde baja están más sueltos: por eso se ve de un vistazo si está metido en el pelotón o si tiene hueco alrededor.<br>El <b>punto negro</b> es su marca, posado sobre la montaña. La zona <b>coloreada a su izquierda</b> son "+(sexFilter==="M"?"los que ya tiene por detrás":"las que ya tiene por detrás")+", así que de un vistazo se ve qué parte de la prueba ha dejado atrás. Debajo, lo que le separa de "+(sexFilter==="M"?"quien tiene justo delante":"quien tiene justo delante")+" —que es el puesto que puede ganar— y "+(sexFilter==="M"?"del líder":"de la líder")+".<br><span style='color:var(--muted)'>Si "+(sexFilter==="M"?"algún nadador va muy rezagado":"alguna nadadora va muy rezagada")+", queda fuera del dibujo para que el grueso del grupo se siga viendo, y el borde izquierdo aparece <b>desvanecido</b> para avisarlo. Pasa con 3 de cada 100 marcas, y nunca con la suya.</span></div></div>"+"<div style='margin-top:7px;padding-top:7px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m:</span><br>La pastilla "+pisPill()+" junto al nombre de la prueba avisa de que su mejor marca en esa prueba <b>se nadó en piscina larga</b>, y de que sus puntos salen de la tabla de 50 m.<br>En la pestaña <b>Mínimas</b> esa misma prueba puede enseñar <b>otra marca</b>: allí manda la que consigue la mínima, y aquí la más rápida.</div>",
+    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Dentro de la ficha, cada prueba lleva una pastilla <span style='display:inline-block;padding:0 6px;border:1px solid var(--line);border-radius:999px;font-size:10px;font-weight:700;color:var(--muted)'>Historial ▾</span> que despliega todos sus tiempos "+(isHist()?"registrados"+scopeTxt():"de la temporada")+", con fecha y competición.<br>En <b>Su sitio en la prueba</b>, arrastra el dedo sobre la montaña: sale un punto con el tiempo de esa posición del eje —el del eje, no la marca de nadie— y se va solo al soltar.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b>: al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>Junto a la marca aparece <b>🫍 TOP 5%</b> (percentil 95+), <b>🦈 TOP 10%</b> (90-94) o <b>🐬 TOP 20%</b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+".<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Los dos gráficos de cada prueba:</span><br><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>PROGRESO "+(isHist()?"REGISTRADO":"DE LA TEMPORADA")+"</span> cuánto ha bajado desde su primera marca "+(isHist()?"registrada"+scopeTxt():"de la temporada")+", en segundos y en porcentaje. <b>La barra se llena del todo con un 10% de mejora</b>, así que el largo se puede comparar entre pruebas distintas: la mitad de las mejoras se quedan por debajo del 4% y solo 1 de cada 17 pasa del 10%. Si solo ha nadado esa prueba una vez, va vacía y lo dice: no es que no haya mejorado, es que todavía no hay con qué comparar.<div style='margin-top:7px'><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>SU SITIO EN LA PRUEBA</span> el reparto de <b>todas las marcas</b> de esa prueba, ordenadas por tiempo con "+(sexFilter==="M"?"el líder":"la líder")+" a la <b>derecha</b>. <b>Donde la montaña sube hay más "+(sexFilter==="M"?"nadadores":"nadadoras")+" juntos</b>, y donde baja están más sueltos: por eso se ve de un vistazo si está metido en el pelotón o si tiene hueco alrededor.<br>El <b>punto negro</b> es su marca, posado sobre la montaña. La zona <b>coloreada a su izquierda</b> son "+(sexFilter==="M"?"los que ya tiene por detrás":"las que ya tiene por detrás")+", así que de un vistazo se ve qué parte de la prueba ha dejado atrás. Debajo, lo que le separa de "+(sexFilter==="M"?"quien tiene justo delante":"quien tiene justo delante")+" —que es el puesto que puede ganar— y "+(sexFilter==="M"?"del líder":"de la líder")+".<br><span style='color:var(--muted)'>Si "+(sexFilter==="M"?"algún nadador va muy rezagado":"alguna nadadora va muy rezagada")+", queda fuera del dibujo para que el grueso del grupo se siga viendo, y el borde izquierdo aparece <b>desvanecido</b> para avisarlo. Pasa con 3 de cada 100 marcas, y nunca con la suya.</span></div></div>"+"<div style='margin-top:7px;padding-top:7px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m:</span><br>La pastilla "+pisPill()+" junto al nombre de la prueba avisa de que su mejor marca en esa prueba <b>se nadó en piscina larga</b>, y de que sus puntos salen de la tabla de 50 m.<br>En la pestaña <b>Mínimas</b> esa misma prueba puede enseñar <b>otra marca</b>: allí manda la que consigue la mínima, y aquí la más rápida.</div>",
     /* ⚠️ Las CUATRO leyendas que pueden ver una pastilla de piscina la explican: `marcas` y
        `marcasFicha` arriba, `minimas` y `minimasFicha` aquí abajo. Y todas la pintan llamando a
        `p50Pill()` / `pisPill()`, nunca copiando el HTML: así un cambio de texto o de estilo se
@@ -4004,10 +3928,6 @@ el("view").addEventListener("click",e=>{
      (§4.44) no desplegara además el historial al soltar. Al acotar el toque a `.hPill`, ese parche
      deja de hacer falta y se retira: la fila entera vuelve a ser inerte y cada gesto tiene dueño.
      ⚠️ Si algún día se vuelve al "toca donde sea", hay que reponer el guardarraíl de `.cur`. */
-  /* El ✕ borra el objetivo y devuelve la fila a la barra de eje fijo. Va ANTES que la pastilla
-     porque los dos viven dentro de la misma `.pRow` y el primero que case se queda el toque. */
-  const ox=cl(".objX");if(ox&&ox.dataset){objSet(ox.dataset.n,ox.dataset.p,"");render();return;}
-  if(cl(".objI"))return;   /* tocar el campo es escribir en él, no otra cosa */
   const hp=cl(".hPill");if(hp){const pr=hp.closest(".pRow");if(pr)toggleHist(pr);return;}
   const t=cl(".name");if(t&&t.dataset&&t.dataset.n)goProfile(t.dataset.n);
 });
@@ -4096,24 +4016,6 @@ el("view").addEventListener("mousedown",e=>{
   SCRUB=c;scrubMover(c,e.clientX);});
 window.addEventListener("mousemove",e=>{if(SCRUB)scrubMover(SCRUB,e.clientX);});
 window.addEventListener("mouseup",scrubSoltar);
-/* ===== OBJETIVO: confirmar y borrar ====================================================
-   Delegado en #view como todo lo demás, porque `render()` rehace la ficha entera y unos
-   manejadores colgados de cada campo se perderían en el primer repintado.
-   ⚠️ Se escucha `change` y `keydown`+Intro, NO `input`: con `input` se repintaría la ficha a cada
-   tecla y el campo perdería el foco tras la primera. `change` en un `<input type=text>` salta al
-   salir del campo, que es justo cuando el usuario ha terminado de escribir.
-   ⚠️ Un texto que no se entiende como tiempo NO se guarda y se deja el campo vacío: guardarlo
-   dejaría una barra muda sin explicación. `toCs` devuelve `Infinity` en ese caso. */
-function objConfirmar(inp){
-  if(!inp||!inp.dataset)return;
-  objSet(inp.dataset.n,inp.dataset.p,inp.value);
-  render();
-}
-el("view").addEventListener("change",e=>{const i=e.target&&e.target.closest?e.target.closest(".objI"):null;if(i)objConfirmar(i);});
-el("view").addEventListener("keydown",e=>{
-  if(e.key!=="Enter")return;
-  const i=e.target&&e.target.closest?e.target.closest(".objI"):null;
-  if(!i)return;e.preventDefault();if(i.blur)i.blur();objConfirmar(i);});
 el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;render();});
 el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sexFilter=b.dataset.s;el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
 function cambiarCat(c,hist){
