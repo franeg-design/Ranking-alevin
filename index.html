@@ -532,8 +532,14 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
    El renglón de la meta se queda, así que la caja sigue ganando aire respecto al original. */
 .pgBar{position:relative;height:9px;background:var(--chip);border-radius:6px;box-shadow:inset 0 1px 2px rgba(11,42,58,.09);overflow:hidden}
 /* Rayitas donde cae cada meta dentro del eje. Con eje 5 no hay ninguna: la barra entera ES la
-   primera meta. Van DEBAJO del relleno a propósito, para que se sigan viendo al pasarlas. */
-.pgBar i{position:absolute;top:0;bottom:0;width:1px;background:rgba(11,42,58,.16);z-index:0}
+   primera meta.
+   ⚠️ VAN POR ENCIMA DEL RELLENO (`z-index:2`). Estaban debajo, y el comentario que había aquí decía
+   —al revés de la realidad— que así se seguían viendo al pasarlas: el relleno es opaco, así que en
+   cuanto la barra alcanzaba una meta, su rayita desaparecía. Justo en las barras donde más falta
+   hace verla, que son las que ya han conseguido algo. Lo vio Fran, 22-ago-2026.
+   ⚠️ El color es un OSCURO TRANSLÚCIDO, no blanco ni sólido: tiene que leerse sobre el hueco claro
+   (`--chip`) y también sobre el bronce, la plata y el oro del relleno. */
+.pgBar i{position:absolute;top:0;bottom:0;width:1px;background:rgba(11,42,58,.32);z-index:2}
 .pgFill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,#3ba7bd 0%,#0e7c93 100%);z-index:1}
 /* LOS TRES METALES. Mientras va a por la primera meta, el turquesa de la app; después, el metal
    que le corresponda. Es lo que da sentido visual a «objetivo completado». */
@@ -544,9 +550,14 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .pg.m1 .pgFill{background:linear-gradient(90deg,#d9a06d 0%,var(--bronze) 100%)}
 .pg.m2 .pgFill{background:linear-gradient(90deg,#c6d0d8 0%,var(--silver) 100%)}
 .pg.m3 .pgFill{background:linear-gradient(90deg,#f0cf72 0%,var(--gold) 100%)}
-.pg.m1 .objDone{color:var(--bronze)}
-.pg.m2 .objDone{color:#78848f}
-.pg.m3 .objDone{color:#a97b12}
+/* ⚠️ EL COLOR LO LLEVA CADA RENGLÓN, NO LA CAJA (22-ago-2026, Fran): los conseguidos se APILAN
+   —el primero no desaparece al lograr el segundo— y cada uno luce su propio metal, así que colgarlo
+   de `.pg.mN` los habría pintado a todos del mismo. */
+.objDone.o1{color:var(--bronze)}
+.objDone.o2{color:#78848f}
+.objDone.o3{color:#a97b12}
+.objDone+.objDone{margin-top:2px}
+.objDone .mono{font-weight:700}
 .pg.m1 .gtMetaV{color:var(--bronze)}
 .pg.m2 .gtMetaV{color:#78848f}
 .pg.m3 .gtMetaV{color:#a97b12}
@@ -3249,7 +3260,10 @@ function mmpProg(name,p,cs){
      centrada sumaba ~24px por prueba y se descartó por eso. */
   const rot=hh=>`<div class="gtRow"><span class="gt">Progreso ${isHist()?"registrado":"de la temporada"}</span>`+
     ((ref&&hh<OBJ_N)?`<span class="gtMeta"><span class="gtMetaL">Objetivo</span><span class="gtMetaV mono">${fmtClock(meta(hh+1))}</span></span>`:"")+`</div>`;
-  const pie=hh=>hh>=1?`<div class="objDone">${OBJ_MET[hh]} objetivo completado</div>`:"";
+  /* ⚠️ UNA LÍNEA POR OBJETIVO CONSEGUIDO, y no se borran (Fran, 22-ago-2026): al lograr el
+     segundo, el primero sigue ahí debajo con su tiempo y su color. Antes solo se veía el último
+     y se perdía el historial de metas. Cada renglón dice el tiempo con el que se cerró esa meta. */
+  const pie=hh=>{let o="";for(let i=1;i<=hh;i++)o+=`<div class="objDone o${i}">${OBJ_MET[i]} objetivo <span class="mono">${fmtClock(meta(i))}</span> completado</div>`;return o;};
   /* Las rayitas marcan dónde cae cada meta dentro del eje. Con eje 5 no hay ninguna intermedia
      (la barra entera ES la primera meta), con eje 10 hay una y con eje 15, dos. */
   const marcas=(()=>{let o="";for(let i=1;i*OBJ_PASO<EJE;i++)o+=`<i style="left:${(i*OBJ_PASO/EJE*100).toFixed(2)}%"></i>`;return o;})();
