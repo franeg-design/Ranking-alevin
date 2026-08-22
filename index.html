@@ -523,7 +523,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
    `flex:0 0 auto` para que sea el TÍTULO el que se recorte si no cabe, nunca la cifra. */
 .gtMeta{flex:0 0 auto;display:flex;align-items:baseline;gap:5px}
 .gtMetaL{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.gtMetaV{font-weight:700;font-size:14px;color:var(--brand-deep);font-variant-numeric:tabular-nums}
+.gtMetaV{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
 /* --- barra de progreso de la temporada --- */
 .pg{margin-top:11px}
 /* ⚠️ AFINADO EL 22-ago-2026 tras verlo Fran en el móvil: el título sube de 13 a 14px —un escalón
@@ -550,17 +550,20 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .pg.m1 .pgFill{background:linear-gradient(90deg,#d9a06d 0%,var(--bronze) 100%)}
 .pg.m2 .pgFill{background:linear-gradient(90deg,#c6d0d8 0%,var(--silver) 100%)}
 .pg.m3 .pgFill{background:linear-gradient(90deg,#f0cf72 0%,var(--gold) 100%)}
-/* ⚠️ EL COLOR LO LLEVA CADA RENGLÓN, NO LA CAJA (22-ago-2026, Fran): los conseguidos se APILAN
-   —el primero no desaparece al lograr el segundo— y cada uno luce su propio metal, así que colgarlo
-   de `.pg.mN` los habría pintado a todos del mismo. */
-.objDone.o1{color:var(--bronze)}
-.objDone.o2{color:#78848f}
-.objDone.o3{color:#a97b12}
+/* ⚠️ EL COLOR LO LLEVA CADA PIEZA POR SU NÚMERO DE META, NO LA CAJA (22-ago-2026, Fran).
+   Dos motivos, y el segundo lo cazó Fran mirándolo:
+     · los conseguidos se APILAN —el primero no desaparece al lograr el segundo— y cada uno luce su
+       propio metal, así que colgarlo de `.pg.mN` los habría pintado a todos igual;
+     · y el TIEMPO DEL OBJETIVO tiene que ir del color del metal que PERSIGUE, no del que ya tiene:
+       sin ninguno conseguido va en bronce (va a por el bronce), con uno en plata y con dos en oro.
+       Antes salía azul primero y luego repetía el metal ya logrado, que es decir lo contrario.
+   Por eso las clases `o1/o2/o3` las comparten el renglón conseguido y la cifra del objetivo: una
+   sola regla de color por metal, y no puede volver a divergir. */
+.objDone.o1,.gtMetaV.o1{color:var(--bronze)}
+.objDone.o2,.gtMetaV.o2{color:#78848f}
+.objDone.o3,.gtMetaV.o3{color:#a97b12}
 .objDone+.objDone{margin-top:2px}
 .objDone .mono{font-weight:700}
-.pg.m1 .gtMetaV{color:var(--bronze)}
-.pg.m2 .gtMetaV{color:#78848f}
-.pg.m3 .gtMetaV{color:#a97b12}
 /* Los objetivos CONSEGUIDOS se quedan debajo de la barra, donde ya estaban: encargo de Fran. */
 .objDone{margin-top:4px;font-size:11px;line-height:1.35;font-weight:800;letter-spacing:.01em}
 .pgTxt{display:flex;justify-content:space-between;gap:10px;margin-top:5px;font-size:11px;line-height:1.35;color:var(--ink-soft)}
@@ -3259,7 +3262,7 @@ function mmpProg(name,p,cs){
      De las tres maquetaciones probadas era la que menos altura añadía; la que ponía la meta en 19px
      centrada sumaba ~24px por prueba y se descartó por eso. */
   const rot=hh=>`<div class="gtRow"><span class="gt">Progreso ${isHist()?"registrado":"de la temporada"}</span>`+
-    ((ref&&hh<OBJ_N)?`<span class="gtMeta"><span class="gtMetaL">Objetivo</span><span class="gtMetaV mono">${fmtClock(meta(hh+1))}</span></span>`:"")+`</div>`;
+    ((ref&&hh<OBJ_N)?`<span class="gtMeta"><span class="gtMetaL">Objetivo</span><span class="gtMetaV mono o${hh+1}">${fmtClock(meta(hh+1))}</span></span>`:"")+`</div>`;
   /* ⚠️ UNA LÍNEA POR OBJETIVO CONSEGUIDO, y no se borran (Fran, 22-ago-2026): al lograr el
      segundo, el primero sigue ahí debajo con su tiempo y su color. Antes solo se veía el último
      y se perdía el historial de metas. Cada renglón dice el tiempo con el que se cerró esa meta. */
