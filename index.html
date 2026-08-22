@@ -489,11 +489,6 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .sugPick .sgN{font-size:14px;font-weight:700;color:var(--brand-deep)}
 .sugPick .sgM{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600;text-align:right}
 .raline{font-size:12px;color:var(--muted);margin-top:4px;white-space:nowrap}
-/* ⚠️ INSIGNIA TOP, sin emoticono (Fran, 22-ago-2026). Se retiraron el 🫍/🦈/🐬 y con ellos las
-   reglas `.pctline`, que solo existían para colocarlos: la insignia es ya solo texto y color.
-   Los colores son los TRES METALES, y su declaración se comparte con las metas de la barra de
-   progreso —una sola regla por metal en toda la app— para que no puedan divergir. */
-.pctb{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.01em;white-space:nowrap}
 /* ===== MMP/PROGRESO: DOS GRÁFICOS POR PRUEBA (18-ago-2026, §4.38) =====
    Sustituyen a las pastillas `DISTANCIA AL LÍDER` y `PROGRESO`. El motivo no era estético: la
    distancia al líder solo sirve arriba del ranking y el 55,7% de las filas son del puesto 11 para
@@ -554,9 +549,9 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
        Antes salía azul primero y luego repetía el metal ya logrado, que es decir lo contrario.
    Por eso las clases `o1/o2/o3` las comparten el renglón conseguido y la cifra del objetivo: una
    sola regla de color por metal, y no puede volver a divergir. */
-.objDone.o1,.gtMetaV.o1,.pctb.pb20{color:var(--bronze)}
-.objDone.o2,.gtMetaV.o2,.pctb.pb10{color:#78848f}
-.objDone.o3,.gtMetaV.o3,.pctb.pb5{color:#a97b12}
+.objDone.o1,.gtMetaV.o1{color:var(--bronze)}
+.objDone.o2,.gtMetaV.o2{color:#78848f}
+.objDone.o3,.gtMetaV.o3{color:#a97b12}
 .objDone+.objDone{margin-top:2px}
 .objDone .mono{font-weight:700}
 /* Los objetivos CONSEGUIDOS se quedan debajo de la barra, donde ya estaban: encargo de Fran. */
@@ -609,7 +604,6 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 /* La insignia TOP se muda al lado del nombre de la prueba. Solo el 4,0% de las filas juntan
    nombre + `Piscina 50m` + insignia, y en ese caso se deja partir el renglón: la insignia va
    `nowrap` para caer entera a la línea de abajo y no romperse por dentro. */
-.pctb.pctIn{margin-left:6px;vertical-align:1px}
 .raline.rabeat{color:var(--good);font-weight:800}
 .rmfill.rfbeat{background:linear-gradient(90deg,#8fdcc0,var(--good))}
 .recFaint{color:#6d8c9c;font-weight:400}
@@ -3503,7 +3497,7 @@ function render(){
 
   // legend
   const legs={marcas:"<span style='font-weight:700'>Ranking por MMP.</span> Cada nadador/a con su <b>mejor marca personal</b> "+(isHist()?"de todas las temporadas"+scopeTxt():"de la temporada")+" en la prueba elegida. <b>Nº</b> = puesto · <b>pts</b> = puntos FINA, que sirven para comparar marcas de pruebas distintas: cuantos más puntos, mejor la marca."+((isHist()||SEASONS.indexOf(season)<1)?"":"<br><span style='font-weight:600;letter-spacing:.02em;margin-right:5px'>MMP</span>bajo el club: su mejor marca de <b>temporadas anteriores</b>, con su fecha. Solo aparece mientras la de esta temporada sea más lenta; al superarla desaparece. No cuenta para el puesto ni para los puntos.")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Indicadores de la última competición.</span> <span style='color:var(--muted)'>Solo en marcas logradas en la última competición.</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ variación de puesto<br><span class='pos new' style='display:inline-block;margin-top:0;padding:0 5px;font-size:10px'>nuevo</span> primer registro en esta prueba</div>"+(minsOn()?"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Mínimas.</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de <b>Euskadi</b> / <b>España</b> conseguida. En la pestaña <b>Mínimas</b> se ven todas las de cada nadador/a.</div>":"")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m.</span><br>La pastilla "+p50Pill()+" junto a los puntos avisa de que esa marca <b>se nadó en piscina larga</b>. El ranking <b>no separa por piscina</b>: esas marcas compiten en la misma lista y se ordenan por tiempo, igual que las demás.<br>Los <b>puntos</b> sí distinguen: cada marca puntúa contra la tabla de su propia piscina. Por eso una marca de 50 m puede tener <b>más puntos</b> que otra de 25 m que es más rápida.</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Fichas.</span><br>Toca un <b>nombre</b> de la lista (o búscalo) para abrir su ficha; <b>← Volver</b> regresa al ranking.</div><span style='display:block;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);color:var(--muted)'>El botón flotante ⓘ abre esta ventana con la explicación de lo que tengas seleccionado en cada momento: cambia según estés en Marcas, Mínimas, Top FINA o en una ficha.</span>",
-    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>En <b>MMP/progreso</b>, cada prueba lleva una pastilla <span style='display:inline-block;padding:0 6px;border:1px solid var(--line);border-radius:999px;font-size:10px;font-weight:700;color:var(--muted)'>Historial ▾</span> que despliega todos sus tiempos "+(isHist()?"registrados"+scopeTxt():"de la temporada")+", con fecha y competición.<br>En <b>Su sitio en la prueba</b>, arrastra el dedo sobre la montaña: sale un punto con el tiempo de esa posición del eje —el del eje, no la marca de nadie— y se va solo al soltar.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto y percentil:</span><br>El <b>Nº</b> (puesto) y el percentil se calculan entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b>: al cambiarlo, cambian los dos.<br>El <b>percentil</b> es el porcentaje "+(sexFilter==="M"?"de nadadores a los que supera":"de nadadoras a las que supera")+" en esa prueba: 100 = la mejor marca, 50 = justo en la mitad.<br>En <b>Récords Álava</b>, junto al nombre de la prueba, aparece <b><span style='color:#a97b12'>TOP 5%</span></b> (percentil 95+), <b><span style='color:#78848f'>TOP 10%</span></b> (90-94) o <b><span style='color:var(--bronze)'>TOP 20%</span></b> (80-89), solo si la prueba tiene 5 o más "+(sexFilter==="M"?"nadadores":"nadadoras")+". Son los mismos tres metales que las metas de la barra de progreso.<br><b>Nº</b> = puesto en el ranking · <b>pts</b> = puntos FINA.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Los dos gráficos de cada prueba:</span><br><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>PROGRESO "+(isHist()?"REGISTRADO":"DE LA TEMPORADA")+"</span> cuánto ha bajado desde su primera marca "+(isHist()?"registrada"+scopeTxt():"de la temporada")+", en segundos y en porcentaje. La barra va hacia <b>tres objetivos</b> sobre su mejor marca anterior: <b>−5%</b>, <b>−10%</b> y <b>−15%</b>. Debajo se escribe el tiempo del siguiente, y al conseguirlo la barra cambia de metal —<span style='color:var(--bronze);font-weight:800'>bronce</span>, <span style='color:#78848f;font-weight:800'>plata</span>, <span style='color:#a97b12;font-weight:800'>oro</span>— y se abre cinco puntos más. <b>El eje es el mismo para todas sus pruebas</b>, y lo marca la que va más adelantada: por eso el largo de dos barras suyas se puede comparar, y por eso una prueba muy lanzada acorta a las demás. Las rayitas de dentro señalan dónde cae cada objetivo. Si solo ha nadado esa prueba una vez, va vacía y lo dice: no es que no haya mejorado, es que todavía no hay con qué comparar.<div style='margin-top:7px'><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>SU SITIO EN LA PRUEBA</span> el reparto de <b>todas las marcas</b> de esa prueba, ordenadas por tiempo con "+(sexFilter==="M"?"el líder":"la líder")+" a la <b>derecha</b>. <b>Donde la montaña sube hay más "+(sexFilter==="M"?"nadadores":"nadadoras")+" juntos</b>, y donde baja están más sueltos: por eso se ve de un vistazo si está metido en el pelotón o si tiene hueco alrededor.<br>El <b>punto negro</b> es su marca, posado sobre la montaña. La zona <b>coloreada a su izquierda</b> son "+(sexFilter==="M"?"los que ya tiene por detrás":"las que ya tiene por detrás")+", así que de un vistazo se ve qué parte de la prueba ha dejado atrás. Debajo, lo que le separa de "+(sexFilter==="M"?"quien tiene justo delante":"quien tiene justo delante")+" —que es el puesto que puede ganar— y "+(sexFilter==="M"?"del líder":"de la líder")+".<br><span style='color:var(--muted)'>Si "+(sexFilter==="M"?"algún nadador va muy rezagado":"alguna nadadora va muy rezagada")+", queda fuera del dibujo para que el grueso del grupo se siga viendo, y el borde izquierdo aparece <b>desvanecido</b> para avisarlo. Pasa con 3 de cada 100 marcas, y nunca con la suya.</span></div></div>"+"<div style='margin-top:7px;padding-top:7px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m:</span><br>La pastilla "+pisPill()+" junto al nombre de la prueba avisa de que su mejor marca en esa prueba <b>se nadó en piscina larga</b>, y de que sus puntos salen de la tabla de 50 m.<br>En la pestaña <b>Mínimas</b> esa misma prueba puede enseñar <b>otra marca</b>: allí manda la que consigue la mínima, y aquí la más rápida.</div>",
+    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>En <b>MMP/progreso</b>, cada prueba lleva una pastilla <span style='display:inline-block;padding:0 6px;border:1px solid var(--line);border-radius:999px;font-size:10px;font-weight:700;color:var(--muted)'>Historial ▾</span> que despliega todos sus tiempos "+(isHist()?"registrados"+scopeTxt():"de la temporada")+", con fecha y competición.<br>En <b>Su sitio en la prueba</b>, arrastra el dedo sobre la montaña: sale un punto con el tiempo de esa posición del eje —el del eje, no la marca de nadie— y se va solo al soltar.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto:</span><br><b>Nº 4 de 16</b> quiere decir que va "+(sexFilter==="M"?"cuarto de dieciséis nadadores":"cuarta de dieciséis nadadoras")+" en esa prueba. Se cuenta entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b>: al cambiarlo, cambian el puesto y el recuento.<br>En <b>Récords Álava</b> el recuento va <b>por piscina</b>, así que el «de N» es el de esa piscina y no el del total.<br><b>pts</b> = puntos FINA.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Los dos gráficos de cada prueba:</span><br><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>PROGRESO "+(isHist()?"REGISTRADO":"DE LA TEMPORADA")+"</span> cuánto ha bajado desde su primera marca "+(isHist()?"registrada"+scopeTxt():"de la temporada")+", en segundos y en porcentaje. La barra va hacia <b>tres objetivos</b> sobre su mejor marca anterior: <b>−5%</b>, <b>−10%</b> y <b>−15%</b>. Debajo se escribe el tiempo del siguiente, y al conseguirlo la barra cambia de metal —<span style='color:var(--bronze);font-weight:800'>bronce</span>, <span style='color:#78848f;font-weight:800'>plata</span>, <span style='color:#a97b12;font-weight:800'>oro</span>— y se abre cinco puntos más. <b>El eje es el mismo para todas sus pruebas</b>, y lo marca la que va más adelantada: por eso el largo de dos barras suyas se puede comparar, y por eso una prueba muy lanzada acorta a las demás. Las rayitas de dentro señalan dónde cae cada objetivo. Si solo ha nadado esa prueba una vez, va vacía y lo dice: no es que no haya mejorado, es que todavía no hay con qué comparar.<div style='margin-top:7px'><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>SU SITIO EN LA PRUEBA</span> el reparto de <b>todas las marcas</b> de esa prueba, ordenadas por tiempo con "+(sexFilter==="M"?"el líder":"la líder")+" a la <b>derecha</b>. <b>Donde la montaña sube hay más "+(sexFilter==="M"?"nadadores":"nadadoras")+" juntos</b>, y donde baja están más sueltos: por eso se ve de un vistazo si está metido en el pelotón o si tiene hueco alrededor.<br>El <b>punto negro</b> es su marca, posado sobre la montaña. La zona <b>coloreada a su izquierda</b> son "+(sexFilter==="M"?"los que ya tiene por detrás":"las que ya tiene por detrás")+", así que de un vistazo se ve qué parte de la prueba ha dejado atrás. Debajo, lo que le separa de "+(sexFilter==="M"?"quien tiene justo delante":"quien tiene justo delante")+" —que es el puesto que puede ganar— y "+(sexFilter==="M"?"del líder":"de la líder")+".<br><span style='color:var(--muted)'>Si "+(sexFilter==="M"?"algún nadador va muy rezagado":"alguna nadadora va muy rezagada")+", queda fuera del dibujo para que el grueso del grupo se siga viendo, y el borde izquierdo aparece <b>desvanecido</b> para avisarlo. Pasa con 3 de cada 100 marcas, y nunca con la suya.</span></div></div>"+"<div style='margin-top:7px;padding-top:7px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m:</span><br>La pastilla "+pisPill()+" junto al nombre de la prueba avisa de que su mejor marca en esa prueba <b>se nadó en piscina larga</b>, y de que sus puntos salen de la tabla de 50 m.<br>En la pestaña <b>Mínimas</b> esa misma prueba puede enseñar <b>otra marca</b>: allí manda la que consigue la mínima, y aquí la más rápida.</div>",
     /* ⚠️ Las CUATRO leyendas que pueden ver una pastilla de piscina la explican: `marcas` y
        `marcasFicha` arriba, `minimas` y `minimasFicha` aquí abajo. Y todas la pintan llamando a
        `p50Pill()` / `pisPill()`, nunca copiando el HTML: así un cambio de texto o de estilo se
@@ -3858,6 +3852,12 @@ function renderProfile(vw){
         return `<div class="pRow tog pRowDsq" style="${anim2}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}</div><div class="puesto">Sin marca · ${nd} ${nd===1?"descalificación":"descalificaciones"}</div></div><div class="right"><div class="time dsqT">DSQ</div>${histPill(name,p)}</div></div>`+histBox(name,p);
       }
       const cs=toCs(b.tiempo);const rkList=rankTime(RECORDS,p);const rk=rkList.find(x=>x.name===name);const ev=evolution(name,p);
+      /* `Nº 4 de 16` en LAS TRES pestañas. Sin `rk` no hay puesto y tampoco tiene sentido el
+         recuento, así que se calla entero.
+         ⚠️ En Récords Álava `RECORDS` va filtrado por piscina, de modo que el «de N» es el de ESA
+         piscina y no el del total. Es correcto —allí nada se compara entre piscinas— y ahora se
+         ve, que es justo lo que el percentil escondía. */
+      const puestoTxt=rk?`Nº ${rk.rank} de ${rkList.length}`:"Nº -";
       const dt=deltaTag(ev,0,1);const dstr=!/^Ranking /.test(b.competi||"")?`<span class="tdate">${fmtDate(b.fecha)}</span>`:"";
       const f=fina(p,cs,b.fecha,es50(b.competi));
       let detail,recs="",stamp="";
@@ -3901,19 +3901,14 @@ function renderProfile(vw){
         }
       }
       const tf=view==="topfina";
-      /* ⚠️ EL PERCENTIL Y LA INSIGNIA VIVEN EN RÉCORDS ÁLAVA, NO EN MMP/PROGRESO (Fran, 22-ago-2026).
-         Estaban en Marcas; se mudan enteros. En MMP/progreso el sitio lo ocupan ahora las metas y
-         sus metales, y tener allí además TOP 5/10/20 eran dos lenguajes de premio en la misma fila.
-         ⚠️ Sin emoticonos, también por encargo: la insignia es solo texto y color.
-         ⚠️ Los tres colores son los MISMOS METALES que las metas —bronce el TOP 20, plata el TOP 10,
-         oro el TOP 5— y comparten la regla de color en el CSS para que no puedan divergir. */
-      let pctTxt="",pctBadge="";
-      if(tf&&rk){
-        const N=rkList.length;
-        const pct=N>1?Math.round((N-rk.rank)/(N-1)*100):100;
-        pctTxt=` · Percentil ${pct}`;
-        if(N>=5&&pct>=80){const bd=pct>=95?["TOP 5%","pb5"]:(pct>=90?["TOP 10%","pb10"]:["TOP 20%","pb20"]);pctBadge=`<span class="pctb pctIn ${bd[1]}">${bd[0]}</span>`;}
-      }
+      /* ⚠️ NI PERCENTIL NI INSIGNIA TOP EN NINGUNA PESTAÑA DE LA FICHA (Fran, 22-ago-2026).
+         Vivían en Marcas, se probaron en Récords Álava y se retiraron del todo. El motivo se midió:
+         Récords Álava separa piscinas (§4.20), así que allí la población se encoge —mediana de 5
+         nadadores en 50 m, y el 47 % de las pruebas con menos de 5—, y en 14 pruebas con UNA sola
+         marca el percentil salía 100 por pura aritmética. Un elogio que no se puede desmentir.
+         La insignia tenía guarda de N>=5; el texto del percentil, no.
+         Los sustituye `Nº 4 de 16`, que dice lo mismo, se entiende sin leyenda y NO MIENTE nunca,
+         tenga la población el tamaño que tenga. Ver `puestoTxt()`. */
       const anim=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
       if(view==="minimas"){
         /* La fila entera habla de la marca elegida por marcaFila(): tiempo, fecha y puntos
@@ -3927,7 +3922,7 @@ function renderProfile(vw){
            —era su única puerta— y la clase `tog`, que ya no significa nada aquí.
            Con ella se fue la envoltura `.right` que se había metido en esta fila solo para colgarla:
            el tiempo vuelve a ser hijo directo de `.mHead`, como siempre lo fue. */
-        return `<div class="pRow mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}${es50(mf.competi)?pisPill():""}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${fMF} pts</div></div><div class="time mono">${dMF}${esc(mf.tiempo)}</div></div>${detail}</div>`;}
+        return `<div class="pRow mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}${es50(mf.competi)?pisPill():""}</div><div class="puesto">${puestoTxt} · ${fMF} pts</div></div><div class="time mono">${dMF}${esc(mf.tiempo)}</div></div>${detail}</div>`;}
       /* Rótulo de piscina larga en MARCAS (MMP/progreso). Se pregunta por `b`, la marca que
          ESTA fila enseña (la mejor), NO por marcaFila(): mínimas puede estar enseñando otra.
          Caso real: quien tiene su mejor 100 en 25 m pero consigue la mínima por la vía larga ve
@@ -3945,10 +3940,10 @@ function renderProfile(vw){
            flex y con los gráficos dentro se habrían colocado como tercera columna. */
         return `<div class="pRow tog pmRow" style="${anim}">${stamp}<div class="pCols"><div class="mid">`+
           `<div class="prueba ${stKlass(p)}">${esc(p)}${es50(b.competi)?pisPill():""}</div>`+
-          `<div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts</div></div>${der}</div>`+
+          `<div class="puesto">${puestoTxt} · ${f} pts</div></div>${der}</div>`+
           mmpProg(name,p,cs)+mmpCurva(name,p,cs,rk,rkList)+`</div>`+histBox(name,p);
       }
-      return `<div class="pRow" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}${pctBadge}</div><div class="puesto">Nº ${rk?rk.rank:"-"} · ${f} pts${pctTxt}</div>${detail}</div>${der}</div>`;
+      return `<div class="pRow" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}</div><div class="puesto">${puestoTxt} · ${f} pts</div>${detail}</div>${der}</div>`;
     }).join("");
     /* La cabecera solo existe si tiene algo dentro: con la EH callada (ver profileStat) podía
        quedar un .pMinHead vacío metiendo 14 px de aire muerto encima de la primera prueba. */
