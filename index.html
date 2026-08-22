@@ -509,8 +509,21 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .pCols{display:flex;align-items:flex-start;gap:10px}
 /* Rótulo de gráfico. Es el nivel de letra que ya existe en .tagO, .pis50 y `mín.`: 9 px, 800,
    versalita espaciada. No se abre un tamaño nuevo. */
-.gtRow{margin-bottom:5px}
-.gt{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ===== CABECERA DE LOS DOS GRÁFICOS (maquetación «A», 21-ago-2026) ======================
+   Fran: «los títulos de progreso de la temporada y su sitio en la prueba son sosos y pequeños».
+   Eran un renglón de 9px en gris. Pasan a 13px en Space Grotesk 700 y en tinta, que es el mismo
+   peso tipográfico que el nombre de la prueba (16px) pero un escalón por debajo: así hay jerarquía
+   —prueba, luego gráfico, luego dato— en vez de dos extremos.
+   ⚠️ SUBEN LOS DOS TÍTULOS A LA VEZ. Subir solo el de la barra dejaba la jerarquía coja: el
+   segundo gráfico parecería un pie del primero.
+   ⚠️ Space Grotesk NO tiene 800 en este sistema: el tope es 700 (§F3). */
+.gtRow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.gt{min-width:0;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:-.01em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* La meta comparte renglón con el título, arriba y despegada de la barra: encargo literal de Fran.
+   `flex:0 0 auto` para que sea el TÍTULO el que se recorte si no cabe, nunca la cifra. */
+.gtMeta{flex:0 0 auto;display:flex;align-items:baseline;gap:5px}
+.gtMetaL{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.gtMetaV{font-weight:700;font-size:14px;color:var(--brand-deep);font-variant-numeric:tabular-nums}
 /* --- barra de progreso de la temporada --- */
 .pg{margin-top:11px}
 /* ⚠️ MÁS AIRE (21-ago-2026, Fran): la barra sube de 8 a 11px y la caja gana su renglón de meta.
@@ -522,17 +535,21 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .pgFill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,#3ba7bd 0%,#0e7c93 100%);z-index:1}
 /* LOS TRES METALES. Mientras va a por la primera meta, el turquesa de la app; después, el metal
    que le corresponda. Es lo que da sentido visual a «objetivo completado». */
-.pg.m1 .pgFill{background:linear-gradient(90deg,#d0925c 0%,#a86a34 100%)}
-.pg.m2 .pgFill{background:linear-gradient(90deg,#b9c3cd 0%,#8b97a4 100%)}
-.pg.m3 .pgFill{background:linear-gradient(90deg,#e8c25c 0%,#c08f1e 100%)}
-.pg.m1 .objDone{color:#a86a34}
+/* ⚠️ Los metales salen de los tokens `--bronze/--silver/--gold`, que YA EXISTÍAN en `:root`. La
+   primera versión los llevaba en hexadecimal a mano, que es saltarse el sistema de color.
+   El TEXTO usa tonos más oscuros que el token porque el token está pensado para rellenos: la plata
+   (#a9b6bf) y el oro (#e0ad3f) sobre blanco no darían contraste suficiente para leer. */
+.pg.m1 .pgFill{background:linear-gradient(90deg,#d9a06d 0%,var(--bronze) 100%)}
+.pg.m2 .pgFill{background:linear-gradient(90deg,#c6d0d8 0%,var(--silver) 100%)}
+.pg.m3 .pgFill{background:linear-gradient(90deg,#f0cf72 0%,var(--gold) 100%)}
+.pg.m1 .objDone{color:var(--bronze)}
 .pg.m2 .objDone{color:#78848f}
 .pg.m3 .objDone{color:#a97b12}
-.objLine{display:flex;align-items:baseline;gap:5px;margin-top:4px;font-size:11px;line-height:1.35;min-width:0}
-.objDone{flex:0 0 auto;font-weight:800;letter-spacing:.01em;white-space:nowrap}
-.objSep{flex:0 0 auto;color:var(--muted)}
-.objNext{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-weight:600}
-.objNext .v{font-weight:700;color:var(--ink-soft)}
+.pg.m1 .gtMetaV{color:var(--bronze)}
+.pg.m2 .gtMetaV{color:#78848f}
+.pg.m3 .gtMetaV{color:#a97b12}
+/* Los objetivos CONSEGUIDOS se quedan debajo de la barra, donde ya estaban: encargo de Fran. */
+.objDone{margin-top:4px;font-size:11px;line-height:1.35;font-weight:800;letter-spacing:.01em}
 .pgTxt{display:flex;justify-content:space-between;gap:10px;margin-top:5px;font-size:11px;line-height:1.35;color:var(--ink-soft)}
 .pgTxt span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pgTxt .v{font-weight:800;color:var(--brand-deep)}
@@ -3219,35 +3236,34 @@ function mmpProg(name,p,cs){
   RECORDS.filter(r=>r.nadadora===name&&r.prueba===p).forEach(r=>{
     const c=toCs(r.tiempo);if(!dias[r.fecha]||c<dias[r.fecha])dias[r.fecha]=c;});
   const fs=Object.keys(dias).sort();
-  const rot=`<div class="gtRow"><span class="gt">Progreso ${isHist()?"registrado":"de la temporada"}</span></div>`;
   const ref=refMarca(name,p,dias,fs);
   const EJE=ejeFicha(name);
-  /* Los objetivos se calculan SIEMPRE que haya referencia, aunque todavía no haya recorrido que
-     dibujar: una prueba nadada una sola vez no tiene barra, pero sí tiene meta, y enseñarla es
-     justo lo que pedía Fran. */
   const meta=k=>Math.round(ref.cs*(1-OBJ_PASO*k/100));
-  const pie=(h,hh)=>{
-    if(!ref)return "";
-    const done=hh>=1?`<span class="objDone">${OBJ_MET[hh]} objetivo completado</span>`:"";
-    const sig=hh<OBJ_N?`<span class="objNext">Objetivo <span class="v mono">${fmtClock(meta(hh+1))}</span></span>`:"";
-    return `<div class="objLine">${done}${done&&sig?'<span class="objSep">·</span>':""}${sig}</div>`;
-  };
+  /* MAQUETACIÓN «A», elegida por Fran en `muestra.html` el 21-ago-2026 sobre otras dos.
+     ⚠️ LA META VA ARRIBA, COMPARTIENDO RENGLÓN CON EL TÍTULO, no pegada a la barra: era el encargo
+     literal —«más vistoso encima de la barra pero no justo pegada, algo más arriba»—. Los objetivos
+     ya CONSEGUIDOS sí se quedan debajo de la barra, también por encargo.
+     De las tres maquetaciones probadas era la que menos altura añadía; la que ponía la meta en 19px
+     centrada sumaba ~24px por prueba y se descartó por eso. */
+  const rot=hh=>`<div class="gtRow"><span class="gt">Progreso ${isHist()?"registrado":"de la temporada"}</span>`+
+    ((ref&&hh<OBJ_N)?`<span class="gtMeta"><span class="gtMetaL">Objetivo</span><span class="gtMetaV mono">${fmtClock(meta(hh+1))}</span></span>`:"")+`</div>`;
+  const pie=hh=>hh>=1?`<div class="objDone">${OBJ_MET[hh]} objetivo completado</div>`:"";
   /* Las rayitas marcan dónde cae cada meta dentro del eje. Con eje 5 no hay ninguna intermedia
      (la barra entera ES la primera meta), con eje 10 hay una y con eje 15, dos. */
   const marcas=(()=>{let o="";for(let i=1;i*OBJ_PASO<EJE;i++)o+=`<i style="left:${(i*OBJ_PASO/EJE*100).toFixed(2)}%"></i>`;return o;})();
-  const mudo=(t,hh)=>`<div class="pg${hh?" m"+hh:""}">${rot}<div class="pgBar">${marcas}</div><div class="pgTxt solo"><span>${t}</span></div>${pie(0,hh)}</div>`;
-  if(!ref)return `<div class="pg">${rot}<div class="pgBar"></div><div class="pgTxt solo"><span>Una sola competición en esta prueba</span></div></div>`;
+  const mudo=t=>`<div class="pg">${rot(0)}<div class="pgBar">${marcas}</div><div class="pgTxt solo"><span>${t}</span></div></div>`;
+  if(!ref)return `<div class="pg"><div class="gtRow"><span class="gt">Progreso ${isHist()?"registrado":"de la temporada"}</span></div><div class="pgBar"></div><div class="pgTxt solo"><span>Una sola competición en esta prueba</span></div></div>`;
   const t0=ref.cs,g=t0-cs,pc=g/t0*100,hh=objHechos(pc);
   /* ⚠️ Sin tramo de color NO se escribe "0%" en ninguna parte: el 43,4% de las filas son pruebas
      nadadas una sola vez, así que no es que no haya mejorado, es que no hay recorrido que dibujar.
-     La meta sí se enseña: para eso está el pie. */
-  if(!ref.previa&&fs.length<2)return mudo("Una sola competición en esta prueba",0);
-  if(g<=0)return mudo(ref.previa?"Aún sin bajar su mejor marca anterior":"Aún sin bajar su marca de partida",0);
+     La meta sí se enseña, arriba: para eso está en el renglón del título. */
+  if(!ref.previa&&fs.length<2)return mudo("Una sola competición en esta prueba");
+  if(g<=0)return mudo(ref.previa?"Aún sin bajar su mejor marca anterior":"Aún sin bajar su marca de partida");
   const w=Math.max(0,Math.min(100,pc/EJE*100));
   const desde=ref.previa?"sobre su mejor marca anterior":("desde "+fmtDate(fs[0]));
-  return `<div class="pg${hh?" m"+hh:""}">${rot}<div class="pgBar">${marcas}<div class="pgFill" style="width:${w.toFixed(1)}%"></div></div>`+
+  return `<div class="pg${hh?" m"+hh:""}">${rot(hh)}<div class="pgBar">${marcas}<div class="pgFill" style="width:${w.toFixed(1)}%"></div></div>`+
     `<div class="pgTxt"><span><span class="v mono">−${fmtGap(g)}</span> ${desde}</span>`+
-    `<span class="b">${pc.toFixed(1).replace(".",",")}% más ${sexFilter==="M"?"rápido":"rápida"}</span></div>${pie(w,hh)}</div>`;
+    `<span class="b">${pc.toFixed(1).replace(".",",")}% más ${sexFilter==="M"?"rápido":"rápida"}</span></div>${pie(hh)}</div>`;
 }
 /* Contador para el id del degradado: dos <svg> con el mismo id se pisan y todas las curvas
    saldrían con el degradado de la primera. Sube y no se reinicia: basta con que no se repita. */
