@@ -518,7 +518,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
    segundo gráfico parecería un pie del primero.
    ⚠️ Space Grotesk NO tiene 800 en este sistema: el tope es 700 (§F3). */
 .gtRow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
-.gt{min-width:0;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:-.01em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gt{min-width:0;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;letter-spacing:-.01em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* La meta comparte renglón con el título, arriba y despegada de la barra: encargo literal de Fran.
    `flex:0 0 auto` para que sea el TÍTULO el que se recorte si no cabe, nunca la cifra. */
 .gtMeta{flex:0 0 auto;display:flex;align-items:baseline;gap:5px}
@@ -526,9 +526,11 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .gtMetaV{font-weight:700;font-size:14px;color:var(--brand-deep);font-variant-numeric:tabular-nums}
 /* --- barra de progreso de la temporada --- */
 .pg{margin-top:11px}
-/* ⚠️ MÁS AIRE (21-ago-2026, Fran): la barra sube de 8 a 11px y la caja gana su renglón de meta.
-   El coste es ~22px por prueba, y una ficha tiene 11 de mediana (17 la mayor). */
-.pgBar{position:relative;height:11px;background:var(--chip);border-radius:6px;box-shadow:inset 0 1px 2px rgba(11,42,58,.09);overflow:hidden}
+/* ⚠️ AFINADO EL 22-ago-2026 tras verlo Fran en el móvil: el título sube de 13 a 14px —un escalón
+   de la escala, y sigue por debajo de los 16px del nombre de la prueba, que es lo que sostiene la
+   jerarquía— y la barra baja de 11 a 9px. Venía de 8px: se subió a 11 al meter las metas y se pasó.
+   El renglón de la meta se queda, así que la caja sigue ganando aire respecto al original. */
+.pgBar{position:relative;height:9px;background:var(--chip);border-radius:6px;box-shadow:inset 0 1px 2px rgba(11,42,58,.09);overflow:hidden}
 /* Rayitas donde cae cada meta dentro del eje. Con eje 5 no hay ninguna: la barra entera ES la
    primera meta. Van DEBAJO del relleno a propósito, para que se sigan viendo al pasarlas. */
 .pgBar i{position:absolute;top:0;bottom:0;width:1px;background:rgba(11,42,58,.16);z-index:0}
