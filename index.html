@@ -2867,8 +2867,14 @@ function goalPill(name,vacio){
   cand.sort((a,b)=>a.rel-b.rel);
   const hot=cand.filter(x=>x.rel<=0.02).slice(0,3);
   /* El "(a X)" sale de la mejor vía, que puede ser una marca de piscina larga. Sin decirlo, el
-     número no se puede reconstruir desde la marca que se ve en la fila de esa prueba. */
-  const gp=x=>x.t+" "+abbrev(x.p)+" (a "+fmtClock(x.d)+(x.largo?" en 50 m":"")+")";
+     número no se puede reconstruir desde la marca que se ve en la fila de esa prueba.
+     ⚠️ Se dice «en piscina larga» y NO «en 50 m» (Fran, 22-ago-2026, lo vio en pantalla): dentro de
+     un paréntesis que ya lleva un tiempo —«ESP 200 B (a 3.97 en 50 m)»— ese «50 m» se lee como si
+     fuera parte de la distancia de la prueba, no como la piscina. «Piscina larga» no se confunde
+     con nada.
+     ⚠️ `gp` lo comparten «A tiro» y «Objetivo más cercano», así que este cambio vale para los dos.
+     ⚠️ Esto NO afecta a la pastilla `Piscina 50m`, que es deliberada y no se toca (CANON). */
+  const gp=x=>x.t+" "+abbrev(x.p)+" (a "+fmtClock(x.d)+(x.largo?" en piscina larga":"")+")";
   /* `solo` = no hay nada conseguido encima, así que esta línea no lleva raya ni hueco de separación.
      El rótulo va en negrita y el contenido no: es la misma jerarquía que usan las demás líneas. */
   const solo=arg=>arg?" solo":"";
