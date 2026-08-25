@@ -726,6 +726,19 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
    (`.pRow.open .hPill`), y reutilizarla encendía la pastilla de historial con solo abrir la prueba. */
 .pBody{display:none}
 .pRow.desp>.pBody{display:block;margin:11px -13px -10px;animation:vfade .2s ease-out}
+/* AL ABRIRSE, LA PRUEBA SE ENMARCA (Fran, 25-ago-2026): mientras está desplegada se lee como una
+   ficha suya —marco, esquinas redondeadas y aire alrededor— y al cerrarse vuelve a ser una fila
+   más y el marco desaparece. Cuelga de la misma clase que despliega, así que no hay estado nuevo
+   que mantener.
+   ⚠️ El marco SUSTITUYE al `border-top` de la fila, no se suma: al declarar los cuatro lados, el
+   de arriba queda sobrescrito y no aparece la línea suelta pegada al borde.
+   ⚠️ El redondeo lo recorta `.pRow{overflow:hidden}`, que ya estaba: sin él, la última sección se
+   saldría por las esquinas de abajo.
+   ⚠️ La fila siguiente pierde su línea mientras dura, para que el hueco bajo el marco quede limpio
+   en vez de con un filete flotando. */
+.pRow.desp{margin:10px 8px;border:1.5px solid var(--brand);border-radius:16px;
+  background:var(--surface);box-shadow:0 2px 8px rgba(11,42,58,.07)}
+.pRow.desp+.pRow{border-top:0}
 .pSec{padding:14px 13px 15px;border-top:1px solid var(--line)}
 .pSecH{padding:0 13px 13px}
 /* ⚠️ Mismos valores que `.hPill .chev`: 10px y `vertical-align:0`. A 13px y levantado parecía
