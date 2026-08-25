@@ -748,7 +748,10 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .pList{overflow:visible}
 .pRow.desp{margin:12px -1px;border:1px solid #a3cdd6;border-radius:16px;
   background:var(--surface);box-shadow:0 1px 3px rgba(11,42,58,.06),0 1px 2px rgba(11,42,58,.04)}
-.pRow.desp+.pRow{border-top:0}
+/* ⚠️ `:not(.desp)` ES IMPRESCINDIBLE. Sin él, al abrir dos pruebas seguidas la segunda perdía su
+   borde superior: esta regla, que solo quería limpiar el filete de la fila CERRADA que va debajo,
+   pisaba el `border-top` del marco de la de abajo si también estaba abierta. */
+.pRow.desp+.pRow:not(.desp){border-top:0}
 .pSec{padding:14px 13px 15px;border-top:1px solid var(--line)}
 .pSecH{padding:0 13px 13px}
 /* ⚠️ Mismos valores que `.hPill .chev`: 10px y `vertical-align:0`. A 13px y levantado parecía
@@ -785,22 +788,33 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 /* Lo que queda por recorrer hasta el objetivo, a rayas: dice «esto todavia no esta hecho». */
 .mtRest{position:absolute;top:0;bottom:0;right:0;border-radius:0 6px 6px 0;z-index:1;
   background:repeating-linear-gradient(90deg,rgba(11,42,58,.13) 0 3px,transparent 3px 7px)}
-.mtDot{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;transform:translate(-50%,-50%);
-  z-index:3;background:var(--surface);border:2.5px solid var(--line);box-sizing:border-box}
-.mtDot.hecho{border:0}
-.mtDot.hecho.o1{background:var(--bronze)}
-.mtDot.hecho.o2{background:var(--silver)}
-.mtDot.hecho.o3{background:var(--gold)}
-.mtDot.next.o1{border-color:var(--bronze)}
-.mtDot.next.o2{border-color:#a9b6bf}
-.mtDot.next.o3{border-color:var(--gold)}
-.mtDot.yo{width:11px;height:11px;background:var(--brand);border:2px solid var(--surface);
-  box-shadow:0 0 0 1.5px var(--brand);z-index:4}
-.mtDot.yo.m1{background:var(--bronze);box-shadow:0 0 0 1.5px var(--bronze)}
-.mtDot.yo.m2{background:#8d9aa4;box-shadow:0 0 0 1.5px #8d9aa4}
-.mtDot.yo.m3{background:#c9992a;box-shadow:0 0 0 1.5px #c9992a}
-.mtLabs{position:relative;height:40px;margin:10px 8px 0}
-.mtLab{position:absolute;top:0;transform:translateX(-50%);text-align:center;white-space:nowrap}
+.mtDot{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;
+  transform:translate(-50%,-50%);z-index:3;box-sizing:border-box;
+  background:var(--surface);border:2px solid var(--ink);
+  box-shadow:0 0 0 2px var(--surface)}
+/* ⚠️ El halo blanco es lo que los despega del carril: sin él, sobre el relleno de color los
+   puntos se confundían con la propia barra. El metal sigue estando donde importa —el relleno y
+   el rótulo—, así que aquí no hace falta y en negro leen mucho mejor. */
+.mtDot.hecho{background:var(--ink);border-color:var(--ink)}
+.mtDot.yo{width:14px;height:14px;background:var(--ink);border:3px solid var(--surface);
+  box-shadow:0 0 0 2px var(--ink);z-index:4}
+/* ⚠️ EL SOLAPE SE IMPIDE POR GEOMETRÍA, NO MIDIENDO TEXTO. «Tiempo de partida» se montaba con
+   «1.er objetivo» porque yo había estimado anchos a ojo y me quedé corto. Ahora cada rótulo tiene
+   un ancho MÁXIMO y las cuentas cierran solas, con cualquier tipografía y a cualquier ancho de
+   pantalla: la partida va pegada a la izquierda y ocupa como mucho el 19%; los objetivos van
+   centrados sobre su punto con un tope del 20%, o sea 10% a cada lado; el del final va pegado a
+   la derecha.
+     partida (19%) vs 1.er objetivo (33,3%)   -> 19 + 10 = 29   < 33,3   holgura 4,3 pp
+     entre objetivos centrados                -> 10 + 10 = 20   < 33,3   holgura 13,3 pp
+     2.º (66,7%) vs 3.er, pegado a la derecha -> 76,7 < 80              holgura 3,3 pp
+   Con 22%/20% la más apretada se quedaba en 0,33 pp, poco más de un píxel: se cumplía, pero sin
+   margen para otra tipografía. Lo que no cabe se parte en dos renglones, y por eso la fila mide
+   56px y el rótulo ya no lleva `nowrap`. El tiempo sí lo conserva: no debe partirse nunca. */
+.mtLabs{position:relative;height:56px;margin:10px 8px 0}
+.mtLab{position:absolute;top:0;transform:translateX(-50%);text-align:center;
+  max-width:20%;white-space:normal}
+.mtLab.part{max-width:19%}
+.mtLab .t{white-space:nowrap}
 .mtLab.borR{transform:none;text-align:right}
 .mtLab.borL{transform:none;text-align:left}
 .mtLab .t{display:block;font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;
