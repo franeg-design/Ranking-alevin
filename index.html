@@ -736,10 +736,17 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
    saldría por las esquinas de abajo.
    ⚠️ La fila siguiente pierde su línea mientras dura, para que el hueco bajo el marco quede limpio
    en vez de con un filete flotando. */
-/* ⚠️ MISMO BORDE QUE `.profile`, no uno propio: 1px de --line, radio 16 y su misma sombra. Se
-   probó un marco azul de 1,5px y era un borde nuevo por dentro de otro borde. La sensación de
-   ficha la da el lenguaje de tarjeta que la app ya tiene, no un trazo inventado. */
-.pRow.desp{margin:10px 8px;border:1px solid var(--line);border-radius:16px;
+/* ⚠️ EL MARCO CAE ENCIMA DEL BORDE REAL DE LA TARJETA, no por dentro. El `margin:0 -1px` lo saca
+   justo hasta donde `.profile` pinta su borde de 1px, así que ocupa EXACTAMENTE su sitio y su
+   ancho: mientras la prueba está abierta, el borde de siempre se oscurece a lo largo de esa
+   prueba, y por arriba y por abajo sigue pálido. Al cerrarla vuelve a su color.
+   Historial de esta línea, para no repetir los errores:
+     · trazo azul de 1,5px  -> un borde inventado por dentro de otro borde;
+     · `--line` tal cual    -> a #d8e8ee no se distingue del fondo, no enmarcaba nada;
+     · `margin:10px 8px`    -> metido 8px hacia dentro, se veían DOS líneas y la de fuera mandaba.
+   Necesita `.pList{overflow:visible}`: con el recorte de `.profile` el marco desaparecía. */
+.pList{overflow:visible}
+.pRow.desp{margin:12px -1px;border:1px solid #a3cdd6;border-radius:16px;
   background:var(--surface);box-shadow:0 1px 3px rgba(11,42,58,.06),0 1px 2px rgba(11,42,58,.04)}
 .pRow.desp+.pRow{border-top:0}
 .pSec{padding:14px 13px 15px;border-top:1px solid var(--line)}
@@ -3445,7 +3452,9 @@ function mmpProg(name,p,cs){
   /* ⚠️ TIEMPO DE PARTIDA al arranque del carril (Fran, 25-ago-2026): la marca desde la que se
      mide todo. Dentro de la temporada es su primera marca; en una temporada nueva, su mejor marca
      anterior. Va al mismo nivel que los objetivos conseguidos, pegada a la izquierda. */
-  let labs=`<div style="left:0" class="mtLab borL part"><span class="t">${fmtClock(ref.cs)}</span>`+
+  /* ⚠️ Si la marca actual ES la de partida no se escribe: repetir el mismo tiempo a los dos lados
+     del carril no dice nada. Pasa en toda prueba nadada una sola vez. */
+  let labs=(cs===ref.cs)?"":`<div style="left:0" class="mtLab borL part"><span class="t">${fmtClock(ref.cs)}</span>`+
     `<span class="c">Tiempo de partida</span></div>`;
   for(let i=1;i*OBJ_PASO<=EJE;i++){
     const x=Math.min(100,(OBJ_PASO*i/EJE)*100),hecho=i<=hh;
@@ -3468,7 +3477,7 @@ function mmpProg(name,p,cs){
      `<span class="sep"></span><span class="b">${pc.toFixed(1).replace(".",",")}% más `+
      `${sexFilter==="M"?"rápido":"rápida"}</span></div>`;
   return `<div class="pSec">${rot}${cab}<div class="pgTrack"><div class="mtTrack">${fill}${resto}${dots}</div>`+
-    `<div class="mtLabs">${labs}</div></div>${pie}</div>`;
+    (labs?`<div class="mtLabs">${labs}</div>`:"")+`</div>${pie}</div>`;
 }
 /* Contador para el id del degradado: dos <svg> con el mismo id se pisan y todas las curvas
    saldrían con el degradado de la primera. Sube y no se reinicia: basta con que no se repita. */
@@ -4167,7 +4176,9 @@ function renderProfile(vw){
     const mh=view==="minimas"?(mhSt+goalPill(name,!mhSt)):"";
     /* Sin esto, quien no haya nadado nunca en largo veria un panel en blanco sin explicacion. */
     if(_P50&&!rows)return `<div class="profile"><div class="pRow"><div class="mid"><div class="puesto">Sin marcas en piscina de 50 m.</div></div></div></div>`;
-    return `<div class="profile">${mh?`<div class="pMinHead"><div class="mhBox">${mh}</div></div>`:""}${rows}</div>`;
+    /* `pList` deja ver lo que se sale de la tarjeta: la prueba desplegada necesita pintar su
+       marco JUSTO ENCIMA del borde de `.profile`, y con `overflow:hidden` quedaba recortado. */
+    return `<div class="profile pList">${mh?`<div class="pMinHead"><div class="mhBox">${mh}</div></div>`:""}${rows}</div>`;
   }).join("");
   _P50=false;
   clubFilter=savedClub;sexFilter=savedSex;RECORDS=savedRec;MAXFECHA=savedMax;MAXJOR=savedJor;
