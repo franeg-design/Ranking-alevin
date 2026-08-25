@@ -759,6 +759,9 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .mtFill.m1{background:linear-gradient(90deg,#d9a06d 0%,var(--bronze) 100%)}
 .mtFill.m2{background:linear-gradient(90deg,#c6d0d8 0%,var(--silver) 100%)}
 .mtFill.m3{background:linear-gradient(90deg,#f0cf72 0%,var(--gold) 100%)}
+/* Lo que queda por recorrer hasta el objetivo, a rayas: dice «esto todavia no esta hecho». */
+.mtRest{position:absolute;top:0;bottom:0;right:0;border-radius:0 6px 6px 0;z-index:1;
+  background:repeating-linear-gradient(90deg,rgba(11,42,58,.13) 0 3px,transparent 3px 7px)}
 .mtDot{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;transform:translate(-50%,-50%);
   z-index:3;background:var(--surface);border:2.5px solid var(--line);box-sizing:border-box}
 .mtDot.hecho{border:0}
@@ -786,18 +789,47 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .mtLab.o1 .t,.mtLab.o1 .ok{color:var(--bronze)}
 .mtLab.o2 .t,.mtLab.o2 .ok{color:#78848f}
 .mtLab.o3 .t,.mtLab.o3 .ok{color:#a97b12}
-.pgWin{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-top:15px}
-.pgWin .d{font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;
-  font-size:16px;font-weight:700;letter-spacing:-.01em;color:var(--good-deep);white-space:nowrap}
-.pgWin .d svg{width:13px;height:13px;vertical-align:-1px;margin-right:2px}
-.pgWin .p{font-size:13px;font-weight:700;color:var(--ink-soft);white-space:nowrap}
-.pgSince{font-size:11px;color:var(--muted);margin-top:2px}
+/* CABECERA DE LA BARRA: marca actual · lo que falta · objetivo por alcanzar (Fran, 25-ago-2026).
+   ⚠️ El objetivo POR ALCANZAR se rotula solo «Objetivo», sin ordinal: el ordinal es cosa de los
+   ya conseguidos, que van bajo su punto del carril. */
+.mtHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px}
+.mtBig{min-width:0}
+.mtBig .n{display:block;font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;
+  font-size:19px;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+.mtBig .l{display:block;font-size:11px;color:var(--muted);margin-top:1px}
+.mtBig.r{text-align:right}
+.mtBig.a .n{color:var(--brand)}
+.mtChip{flex:0 1 auto;min-width:0;text-align:center;border:1px solid var(--line);border-radius:10px;padding:5px 9px}
+.mtChip .n{display:block;font-size:13px;font-weight:800;color:var(--good-deep);white-space:nowrap}
+.mtChip .l{display:block;font-size:10px;color:var(--muted);margin-top:1px;white-space:nowrap}
+.mtChip.done .n{color:#a97b12}
+/* CAJA DEL RESUMEN, DEBAJO DE LA BARRA. Un escalon mas grande que la primera version: la cifra
+   a 15px y los rotulos a 12/13, que a 11 se perdian al lado del carril. */
+.pgBox{display:flex;align-items:center;margin-top:16px;border:1px solid var(--line);border-radius:10px;
+  padding:10px 12px;gap:12px}
+.pgBox .h{flex:1;min-width:0;font-size:12px;line-height:1.35;color:var(--muted);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pgBox .h svg{width:14px;height:14px;vertical-align:-2px;margin-right:3px;color:var(--good-deep)}
+.pgBox .h .v{font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;
+  font-size:15px;font-weight:700;letter-spacing:-.01em;color:var(--good-deep)}
+.pgBox .sep{flex:0 0 1px;align-self:stretch;background:var(--line)}
+.pgBox .b{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--ink-soft);text-align:right}
+.pgBox.solo{justify-content:center}
+.pgBox.solo .h{flex:0 1 auto;text-align:center;white-space:normal}
 .pgMudo{font-size:12px;line-height:1.4;color:var(--muted);margin-top:15px}
 .pgMudo.sola{margin-top:0}
 
 /* ---- SU SITIO EN LA PRUEBA ----
    ⚠️ La montaña se queda en su escala de 34 px (encargo de Fran). Lo que se le da es AIRE. */
-.curBox{padding:10px 0 8px}
+/* EJE VERTICAL DE LA MONTANA (Fran, 25-ago-2026): sin el, la altura no decia de que hablaba.
+   ⚠️ El rotulo mide mas que los 34px del dibujo, asi que sobresale por arriba y por abajo; el
+   relleno de `.curBox` esta calculado para que quepa sin tocar ni el subtitulo ni las flechas. */
+.curWrap{display:flex;align-items:stretch;gap:7px}
+.curY{flex:0 0 auto;width:11px;position:relative;border-right:1px solid var(--line)}
+.curY span{position:absolute;left:1px;top:50%;transform:translate(-50%,-50%) rotate(-90deg);
+  white-space:nowrap;font-size:8px;font-weight:700;letter-spacing:.03em;color:var(--muted)}
+.curIn{flex:1;min-width:0}
+.curBox{padding:13px 0 11px}
 .curDir{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;font-weight:700}
 .curDir .lento{color:var(--muted)}
 .curDir .rapido{color:var(--good-deep)}
@@ -3378,6 +3410,16 @@ function mmpProg(name,p,cs){
        2 o 3         -> 15 % */
   const EJE=Math.min(OBJ_PASO*OBJ_N,OBJ_PASO*(hh+1));
   const w=mudo?0:Math.max(0,Math.min(100,pc/EJE*100));
+  /* ⚠️ CABECERA DE LA BARRA. El objetivo por alcanzar va SIN ordinal —solo «Objetivo»—: el
+     ordinal se reserva para los ya conseguidos, que se rotulan bajo su punto del carril. */
+  const sig=hh<OBJ_N?hh+1:0;
+  const chip=sig
+    ?`<div class="mtChip"><span class="n">−${gapS(Math.max(0,cs-meta(sig)))}</span><span class="l">hasta el objetivo</span></div>`
+    :`<div class="mtChip done"><span class="n">Los 3 objetivos</span><span class="l">completados</span></div>`;
+  const cab=`<div class="mtHead"><div class="mtBig a"><span class="n">${fmtClock(cs)}</span>`+
+    `<span class="l">Actual</span></div>${chip}`+
+    `<div class="mtBig r"><span class="n o${sig||OBJ_N}">${fmtClock(meta(sig||OBJ_N))}</span>`+
+    `<span class="l">${sig?"Objetivo":OBJ_MET[OBJ_N]+" objetivo"}</span></div></div>`;
   /* EL CARRIL. Los objetivos caen siempre a 33,3 / 66,7 / 100 %, así que sus rótulos no se pisan
      entre sí; lo único que hay que sujetar son los de los extremos, que van centrados sobre el
      punto y se saldrían de la tarjeta. */
@@ -3385,22 +3427,25 @@ function mmpProg(name,p,cs){
   for(let i=1;i*OBJ_PASO<=EJE;i++){
     const x=Math.min(100,(OBJ_PASO*i/EJE)*100),hecho=i<=hh;
     dots+=`<i class="mtDot o${i}${hecho?" hecho":(i===hh+1?" next":"")}" style="left:${x.toFixed(2)}%"></i>`;
-    const cola=hecho?`<span class="ok">✓</span>`
-                    :`<span class="falta">a −${gapS(Math.max(0,cs-meta(i)))}</span>`;
+    /* ⚠️ SOLO SE ROTULAN LOS CONSEGUIDOS (Fran, 25-ago-2026). El que queda por alcanzar ya tiene
+       su sitio en la cabecera, con su tiempo y lo que falta: repetirlo aqui era decirlo dos veces. */
+    if(!hecho)continue;
     const borde=x>=99?" borR":(x<=1?" borL":"");
     const pos=x>=99?"right:0":(x<=1?"left:0":`left:${x.toFixed(2)}%`);
     labs+=`<div style="${pos}" class="mtLab${borde} o${i}"><span class="t">${fmtClock(meta(i))}</span>`+
-          `<span class="c">${OBJ_MET[i]} objetivo</span>${cola}</div>`;
+          `<span class="c">${OBJ_MET[i]} objetivo</span><span class="ok">✓</span></div>`;
   }
   if(w>0)dots+=`<i class="mtDot yo${hh?" m"+hh:""}" style="left:${w.toFixed(2)}%"></i>`;
   const fill=w>0?`<i class="mtFill${hh?" m"+hh:""}" style="width:${w.toFixed(2)}%"></i>`:"";
-  /* ⚠️ EL RESUMEN VA DEBAJO DE LA BARRA (Fran, 25-ago-2026), no encima. */
-  const pie=mudo?`<div class="pgMudo">${mudo}</div>`
-    :`<div class="pgWin"><span class="d">${ICONO.abajo}−${gapS(g)}</span>`+
-     `<span class="p">${pc.toFixed(1).replace(".",",")}% más ${sexFilter==="M"?"rápido":"rápida"}</span></div>`+
-     `<div class="pgSince">${ref.previa?"sobre su mejor marca anterior":("desde "+fmtDate(fs[0]))}</div>`;
-  return `<div class="pSec">${rot}<div class="pgTrack"><div class="mtTrack">${fill}${dots}</div>`+
-    `<div class="mtLabs">${labs}</div></div>${pie}</div>`;
+  const resto=(w>0&&w<100)?`<i class="mtRest" style="left:${w.toFixed(2)}%"></i>`:"";
+  /* ⚠️ EL RESUMEN VA DEBAJO DE LA BARRA (Fran, 25-ago-2026), no encima, y en su caja. */
+  const pie=mudo?`<div class="pgBox solo"><span class="h">${mudo}</span></div>`
+    :`<div class="pgBox"><span class="h">${ICONO.abajo}<span class="v">−${gapS(g)}</span> `+
+     `${ref.previa?"sobre su mejor marca anterior":("desde "+fmtDate(fs[0]))}</span>`+
+     `<span class="sep"></span><span class="b">${pc.toFixed(1).replace(".",",")}% más `+
+     `${sexFilter==="M"?"rápido":"rápida"}</span></div>`;
+  return `<div class="pSec">${rot}${cab}<div class="pgTrack"><div class="mtTrack">${fill}${resto}${dots}</div>`+
+    (labs?`<div class="mtLabs">${labs}</div>`:"")+`</div>${pie}</div>`;
 }
 /* Contador para el id del degradado: dos <svg> con el mismo id se pisan y todas las curvas
    saldrían con el degradado de la primera. Sube y no se reinicia: basta con que no se repita. */
@@ -3469,7 +3514,9 @@ function mmpCurva(name,p,cs,rk,rkList){
      Así el relleno deja de ser adorno y dice qué porción del campo ha dejado atrás. */
   /* El gesto necesita dos cosas que solo se saben aquí: la escala del eje (lid/corte, en
      centésimas) y la altura de la silueta en las 48 casillas, para posar el punto SOBRE la línea. */
-  return `<div class="pSec">${rot}${sub}<div class="curBox"><div class="cur" data-lid="${lid}" data-corte="${corte}" `+
+  return `<div class="pSec">${rot}${sub}<div class="curBox"><div class="curWrap">`+
+    `<div class="curY"><span>Nº ${sexFilter==="M"?"nadadores":"nadadoras"}</span></div>`+
+    `<div class="curIn"><div class="cur" data-lid="${lid}" data-corte="${corte}" `+
     `data-h="${P.map(q=>q[1].toFixed(1)).join(",")}">`+
     `<svg viewBox="0 0 100 34" preserveAspectRatio="none" aria-hidden="true"><defs>`+
     `<linearGradient id="${gid}" x1="0" x2="1"><stop offset="0" stop-color="#a8d3e2"/><stop offset="1" stop-color="#cde5ed"/></linearGradient>`+
@@ -3480,7 +3527,7 @@ function mmpCurva(name,p,cs,rk,rkList){
     (fuera?`<div class="curFade"></div>`:"")+
     `<div class="curPt" style="left:${xy.toFixed(2)}%;top:${P[Math.round(xy/100*(NB-1))][1].toFixed(1)}px"></div>`+
     `<div class="scrub"><div class="sPt"></div><div class="sLab mono"></div></div>`+
-    `</div></div>${dir}${pie}</div>`;
+    `</div></div></div></div>${dir}${pie}</div>`;
 }
 
 function pruebasPresent(){const set=new Set(poolRecs(RECORDS).map(r=>r.prueba));const ord=PRUEBA_ORDER.filter(p=>set.has(p));const ex=[...set].filter(p=>!PRUEBA_ORDER.includes(p));return[...ord,...ex];}
@@ -3632,7 +3679,7 @@ function render(){
 
   // legend
   const legs={marcas:"<span style='font-weight:700'>Ranking por MMP.</span> Cada nadador/a con su <b>mejor marca personal</b> "+(isHist()?"de todas las temporadas"+scopeTxt():"de la temporada")+" en la prueba elegida. <b>Nº</b> = puesto · <b>pts</b> = puntos FINA, que sirven para comparar marcas de pruebas distintas: cuantos más puntos, mejor la marca."+((isHist()||SEASONS.indexOf(season)<1)?"":"<br><span style='font-weight:600;letter-spacing:.02em;margin-right:5px'>MMP</span>bajo el club: su mejor marca de <b>temporadas anteriores</b>, con su fecha. Solo aparece mientras la de esta temporada sea más lenta; al superarla desaparece. No cuenta para el puesto ni para los puntos.")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Indicadores de la última competición.</span> <span style='color:var(--muted)'>Solo en marcas logradas en la última competición.</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<br>↑ ↓ variación de puesto<br><span class='pos new' style='display:inline-block;margin-top:0;padding:0 5px;font-size:10px'>nuevo</span> primer registro en esta prueba</div>"+(minsOn()?"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Mínimas.</span><br><span class='mb mbEH' style='margin-left:0'>EH</span> / <span class='mb mbESP'>ESP</span> = mínima de <b>Euskadi</b> / <b>España</b> conseguida. En la pestaña <b>Mínimas</b> se ven todas las de cada nadador/a.</div>":"")+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m.</span><br>La pastilla "+p50Pill()+" junto a los puntos avisa de que esa marca <b>se nadó en piscina larga</b>. El ranking <b>no separa por piscina</b>: esas marcas compiten en la misma lista y se ordenan por tiempo, igual que las demás.<br>Los <b>puntos</b> sí distinguen: cada marca puntúa contra la tabla de su propia piscina. Por eso una marca de 50 m puede tener <b>más puntos</b> que otra de 25 m que es más rápida.</div><div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Fichas.</span><br>Toca un <b>nombre</b> de la lista (o búscalo) para abrir su ficha; <b>← Volver</b> regresa al ranking.</div><span style='display:block;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);color:var(--muted)'>El botón flotante ⓘ abre esta ventana con la explicación de lo que tengas seleccionado en cada momento: cambia según estés en Marcas, Mínimas, Top FINA o en una ficha.</span>",
-    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Aquí, y solo aquí, cada prueba se <b>despliega</b> al tocar su nombre —el ▾ del lado lo indica— y dentro aparecen el historial, el progreso y su sitio en la prueba. La pastilla <b>Historial de tiempos</b> abre todos sus tiempos "+(isHist()?"registrados"+scopeTxt():"de la temporada")+", con fecha y competición.<br>En <b>Su sitio en la prueba</b>, arrastra el dedo sobre la montaña: sale un punto con el tiempo de esa posición del eje —el del eje, no la marca de nadie—, y al levantar el dedo se va solo <b>a los dos segundos</b>. Solo puede haber un punto abierto: al tocar otra prueba, el anterior se cierra.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto:</span><br><b>Nº 4 de 16</b> quiere decir que va "+(sexFilter==="M"?"cuarto de dieciséis nadadores":"cuarta de dieciséis nadadoras")+" en esa prueba. Se cuenta entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b>: al cambiarlo, cambian el puesto y el recuento.<br><b>pts</b> = puntos FINA.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Los dos gráficos de cada prueba:</span><br><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>PROGRESO "+(isHist()?"REGISTRADO":"DE LA TEMPORADA")+"</span> cuánto ha bajado desde su primera marca "+(isHist()?"registrada"+scopeTxt():"de la temporada")+", en segundos y en porcentaje. La barra va hacia <b>tres objetivos</b> sobre su mejor marca anterior: <b>−5%</b>, <b>−10%</b> y <b>−15%</b>. Cada uno lleva su tiempo escrito debajo del carril y, si está pendiente, lo que le falta para llegar; al conseguirlo se marca con ✓ y la barra cambia de metal —<span style='color:var(--bronze);font-weight:800'>bronce</span>, <span style='color:#78848f;font-weight:800'>plata</span>, <span style='color:#a97b12;font-weight:800'>oro</span>—. <b>El carril se abre cinco puntos más cada vez que alcanza un objetivo</b>: al principio solo se ve el primero, y los siguientes van apareciendo según los consigue. <b>El eje es de cada prueba</b>, no de la ficha, así que el largo de dos barras suyas no es comparable entre sí: cada una cuenta su propio camino. Debajo van los segundos que ha bajado y el porcentaje. Si solo ha nadado esa prueba una vez, va vacía y lo dice: no es que no haya mejorado, es que todavía no hay con qué comparar.<div style='margin-top:7px'><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>SU SITIO EN LA PRUEBA</span> el reparto de <b>todas las marcas</b> de esa prueba, ordenadas por tiempo con "+(sexFilter==="M"?"el líder":"la líder")+" a la <b>derecha</b>. <b>Donde la montaña sube hay más "+(sexFilter==="M"?"nadadores":"nadadoras")+" juntos</b>, y donde baja están más sueltos: por eso se ve de un vistazo si está metido en el pelotón o si tiene hueco alrededor.<br>El <b>punto negro</b> es su marca, posado sobre la montaña. La zona <b>coloreada a su izquierda</b> son "+(sexFilter==="M"?"los que ya tiene por detrás":"las que ya tiene por detrás")+", así que de un vistazo se ve qué parte de la prueba ha dejado atrás. Debajo, lo que le separa de "+(sexFilter==="M"?"quien tiene justo delante":"quien tiene justo delante")+" —que es el puesto que puede ganar— y "+(sexFilter==="M"?"del líder":"de la líder")+".<br><span style='color:var(--muted)'>Si "+(sexFilter==="M"?"algún nadador va muy rezagado":"alguna nadadora va muy rezagada")+", queda fuera del dibujo para que el grueso del grupo se siga viendo, y el borde izquierdo aparece <b>desvanecido</b> para avisarlo. Pasa con 3 de cada 100 marcas, y nunca con la suya.</span></div></div>"+"<div style='margin-top:7px;padding-top:7px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m:</span><br>La pastilla "+p50Pill()+" a la izquierda de la fecha avisa de que su mejor marca en esa prueba <b>se nadó en piscina larga</b>, y de que sus puntos salen de la tabla de 50 m.<br>En la pestaña <b>Mínimas</b> esa misma prueba puede enseñar <b>otra marca</b>: allí manda la que consigue la mínima, y aquí la más rápida.</div>",
+    marcasFicha:"<span style='font-weight:700'>Indicadores de la última competición:</span><br><span class='tag up' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>− más rápida</span> / <span class='tag down' style='margin-top:0;padding:0 5px;font-size:10px;font-weight:600'>+ más lenta</span> que su MMP anterior<div style='margin-top:7px'><span style='font-weight:700'>En la ficha:</span><br>Aquí, y solo aquí, cada prueba se <b>despliega</b> al tocar su nombre —el ▾ del lado lo indica— y dentro aparecen el historial, el progreso y su sitio en la prueba. La pastilla <b>Historial de tiempos</b> abre todos sus tiempos "+(isHist()?"registrados"+scopeTxt():"de la temporada")+", con fecha y competición.<br>En <b>Su sitio en la prueba</b>, arrastra el dedo sobre la montaña: sale un punto con el tiempo de esa posición del eje —el del eje, no la marca de nadie—, y al levantar el dedo se va solo <b>a los dos segundos</b>. Solo puede haber un punto abierto: al tocar otra prueba, el anterior se cierra.<br>Con <b>Comparar</b> eliges un rival y ves el cara a cara prueba a prueba: el marcador cuenta solo las pruebas nadadas por ambos.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Puesto:</span><br><b>Nº 4 de 16</b> quiere decir que va "+(sexFilter==="M"?"cuarto de dieciséis nadadores":"cuarta de dieciséis nadadoras")+" en esa prueba. Se cuenta entre "+(sexFilter==="M"?"los nadadores":"las nadadoras")+" del <b>año seleccionado arriba</b>: al cambiarlo, cambian el puesto y el recuento.<br><b>pts</b> = puntos FINA.</div>"+"<div style='margin-top:7px'><span style='font-weight:700'>Los dos gráficos de cada prueba:</span><br><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>PROGRESO "+(isHist()?"REGISTRADO":"DE LA TEMPORADA")+"</span> cuánto ha bajado desde su primera marca "+(isHist()?"registrada"+scopeTxt():"de la temporada")+", en segundos y en porcentaje. La barra va hacia <b>tres objetivos</b> sobre su mejor marca anterior: <b>−5%</b>, <b>−10%</b> y <b>−15%</b>. Arriba van su marca actual, lo que le falta y el <b>objetivo por alcanzar</b>; al conseguirlo se queda escrito debajo de su punto del carril, con su tiempo y un ✓, y la barra cambia de metal —<span style='color:var(--bronze);font-weight:800'>bronce</span>, <span style='color:#78848f;font-weight:800'>plata</span>, <span style='color:#a97b12;font-weight:800'>oro</span>—. <b>El carril se abre cinco puntos más cada vez que alcanza un objetivo</b>: al principio solo se ve el primero, y los siguientes van apareciendo según los consigue. <b>El eje es de cada prueba</b>, no de la ficha, así que el largo de dos barras suyas no es comparable entre sí: cada una cuenta su propio camino. Debajo del carril, en su recuadro, van los segundos que ha bajado desde su primera marca y el porcentaje. Si solo ha nadado esa prueba una vez, va vacía y lo dice: no es que no haya mejorado, es que todavía no hay con qué comparar.<div style='margin-top:7px'><span style='font-size:9px;font-weight:800;letter-spacing:.06em;color:var(--muted)'>SU SITIO EN LA PRUEBA</span> el reparto de <b>todas las marcas</b> de esa prueba, ordenadas por tiempo con "+(sexFilter==="M"?"el líder":"la líder")+" a la <b>derecha</b>. <b>Donde la montaña sube hay más "+(sexFilter==="M"?"nadadores":"nadadoras")+" juntos</b>, y donde baja están más sueltos: por eso se ve de un vistazo si está metido en el pelotón o si tiene hueco alrededor.<br>El <b>punto negro</b> es su marca, posado sobre la montaña. La zona <b>coloreada a su izquierda</b> son "+(sexFilter==="M"?"los que ya tiene por detrás":"las que ya tiene por detrás")+", así que de un vistazo se ve qué parte de la prueba ha dejado atrás. Debajo, lo que le separa de "+(sexFilter==="M"?"quien tiene justo delante":"quien tiene justo delante")+" —que es el puesto que puede ganar— y "+(sexFilter==="M"?"del líder":"de la líder")+".<br><span style='color:var(--muted)'>Si "+(sexFilter==="M"?"algún nadador va muy rezagado":"alguna nadadora va muy rezagada")+", queda fuera del dibujo para que el grueso del grupo se siga viendo, y el borde izquierdo aparece <b>desvanecido</b> para avisarlo. Pasa con 3 de cada 100 marcas, y nunca con la suya.</span></div></div>"+"<div style='margin-top:7px;padding-top:7px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m:</span><br>La pastilla "+p50Pill()+" a la izquierda de la fecha avisa de que su mejor marca en esa prueba <b>se nadó en piscina larga</b>, y de que sus puntos salen de la tabla de 50 m.<br>En la pestaña <b>Mínimas</b> esa misma prueba puede enseñar <b>otra marca</b>: allí manda la que consigue la mínima, y aquí la más rápida.</div>",
     /* ⚠️ Las CUATRO leyendas que pueden ver una pastilla de piscina la explican: `marcas` y
        `marcasFicha` arriba, `minimas` y `minimasFicha` aquí abajo. Y todas la pintan llamando a
        `p50Pill()` / `pisPill()`, nunca copiando el HTML: así un cambio de texto o de estilo se
