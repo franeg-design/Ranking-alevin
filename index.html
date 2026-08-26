@@ -129,7 +129,13 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
    suelta dentro de su banda; y sin `overscroll-behavior` el gesto se contagiaba a la página.
    `proximity`, no `mandatory`: con `mandatory` el primer y el último botón no se pueden centrar y
    el navegador reposiciona solo, que es otra forma de parecer suelto. */
-.seg.scr{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;overscroll-behavior-x:contain;scroll-behavior:smooth}
+/* ⚠️ `overflow-y:hidden` NO ES DECORATIVO (Fran, 26-ago-2026). Al declarar `overflow-x:auto`, la
+   otra dirección deja de ser `visible` y pasa a `auto` por especificación: el carril se volvía
+   desplazable TAMBIÉN en vertical y, con `-webkit-overflow-scrolling:touch`, rebotaba arriba y
+   abajo aunque no hubiera nada que desplazar. En pantalla el selector parecía suelto dentro de su
+   propia caja. Fijándolo a `hidden` solo queda el desplazamiento horizontal, que es el que se
+   quiere; y como no hay contenido que sobresalga por arriba ni por abajo, no se recorta nada. */
+.seg.scr{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;overscroll-behavior-x:contain;scroll-behavior:smooth}
 .seg.scr::-webkit-scrollbar{display:none}
 .seg.scr button{flex:0 0 auto;white-space:nowrap;padding-left:13px;padding-right:13px;scroll-snap-align:center}
 .seg button{flex:1;display:flex;align-items:center;justify-content:center;min-height:31px;border:none;background:none;padding:7px 6px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;line-height:1.15}
@@ -732,22 +738,6 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
    mitad y el tiempo caía a un segundo renglón). Lo único que se le añade es un hermano oculto.
    ⚠️ La clase del panel es `desp`, NO `open`: `open` ya significa "el historial está desplegado"
    (`.pRow.open .hPill`), y reutilizarla encendía la pastilla de historial con solo abrir la prueba. */
-/* ⚠️⚠️ LA COLUMNA DERECHA NO SE PARTE NUNCA. Vuelve a estar aquí porque YA ESTABA y la quité por un
-   diagnóstico equivocado: cuando la fecha se partía por la mitad («5 jul» / «26 2:31.81») culpé a
-   una capa `.pHead` que había metido yo, la quité, y como el síntoma seguía sin verse en las
-   muestras di el caso por cerrado. No lo estaba: el síntoma reaparece en la app, sin capa ninguna.
-   Por el modelo de flexbox esto no debería pasar —`.right` lleva `flex-shrink:0`, así que su base
-   es el tamaño max-content y no puede encoger—, pero pasa. Así que en vez de deducirlo, se fuerza:
-     · `min-width:max-content` -> la columna reserva SIEMPRE lo que mide su contenido
-     · `white-space:nowrap`    -> fecha y tiempo no pueden separarse
-   MEDIDO sobre las 15.258 filas del arnés: la columna derecha más ancha necesita **173 px**
-   («[50M] 28 jun 26 19:00.15»), y en una pantalla de 393 px quedan **182 px** para el nombre y el
-   puesto. Sitio hay; lo que faltaba era obligar al navegador a dárselo.
-   ⚠️ Acotado a `.pmRow`: en Mínimas y Récords Álava la columna derecha lleva otro contenido y no se
-   toca. Quien cede si algún día no cabe es la IZQUIERDA, que `.mid` lleva `min-width:0`. */
-.pmRow .right{flex:0 0 auto;min-width:max-content;white-space:nowrap}
-.pmRow .time{white-space:nowrap}
-
 .pBody{display:none}
 .pRow.desp>.pBody{display:block;margin:11px -13px -10px;animation:vfade .2s ease-out}
 /* AL ABRIRSE, LA PRUEBA SE ENMARCA (Fran, 25-ago-2026): mientras está desplegada se lee como una
@@ -1308,7 +1298,15 @@ function fillYears(only){const seg=el("segYear");if(!seg)return;const all=[...ne
      mientras exista alguno de los dos años que representa. */
   yearFilter=yearFilter.filter(y=>ys.includes(y)||(y==="0607"&&(ys.includes("2006")||ys.includes("2007"))));/* En Histórico conviven cohortes de varias temporadas, así que la etiqueta "Alevín 13/14" dejaría
      de ser cierta: el botón absoluto pasa a llamarse "Todos". */
-  const lab=isHist()?(catFilter==="all"?"Todas":"Todos"):((CAT_LAB[catFilter]||"Alevín")+(all.length?" "+all.map(y=>y.slice(2)).join("/"):""));
+  /* ⚠️ SOLO EL NOMBRE DE LA CATEGORÍA, sin la lista de años (Fran, 26-ago-2026). Antes decía
+     `Alevín 13/14`, `Infantil 11/12`, `Júnior 08/09/10`, y eso traía dos problemas medidos:
+       · REPETÍA lo que ya dicen los botones de al lado (`2011` y `2012` justo al lado de «11/12»);
+       · y hacía que cada categoría midiera distinto. Con cuatro botones en 382px a cada uno le
+         tocan ~89px, y `Júnior 08/09/10` pide ~98: se partía en DOS RENGLONES y la fila crecía,
+         mientras `Infantil 11/12` (~92px) aguantaba en una. No era casualidad, era aritmética.
+     Ahora todas siguen la misma regla: primer botón = nombre, el resto = años. Una línea siempre.
+     ⚠️ Absoluta NO pasa por aquí: tiene su propia rama, más abajo, y se queda como estaba. */
+  const lab=isHist()?(catFilter==="all"?"Todas":"Todos"):(CAT_LAB[catFilter]||"Alevín");
   /* ABSOLUTA (§4.45): CINCO botones fijos, en este orden y con estos nombres —los eligió Fran el
      21-ago-2026—. «Abs joven» no es una cohorte más: es un atajo que marca el 06 y el 07 a la vez,
      y por eso no sale de la lista de claves sino que se inyecta aquí. */
