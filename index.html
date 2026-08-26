@@ -2100,7 +2100,51 @@ let PC_L50={
   PC_IM:{Mariposa:21.3,Espalda:26.3,Braza:29.7,Libre:22.8},
   PC_IM4:{Mariposa:23.0,Espalda:26.0,Braza:29.0,Libre:22.2},
   PC_IMD:{200:[0.7,1.3,1.6],400:[0.7,1.3,1.5]}
+ },
+ /* ⚠️ JUNIOR Y ABSOLUTA · piscina larga · ESTANDAR FIJO (§4.53, 26-ago-2026).
+    Corpus: XXVI Cto. Espana Absoluto "OPEN" + XLII Cto. Espana Junior, Sabadell 11-15/3/2026,
+    P50. De 3.557 carreras leidas quedan 2.085 validas: 1.188 junior y 897 absoluto.
+    Metodo §4.28, el mismo que infantil: TODAS las carreras -eliminatorias y finales-, sin
+    quedarse con la mejor de cada nadador ni con la mitad mejor. Las once tablas salen de
+    `calc()` de recalibrar.py, sin reteclear una formula.
+    ⚠️ La categoria se decide por ANO DE NACIMIENTO con el criterio de LA APP -junior 2008-2010,
+    absoluto 2007 y anteriores, incluidos los abs jovenes-, NO con el del campeonato (E8ter).
+    ⚠️ NO SE ROTA POR TEMPORADA ni la toca `recalibrar.py` (E9): es un patron de la categoria.
+    ⚠️ Control que valida el metodo: en larga PC_FIN sale POSITIVO en los cuatro estilos de las
+    dos categorias, igual que le paso a infantil en §4.28. En 25 m es negativo. */
+ junior:{
+  PC_SAL:{"100 Libre":[4.2,5.2,3.3,6.3,1.6,8.2],"100 Espalda":[3.2,4.6,2.2,6.1,1.4,7.2],"100 Braza":[2.8,3.9,1.9,5.6,1.2,7.2],"100 Mariposa":[2.4,3.6,1.6,4.7,0.7,6.4],"200 Libre":[8.7,10.3,7.1,12.2,5.3,13.1],"200 Espalda":[6.5,8.5,5.6,10.1,4.7,10.9],"200 Braza":[6.6,8.3,4.9,10.3,3.7,12.8],"200 Mariposa":[8.2,10.1,7,11.1,5.8,13.3],"400 Libre":[12.5,13.7,10,15.5,7.8,18.4]},
+  PC_100:{Libre:[8,9.6,6.8,11.3,4.6,13.2],Espalda:[6.7,8.1,5.3,9.7,3.3,13.5],Braza:[13.6,15.4,12.1,17.3,10.7,19.1],Mariposa:[14.7,16.8,13.4,18.3,12.2,20.4]},
+  PC_CRU:{Libre:[0.7,1.9,2.6],Espalda:[1,2.1,2.8],Braza:[0.8,1.8,2.7],Mariposa:[1.1,2.5,3.6]},
+  PC_FIN:{Libre:[2.2,3.8,5.1],Espalda:[1.7,3.4,5],Braza:[3.6,5,6.5],Mariposa:[6.8,9.1,10.8]},
+  PC_200:{Libre:[5.3,7.3,3.9,9.6,3.2,10.7],Espalda:[6.3,8.2,4.9,9.9,3.6,11.6],Braza:[8.1,9.9,6.5,12,4.6,13.7],Mariposa:[11.4,13.9,9.1,16.6,6.3,18.4]},
+  PC_TRA:{"200 Libre":[9.1,10.8,8.4,12.5,7.1,13.7],"200 Espalda":[10.6,12.1,9.2,13.3,8.3,15.2],"200 Braza":[12.9,14.9,11.7,16.2,10.8,17.6],"200 Mariposa":[16.4,18.2,14.8,20.1,13.6,22.3],"400 Libre":[11.2,12.8,9.7,14.7,8.4,16.4]},
+  PC_CV:{"400":[1.3,2.3,2.7]},
+  PC_DER:[0.3,0.5,0.6],
+  PC_IM:{Mariposa:21.1,Espalda:26,Braza:29.1,Libre:23.7},
+  PC_IM4:{Mariposa:23.6,Espalda:25.9,Braza:24.9,Libre:25.7},
+  PC_IMD:{"200":[1.4,2.2,2.6],"400":[3.6,4.2,4.4]}
+ },
+ absoluto:{
+  PC_SAL:{"100 Libre":[3.6,4.6,2.8,6,2.2,7.1],"100 Espalda":[3.4,4.3,2.7,5.5,2,6.5],"100 Braza":[2.3,3.5,1.4,4.5,0.7,5.7],"100 Mariposa":[1.9,3.3,0.8,4.2,0.5,5.4],"200 Libre":[8.9,11,7.3,11.5,6.3,13.2],"200 Espalda":[7.3,9.1,5.6,10.5,4.7,11.8],"200 Braza":[6.4,8.2,4.9,10.1,4.3,12.6],"200 Mariposa":[7.7,10.9,6.3,12.3,5.9,21.3]},
+  PC_100:{Libre:[7.8,9.8,6.4,10.9,5.3,12.1],Espalda:[6.7,8.7,5.1,10.4,4,12],Braza:[14.4,15.6,13,17.7,11.3,19.6],Mariposa:[14.1,16.8,12.6,18.1,11.2,19.9]},
+  PC_CRU:{Libre:[0.8,2,2.7],Espalda:[0.7,1.9,2.1],Braza:[0.9,1.9,2.2],Mariposa:[1.2,2.5,2.9]},
+  PC_FIN:{Libre:[2.4,4.3,6.5],Espalda:[2,3.2,4.5],Braza:[4.1,5.8,6.3],Mariposa:[6,7.2,10.5]},
+  PC_200:{Libre:[5.2,7.4,3.9,9.4,2.9,10.9],Espalda:[5.2,7.5,4.4,8.8,2.9,10],Braza:[8.4,10.7,6.7,11.9,4.8,12.7],Mariposa:[10.4,12.8,9.2,14.5,7.2,17.4]},
+  PC_TRA:{"200 Libre":[8.7,9.9,7.1,11.3,6.1,13.3],"200 Espalda":[8.9,10.8,7.6,12.5,6.9,13.8],"200 Braza":[13.3,14.4,12.3,15.7,10.1,16.8],"200 Mariposa":[14.8,16.8,13.6,18.6,12.3,19.9],"400 Libre":[9.4,11.8,8.2,13.7,6.6,14.3]},
+  PC_CV:{"400":[1.1,2.3,2.9]},
+  PC_DER:[0.2,0.4,0.6],
+  PC_IM:{Mariposa:21.2,Espalda:25.6,Braza:29.2,Libre:24.1},
+  PC_IM4:{Mariposa:23.5,Espalda:26,Braza:24.6,Libre:25.8},
+  PC_IMD:{"200":[1.5,2.4,2.6],"400":[3.7,4.5,4.7]}
  }};
+/* ⚠️ LA CLAVE ES LA QUE DEVUELVE `catOf`, NO EL GRUPO. `catOf` da `absjov` (2006-2007) y
+   `absoluto` (2005 y anteriores) por separado; `absoluta` es solo el GRUPO con el que la app
+   agrupa el ranking, y `PC_L50[cat]` nunca lo recibe. Declararlo con esa clave dejaba las tablas
+   sin usar y NADA lo delataba: el arnés pasaba en verde y las fichas salían idénticas.
+   Los abs jóvenes comparten tabla con absoluto por decisión de Fran (26-ago-2026): el corpus se
+   calibró con las dos poblaciones juntas, así que apuntar aquí es lo coherente. */
+PC_L50.absjov=PC_L50.absoluto;
 /* TABLAS DE RITMO POR TEMPORADA (ago-2026). Antes eran constantes únicas, así que recalibrar en
    junio habría reescrito las notas de la temporada anterior, ya publicadas desde hacía un año.
    Ahora se congelan igual que BASE / MIN_ESP / MIN_EH / REC_ALAVA en `TABLES`.
