@@ -768,7 +768,15 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 
 /* Títulos de sección */
 .secH{display:flex;align-items:center;gap:8px;margin-bottom:12px}
-.secH svg{width:17px;height:17px;flex:0 0 auto;color:var(--brand)}
+/* ⚠️ CRITERIO DE TAMAÑO DE ICONO (26-ago-2026): **un escalón de la escala por encima del texto al
+   que acompañan**, y solo dos medidas en todo el panel:
+     título de sección (.gt, 14px)  -> icono 16
+     texto en línea    (11px)       -> icono 13
+   Antes eran tres medidas sin regla —17, 15 y 13— y las dos últimas acompañaban al MISMO tamaño
+   de texto. El 17 y el 15 tampoco existían en la escala de la app (9·11·12·13·14·16·19·23).
+   ⚠️ Ninguno de los dos cambios mueve un píxel de alto: en `.secH` manda ahora el renglón del
+   título (16,8 px) en vez del icono, y en `.paBox` ya mandaba la cifra de 13 px, no el icono. */
+.secH svg{width:16px;height:16px;flex:0 0 auto;color:var(--brand)}
 .secSub{margin:-8px 0 11px;font-size:11px;color:var(--muted)}
 
 /* ---- PROGRESO ----
@@ -810,7 +818,7 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
    Con 22%/20% la más apretada se quedaba en 0,33 pp, poco más de un píxel: se cumplía, pero sin
    margen para otra tipografía. Lo que no cabe se parte en dos renglones, y por eso la fila mide
    56px y el rótulo ya no lleva `nowrap`. El tiempo sí lo conserva: no debe partirse nunca. */
-.mtLabs{position:relative;height:56px;margin:10px 8px 0}
+.mtLabs{position:relative;height:60px;margin:10px 8px 0}
 .mtLab{position:absolute;top:0;transform:translateX(-50%);text-align:center;
   max-width:20%;white-space:normal}
 .mtLab.part{max-width:19%}
@@ -819,10 +827,13 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .mtLab.borL{transform:none;text-align:left}
 .mtLab .t{display:block;font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;
   font-size:13px;font-weight:700;line-height:1.2;color:var(--ink)}
-.mtLab .c{display:block;font-size:10px;line-height:1.25;color:var(--muted);margin-top:1px}
+/* ⚠️ 11 px, no 10: el 10 aparecía UNA sola vez en todo el resto de la app. Al crecer el rótulo
+   cabe peor en una línea, y por eso `.mtLabs` sube a 60 px: se parte en dos y hay que darle sitio. */
+.mtLab .c{display:block;font-size:11px;line-height:1.25;color:var(--muted);margin-top:1px}
 .mtLab .ok{display:block;font-size:11px;line-height:1.15;margin-top:1px;font-weight:700}
-.mtLab .falta{display:block;font-size:10px;line-height:1.2;margin-top:1px;font-weight:700;
-  color:var(--good-deep);font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+/* ⛔ RETIRADO `.mtLab .falta` (26-ago-2026): quedó de cuando los objetivos PENDIENTES se rotulaban
+   bajo el carril con lo que faltaba. Desde que solo se rotulan los conseguidos no lo pintaba nadie:
+   cero apariciones en las 1.596 pantallas del arnés. No reintroducir sin volver a rotular pendientes. */
 .mtLab.part .t{color:var(--ink-soft)}
 .mtLab.o1 .t,.mtLab.o1 .ok{color:var(--bronze)}
 .mtLab.o2 .t,.mtLab.o2 .ok{color:#78848f}
@@ -832,31 +843,46 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
    ya conseguidos, que van bajo su punto del carril. */
 .mtHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:16px}
 .mtBig{min-width:0}
+/* ⚠️ 16 px, NO 19 (Fran, 26-ago-2026): a 19 eran lo más grande del panel, por encima del nombre
+   de la prueba, que es el título de la fila. Con 16 nada de dentro pasa de la cabecera. */
 .mtBig .n{display:block;font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;
-  font-size:19px;font-weight:700;line-height:1.15;letter-spacing:-.01em}
+  font-size:16px;font-weight:700;line-height:1.2;letter-spacing:-.01em}
 .mtBig .l{display:block;font-size:11px;color:var(--muted);margin-top:1px}
 .mtBig.r{text-align:right}
 .mtBig.a .n{color:var(--brand)}
-.mtChip{flex:0 1 auto;min-width:0;text-align:center;border:1px solid var(--line);border-radius:10px;padding:5px 9px}
+/* ⚠️ SIN RECUADRO Y A PESO 700 (Fran, 26-ago-2026). Pesaba de más por dos motivos medidos: su
+   cifra era el ÚNICO peso 800 del panel —todo lo demás va a 700— y era lo único con borde de esa
+   fila. Quitadas las dos cosas, el tamaño (13 px) se queda: es el escalón de los números aquí. */
+.mtChip{flex:0 1 auto;min-width:0;text-align:center}
 /* ⚠️ --good, el mismo verde que ÚLT. COMP. --good-deep está reservado para «a X de la de
    delante» y su rayita en la parrilla (§4.38); usarlo aquí eran dos verdes distintos en pantalla. */
-.mtChip .n{display:block;font-size:13px;font-weight:800;color:var(--good);white-space:nowrap}
-.mtChip .l{display:block;font-size:10px;color:var(--muted);margin-top:1px;white-space:nowrap}
+/* ⚠️ 12 px (Fran, 26-ago-2026): un escalón por debajo de los números del panel (13). Es un dato
+   secundario —lo que falta— y ya no compite con los tiempos del carril ni con las cajas de pie.
+   12 está en la escala de la app (29 usos); 12,5 o 12,5 «a ojo» no lo están. */
+.mtChip .n{display:block;font-size:12px;font-weight:700;color:var(--good);white-space:nowrap}
+.mtChip .l{display:block;font-size:11px;color:var(--muted);margin-top:1px;white-space:nowrap}
 .mtChip.done .n{color:#a97b12}
 /* CAJA DEL RESUMEN, DEBAJO DE LA BARRA. Un escalon mas grande que la primera version: la cifra
    a 15px y los rotulos a 12/13, que a 11 se perdian al lado del carril. */
-.pgBox{display:flex;align-items:center;margin-top:16px;border:1px solid var(--line);border-radius:10px;
-  padding:10px 12px;gap:12px}
-.pgBox .h{flex:1;min-width:0;font-size:12px;line-height:1.35;color:var(--muted);
+/* ⚠️ CALCADA A `.paBox` (Fran, 26-ago-2026). Se descuadraban en cuatro sitios a la vez: relleno
+   10/12 contra 9/11, texto 12 contra 11, cifra 15 contra 13 y separación 12 contra 11. La regla
+   ahora es la misma en las dos cajas: **las palabras a 11 y los números a 13**, y lo que distingue
+   es el color —verde lo ganado, tinta lo neutro—. De paso se va el 15 px, que no existía en
+   ninguna otra parte de la app. */
+.pgBox{display:flex;align-items:center;margin-top:14px;border:1px solid var(--line);border-radius:10px;
+  padding:9px 11px;gap:11px}
+.pgBox .h{flex:1;min-width:0;font-size:11px;line-height:1.35;color:var(--muted);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pgBox .h .v{font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;
-  font-size:15px;font-weight:700;letter-spacing:-.01em;color:var(--good)}
+  font-size:13px;font-weight:700;color:var(--good)}
 .pgBox .sep{flex:0 0 1px;align-self:stretch;background:var(--line)}
-.pgBox .b{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--ink-soft);text-align:right}
+.pgBox .b{flex:0 0 auto;font-size:11px;color:var(--muted);text-align:right}
+.pgBox .b .v{font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;
+  font-size:13px;font-weight:700;color:var(--ink)}
 .pgBox.solo{justify-content:center}
 .pgBox.solo .h{flex:0 1 auto;text-align:center;white-space:normal}
-.pgMudo{font-size:12px;line-height:1.4;color:var(--muted);margin-top:15px}
-.pgMudo.sola{margin-top:0}
+/* ⛔ RETIRADO `.pgMudo` (26-ago-2026): los mensajes de «una sola competición» y «aún sin bajar»
+   pasaron al recuadro (`.pgBox.solo`) y esta regla se quedó huérfana. Cero apariciones medidas. */
 
 /* ---- SU SITIO EN LA PRUEBA ----
    ⚠️ La montaña se queda en su escala de 34 px (encargo de Fran). Lo que se le da es AIRE. */
@@ -865,13 +891,27 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
    relleno de `.curBox` esta calculado para que quepa sin tocar ni el subtitulo ni las flechas. */
 .curWrap{display:flex;align-items:stretch;gap:7px}
 .curY{flex:0 0 auto;width:11px;position:relative;border-right:1px solid var(--line)}
+/* ⚠️ 9 px, no 8: 8 no existe en ninguna otra parte de la app y la escala real es
+   9·11·12·13·14·16·19·23. El MANUAL lo dice: no inventar intermedios. */
 .curY span{position:absolute;left:1px;top:50%;transform:translate(-50%,-50%) rotate(-90deg);
-  white-space:nowrap;font-size:8px;font-weight:700;letter-spacing:.03em;color:var(--muted)}
+  white-space:nowrap;font-size:9px;font-weight:700;letter-spacing:.03em;color:var(--muted)}
 .curIn{flex:1;min-width:0}
+/* ⚠️ 64 px (Fran, 26-ago-2026). ⛔ SUPERA «se queda en su escala de 34 px»: medido, la montaña
+   era la pieza MÁS PEQUEÑA de su propia sección —34 px de 235, el 14 %— mientras el marco de
+   alrededor (título, subtítulo, ejes y caja de pie) se lo comía. A 64 la sección se equilibra con
+   la del progreso.
+   ⚠️ ESTO NO ES SOLO CSS. El punto de la curva venía con su `top` en píxeles medidos sobre 34, y
+   el globo del dedo igual. Los dos llevan ahora factor de altura; ver `CUR_ALTO`. Si algún día se
+   cambia este número, hay que cambiarlo en UN SOLO SITIO: la constante. */
+.cur,.cur svg{height:64px}
 .curBox{padding:13px 0 11px}
-.curDir{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;font-weight:700}
-.curDir .lento{color:var(--muted)}
-.curDir .rapido{color:var(--good-deep)}
+/* ⚠️ ES UN EJE, NO UN RÓTULO (Fran, 26-ago-2026). Iba a 11 px y en negrita mientras el eje
+   vertical —`Nº nadadoras`— iba a 9: son los dos ejes del MISMO dibujo y el de abajo pesaba más
+   que la propia montaña. Ahora los dos van a 9 px, en `--muted` y sin negrita. La palabra
+   `tiempo` va en medio, entre las dos flechas. */
+.curDir{display:flex;align-items:center;gap:8px;margin-top:7px;font-size:9px;color:var(--muted)}
+.curDir .lento,.curDir .rapido,.curDir .mid{color:var(--muted);letter-spacing:.03em}
+.curDir .mid{flex:0 0 auto}
 .curDir .fl{flex:1;height:1px;background:var(--line);position:relative}
 .curDir .fl::before,.curDir .fl::after{content:"";position:absolute;top:50%;width:5px;height:5px;
   border-top:1px solid var(--line);border-right:1px solid var(--line)}
@@ -880,7 +920,7 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .paBox{display:flex;align-items:center;margin-top:14px;border:1px solid var(--line);border-radius:10px;
   padding:9px 11px;gap:11px}
 .paBox .c{flex:1;min-width:0;display:flex;align-items:center;gap:7px;font-size:11px;line-height:1.35;color:var(--muted)}
-.paBox .c svg{width:15px;height:15px;flex:0 0 auto}
+.paBox .c svg{width:13px;height:13px;flex:0 0 auto}
 .paBox .c.sig{color:var(--good-deep)}
 .paBox .c.sig svg{color:var(--good-deep)}
 .paBox .c.lid svg{color:var(--gold)}
@@ -3435,7 +3475,7 @@ function mmpProg(name,p,cs){
   const fs=Object.keys(dias).sort();
   const ref=refMarca(name,p,dias,fs);
   const rot=`<div class="secH">${ICONO.barras}<span class="gt">Progreso ${isHist()?"registrado":"de la temporada"}</span></div>`;
-  if(!ref)return `<div class="pSec">${rot}<div class="pgMudo sola">Una sola competición en esta prueba</div></div>`;
+  if(!ref)return `<div class="pSec">${rot}<div class="pgBox solo"><span class="h">Una sola competición en esta prueba</span></div></div>`;
   const meta=k=>Math.round(ref.cs*(1-OBJ_PASO*k/100));
   const t0=ref.cs,g=t0-cs,pc=g/t0*100,hh=objHechos(pc);
   /* ⚠️ Sin tramo de color NO se escribe "0%" en ninguna parte: el 43,4% de las filas son pruebas
@@ -3472,7 +3512,9 @@ function mmpProg(name,p,cs){
     `<span class="c">Tiempo de partida</span></div>`;
   for(let i=1;i*OBJ_PASO<=EJE;i++){
     const x=Math.min(100,(OBJ_PASO*i/EJE)*100),hecho=i<=hh;
-    dots+=`<i class="mtDot o${i}${hecho?" hecho":(i===hh+1?" next":"")}" style="left:${x.toFixed(2)}%"></i>`;
+    /* ⚠️ Sin clase `next`: con el eje por prueba el único punto sin conseguir es SIEMPRE el último,
+       y el estilo base de `.mtDot` ya lo pinta hueco. La clase se emitía y no la leía nadie. */
+    dots+=`<i class="mtDot o${i}${hecho?" hecho":""}" style="left:${x.toFixed(2)}%"></i>`;
     /* ⚠️ SOLO SE ROTULAN LOS CONSEGUIDOS (Fran, 25-ago-2026). El que queda por alcanzar ya tiene
        su sitio en la cabecera, con su tiempo y lo que falta: repetirlo aqui era decirlo dos veces. */
     if(!hecho)continue;
@@ -3488,8 +3530,8 @@ function mmpProg(name,p,cs){
   const pie=mudo?`<div class="pgBox solo"><span class="h">${mudo}</span></div>`
     :`<div class="pgBox"><span class="h"><span class="v">−${fmtGap(g)}</span> `+
      `${ref.previa?"sobre su mejor marca anterior":("desde "+fmtDate(fs[0]))}</span>`+
-     `<span class="sep"></span><span class="b">${pc.toFixed(1).replace(".",",")}% más `+
-     `${sexFilter==="M"?"rápido":"rápida"}</span></div>`;
+     `<span class="sep"></span><span class="b"><span class="v">${pc.toFixed(1).replace(".",",")}%</span> `+
+     `más ${sexFilter==="M"?"rápido":"rápida"}</span></div>`;
   return `<div class="pSec">${rot}${cab}<div class="pgTrack"><div class="mtTrack">${fill}${resto}${dots}</div>`+
     (labs?`<div class="mtLabs">${labs}</div>`:"")+`</div>${pie}</div>`;
 }
@@ -3527,8 +3569,8 @@ function mmpCurva(name,p,cs,rk,rkList){
       `<span class="sep"></span><span class="c lid">${ICONO.copa}<span class="tx">a <span class="v">${fmtGap(cs-rkList[0].cs)}</span> `+
       `${sexFilter==="M"?"del líder":"de la líder"}</span></span></div>`;
   /* ⚠️ La flecha va al revés que en la referencia de papel: aquí el líder está a la DERECHA. */
-  const dir=`<div class="curDir"><span class="lento">Más lento</span><span class="fl"></span>`+
-    `<span class="rapido">Más rápido</span></div>`;
+  const dir=`<div class="curDir"><span class="lento">más lento</span><span class="fl"></span>`+
+    `<span class="mid">tiempo</span><span class="fl"></span><span class="rapido">más rápido</span></div>`;
   if(N<2)return `<div class="pSec">${rot}${pie}</div>`;
   const ord=rkList.map(x=>x.cs).slice().sort((a,b)=>a-b);
   const lid=ord[0],med=ord[Math.floor((N-1)*0.5)];
@@ -3571,7 +3613,9 @@ function mmpCurva(name,p,cs,rk,rkList){
     `<path d="${area}" fill="url(#${gid})" clip-path="url(#c${gid})"/>`+
     `<path d="${linea}" fill="none" stroke="#7fb6c9" stroke-width="0.8" vector-effect="non-scaling-stroke"/></svg>`+
     (fuera?`<div class="curFade"></div>`:"")+
-    `<div class="curPt" style="left:${xy.toFixed(2)}%;top:${P[Math.round(xy/100*(NB-1))][1].toFixed(1)}px"></div>`+
+    /* ⚠️ El `top` va en % del alto, no en px: `P` está medido sobre las 34 unidades del viewBox,
+       así que en píxeles se despegaría de la línea en cuanto cambie el alto del dibujo. */
+    `<div class="curPt" style="left:${xy.toFixed(2)}%;top:${(P[Math.round(xy/100*(NB-1))][1]/34*100).toFixed(2)}%"></div>`+
     `<div class="scrub"><div class="sPt"></div><div class="sLab mono"></div></div>`+
     `</div></div></div></div>${dir}${pie}</div>`;
 }
@@ -4313,9 +4357,13 @@ function scrubMover(cur,cx){
   const H=(cur.dataset.h||"").split(",").map(Number);if(H.length<2)return;
   const lid=+cur.dataset.lid,corte=+cur.dataset.corte;
   const r=cur.getBoundingClientRect();if(!r.width)return;
+  /* ⚠️ `H` viene medido sobre las 34 unidades del viewBox. Todo lo que se compare con píxeles de
+     pantalla —la altura del punto y los topes del globo— hay que escalarlo por K. Sin esto, al
+     subir el dibujo a 64 px el globo se quedaba pegado al tercio superior. */
+  const K=r.height/34, ALTOG=r.height;
   const x=Math.max(0,Math.min(100,((cx-r.left)/r.width)*100));
   const f=x/100*(H.length-1),i=Math.floor(f),j=Math.min(H.length-1,i+1);
-  const y=H[i]+(H[j]-H[i])*(f-i);
+  const y=(H[i]+(H[j]-H[i])*(f-i))*K;
   pt.style.left=x.toFixed(2)+"%";pt.style.top=y.toFixed(1)+"px";
   lab.textContent=fmtClock(Math.round(lid+(100-x)/100*(corte-lid)));
   lab.style.left=Math.max(12,Math.min(88,x)).toFixed(2)+"%";
@@ -4336,15 +4384,15 @@ function scrubMover(cur,cx){
      instantánea: en una silueta de peine, cada diente hacía cambiar de lado. La POSICIÓN, en
      cambio, usa la altura real, que es lo que mantiene los 8 px de separación con el punto. */
   let suma=0,cuenta=0;
-  for(let k=-6;k<=6;k++){const q=i+k;if(q>=0&&q<H.length){suma+=H[q];cuenta++;}}
+  for(let k=-6;k<=6;k++){const q=i+k;if(q>=0&&q<H.length){suma+=H[q]*K;cuenta++;}}
   const ySuave=suma/cuenta;
-  const sobraArriba=Math.max(0,ALTO+SEP-ySuave), sobraAbajo=Math.max(0,ySuave+SEP+ALTO-34);
+  const sobraArriba=Math.max(0,ALTO+SEP-ySuave), sobraAbajo=Math.max(0,ySuave+SEP+ALTO-ALTOG);
   let baja=lab.classList.contains("baja");
   if(baja?(sobraArriba+4<sobraAbajo):(sobraAbajo+4<sobraArriba))baja=!baja;
   /* Tope duro: en la cresta de un pico alto el lado suavizado se saldría hasta 21 px por arriba,
      encima del rótulo. Si el lado elegido se sale más de 12 px y el otro cabe mejor, se cambia
      aunque la suavizada dijera lo contrario. Pasa solo en la cresta y devuelve dos cambios. */
-  const fueraA=Math.max(0,ALTO+SEP-y), fueraB=Math.max(0,y+SEP+ALTO-34);
+  const fueraA=Math.max(0,ALTO+SEP-y), fueraB=Math.max(0,y+SEP+ALTO-ALTOG);
   if(baja?(fueraB>12&&fueraA<fueraB):(fueraA>12&&fueraB<fueraA))baja=!baja;
   lab.classList.toggle("baja",baja);
   const top=baja?y+SEP:y-SEP;
