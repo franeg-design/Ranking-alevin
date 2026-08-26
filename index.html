@@ -571,7 +571,15 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 /* Un solo punto, posado SOBRE la línea, a la altura que le toque. Antes eran dos barritas
    verticales (la suya y la del líder) con una bola encima; Fran las quitó las dos: el líder no
    necesita marca porque siempre está en el extremo derecho por construcción (19-ago-2026). */
-.curPt{position:absolute;width:5.5px;height:5.5px;border-radius:50%;background:var(--ink);transform:translate(-50%,-50%);z-index:2}
+/* ⚠️ EL PUNTO NO CRECE, SOLO GANA HALO (Fran, 26-ago-2026). El truco es `box-sizing:border-box`:
+   con 8px de caja y 1,5px de anillo blanco, el círculo oscuro que se ve sigue midiendo 5px —lo
+   mismo que los 5,5px de antes—. Lo que se añade es el anillo, que lo despega de la montaña, y un
+   halo de 1px muy tenue que le da relieve. Huella total 10px.
+   ⚠️ Si alguna vez hay que agrandarlo, se sube la caja Y el anillo a la vez, o el punto engorda. */
+.curPt{position:absolute;width:8px;height:8px;box-sizing:border-box;border-radius:50%;
+  background:var(--ink);border:1.5px solid var(--surface);
+  box-shadow:0 0 0 1px rgba(11,42,58,.20);
+  transform:translate(-50%,-50%);z-index:2}
 /* --- punto que sigue al dedo sobre la montaña (§4.44) ---
    ⚠️ `.scrub` va a `inset:0` porque sus hijos se colocan en %: sin caja propia el % se calcula
    sobre 0 px de ancho y el punto y la etiqueta se amontonan en el borde izquierdo. Fue el fallo
@@ -746,6 +754,17 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
      · `margin:10px 8px`    -> metido 8px hacia dentro, se veían DOS líneas y la de fuera mandaba.
    Necesita `.pList{overflow:visible}`: con el recorte de `.profile` el marco desaparecía. */
 .pList{overflow:visible}
+/* ⚠️ `overflow:visible` hace falta para que se vea el marco de la prueba abierta, pero tiene un
+   efecto colateral: la línea de arriba de la PRIMERA fila deja de estar recortada por las esquinas
+   redondeadas de la tarjeta y asoma por fuera de la curva. En pantalla se ven DOS líneas finas en
+   cada esquina de arriba. Se le quita: con la fila CERRADA esa línea no separa nada, porque el
+   borde de la tarjeta ya hace de tapa.
+   ⚠️⚠️ `:not(.desp)` ES IMPRESCINDIBLE. Sin él se la quitaba también con la prueba ABIERTA, y ahí
+   esa línea es **la tapa de su marco**: el marco se quedaba sin borde de arriba. Pasó y se vio en
+   pantalla.
+   ⚠️ Y solo si la fila es la PRIMERA. Cuando delante va `.pMinHead` —154 pantallas del arnés— su
+   línea sí separa y además no está en la esquina, así que se queda. */
+.pList>.pRow:first-child:not(.desp){border-top:0}
 .pRow.desp{margin:12px -1px;border:1px solid #a3cdd6;border-radius:16px;
   background:var(--surface);box-shadow:0 1px 3px rgba(11,42,58,.06),0 1px 2px rgba(11,42,58,.04)}
 /* ⚠️ `:not(.desp)` ES IMPRESCINDIBLE. Sin él, al abrir dos pruebas seguidas la segunda perdía su
@@ -909,14 +928,15 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
    vertical —`Nº nadadoras`— iba a 9: son los dos ejes del MISMO dibujo y el de abajo pesaba más
    que la propia montaña. Ahora los dos van a 9 px, en `--muted` y sin negrita. La palabra
    `tiempo` va en medio, entre las dos flechas. */
-.curDir{display:flex;align-items:center;gap:8px;margin-top:7px;font-size:9px;color:var(--muted)}
-.curDir .lento,.curDir .rapido,.curDir .mid{color:var(--muted);letter-spacing:.03em}
+.curDir{display:flex;align-items:center;gap:8px;margin-top:7px;font-size:9px;font-weight:700;color:var(--muted)}
+.curDir .lento,.curDir .rapido,.curDir .mid{color:var(--muted);letter-spacing:.03em;font-weight:700}
 .curDir .mid{flex:0 0 auto}
-.curDir .fl{flex:1;height:1px;background:var(--line);position:relative}
-.curDir .fl::before,.curDir .fl::after{content:"";position:absolute;top:50%;width:5px;height:5px;
-  border-top:1px solid var(--line);border-right:1px solid var(--line)}
-.curDir .fl::before{left:0;transform:translateY(-50%) rotate(-135deg)}
-.curDir .fl::after{right:0;transform:translateY(-50%) rotate(45deg)}
+/* ⚠️ LOS DOS EJES DEL MISMO DIBUJO TIENEN QUE SER IGUALES (Fran, 26-ago-2026). No lo eran en tres
+   cosas a la vez: el vertical iba a peso 700 y el horizontal a normal; el horizontal llevaba
+   flechas y el vertical no; y encima el vertical es un `border-right` y el horizontal un div con
+   fondo. Ahora los dos son la MISMA raya de 1px en `--line`, sin flechas —la dirección la dicen
+   las palabras de los extremos, que para eso están— y con la misma letra. */
+.curDir .fl{flex:1;height:1px;background:var(--line)}
 .paBox{display:flex;align-items:center;margin-top:14px;border:1px solid var(--line);border-radius:10px;
   padding:9px 11px;gap:11px}
 .paBox .c{flex:1;min-width:0;display:flex;align-items:center;gap:7px;font-size:11px;line-height:1.35;color:var(--muted)}
