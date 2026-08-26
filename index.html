@@ -732,6 +732,22 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
    mitad y el tiempo caía a un segundo renglón). Lo único que se le añade es un hermano oculto.
    ⚠️ La clase del panel es `desp`, NO `open`: `open` ya significa "el historial está desplegado"
    (`.pRow.open .hPill`), y reutilizarla encendía la pastilla de historial con solo abrir la prueba. */
+/* ⚠️⚠️ LA COLUMNA DERECHA NO SE PARTE NUNCA. Vuelve a estar aquí porque YA ESTABA y la quité por un
+   diagnóstico equivocado: cuando la fecha se partía por la mitad («5 jul» / «26 2:31.81») culpé a
+   una capa `.pHead` que había metido yo, la quité, y como el síntoma seguía sin verse en las
+   muestras di el caso por cerrado. No lo estaba: el síntoma reaparece en la app, sin capa ninguna.
+   Por el modelo de flexbox esto no debería pasar —`.right` lleva `flex-shrink:0`, así que su base
+   es el tamaño max-content y no puede encoger—, pero pasa. Así que en vez de deducirlo, se fuerza:
+     · `min-width:max-content` -> la columna reserva SIEMPRE lo que mide su contenido
+     · `white-space:nowrap`    -> fecha y tiempo no pueden separarse
+   MEDIDO sobre las 15.258 filas del arnés: la columna derecha más ancha necesita **173 px**
+   («[50M] 28 jun 26 19:00.15»), y en una pantalla de 393 px quedan **182 px** para el nombre y el
+   puesto. Sitio hay; lo que faltaba era obligar al navegador a dárselo.
+   ⚠️ Acotado a `.pmRow`: en Mínimas y Récords Álava la columna derecha lleva otro contenido y no se
+   toca. Quien cede si algún día no cabe es la IZQUIERDA, que `.mid` lleva `min-width:0`. */
+.pmRow .right{flex:0 0 auto;min-width:max-content;white-space:nowrap}
+.pmRow .time{white-space:nowrap}
+
 .pBody{display:none}
 .pRow.desp>.pBody{display:block;margin:11px -13px -10px;animation:vfade .2s ease-out}
 /* AL ABRIRSE, LA PRUEBA SE ENMARCA (Fran, 25-ago-2026): mientras está desplegada se lee como una
