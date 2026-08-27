@@ -2105,7 +2105,11 @@ let PC_L50={
     Corpus: XXVI Cto. Espana Absoluto "OPEN" + XLII Cto. Espana Junior, Sabadell 11-15/3/2026,
     P50. De 3.557 carreras leidas quedan 2.085 validas: 1.188 junior y 897 absoluto.
     Metodo §4.28, el mismo que infantil: TODAS las carreras -eliminatorias y finales-, sin
-    quedarse con la mejor de cada nadador ni con la mitad mejor. Las once tablas salen de
+    quedarse con la mejor de cada nadador ni con la mitad mejor.
+    ⚠️ EL FONDO ENTRA. §4.28 decia que el 800 y el 1500 se caen porque sus parciales vienen cada
+    100 m: eso era cierto DE AQUEL ACTA (infantil 2024), no de todas. Esta publica el fondo cada 50
+    -800 con 16 tramos, 1500 con 30- y las sumas cuadran. Aplicar la regla sin comprobar la cadencia
+    de ESTE acta tiro 312 carreras buenas. Se comprueba la cadencia, no se presupone. Las once tablas salen de
     `calc()` de recalibrar.py, sin reteclear una formula.
     ⚠️ La categoria se decide por ANO DE NACIMIENTO con el criterio de LA APP -junior 2008-2010,
     absoluto 2007 y anteriores, incluidos los abs jovenes-, NO con el del campeonato (E8ter).
@@ -2118,9 +2122,9 @@ let PC_L50={
   PC_CRU:{Libre:[0.7,1.9,2.6],Espalda:[1,2.1,2.8],Braza:[0.8,1.8,2.7],Mariposa:[1.1,2.5,3.6]},
   PC_FIN:{Libre:[2.2,3.8,5.1],Espalda:[1.7,3.4,5],Braza:[3.6,5,6.5],Mariposa:[6.8,9.1,10.8]},
   PC_200:{Libre:[5.3,7.3,3.9,9.6,3.2,10.7],Espalda:[6.3,8.2,4.9,9.9,3.6,11.6],Braza:[8.1,9.9,6.5,12,4.6,13.7],Mariposa:[11.4,13.9,9.1,16.6,6.3,18.4]},
-  PC_TRA:{"200 Libre":[9.1,10.8,8.4,12.5,7.1,13.7],"200 Espalda":[10.6,12.1,9.2,13.3,8.3,15.2],"200 Braza":[12.9,14.9,11.7,16.2,10.8,17.6],"200 Mariposa":[16.4,18.2,14.8,20.1,13.6,22.3],"400 Libre":[11.2,12.8,9.7,14.7,8.4,16.4]},
-  PC_CV:{"400":[1.3,2.3,2.7]},
-  PC_DER:[0.3,0.5,0.6],
+  PC_TRA:{"200 Libre":[9.1,10.8,8.4,12.5,7.1,13.7],"200 Espalda":[10.6,12.1,9.2,13.3,8.3,15.2],"200 Braza":[12.9,14.9,11.7,16.2,10.8,17.6],"200 Mariposa":[16.4,18.2,14.8,20.1,13.6,22.3],"400 Libre":[11.2,12.8,9.7,14.7,8.4,16.4],"800 Libre":[12.4,14.7,11.5,16.3,9.3,18.6],"1500 Libre":[12,13.9,11.2,16,9.1,17.8]},
+  PC_CV:{"400":[1.3,2.3,2.7],"800":[1.4,2.3,3],"1500":[1.6,2.5,3]},
+  PC_DER:[0.1,0.3,0.5],
   PC_IM:{Mariposa:21.1,Espalda:26,Braza:29.1,Libre:23.7},
   PC_IM4:{Mariposa:23.6,Espalda:25.9,Braza:24.9,Libre:25.7},
   PC_IMD:{"200":[1.4,2.2,2.6],"400":[3.6,4.2,4.4]}
@@ -2131,9 +2135,9 @@ let PC_L50={
   PC_CRU:{Libre:[0.8,2,2.7],Espalda:[0.7,1.9,2.1],Braza:[0.9,1.9,2.2],Mariposa:[1.2,2.5,2.9]},
   PC_FIN:{Libre:[2.4,4.3,6.5],Espalda:[2,3.2,4.5],Braza:[4.1,5.8,6.3],Mariposa:[6,7.2,10.5]},
   PC_200:{Libre:[5.2,7.4,3.9,9.4,2.9,10.9],Espalda:[5.2,7.5,4.4,8.8,2.9,10],Braza:[8.4,10.7,6.7,11.9,4.8,12.7],Mariposa:[10.4,12.8,9.2,14.5,7.2,17.4]},
-  PC_TRA:{"200 Libre":[8.7,9.9,7.1,11.3,6.1,13.3],"200 Espalda":[8.9,10.8,7.6,12.5,6.9,13.8],"200 Braza":[13.3,14.4,12.3,15.7,10.1,16.8],"200 Mariposa":[14.8,16.8,13.6,18.6,12.3,19.9],"400 Libre":[9.4,11.8,8.2,13.7,6.6,14.3]},
-  PC_CV:{"400":[1.1,2.3,2.9]},
-  PC_DER:[0.2,0.4,0.6],
+  PC_TRA:{"200 Libre":[8.7,9.9,7.1,11.3,6.1,13.3],"200 Espalda":[8.9,10.8,7.6,12.5,6.9,13.8],"200 Braza":[13.3,14.4,12.3,15.7,10.1,16.8],"200 Mariposa":[14.8,16.8,13.6,18.6,12.3,19.9],"400 Libre":[9.4,11.8,8.2,13.7,6.6,14.3],"800 Libre":[10.4,12.3,8.7,15.1,6.6,16],"1500 Libre":[9.7,11.3,8.8,13,6,13.9]},
+  PC_CV:{"400":[1.1,2.3,2.9],"800":[1.2,2.4,3],"1500":[1.1,2,2.5]},
+  PC_DER:[0.1,0.2,0.4],
   PC_IM:{Mariposa:21.2,Espalda:25.6,Braza:29.2,Libre:24.1},
   PC_IM4:{Mariposa:23.5,Espalda:26,Braza:24.6,Libre:25.8},
   PC_IMD:{"200":[1.5,2.4,2.6],"400":[3.7,4.5,4.7]}
@@ -2212,7 +2216,14 @@ function pcCal(prueba){
     return !!(R&&R.Mariposa&&R.Espalda&&R.Braza&&R.Libre&&PC_IMD&&PC_IMD[dist]);
   }
   if(dist===100)return !!(PC_100||{})[est];
-  if(dist===200)return !!((PC_200||{})[est]&&(PC_CRU||{})[est]&&(PC_FIN||{})[est]&&(PC_TRA||{})[prueba]);
+  /* ⚠️ El 200 tiene DOS lecturas y cada una pide lo suyo (§4.54):
+       · cuatro parciales de 50  -> analisis completo: mitades + crucero + final + transicion
+       · dos parciales de 100    -> solo el REPARTO POR MITADES, que es `PC_200[est]` y nada mas.
+     La metrica de mitades es la MISMA en los dos casos -(2.a mitad - 1.a)/1.a- porque sumar dos
+     cincuentas da el cien. Por eso NO hace falta calibrar nada nuevo: la tabla ya vale.
+     `pcCal` responde por la prueba, no por la carrera, asi que basta con la banda de mitades; la
+     rama de dentro decide que puede contar con los tramos que le han llegado. */
+  if(dist===200)return !!(PC_200||{})[est];
   return !!((PC_CV||{})[dist]&&PC_DER&&(PC_TRA||{})[prueba]);
 }
 const IM_LEGS=["Mariposa","Espalda","Braza","Libre"];
@@ -2749,6 +2760,36 @@ function pcAnalyseIn(prueba,parc,nadadora,fecha,L){
               :"Carrera muy desequilibrada: el arranque ha pasado factura. Base aeróbica para sostener el final."))
       +" "+pcT(scTxt(),PC_T100[est]||PC_T100.Libre);
     return done(g,glob);
+  }
+  // ---------- 200 m CON PARCIALES CADA 100 (§4.54) ----------
+  /* Dos filas, una por cada 100, porque dos parciales es lo que trae el acta. No se puede medir ni
+     la salida (haria falta el primer 50) ni el crucero ni el final: se mide lo unico que estos
+     datos permiten, el REPARTO POR MITADES, con la misma banda `PC_200[est]` y la misma cuenta que
+     en la version de cuatro tramos. La nota global ES esa, sin promediar con nada.
+     ⚠️ Una nota sacada de cienes NO es comparable con una sacada de cincuentas, igual que no lo son
+     las de 25 y 50 m: por eso el texto dice de que se ha podido mirar y de que no. */
+  if(dist===200&&est!=="Estilos"&&cs.length===2&&slots.length===4&&
+     slots.every((x,i)=>(i%2===1)===!!x)&&(PC_200||{})[est]){
+    const B=PC_200[est];
+    const fh=cs[0],sh=cs[1],d=(sh-fh)/fh*100;
+    let sc;
+    if(d<B[0])sc=pcOut(B[0]-d,B[0]-B[2],B[0]-B[4],30,0);
+    else if(d>B[1])sc=pcOut(d-B[1],B[3]-B[1],B[5]-B[1],60,50);
+    else sc=100;
+    const nv=pcNivel(sc);
+    rows.push(pcRow("100m",vals[0],"1.ª mitad",nv,bw(cs[0])));
+    rows.push(pcRow("200m",vals[1],"2.ª mitad",nv,bw(cs[1])));
+    notes.push({k:nv.key,m:"Reparto por mitades",
+      t:`La segunda mitad ${d>=0?"cae":"sube"} un <b>${fmtp(d)}</b> respecto a la primera`+
+        ` (lo habitual en ${est.toLowerCase()} es ${nc(B[0])}–${nc(B[1])}%).`+
+        /* ⚠️ Se reusa `PC_T100`, que ya describe por estilo lo mismo -cuanto se cae la segunda
+           parte y que significa-, en vez de inventar un juego de frases nuevo. Un texto nuevo
+           habria que calibrarlo con el mismo 0-100 que pinta el color (regla del MANUAL), y aqui
+           la nota es la misma cuenta. */
+        pcT(sc,PC_T100[est]||PC_T100.Libre)});
+    const glob=`El acta trae los parciales cada 100 m, así que solo se puede mirar el reparto entre`+
+      ` las dos mitades: la salida, el crucero y el cierre necesitan los parciales cada 50.`;
+    return done(sc,glob);
   }
   // ---------- 200 m ----------
   if(dist===200&&cs.length===4&&per50){
