@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Ranking Álava</title>
-<meta name="description" content="Mejores marcas, puntos FINA y mínimas de la natación alevín e infantil de Álava, femenino y masculino. Piscinas de 25 y 50 m." />
+<meta name="description" content="Mejores marcas, puntos FINA y mínimas de la natación de Álava: alevín, infantil, júnior, absoluto joven y absoluto, femenino y masculino. Piscinas de 25 y 50 m." />
 <meta name="theme-color" content="#0e7c93" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -1805,18 +1805,22 @@ function pcEstrat(nadadora,est,fecha,t1cs,t2cs,L){
    "demasiado agresiva" al lado de una pastilla verde ni al revés. Es la garantía estructural de
    siempre, aplicada al caso nuevo. */
 function pcSalSinRef(s2,caidaFuera,d,B,est,contra){
-  /* Lleva la CIFRA y el RANGO, con el mismo formato que la tarjeta del Final. Sin el número la
-     tarjeta de Salida no se sostiene sola, que es justo lo que hace falta cuando no lleva nota.
-     ⚠️ Ya NO califica la salida (ago-2026): antes decía "la salida fue algo más agresiva de lo que
-     podías sostener" en cuanto la caída rozaba el borde, exactamente el juicio sin base que se
-     retiró del resto del motor. Ahora solo sentencia cuando la caída se ha desfondado de verdad
-     (nota del Final por debajo de 40), que es el equivalente aquí del "caso evidente". */
-  const sit=d>B[1]?"más de lo que marca el":d<B[0]?"menos de lo que marca el":"dentro del";
-  const r=` El segundo largo se ha caído un <b>${dec(Math.abs(d))}%</b>, ${sit} rango bueno en ${est.toLowerCase()} (${nc(B[0])}–${nc(B[1])}%)`;
-  if(!caidaFuera||s2>=40)return r+".";
+  /* ⚠️ UN DATO, UN DUEÑO (Fran, 26-ago-2026). La caída del 2.º largo es del párrafo del FINAL, y
+     aquí NO se repite. Antes esta función escribía la cifra y el rango otra vez —«el segundo largo
+     se ha caído un 23,4%, rango bueno 14,4–15,6%»— y la tarjeta del Final decía exactamente lo
+     mismo dos centímetros más abajo. Medido: pasaba en 289 carreras de 100, el 13% de las que
+     llevan nota.
+     ⛔ SUPERA el motivo que había escrito aquí («sin el número la tarjeta de Salida no se sostiene
+     sola»). No se sostiene: la tarjeta ya explica por qué no lleva nota, que es lo que le toca. Lo
+     que sí se conserva es el HILO —si el arranque le pasó factura al final, se dice— pero sin
+     volver a soltar la cifra: se señala dónde se ve.
+     ⚠️ Sigue sin calificar la salida: solo sentencia cuando la caída se ha desfondado de verdad
+     (nota del Final por debajo de 40), que es el «caso evidente». */
+  if(!caidaFuera||s2>=40)return "";
   /* Sin referencia válida no se puede hablar de cerca/lejos del mejor 50, así que aquí el eje es
      la propia carrera. `contra` cumple el mismo papel que en pcSalToque. */
-  return r+(contra?": aun así, ese arranque":": ese arranque")+" ha sido más rápido de lo que has podido sostener.";
+  return (contra?" Aun así, ese arranque":" Ese arranque")+
+    " ha sido más rápido de lo que has podido sostener, y el coste se ve en el largo siguiente.";
 }
 /* ETIQUETA DEL TRAMO SALIDA (ago-2026). El semáforo general (Ritmo óptimo…Fatigado) no sirve para
    el primer largo por dos motivos. Uno: "Fatigado" en el 50 de salida es físicamente imposible,
@@ -2228,7 +2232,12 @@ function pcCal(prueba){
 }
 const IM_LEGS=["Mariposa","Espalda","Braza","Libre"];
 function pcRow(met,tiempo,nom,n,w){
-  return `<div class="pcR"><div class="pcRh"><span class="pcRm">${esc(met)}</span><span class="pcRt mono">${esc(tiempo)}</span><span class="pcRn">${esc(nom)}</span><span class="pcRl pcL-${n.key}">${n.lab}</span><span class="pcRs pcL-${n.key}">${n.sc}</span></div><div class="pcBt"><i class="pcBf pcF-${n.key}" style="width:${Math.max(6,Math.min(100,w))}%"></i></div></div>`;
+  /* ⚠️ `data-sc` NO ES DECORATIVO. `done()` necesita saber qué tramo se ha descolgado, y hasta hoy
+     lo sacaba LEYENDO EL NÚMERO DEL HTML pintado. Al dejar de enseñarlo (26-ago-2026) esa lectura
+     se quedaba sin encontrar nada y la frase «aun con esa nota de conjunto, el final se ha
+     descolgado» desaparecía en silencio, sin error y sin que el arnés dijera nada. La nota viaja
+     ahora en el atributo: se puede dejar de enseñar sin romper a quien la usa. */
+  return `<div class="pcR" data-sc="${n.sc}"><div class="pcRh"><span class="pcRm">${esc(met)}</span><span class="pcRt mono">${esc(tiempo)}</span><span class="pcRn">${esc(nom)}</span><span class="pcRl pcL-${n.key}">${n.lab}</span></div><div class="pcBt"><i class="pcBf pcF-${n.key}" style="width:${Math.max(6,Math.min(100,w))}%"></i></div></div>`;
 }
 function pcNom(i,n,completa){return i===0?"Salida":((completa&&i===n-1)?"Final":"Crucero");}
 /* ---- Textos graduados del análisis de ritmo (jul-2026) ----
@@ -2473,8 +2482,8 @@ function pcAnalyseIn(prueba,parc,nadadora,fecha,L){
   const done=(g,glob)=>{
     if(g>=70){
       const rojos=[];
-      rows.forEach(r=>{const m=/pcRn">([^<]+)<\/span><span class="pcRl pcL-\w+">[^<]*<\/span><span class="pcRs pcL-\w+">(\d+)</.exec(r);
-        if(m&&+m[2]<30&&rojos.indexOf(m[1])<0)rojos.push(m[1]);});
+      rows.forEach(r=>{const m=/data-sc="(\d+)"[\s\S]*?pcRn">([^<]+)</.exec(r);
+        if(m&&+m[1]<30&&rojos.indexOf(m[2])<0)rojos.push(m[2]);});
       /* Solo se añade si la global NO estaba ya hablando de ese tramo: si no, salía "Donde más
          margen queda es en el final… Aun con esa nota, el final se ha descolgado", diciendo dos
          veces lo mismo. Y si la global afirma que no se descuelga nada, la coletilla la desmiente
@@ -2740,7 +2749,9 @@ function pcAnalyseIn(prueba,parc,nadadora,fecha,L){
     /* ⚠️ Con s1==null la global se apoya SOLO en el Final, así que esta frase afirmaba que el 2º
        largo aguantó incluso con la caída fuera de banda (Xabier, 100 Braza 14-jun: caída 12,1% con
        el rango hasta 11,7% y global 95). Se comprueba `caidaFuera` antes de elogiarlo. */
-    const glob=(g>=90?(s1==null?(caidaFuera?`Carrera bien resuelta, con el segundo largo cayendo más de lo que marca el rango bueno en ${est.toLowerCase()} (${nc(B[0])}–${nc(B[1])}%): ahí está el margen.`
+    const glob=(g>=90?(s1==null?(caidaFuera?/* ⚠️ UN DATO, UN DUEÑO: el rango bueno lo escribe la tarjeta del Final. Aquí se nombra el
+             hecho, no se vuelve a soltar la cifra. */
+            `Carrera bien resuelta, aunque el segundo largo cae más de lo que le corresponde: ahí está el margen.`
                                            :"Carrera bien gestionada: el segundo largo aguanta como tiene que aguantar.")
                               :"Carrera bien gestionada. En 100 se sale con cabeza y se vuelve con corazón, y eso es lo que has hecho.")
       :g>=70?"Buena gestión en conjunto, con un punto de mejora en el reparto. Estás muy cerca del 100 ideal."
@@ -2919,7 +2930,10 @@ function fichCompCard(name,FE){
   h+=`<div class="pcList">`;
   sw.forEach(r=>{
     const an=pcAnalyse(r.prueba,r.parciales,r.nadadora,r.fecha,r.competi);
-    const badge=an?`<span class="pcV pcV-${an.gkey}">${an.lab}${an.score!=null?` · ${an.score}`:""}</span>`:"";
+    /* ⚠️ SIN EL NÚMERO (Fran, 26-ago-2026): la palabra dice lo mismo y el 0-100 se leía como una
+       nota de colegio. El `score` SIGUE calculándose —es quien decide el color— y sigue viajando en
+       el objeto; lo único que cambia es que no se enseña. */
+    const badge=an?`<span class="pcV pcV-${an.gkey}">${an.lab}</span>`:"";
     let body;
     if(!an){
       const c50=pc50Txt(r.prueba,r.tiempo,r.nadadora,r.fecha,r.competi);
