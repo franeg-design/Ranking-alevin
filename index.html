@@ -954,7 +954,14 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
   font-family:'Space Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .paBox .c.sig .v{color:var(--good-deep)}
 .paBox .sep{flex:0 0 1px;align-self:stretch;background:var(--line)}
-.paBox .tx{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.paBox .tx{min-width:0}
+/* El nombre, en su renglón, un punto más oscuro que el texto que lo introduce. */
+.paBox .nm{display:block;color:var(--ink-soft);font-weight:700}
+.paBox .c.sig .nm{color:var(--good-deep)}
+/* ⚠️ Las dos mitades, a la misma altura: con `align-items:center` la de una línea se centraba
+   contra la de dos y el separador quedaba descuadrado. */
+.paBox{align-items:stretch}
+.paBox .c{align-items:flex-start}
 .paBox.solo{justify-content:center}
 </style>
 </head>
@@ -3709,14 +3716,21 @@ function mmpCurva(name,p,cs,rk,rkList){
   const lidR=rkList[0], gapLid=fmtGap(cs-lidR.cs), esLider=ant&&ant.name===lidR.name;
   const artLid=sexFilter==="M"?"del líder":"de la líder";
   const pie=!ant?`<div class="paBox solo"><span class="c lid">${ICONO.copa}<span class="tx">Nadie por delante</span></span></div>`
+    /* ⚠️ EL NOMBRE VA EN SU PROPIA LÍNEA (`.nm` es `display:block`), no se deja al azar del corte
+       automático. Sin el salto forzado el texto rompía donde le tocaba —unas veces tras «de la»,
+       otras tras el número— y las dos mitades quedaban con alturas distintas. Con el salto, las
+       cuatro celdas son siempre 1.ª línea = el dato, 2.ª = el nombre.
+       Medido: los 231 nombres caben en una sola línea (el más largo, «Johana Aguirregomezcorta»,
+       ocupa 116 de los 146px) y ninguna primera línea pasa de 108px. Cero terceras líneas.
+       Coste: 21 celdas que cabían en una pasan a dos; las otras 2.218 ya eran de dos. */
     :esLider?`<div class="paBox solo"><span class="c lid">${ICONO.copa}<span class="tx">${(cs-ant.cs)<=0
-        ?`${sexFilter==="M"?"empatado":"empatada"} con ${artLid}, ${esc(shortName(lidR.name))}`
-        :`a <span class="v">${gapLid}</span> ${artLid}, ${esc(shortName(lidR.name))}`}</span></span></div>`
+        ?`${sexFilter==="M"?"empatado":"empatada"} con ${artLid}<span class="nm">${esc(shortName(lidR.name))}</span>`
+        :`a <span class="v">${gapLid}</span> ${artLid}<span class="nm">${esc(shortName(lidR.name))}</span>`}</span></span></div>`
     :`<div class="paBox"><span class="c sig">${ICONO.flecha}<span class="tx">${(cs-ant.cs)<=0
-        ?`${sexFilter==="M"?"empatado":"empatada"} con ${sexFilter==="M"?"el":"la"} Nº ${ant.rank}, ${esc(shortName(ant.name))}`
-        :`a <span class="v">${fmtGap(cs-ant.cs)}</span> de ${sexFilter==="M"?"el":"la"} Nº ${ant.rank}, ${esc(shortName(ant.name))}`}</span></span>`+
+        ?`${sexFilter==="M"?"empatado":"empatada"} con ${sexFilter==="M"?"el":"la"} Nº ${ant.rank}<span class="nm">${esc(shortName(ant.name))}</span>`
+        :`a <span class="v">${fmtGap(cs-ant.cs)}</span> ${sexFilter==="M"?"del":"de la"} Nº ${ant.rank}<span class="nm">${esc(shortName(ant.name))}</span>`}</span></span>`+
       `<span class="sep"></span><span class="c lid">${ICONO.copa}<span class="tx">a <span class="v">${gapLid}</span> `+
-      `${artLid}, ${esc(shortName(lidR.name))}</span></span></div>`;
+      `${artLid}<span class="nm">${esc(shortName(lidR.name))}</span></span></span></div>`;
   /* ⚠️ La flecha va al revés que en la referencia de papel: aquí el líder está a la DERECHA. */
   const dir=`<div class="curDir"><span class="lento">más lento</span><span class="fl"></span>`+
     `<span class="mid">tiempo</span><span class="fl"></span><span class="rapido">más rápido</span></div>`;
