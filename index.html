@@ -3695,12 +3695,28 @@ function mmpCurva(name,p,cs,rk,rkList){
   const sub=`<div class="secSub">Distribución de marcas (${N} ${sexFilter==="M"?"nadadores":"nadadoras"})</div>`;
   const ant=iYo>0?rkList[iYo-1]:null;
   /* Las dos distancias, en una caja partida: a quién puede pasar y a cuánto está de la cabeza. */
+  /* PIE DE LA CURVA (§4.58). Dos datos: a quién puede pasar y a cuánto está de la cabeza.
+     ⚠️ Se nombra al LÍDER, que antes no se decía: «a 4.68 de la líder» obligaba a ir al ranking
+     para saber de quién. Y el de delante lleva su puesto.
+     ⚠️ CUANDO VAS SEGUNDA, el de delante ES el líder: las dos mitades nombrarían a la misma
+     persona con el mismo hueco. Pasa en el 6% de las filas (136 de 2.239), así que ese caso se
+     resuelve con UNA sola celda a lo ancho.
+     ⚠️ Medido antes de escribirlo: con los dos añadidos ninguna mitad pasa de DOS líneas (146px de
+     texto por celda). El ancho total engañaba —parecía que no cabía— porque no tenía en cuenta que
+     el texto se parte por palabras. */
+  /* ⚠️ `lidR` y no `lid`: mas abajo esta funcion ya declara un `lid` que es el TIEMPO del
+     lider en centesimas, no el nadador. Reusar el nombre rompia el script entero. */
+  const lidR=rkList[0], gapLid=fmtGap(cs-lidR.cs), esLider=ant&&ant.name===lidR.name;
+  const artLid=sexFilter==="M"?"del líder":"de la líder";
   const pie=!ant?`<div class="paBox solo"><span class="c lid">${ICONO.copa}<span class="tx">Nadie por delante</span></span></div>`
+    :esLider?`<div class="paBox solo"><span class="c lid">${ICONO.copa}<span class="tx">${(cs-ant.cs)<=0
+        ?`${sexFilter==="M"?"empatado":"empatada"} con ${artLid}, ${esc(shortName(lidR.name))}`
+        :`a <span class="v">${gapLid}</span> ${artLid}, ${esc(shortName(lidR.name))}`}</span></span></div>`
     :`<div class="paBox"><span class="c sig">${ICONO.flecha}<span class="tx">${(cs-ant.cs)<=0
-        ?`${sexFilter==="M"?"empatado":"empatada"} con ${esc(shortName(ant.name))}`
-        :`a <span class="v">${fmtGap(cs-ant.cs)}</span> de ${esc(shortName(ant.name))}`}</span></span>`+
-      `<span class="sep"></span><span class="c lid">${ICONO.copa}<span class="tx">a <span class="v">${fmtGap(cs-rkList[0].cs)}</span> `+
-      `${sexFilter==="M"?"del líder":"de la líder"}</span></span></div>`;
+        ?`${sexFilter==="M"?"empatado":"empatada"} con ${sexFilter==="M"?"el":"la"} Nº ${ant.rank}, ${esc(shortName(ant.name))}`
+        :`a <span class="v">${fmtGap(cs-ant.cs)}</span> de ${sexFilter==="M"?"el":"la"} Nº ${ant.rank}, ${esc(shortName(ant.name))}`}</span></span>`+
+      `<span class="sep"></span><span class="c lid">${ICONO.copa}<span class="tx">a <span class="v">${gapLid}</span> `+
+      `${artLid}, ${esc(shortName(lidR.name))}</span></span></div>`;
   /* ⚠️ La flecha va al revés que en la referencia de papel: aquí el líder está a la DERECHA. */
   const dir=`<div class="curDir"><span class="lento">más lento</span><span class="fl"></span>`+
     `<span class="mid">tiempo</span><span class="fl"></span><span class="rapido">más rápido</span></div>`;
