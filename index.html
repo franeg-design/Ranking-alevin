@@ -2266,26 +2266,26 @@ function ESTILISTA(){return sexFilter==="M"?"un buen estilista":"una buena estil
 function NADADOR(){return sexFilter==="M"?"cada nadador":"cada nadadora";}
 function pcT(sc,a){const r=Math.round(sc);return r>=90?a[0]:r>=70?a[1]:r>=50?a[2]:r>=30?a[3]:a[4];}
 const PC_T100={
-  Libre:["Has sostenido la técnica y el segundo largo no se te ha ido.",
-    "El segundo largo pesa algo, pero lo has llevado bien: el desgaste está dentro de lo normal.",
-    "Se te ha acortado la brazada en los últimos metros y ahí se han ido unas décimas.",
-    "El final lo ha acusado: la brazada se ha acortado bastante en el último largo.",
-    "El segundo largo se ha caído mucho. Es de lo más normal a esta edad y es justo lo que más se entrena: series de 100 saliendo más suave."],
-  Espalda:["Gran control: el batido ha aguantado hasta el final, que es lo que más cuesta en espalda.",
-    "El batido ha aguantado casi entero; solo en los últimos metros se nota un punto de desgaste.",
-    "Las piernas han ido perdiendo fuelle en el segundo largo y la posición se ha bajado algo.",
-    "Las piernas han dicho basta antes de tiempo: en espalda el batido es constante y se paga.",
-    "El batido se ha apagado pronto. Es lo típico cuando aún falta base de piernas, y se arregla con series cortas de pies."],
-  Braza:["Deslizamiento mantenido: no has entrado en pánico ni has acortado la brazada. Braza madura.",
-    "Has mantenido bien el deslizamiento; solo al final has subido un punto la frecuencia.",
-    "Has empezado a subir la frecuencia y a perder algo de avance por brazada.",
-    "Has subido la frecuencia y perdido avance: cada brazada te ha rendido menos al final.",
-    "Al final has patinado en el agua: mucha frecuencia y poco avance. Alargar el deslizamiento es lo que más tiempo te va a dar."],
-  Mariposa:["Aguante notable: sostener la cadera alta en mariposa con fatiga es de las cosas más difíciles que hay.",
-    "Has sostenido bien la cadera; solo al final se nota que baja un punto.",
-    "La cadera se ha ido hundiendo en el segundo largo y el avance se ha resentido.",
-    "Las caderas se han hundido al final y la brazada se ha acortado.",
-    "Las caderas se han venido abajo. Muy normal a esta edad: es cuestión de core y de no irte al límite en el primer largo."]};
+  Libre:["Has llegado con margen de sobra para sostener el ritmo hasta el final.",
+    "Pesa algo, pero lo has llevado bien: el desgaste está dentro de lo normal.",
+    "Cuando pasa esto, suele ser que la brazada se acorta al llegar justo.",
+    "Ese desgaste suele venir de acortar la brazada cuando ya no queda margen.",
+    "Es de lo más normal a esta edad, y es justo lo que más se entrena: series de 100 saliendo más suave."],
+  Espalda:["Gran control: has aguantado el ritmo hasta el final, que en espalda es lo que más cuesta porque el batido no descansa.",
+    "Has aguantado casi entero; solo en los últimos metros se nota un punto de desgaste.",
+    "En espalda esto suele venir de las piernas, que son las que sostienen la posición.",
+    "En espalda el batido no para en ningún momento, así que si falta fondo de piernas se paga justo aquí.",
+    "Es lo típico cuando aún falta base de piernas; suele arreglarse con series cortas de pies."],
+  Braza:["Reparto muy maduro para la edad: has llegado al final sin castigarlo.",
+    "Lo has llevado bien; solo al final se nota un punto de desgaste.",
+    "En braza esto suele ser que se sube la frecuencia y cada brazada rinde algo menos.",
+    "Cuando la braza se cae así, lo habitual es que la brazada se acelere y avance menos.",
+    "En braza suele pasar al llegar justo: se nada más rápido de brazos y se avanza menos. Trabajar el deslizamiento es de lo que más tiempo suele dar."],
+  Mariposa:["Aguante notable: sostener el ritmo en mariposa con fatiga es de las cosas más difíciles que hay.",
+    "Lo has sostenido bien; solo al final se nota que baja un punto.",
+    "En mariposa suele ser la cadera, que se hunde en cuanto aparece el cansancio.",
+    "Lo típico en mariposa es que la cadera baje y la brazada se acorte.",
+    "Muy normal a esta edad; suele ir de core y de no irse al límite en el primer largo."]};
 const PC_TFIN100=[" Has sostenido el segundo largo.",
   " El segundo largo ha aguantado casi entero.",
   " Ahí se han ido unas décimas.",
@@ -2766,9 +2766,9 @@ function pcAnalyseIn(prueba,parc,nadadora,fecha,L){
       :g>=30?(s1==null?"El segundo largo se ha caído bastante: el margen está en sostener el ritmo hasta el final."
                     :s2>=70?"El arranque ha desequilibrado la carrera: el final lo has defendido, así que el margen está entero en cómo sales."
                     :"El reparto ha desequilibrado la carrera: revisa cómo sales para poder sostener el final.")
-      :(s1==null?"Carrera muy desequilibrada: el segundo largo se ha ido del todo. Base aeróbica para sostenerlo."
+      :(s1==null?"Carrera muy desequilibrada: el segundo largo se ha ido del todo. Para sostener ese final suele venir bien trabajar base aeróbica."
               :s2>=70?"Carrera muy desequilibrada por el arranque: has salido demasiado fuerte y el final lo has sacado a pulso."
-              :"Carrera muy desequilibrada: el arranque ha pasado factura. Base aeróbica para sostener el final."))
+              :"Carrera muy desequilibrada: el arranque ha pasado factura. Para aguantar el final suele venir bien trabajar base aeróbica."))
       +" "+pcT(scTxt(),PC_T100[est]||PC_T100.Libre);
     return done(g,glob);
   }
