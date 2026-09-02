@@ -1691,8 +1691,11 @@ let PC_TRA={
    No se importan cifras de la literatura: son de piscina de 50 m y de élite adulta
    (en 800 el escalón de élite ronda el 7%, aquí la mediana es 13,7%). */
 const PC_TRA_NS={"200 Mariposa":1,"800 Libre":1};
-function pcTrans(prueba,t1cs,cruCs){
-  const B=PC_TRA[prueba];if(!B||!t1cs||!isFinite(cruCs)||cruCs<=0)return null;
+function pcTrans(prueba,t1cs,cruCs,cad){
+  /* ⚠️ `cad` viaja desde `pcAnalyseIn`: la transición se mide contra el crucero, y el crucero
+     cambia con la cadencia igual que en PC_CV. */
+  const B=PC_TRA[prueba+(cad===100?"/100":"")]||PC_TRA[prueba];
+  if(!B||!t1cs||!isFinite(cruCs)||cruCs<=0)return null;
   const d=(cruCs-t1cs)/t1cs*100;
   /* Una sola cola. Un escalón PEQUEÑO no se penaliza: en las mejores carreras de cada
      nadador/a de esta app el escalón es MENOR que en sus peores (media −1,9 puntos; baja
@@ -2137,9 +2140,9 @@ let PC_L50={
   PC_CRU:{Libre:[0.7,1.9,2.6],Espalda:[1,2.1,2.8],Braza:[0.8,1.8,2.7],Mariposa:[1.1,2.5,3.6]},
   PC_FIN:{Libre:[2.2,3.8,5.1],Espalda:[1.7,3.4,5],Braza:[3.6,5,6.5],Mariposa:[6.8,9.1,10.8]},
   PC_200:{Libre:[5.3,7.3,3.9,9.6,3.2,10.7],Espalda:[6.3,8.2,4.9,9.9,3.6,11.6],Braza:[8.1,9.9,6.5,12,4.6,13.7],Mariposa:[11.4,13.9,9.1,16.6,6.3,18.4]},
-  PC_TRA:{"200 Libre":[9.1,10.8,8.4,12.5,7.1,13.7],"200 Espalda":[10.6,12.1,9.2,13.3,8.3,15.2],"200 Braza":[12.9,14.9,11.7,16.2,10.8,17.6],"200 Mariposa":[16.4,18.2,14.8,20.1,13.6,22.3],"400 Libre":[11.2,12.8,9.7,14.7,8.4,16.4],"800 Libre":[12.4,14.7,11.5,16.3,9.3,18.6],"1500 Libre":[12,13.9,11.2,16,9.1,17.8]},
-  PC_CV:{"400":[1.3,2.3,2.7],"800":[1.4,2.3,3],"1500":[1.6,2.5,3]},
-  PC_DER:[0.1,0.3,0.5],
+  PC_TRA:{"200 Libre":[9.1,10.8,8.4,12.5,7.1,13.7],"200 Espalda":[10.6,12.1,9.2,13.3,8.3,15.2],"200 Braza":[12.9,14.9,11.7,16.2,10.8,17.6],"200 Mariposa":[16.4,18.2,14.8,20.1,13.6,22.3],"400 Libre":[11.2,12.8,9.7,14.7,8.4,16.4],"800 Libre":[12.4,14.7,11.5,16.3,9.3,18.6],"800 Libre/100":[5.9,7.1,5.4,8.1,4.6,10.1],"1500 Libre":[12,13.9,11.2,16,9.1,17.8],"1500 Libre/100":[5.8,6.7,5.2,7.9,4.3,9]},
+  PC_CV:{"400":[1.3,2.3,2.7],"800":[1.4,2.3,3],"1500":[1.6,2.5,3],"800/100":[0.9,1.9,2.6],"1500/100":[1.1,1.7,2.4]},
+  PC_DER:{todo:[0.1,0.3,0.5],"todo/100":[0,0.1,0.2]},
   PC_IM:{Mariposa:21.1,Espalda:26,Braza:29.1,Libre:23.7},
   PC_IM4:{Mariposa:23.6,Espalda:25.9,Braza:24.9,Libre:25.7},
   PC_IMD:{"200":[1.4,2.2,2.6],"400":[3.6,4.2,4.4]}
@@ -2150,9 +2153,9 @@ let PC_L50={
   PC_CRU:{Libre:[0.8,2,2.7],Espalda:[0.7,1.9,2.1],Braza:[0.9,1.9,2.2],Mariposa:[1.2,2.5,2.9]},
   PC_FIN:{Libre:[2.4,4.3,6.5],Espalda:[2,3.2,4.5],Braza:[4.1,5.8,6.3],Mariposa:[6,7.2,10.5]},
   PC_200:{Libre:[5.2,7.4,3.9,9.4,2.9,10.9],Espalda:[5.2,7.5,4.4,8.8,2.9,10],Braza:[8.4,10.7,6.7,11.9,4.8,12.7],Mariposa:[10.4,12.8,9.2,14.5,7.2,17.4]},
-  PC_TRA:{"200 Libre":[8.7,9.9,7.1,11.3,6.1,13.3],"200 Espalda":[8.9,10.8,7.6,12.5,6.9,13.8],"200 Braza":[13.3,14.4,12.3,15.7,10.1,16.8],"200 Mariposa":[14.8,16.8,13.6,18.6,12.3,19.9],"400 Libre":[9.4,11.8,8.2,13.7,6.6,14.3],"800 Libre":[10.4,12.3,8.7,15.1,6.6,16],"1500 Libre":[9.7,11.3,8.8,13,6,13.9]},
-  PC_CV:{"400":[1.1,2.3,2.9],"800":[1.2,2.4,3],"1500":[1.1,2,2.5]},
-  PC_DER:[0.1,0.2,0.4],
+  PC_TRA:{"200 Libre":[8.7,9.9,7.1,11.3,6.1,13.3],"200 Espalda":[8.9,10.8,7.6,12.5,6.9,13.8],"200 Braza":[13.3,14.4,12.3,15.7,10.1,16.8],"200 Mariposa":[14.8,16.8,13.6,18.6,12.3,19.9],"400 Libre":[9.4,11.8,8.2,13.7,6.6,14.3],"800 Libre":[10.4,12.3,8.7,15.1,6.6,16],"800 Libre/100":[5.5,7.1,4.3,8,3.2,8.6],"1500 Libre":[9.7,11.3,8.8,13,6,13.9],"1500 Libre/100":[4.8,5.7,4.5,6.6,2.9,7]},
+  PC_CV:{"400":[1.1,2.3,2.9],"800":[1.2,2.4,3],"1500":[1.1,2,2.5],"800/100":[1,2,2.4],"1500/100":[0.9,1.4,1.5]},
+  PC_DER:{todo:[0.1,0.2,0.4],"todo/100":[0,0.1,0.1]},
   PC_IM:{Mariposa:21.2,Espalda:25.6,Braza:29.2,Libre:24.1},
   PC_IM4:{Mariposa:23.5,Espalda:26,Braza:24.6,Libre:25.8},
   PC_IMD:{"200":[1.5,2.4,2.6],"400":[3.7,4.5,4.7]}
@@ -2577,19 +2580,32 @@ function pcAnalyseIn(prueba,parc,nadadora,fecha,L){
     if(mid.length>=3){
       const m=mid.reduce((a,b)=>a+b,0)/mid.length;
       const sd=Math.sqrt(mid.reduce((a,b)=>a+(b-m)*(b-m),0)/mid.length),cv=sd/m*100;
-      const B=PC_CV[dist]||PC_CV[400];
+      /* ⚠️ LA BANDA DEPENDE DE LA CADENCIA (§4.60). Promediar dos largos reduce la variación:
+         un crucero medido sobre tramos de 100 tiene la MITAD de dispersión que sobre tramos de 50
+         (medido: 800 largo, 1,9 contra 3,3 en el p85). Calificar una carrera de cada 100 con la
+         banda de cada 50 la hacía parecer mucho más regular de lo que es. Cada cadencia, su banda;
+         si la de cada 100 no existe, se cae a la de siempre antes que mentir con la otra. */
+      const sufCad=cada100?"/100":"";
+      const B=PC_CV[dist+sufCad]||PC_CV[dist]||PC_CV[400];
       const gcvDisp=pcScore1(cv,B[0],B[1],B[2]);
       /* pendiente de los largos de crucero, en % del ritmo medio y por largo */
       const nMid=mid.length,mxi=(nMid-1)/2;
       let dnum=0,dden=0;for(let i=0;i<nMid;i++){dnum+=(i-mxi)*(mid[i]-m);dden+=(i-mxi)*(i-mxi);}
       const der=dden?dnum/dden/m*100:0;
-      const sDer=der<=PC_DER[0]?100:pcOut(der-PC_DER[0],PC_DER[1]-PC_DER[0],PC_DER[2]-PC_DER[0],30,0);
+      /* ⚠️ `PC_DER` pasa a poder ser un OBJETO con dos cadencias (`todo` y `todo/100`), pero el
+         resto del motor lo lee como LISTA (`PC_DER[0]`). Se resuelve aquí, una sola vez, y de esa
+         lista tira todo lo de abajo sin enterarse. Si es lista —tablas viejas—, se usa tal cual. */
+      const DER=Array.isArray(PC_DER)?PC_DER:((PC_DER||{})["todo"+sufCad]||(PC_DER||{}).todo||[0.7,1.0,1.6]);
+      const sDer=der<=DER[0]?100:pcOut(der-DER[0],DER[1]-DER[0],DER[2]-DER[0],30,0);
       /* el crucero falla si falla la dispersión O la tendencia: se queda con la peor lectura */
       const gcv=Math.min(gcvDisp,sDer);
       const salR=step===50?pcSalida(prueba,cs[0],nadadora,fecha,L):null;
       const sal=(salR&&!salR.inval)?salR:null, inval=(salR&&salR.inval)?salR:null;
       const last=cs[cs.length-1];
-      const tr=step===50?pcTrans(prueba,cs[0],m):null;
+      /* ⚠️ Antes era `step===50?...:null`: en las carreras de cada 100 la transición NI SE
+         CALCULABA, aunque el dato está —primer tramo contra crucero— y ahora hay banda propia.
+         Se le pasa la cadencia para que elija la suya. */
+      const tr=pcTrans(prueba,cs[0],m,step);
       /* ⚠️ SEGUNDO REORDEN DEL BLOQUE (ago-2026). `tr` ya se había subido en jul-2026 por encima de
          la nota de Salida; ahora sube también por encima del forEach que pinta las filas, porque el
          rescate cambia la nota que se enseña en la fila de Salida. Si se vuelve a mover algo aquí,
@@ -2636,19 +2652,19 @@ function pcAnalyseIn(prueba,parc,nadadora,fecha,L){
       const cvTxt=`Los largos de crucero se han movido entre sí un <b>${nc(cv.toFixed(cv>B[1]&&cv.toFixed(1)===B[1].toFixed(1)?2:1))}%</b>: ${cv<=B[0]?"menos del "+nc(B[0])+"% que se considera un crucero impecable":cv<=B[1]?"dentro del "+nc(B[1])+"% que se considera un ritmo regular":"más del "+nc(B[1])+"% que marca el límite de un ritmo regular"}.`;
       /* Si la tendencia es la que falla hay que decirlo: "se han movido poco entre sí" es verdad y a
          la vez engañoso cuando cada largo es más lento que el anterior. */
-      const derTxt=der>PC_DER[0]
+      const derTxt=der>DER[0]
         ? ` Pero el ritmo se ha ido cayendo de forma constante, <b>${dec(der)}%</b> por ${step}: del primer largo de crucero (${fmtClock(mid[0])}) al último (${fmtClock(mid[nMid-1])}).`
-        : (der<-PC_DER[0]?` Y además has ido acelerando <b>${dec(Math.abs(der))}%</b> por ${step}: de ${fmtClock(mid[0])} a ${fmtClock(mid[nMid-1])}.`:"");
+        : (der<-DER[0]?` Y además has ido acelerando <b>${dec(Math.abs(der))}%</b> por ${step}: de ${fmtClock(mid[0])} a ${fmtClock(mid[nMid-1])}.`:"");
       notes.push({k:pcNivel(gcv).key,m:(step*2)+"-"+(dist-step)+" m · Crucero",
         t:`Tu ritmo de crucero ha sido de <b>${fmtClock(Math.round(m))}</b> por ${step}. `+cvTxt+derTxt});
       const dLast=dLastE, sLast=sLastE;   // calculados arriba: evSal los necesita antes
       notes.push({k:pcNivel(sLast).key,m:dist+" m · Final",
-        t:last<m?(der>PC_DER[0]
+        t:last<m?(der>DER[0]
             ?`Has cerrado el último ${step} un <b>${dec(Math.abs(dLast))}%</b> más rápido que tu ritmo medio de crucero, pero ojo: ese ritmo medio va inflado porque los largos se iban cayendo. Frente al último largo de crucero (${fmtClock(mid[nMid-1])}) el cierre sí ha sido más rápido.`
             :`Has cerrado el último ${step} un <b>${dec(Math.abs(dLast))}%</b> más rápido que tu ritmo de crucero: te quedaba depósito. Eso es dosificar bien.`)
                 :`El último ${step} ha sido un <b>${dec(dLast)}%</b> más lento que tu ritmo de crucero.`+pcT(Math.min(sLast,89),PC_TFINF)});
       const n=pcNivel(g);
-      const glob=(der>PC_DER[0]?(g>=70?"El tempo se ha sostenido en lo grueso, pero se va cayendo largo tras largo: el último largo de crucero ya no va como el primero. En fondo el tiempo está justo ahí."
+      const glob=(der>DER[0]?(g>=70?"El tempo se ha sostenido en lo grueso, pero se va cayendo largo tras largo: el último largo de crucero ya no va como el primero. En fondo el tiempo está justo ahí."
                                       :"El ritmo se ha ido soltando por el camino, cada largo un poco más lento que el anterior. Salir un punto más suave y sostener el tempo da tiempos mejores.")
         :g>=90?"Ritmo de crucero admirable. En fondo gana quien sostiene el mismo tempo largo tras largo, y eso lo has hecho."
         :g>=70?"Ritmo sólido en general, con algún largo que se escapa del tempo. Series largas a ritmo fijo lo van a pulir."
@@ -2825,7 +2841,7 @@ function pcAnalyseIn(prueba,parc,nadadora,fecha,L){
     const s2=scCru(cs[1]),s3=scCru(cs[2]);
     const df=(cs[3]-cru)/cru*100;
     const sFin=df<=F[0]?100:pcOut(df-F[0],F[1]-F[0],F[2]-F[0],30,0);
-    const tr=pcTrans(prueba,cs[0],cru);
+    const tr=pcTrans(prueba,cs[0],cru,50);
     /* La evidencia en el 200 es el FINAL. Se calcula aquí porque el rescate ya la necesita. */
     const evSal=pcSalEvid(sal,sFin);
     /* RESCATE GRADUADO DE LA SALIDA (ago-2026) — 200 y fondo. Hermano del rescate del 100, pero con
