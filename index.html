@@ -973,6 +973,13 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .tag.acc{color:#7a4b00;background:#fff3d6;border-radius:6px;padding:2px 6px;font-size:11px}
 .name.noLink{cursor:default}
 .accEq{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap}
+.tag.fina.noofPts{background:none;border:1px dashed currentColor}
+.ptsNoof{border:1px dashed currentColor;border-radius:6px;padding:0 4px}
+.accLns{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-top:5px}
+.accLn{font-size:11.5px;color:#8a5a00;border:1px dashed #d9a441;border-radius:8px;padding:1px 7px;background:rgba(255,190,80,.08);white-space:nowrap}
+.accLn.eh{color:#7a6a3a;border-color:#cdb98a;background:none}
+.accK{font-weight:700;font-size:10px;letter-spacing:.03em;text-transform:uppercase}
+@media (prefers-color-scheme: dark){.accLn{color:#ffd58a;border-color:#b98a2e;background:rgba(255,190,80,.10)}.accLn.eh{color:#e3d2a4;border-color:#8f7b4c;background:none}}
 .accEqI{font-size:11px;color:var(--muted);font-weight:400}
 .pRowNoof .prueba{font-size:14px;opacity:.9}
 .mb.noofMb{margin-left:6px;font-size:9px;font-weight:700;letter-spacing:.02em;border:1px dashed currentColor;border-radius:999px;padding:1px 6px;vertical-align:middle;background:none;color:var(--muted)}
@@ -1420,8 +1427,21 @@ function noofRank(recs,p){const best={};recs.filter(r=>r.prueba===p).forEach(r=>
 function accesoLine(name,recs){const by={};recs.forEach(r=>{const pc=accesoPct(r);if(pc===null)return;if(!by[r.prueba]||pc>by[r.prueba].pc)by[r.prueba]={pc,r};});
   const ps=ordPruebas(Object.keys(by));if(!ps.length)return"";const best=ps.reduce((a,p)=>by[p].pc>by[a].pc?p:a,ps[0]);
   return `<div class="accLine"><div class="accT">Acceso por ranking · Cto. España Alevín</div><div class="accB">Mejor: <b>${fmtPct(by[best].pc)}</b> en ${esc(abbrev(best))} <span class="accEqI">(mín. equiv. ${fmtClock(accesoRef(by[best].r))})</span></div><div class="accL">${ps.map(p=>`<span class="accP ${stKlass(p)}">${esc(p)} · ${fmtPct(by[p].pc)}</span>`).join("")}</div></div>`;}
-function noofBadge(r){const pc=accesoPct(r),f=finaNoof(r),eq=accesoRef(r);
-  return (f?`<span class="tag fina">${f} FINA</span> `:"")+(pc===null?"":`<span class="tag acc">${fmtPct(pc)} acceso</span><div class="accEq">mín. equiv. ${fmtClock(eq)}</div>`);}
+/* Puntos FINA de una no oficial: en DISCONTINUO, porque son orientativos (Fran, §4.66). */
+function noofBadge(r){const f=finaNoof(r);return f?`<span class="tag fina noofPts">${f} FINA</span>`:"";}
+/* Mínima EQUIVALENTE DE EUSKAL HERRIA, ORIENTATIVA (Fran, 28-oct-2026, §4.66): MIN_EH de la distancia
+   oficial × 3/4. ⚠️ La EIF-FVN NO usa estas pruebas ni esta equivalencia: es solo orientación y se
+   rotula así. En las de 25 m no hay: ni la RFEN ni nadie da una regla para EH (la de 25 m de ESP es una
+   tabla propia del anexo, no × 3/4), así que no se inventa. */
+function eqEH(r){const T=tablesAt(r.fecha)||{},A=T.ACCESO_ALEVIN;if(!A)return null;const w=r.prueba.split(" ");if(!NOOF_EQ[w[0]])return null;
+  const t=(((T.MIN_EH||{})[r.sexo]||{})[NOOF_EQ[w[0]]+" "+w[1]]||{})[r.anio];return t?Math.round(toCs(t)*A.FACTOR):null;}
+function gapTxt(cs,eq){const d=(cs-eq)/100;return (d<=0?"−":"+")+Math.abs(d).toFixed(2);}
+/* Las líneas de la pestaña Mínimas para una no oficial: ESP (acceso, la que usa la RFEN) y EH
+   (orientativa). Ámbar y en discontinuo: se ve que no son mínimas oficiales. */
+function noofMinLines(r){const cs=toCs(r.tiempo),es=accesoRef(r),eh=eqEH(r);let o="";
+  if(es)o+=`<div class="accLn"><span class="accK">ESP · acceso</span> <b>${gapTxt(cs,es)}</b> · ${fmtPct(es/cs*100)} <span class="accEqI">equiv. ${fmtClock(es)}</span></div>`;
+  if(eh)o+=`<div class="accLn eh"><span class="accK">EH · orientativa</span> <b>${gapTxt(cs,eh)}</b> <span class="accEqI">equiv. ${fmtClock(eh)}</span></div>`;
+  return o?`<div class="accLns">${o}</div>`:"";}
 // Tiempos base FINA — World Aquatics SCM 2025 (25 m), femenino (segundos)
 const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo
 50 Libre,"ARAICO QUINTANA, Sara",2013,CN Judizmendi,31.54,2026-06-14,Cto Álava Verano,F
@@ -4108,12 +4128,16 @@ function render(){
   else if(view==="minimas"){LEG_HTML=fo?legs.minimasFicha:legs.minimas;}
   else{LEG_HTML=legs[view];}
   if(!fo&&view==="marcas"&&esNoof(activePrueba))LEG_HTML="<span style='font-weight:700'>Prueba no oficial (Liga Alevín).</span> "
-    +"Sirve para el <b>acceso por ranking al Cto. de España Alevín</b>. Cada marca se compara con su <b>mínima equivalente</b>: "
-    +"la mínima de España (25 m) de la distancia oficial × 3/4 —150 m con 200 m, 75 con 100, 300 con 400, 600 con 800—, "
-    +"o la marca propia que fija la RFEN para las pruebas de 25 m. <b>% acceso</b> = mínima equivalente ÷ tiempo: "
-    +"<b>100 %</b> es llegar a ella, y cuanto más alto, mejor. No asegura plaza: la RFEN ordena a todos los alevines "
-    +"de España por este porcentaje y entran los primeros hasta completar el cupo. Los puntos FINA son los de la Liga "
-    +"(base × 3/4) y no cuentan para Top FINA. Solo valen las marcas del 1 de octubre al 20 de junio.";
+    +"Ranking por mejor marca. Los <b>puntos FINA</b>, en discontinuo, son <b>orientativos</b>: se calculan como la RFEN en la Liga "
+    +"(base de la distancia oficial × 3/4) y no cuentan para Top FINA. Sus mínimas equivalentes están en la pestaña <b>Mínimas</b>.";
+  if(!fo&&view==="minimas"&&esNoof(activePrueba))LEG_HTML="<span style='font-weight:700'>Prueba no oficial (Liga Alevín).</span> "
+    +"No tiene mínimas propias: se compara con <b>mínimas equivalentes</b> = mínima de la distancia oficial × 3/4 "
+    +"(150 m con 200, 75 con 100, 300 con 400, 600 con 800). "
+    +"<b>ESP · acceso</b>: la que usa la RFEN para el <b>acceso por ranking al Cto. de España Alevín</b> "
+    +"(en las de 25 m, la marca que fija el anexo). <b>%</b> = equivalente ÷ tiempo: 100 % es llegar, y cuanto más alto, mejor. "
+    +"No asegura plaza: la RFEN ordena a todos los alevines de España por ese % y entran los primeros hasta llenar el cupo. "
+    +"Solo valen las marcas del 1 de octubre al 20 de junio. "
+    +"<b>EH · orientativa</b>: la mínima de Euskal Herria × 3/4. La Federación Vasca no la usa: es solo orientación (en 25 m no hay).";
   if(isHist()&&!fo&&!badgesFor)LEG_HTML=HIST_LEG+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'></div>"+LEG_HTML;
   if(badgesFor){const bsx=((ALLRECS.find(r=>r.nadadora===badgesFor)||{}).sexo)||sexFilter;const nb=bsx==="M"?"nadador":"nadadora";LEG_HTML="🏅 <span style='font-weight:700'>Recuento de insignias.</span> Todas las insignias que ha conseguido en los resúmenes de las competiciones "+legAmbito()+". Se gana una por cada podio (🥇🥈🥉) en estos cuatro apartados del resumen:<br>"+legPodios(nb,false)+"<br>"+legOlimpico();}
   if(compsFor)LEG_HTML=legComps();
@@ -4132,7 +4156,7 @@ function render(){
   if(view==="topfina"){renderClass(vw,finaN);return;}
 
   // per-prueba (marcas / minimas)
-  const present=view==="marcas"?ordPruebas([...pruebasPresent(),...noofPresent()]):pruebasPresent();
+  const present=(view==="marcas"||view==="minimas")?ordPruebas([...pruebasPresent(),...noofPresent()]):pruebasPresent();
   if(present.length&&!present.includes(activePrueba))activePrueba=present[0];
   const chips1=present.map(p=>`<button class="chip ${stKlass(p)}${esNoof(p)?" noof":""} ${p===activePrueba?"on":""}" data-p="${esc(p)}">${esc(p)}</button>`).join("");
   const chips=chips1+chips1+chips1;
@@ -4143,7 +4167,8 @@ function render(){
   const rows=rk.map(r=>{
     if(NO){const m=medal(r.rank);const dstr=`<span class="tdate">${fmtDate(r.fecha)}</span>`;
       const nm=conFicha.has(r.name)?`<div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div>`:`<div class="name noLink">${esc(r.name)}</div>`;
-      return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div></div><div class="mid">${nm}<div class="club">${esc(r.club)} · ${esc(r.anio)}</div></div><div class="right"><div class="time mono">${dstr}${esc(r.tiempo)}</div><div>${noofBadge(r)}</div></div></div>`;}
+      const minV=view==="minimas";
+      return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div></div><div class="mid">${nm}<div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${minV?noofMinLines(r):""}</div><div class="right"><div class="time mono">${dstr}${esc(r.tiempo)}</div>${minV?"":`<div>${noofBadge(r)}</div>`}</div></div>`;}
     const m=medal(r.rank);
     let right,badges="",sub="";
     if(view==="marcas"){
@@ -4390,11 +4415,11 @@ function renderProfile(vw){
     const rec0=RECORDS.find(r=>r.nadadora===name);
     let ri=0;
     const NOFR=noofScope().filter(r=>r.nadadora===name);
-    const ordFicha=view==="marcas"?ordPruebas([...PRUEBA_ORDER,...new Set(NOFR.map(r=>r.prueba))]):PRUEBA_ORDER;
+    const ordFicha=(view==="marcas"||view==="minimas")?ordPruebas([...PRUEBA_ORDER,...new Set(NOFR.map(r=>r.prueba))]):PRUEBA_ORDER;
     const rows=ordFicha.map(p=>{
       if(esNoof(p)){const L=noofRank(noofScope(),p),me=L.find(x=>x.name===name);if(!me)return"";
         const pc=accesoPct(me),fN=finaNoof(me),eq=accesoRef(me);const anim3=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
-        return `<div class="pRow pRowNoof" style="${anim3}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="mb noofMb">no oficial</span></div><div class="puesto">Nº ${me.rank} de ${L.length}${fN?" · "+fN+" pts":""}${pc===null?"":" · "+fmtPct(pc)+" acceso"}</div></div><div class="right"><div class="time mono"><span class="tdate">${fmtDate(me.fecha)}</span>${esc(me.tiempo)}</div>${eq?`<div class="accEq">mín. equiv. ${fmtClock(eq)}</div>`:""}</div></div>`;}
+        return `<div class="pRow pRowNoof" style="${anim3}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="mb noofMb">no oficial</span></div><div class="puesto">Nº ${me.rank} de ${L.length}${fN?` · <span class="ptsNoof">${fN} pts</span>`:""}</div>${view==="minimas"?noofMinLines(me):""}</div><div class="right"><div class="time mono"><span class="tdate">${fmtDate(me.fecha)}</span>${esc(me.tiempo)}</div></div></div>`;}
       const b=bestOf(RECORDS,name,p);
       if(!b){
         /* PRUEBA SOLO CON DESCALIFICACIONES (jul-2026). Sin marca válida no había fila que
