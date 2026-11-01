@@ -974,18 +974,14 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .name.noLink{cursor:default}
 .accEq{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap}
 .accLns{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-top:5px}
-.accLn{font-size:11.5px;color:#8a5a00;border:1px dashed #d9a441;border-radius:8px;padding:1px 7px;background:rgba(255,190,80,.08);white-space:nowrap}
-.accLn.eh{color:#7a6a3a;border-color:#cdb98a;background:none}
+.accLn{font-size:11.5px;color:#8a5a00;white-space:nowrap}
+.accLn.eh{color:#7a6a3a}
 .accK{font-weight:700;font-size:10px;letter-spacing:.03em;text-transform:uppercase}
-@media (prefers-color-scheme: dark){.accLn{color:#ffd58a;border-color:#b98a2e;background:rgba(255,190,80,.10)}.accLn.eh{color:#e3d2a4;border-color:#8f7b4c;background:none}}
+@media (prefers-color-scheme: dark){.accLn,.accLine{color:#ffd58a}.accLn.eh{color:#e3d2a4}}
 .accEqI{font-size:11px;color:var(--muted);font-weight:400}
 .pRowNoof .prueba{font-size:14px;opacity:.9}
 .mb.noofMb{margin-left:6px;font-size:9px;font-weight:700;letter-spacing:.02em;border:1px dashed currentColor;border-radius:999px;padding:1px 6px;vertical-align:middle;background:none;color:var(--muted)}
-.accLine{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:12px}
-.accT{font-weight:700;margin-bottom:2px}
-.accB{color:var(--ink)}
-.accL{display:flex;flex-wrap:wrap;gap:4px 8px;margin-top:4px}
-.accP{font-size:11px;font-weight:600;border:1px dashed currentColor;border-radius:999px;padding:1px 7px;background:none}
+.accLine{margin-top:8px;font-size:12px;color:#8a5a00}
 @media (prefers-color-scheme: dark){.tag.acc{color:#ffd58a;background:rgba(255,190,80,.14)}}
 </style>
 </head>
@@ -1423,12 +1419,17 @@ function fmtPct(x){return x.toFixed(1).replace(".",",")+" %";}
 function noofRank(recs,p){const best={};recs.filter(r=>r.prueba===p).forEach(r=>{const c=toCs(r.tiempo);if(!best[r.nadadora]||c<best[r.nadadora].cs)best[r.nadadora]={...r,cs:c,name:r.nadadora};});
   const L=Object.values(best).sort((a,b)=>a.cs-b.cs||a.name.localeCompare(b.name));let last=null,rk=0;
   L.forEach((r,i)=>{if(r.cs!==last){rk=i+1;last=r.cs;}r.rank=rk;});return L;}
-/* Línea «Acceso por ranking» de la ficha (pestaña Mínimas). Mejor % y el de cada prueba no oficial. */
-function accesoLine(name,recs){const by={};recs.forEach(r=>{const pc=accesoPct(r);if(pc===null)return;if(!by[r.prueba]||pc>by[r.prueba].pc)by[r.prueba]={pc,r};});
-  const ps=ordPruebas(Object.keys(by));if(!ps.length)return"";const best=ps.reduce((a,p)=>by[p].pc>by[a].pc?p:a,ps[0]);
-  return `<div class="accLine"><div class="accT">Acceso por ranking · Cto. España Alevín</div><div class="accB">Mejor: <b>${fmtPct(by[best].pc)}</b> en ${esc(abbrev(best))} <span class="accEqI">(mín. equiv. ${fmtClock(accesoRef(by[best].r))})</span></div><div class="accL">${ps.map(p=>`<span class="accP ${stKlass(p)}">${esc(p)} · ${fmtPct(by[p].pc)}</span>`).join("")}</div></div>`;}
-/* Puntos FINA de una no oficial, con el mismo aspecto que los oficiales (el discontinuo de §4.66 se
-   quitó en §4.67: la prueba ya se distingue por su pastilla y su etiqueta). */
+/* Línea «Acceso por ranking» de la cabecera de la ficha (pestaña Mínimas). ⚠️ (Fran, 28-oct-2026, §4.68)
+   Solo sale si dice algo útil, con el MISMO criterio que «A tiro» del resto de la app: equivalente ESP
+   alcanzada (≥ 100 %) o a menos de un 2 % de ella. Si está lejos, nada: el dato ya está en la fila. */
+function accesoLine(name,recs){const by={};recs.forEach(r=>{const eq=accesoRef(r);if(!eq)return;const cs=toCs(r.tiempo);
+    if(!by[r.prueba]||cs<by[r.prueba].cs)by[r.prueba]={cs,eq};});
+  const ps=ordPruebas(Object.keys(by));
+  const got=ps.filter(p=>by[p].cs<=by[p].eq),tiro=ps.filter(p=>by[p].cs>by[p].eq&&(by[p].cs-by[p].eq)/by[p].eq<=0.02);
+  if(!got.length&&!tiro.length)return"";
+  const a=got.length?`equivalente alcanzada en ${got.map(p=>esc(abbrev(p))).join(", ")}`:"";
+  const b=tiro.length?`a tiro en ${tiro.map(p=>esc(abbrev(p))+" (a "+fmtClock(by[p].cs-by[p].eq)+")").join(", ")}`:"";
+  return `<div class="accLine"><b>Acceso por ranking:</b> ${a}${a&&b?" · ":""}${b}</div>`;}
 function noofBadge(r){const f=finaNoof(r);return f?`<span class="tag fina">${f} FINA</span>`:"";}
 /* Mínima EQUIVALENTE DE EUSKAL HERRIA, ORIENTATIVA (Fran, 28-oct-2026, §4.66): MIN_EH de la distancia
    oficial × 3/4. ⚠️ La EIF-FVN NO usa estas pruebas ni esta equivalencia: es solo orientación y se
