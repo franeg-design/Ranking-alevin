@@ -971,7 +971,7 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 
 /* Pruebas no oficiales (§4.64) */
 .tag.acc{color:#7a4b00;background:#fff3d6;border-radius:6px;padding:2px 6px;font-size:11px}
-.name.noLink{cursor:default}
+.soloNoofNote{font-size:11.5px;color:var(--muted);border:1px dashed currentColor;border-radius:999px;padding:3px 10px}
 .accEq{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap}
 .accLns{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-top:5px}
 .accLn{font-size:11.5px;color:#8a5a00;white-space:nowrap}
@@ -1374,8 +1374,8 @@ const PRUEBA_ORDER=["50 Libre","100 Libre","200 Libre","400 Libre","800 Libre","
    FINA, mínimas, récords, Top FINA, resúmenes, medallero, insignias ni buscador. Solo se pintan en tres
    sitios: las pastillas y el ranking de la pestaña Marcas, las filas de la ficha (Marcas) y la línea
    «Acceso por ranking» de la ficha (Mínimas). Decisión de Fran, 28-oct-2026.
-   ⚠️ Quien SOLO tiene marcas no oficiales no existe en ALLRECS: sale en el ranking de esas pruebas,
-   pero sin enlace a ficha (no la tiene). */
+   Quien SOLO tiene marcas no oficiales no existe en ALLRECS, pero desde §4.69 se le puede buscar y
+   tiene ficha (con sus filas no oficiales; sin Comparar/Insignias/Competiciones). */
 const NOOF_RE=/^(25|75|150|300|600) /;
 let ALLNOOF=[];
 function esNoof(p){return NOOF_RE.test(p||"");}
@@ -1386,6 +1386,11 @@ function ordPruebas(ps){return ps.slice().sort((a,b)=>{const x=a.split(" "),y=b.
 function noofScope(sx){let s=isHist()?ALLNOOF.slice():ALLNOOF.filter(r=>seasonOf(r.fecha)===season);
   if(catFilter&&catFilter!=="all")s=s.filter(r=>grupoDe(r.anio,r.fecha)===catFilter);
   return s.filter(r=>r.sexo===(sx||sexFilter));}
+/* Ámbito de las no oficiales SIN filtro de sexo, para buscador y fichas (§4.69): quien solo tiene
+   marcas no oficiales también debe poder buscarse y abrir su ficha. */
+function noofScopeAll(){let s=isHist()?ALLNOOF.slice():ALLNOOF.filter(r=>seasonOf(r.fecha)===season);
+  if(catFilter&&catFilter!=="all")s=s.filter(r=>grupoDe(r.anio,r.fecha)===catFilter);return s;}
+function soloNoof(name){return !ALLRECS.some(r=>r.nadadora===name)&&ALLNOOF.some(r=>r.nadadora===name);}
 function noofPresent(){return [...new Set(poolRecs(noofScope()).map(r=>r.prueba))];}
 const NOOF_EQ={"75":"100","150":"200","300":"400","600":"800"};
 /* MÍNIMA EQUIVALENTE de UNA marca, en centésimas, o null si no aplica (otra temporada, fuera de plazo,
@@ -3106,8 +3111,12 @@ function renderComps(vw,name){
 function renderFichSummary(box){
   const found=query.trim()?foundSwimmers():[];const name=found.length?found[0].name:null;
   if(!name){box.innerHTML="";return;}
-  const rec0=ALLRECS.find(r=>r.nadadora===name)||{};
-  box.innerHTML=`<div class="profile fTitleCard"><div class="pTop fTop"><div class="pHead fHead">${logoImg(rec0.club)}<div class="fNameWrap"><div class="pName fName">${esc(name)}</div><div class="pClub">${esc(rec0.club||"")} · ${esc(rec0.anio||"")}</div></div></div><div class="fPills"><button class="cmpBtn" data-n="${esc(name)}">Comparar</button><button class="badgeBtn" data-n="${esc(name)}">🏅 Insignias</button><button class="compBtn" data-n="${esc(name)}">Competiciones</button></div></div></div>`;
+  const rec0=ALLRECS.find(r=>r.nadadora===name)||ALLNOOF.find(r=>r.nadadora===name)||{};
+  /* Quien solo tiene marcas no oficiales (§4.69) no tiene comparativa, insignias ni competiciones
+     (todo eso sale de ALLRECS): sin esos botones, que abrirían pantallas vacías. */
+  const pills=soloNoof(name)?`<div class="fPills"><span class="soloNoofNote">Solo marcas en pruebas no oficiales</span></div>`
+    :`<div class="fPills"><button class="cmpBtn" data-n="${esc(name)}">Comparar</button><button class="badgeBtn" data-n="${esc(name)}">🏅 Insignias</button><button class="compBtn" data-n="${esc(name)}">Competiciones</button></div>`;
+  box.innerHTML=`<div class="profile fTitleCard"><div class="pTop fTop"><div class="pHead fHead">${logoImg(rec0.club)}<div class="fNameWrap"><div class="pName fName">${esc(name)}</div><div class="pClub">${esc(rec0.club||"")} · ${esc(rec0.anio||"")}</div></div></div>${pills}</div></div>`;
 }
 function renderSummary(fecha){
   const box=el("summary");if(!box)return;
@@ -4166,10 +4175,9 @@ function render(){
   const NO=esNoof(activePrueba);
   const rk=NO?noofRank(poolRecs(noofScope()),activePrueba):rankTime(RECORDS,activePrueba);
   const prev=NO?{}:rankMap(rankTime(BEFORE,activePrueba));
-  const conFicha=NO?new Set(ALLRECS.map(r=>r.nadadora)):null;
   const rows=rk.map(r=>{
     if(NO){const m=medal(r.rank);const dstr=`<span class="tdate">${fmtDate(r.fecha)}</span>`;
-      const nm=conFicha.has(r.name)?`<div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div>`:`<div class="name noLink">${esc(r.name)}</div>`;
+      const nm=`<div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div>`;
       const minV=view==="minimas";
       return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div></div><div class="mid">${nm}<div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${minV?noofMinLines(r):""}</div><div class="right"><div class="time mono">${dstr}${esc(r.tiempo)}</div>${minV?"":`<div>${noofBadge(r)}</div>`}</div></div>`;}
     const m=medal(r.rank);
@@ -4350,6 +4358,7 @@ function foundSwimmers(){
   const SREC=scopeRecs();
   const seen=new Set(),cand=[];
   SREC.forEach(r=>{if(seen.has(r.nadadora))return;seen.add(r.nadadora);cand.push({name:r.nadadora,sexo:r.sexo,anio:r.anio,club:r.club});});
+  noofScopeAll().forEach(r=>{if(seen.has(r.nadadora))return;seen.add(r.nadadora);cand.push({name:r.nadadora,sexo:r.sexo,anio:r.anio,club:r.club});});
   return cand.filter(c=>{const hay=normName(c.name+" "+c.club);return qtok.every(t=>hay.includes(t));});
 }
 function renderBadges(vw,name){
@@ -4548,6 +4557,7 @@ function renderProfile(vw){
     const mh=view==="minimas"?(mhSt+goalPill(name,!mhSt)+accesoLine(name,NOFR)):"";
     /* Sin esto, quien no haya nadado nunca en largo veria un panel en blanco sin explicacion. */
     if(_P50&&!rows)return `<div class="profile"><div class="pRow"><div class="mid"><div class="puesto">Sin marcas en piscina de 50 m.</div></div></div></div>`;
+    if(!rows.trim()&&soloNoof(name))return `<div class="profile"><div class="pRow"><div class="mid"><div class="puesto">Solo tiene marcas en pruebas no oficiales: están en <b>Marcas</b> y <b>Mínimas</b>.</div></div></div></div>`;
     /* `pList` deja ver lo que se sale de la tarjeta: la prueba desplegada necesita pintar su
        marco JUSTO ENCIMA del borde de `.profile`, y con `overflow:hidden` quedaba recortado. */
     return `<div class="profile pList">${mh?`<div class="pMinHead"><div class="mhBox">${mh}</div></div>`:""}${rows}</div>`;
@@ -4588,7 +4598,7 @@ function renderSug(q){
   if(!qn){box.style.display="none";box.innerHTML="";return;}
   const SREC=scopeRecs();
   const seen={},list=[];
-  SREC.forEach(r=>{if(seen[r.nadadora])return;if(normName(r.nadadora+" "+r.club).includes(qn)){seen[r.nadadora]=1;list.push(r);}});
+  [...SREC,...noofScopeAll()].forEach(r=>{if(seen[r.nadadora])return;if(normName(r.nadadora+" "+r.club).includes(qn)){seen[r.nadadora]=1;list.push(r);}});
   list.sort((a,b)=>(a.sexo===sexFilter?0:1)-(b.sexo===sexFilter?0:1)||a.nadadora.localeCompare(b.nadadora));
   if(!list.length){box.innerHTML=`<div class="sugEmpty">Sin resultados</div>`;box.style.display="block";return;}
   box.innerHTML=list.slice(0,40).map(r=>`<div class="sugPick" data-n="${esc(r.nadadora)}">${logoImg(r.club,"sm")}<span class="sgN">${esc(shortName(r.nadadora))}</span><span class="sgM">${esc(r.club)} · ${esc(r.anio)}</span></div>`).join("");
