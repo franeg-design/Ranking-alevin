@@ -402,7 +402,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .sbArrow{margin-left:auto;font-size:22px;line-height:1;color:#f2cd82;text-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .3s ease}
 .sumBand.open .sbArrow{transform:rotate(180deg)}
 .sumMenu{position:relative;z-index:2;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s ease,opacity .28s ease,margin .28s ease;display:flex;flex-direction:column;gap:1px}
-.sumMenu.open{max-height:1600px;opacity:1;margin-top:8px}
+.sumMenu.open{max-height:4000px;opacity:1;margin-top:8px}
 .sumOpt{min-height:44px;display:flex;align-items:center;gap:11px;width:100%;text-align:left;font-family:inherit;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-left:3px solid transparent;border-radius:10px;padding:11px 13px}
 .sumOpt.on{border-left-color:#e0b45f;background:linear-gradient(90deg,rgba(224,180,95,.10),var(--surface) 40%)}
 .soDate{font-weight:800;font-size:13px;color:var(--ink);min-width:66px;font-variant-numeric:tabular-nums}
@@ -428,6 +428,29 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .sitem{font-size:13px;margin-top:4px;line-height:1.45}
 .sumClose{display:block;margin:11px auto 1px;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:999px;padding:6px 15px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 1px 3px rgba(11,42,58,.06)}
 .sumClose:active{opacity:.65}
+/* ---- Próximas competiciones (§4.72): mismas piezas que la banda, en claro y con borde discontinuo
+   para que se lea «aún no ha pasado». El discontinuo es el mismo gesto que ya marca lo no oficial. */
+.calSec{font-size:9px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em;margin:6px 2px 3px}
+.calSec:first-child{margin-top:0}
+.sumOpt.calOpt{background:#f7fbfc;border:1px dashed #a9c9d4;border-left:3px solid transparent}
+.sumOpt.calOpt .soDate{color:var(--muted);font-weight:700}
+.sumOpt.calOpt.next{border-style:dashed dashed dashed solid;border-left-color:var(--brand)}
+.sumOpt.calOpt.on{border-left-color:#e0b45f;background:linear-gradient(90deg,rgba(224,180,95,.10),#f7fbfc 40%)}
+.calCnt{flex:0 0 auto;font-size:11px;font-weight:600;color:var(--muted);background:var(--chip);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.sumOpt.calOpt.next .calCnt{background:var(--brand);color:#fff}
+.calMore{align-self:center;margin:4px 0 2px;border:1px solid var(--line);background:#fff;color:var(--brand-deep);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.sumcard.calcard{background:#fbfdfe;border:1px dashed #a9c9d4;box-shadow:none}
+.calcard .sumline{box-shadow:none}
+.calWhen{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--ink);margin-top:4px}
+.calInfo{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:9px 0 2px;font-size:13px;line-height:1.4}
+.calInfo dt{color:var(--muted);font-size:11px;font-weight:600;padding-top:2px}
+.calInfo dd{margin:0;color:var(--ink)}
+.calDay{font-size:11px;font-weight:600;color:var(--muted);margin:8px 0 0}
+.calChips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.chip.calChip{cursor:default;padding:5px 10px;font-size:12px;transition:none}
+.chip.calChip i{font-style:normal;font-weight:700;font-size:9px;letter-spacing:.02em;opacity:.85;margin-left:5px}
+.calNone{color:var(--muted)}
+.calSrc{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.4}
 .pHead{display:flex;align-items:center;gap:11px;padding-right:80px}
 .clubLogo{width:46px;height:46px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(11,42,58,.35))}
 .clubLogo.sm{width:34px;height:34px;margin-bottom:4px}
@@ -1109,6 +1132,108 @@ let BASE,MIN_ESP,MIN_EH,REC_ALAVA,CAT,BASE_50,REC_ALAVA_50,MIN_EH_50,MIN_ESP_50;
    apaga al salir, asi que dejar el selector en 50 m no puede contaminar el ranking, el
    medallero ni los resumenes, que siguen siendo de 25 m. */
 let poolSel="25",_P50=false;
+/* ===== CALENDARIO DE LA TEMPORADA (2-nov-2026, DIARIO §4.72) ==================================
+   Las competiciones que AÚN NO tienen filas en data.csv. La banda COMPETICIONES las enseña arriba,
+   en «Próximas», y al tocarlas sale su programa en vez del resumen.
+   · `n` es el nombre que llevará la columna Competicion cuando entre el acta. Una próxima se da por
+     DISPUTADA en cuanto ALLRECS trae una fila con esa fecha (`f`, el último día) y ese nombre; el
+     cotejo ignora mayúsculas, acentos y el sufijo «(50 m)». Si al cargar el acta se usa otro nombre,
+     la próxima NO desaparece: o se usa este, o se cambia aquí.
+   · `cat` = grupos de categoría (alevin · infantil · junior · absoluta) que la ven.
+   · `pis` = 25 / 50 solo cuando una fuente oficial lo dice; si no, se omite.
+   · `ins:"fed"` = inscripción FEDERATIO de las dos ligas de Álava: el plazo se calcula de la fecha.
+   · `dias[].pr`: "50 Libre" (los dos sexos) · {p,s:"F"|"M"} (un solo sexo) · {o:[a,b]} (elige una)
+     · {p,x:"solo júnior"} (aclaración). Sin `dias` = programa no publicado.
+   Fuentes: calendario FAN 26/27 (29-oct-2026), reglamentos Liga FAN (7-oct) y Liga Escolar DFA
+   (18-oct), normativas RFEN 26/27 (27-400…27-477, 26-408), calendario FNN-NIF 26/27 (fechas de los
+   Ctos. de Euskal Herria) y web del CN Menditxo (Olentzero). Consultadas el 2-nov-2026. */
+const CAL_ACT="2-nov-2026";
+const CALENDARIO={"2026/27":[
+ /* ---- Liga Escolar DFA · alevín (2014-2015) — Mendizorroza 25 m salvo Laudio ---- */
+ {id:"esc1",n:"1ª Jornada Escolar DFA",f:"2026-10-24",cat:["alevin"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"16:30",cal:"15:30",reg:"esc",ins:"fed",
+  dias:[{pr:["25 Mariposa","200 Libre","50 Libre","150 Libre","100 Mariposa","100 Espalda"]}]},
+ {id:"esc2",n:"2ª Jornada Escolar DFA",f:"2026-11-21",cat:["alevin"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"16:30",cal:"15:30",reg:"esc",ins:"fed",
+  dias:[{pr:["25 Braza","200 Estilos","100 Mariposa","150 Estilos","200 Espalda","50 Braza","75 Espalda"]}]},
+ {id:"esc3",n:"3ª Jornada Escolar DFA",f:"2026-12-19",cat:["alevin"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"16:30",cal:"15:30",reg:"esc",ins:"fed",
+  dias:[{pr:["25 Espalda","400 Libre","50 Mariposa","300 Libre","100 Braza","50 Espalda","75 Mariposa"]}]},
+ {id:"esc4",n:"4ª Jornada Escolar DFA",f:"2027-02-13",cat:["alevin"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"16:30",cal:"15:30",reg:"esc",ins:"fed",
+  dias:[{pr:["25 Libre","200 Braza","50 Libre","150 Espalda","100 Espalda","50 Mariposa","75 Braza"]}]},
+ {id:"esc5",n:"5ª Jornada Escolar DFA",f:"2027-03-13",cat:["alevin"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"16:30",cal:"15:30",reg:"esc",ins:"fed",
+  dias:[{pr:[{o:["600 Libre","800 Libre"],s:"M"},"100 Libre",{o:["150 Mariposa","200 Mariposa"],s:"F"},"50 Braza","75 Libre"]}]},
+ {id:"esc6",n:"6ª Jornada Escolar DFA",f:"2027-04-17",cat:["alevin"],lugar:"Piscinas de Laudio (5 calles)",pis:25,h:"10:00",cal:"9:00",reg:"esc",ins:"fed",
+  dias:[{pr:[{o:["600 Libre","800 Libre"],s:"F"},"100 Libre",{o:["150 Mariposa","200 Mariposa"],s:"M"},"50 Espalda","75 Libre"]}]},
+ {id:"esc7",n:"7ª Jornada Escolar DFA",f:"2027-05-15",cat:["alevin"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"16:30",cal:"15:30",reg:"esc",ins:"fed",
+  dias:[{pr:[{o:["300 Estilos","400 Estilos"]},"100 Estilos","150 Braza","100 Braza","50 Libre"]}]},
+ /* ---- Liga FAN federada · infantil, júnior y absoluta — Mendizorroza 25 m ---- */
+ {id:"fan1",n:"1ª Jornada Federada",f:"2026-10-24",cat:["infantil","junior","absoluta"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"10:00",cal:"8:45",reg:"fan",ins:"fed",
+  dias:[{pr:["100 Mariposa","50 Espalda","100 Braza","50 Libre","100 Estilos","50 Mariposa","100 Espalda","50 Braza","100 Libre"]}]},
+ {id:"fan2",n:"2ª Jornada Federada",f:"2026-11-14",cat:["infantil","junior","absoluta"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"16:30",cal:"15:15",reg:"fan",ins:"fed",
+  dias:[{pr:["200 Espalda","50 Braza","100 Mariposa","100 Estilos","50 Libre","800 Libre","100 Espalda","200 Libre","200 Braza","50 Mariposa"]}]},
+ {id:"fan3",n:"3ª Jornada Federada",f:"2026-12-12",cat:["infantil","junior","absoluta"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"16:30",cal:"15:15",reg:"fan",ins:"fed",
+  dias:[{pr:["100 Espalda","200 Libre","50 Braza","1500 Libre","50 Mariposa","100 Braza","400 Estilos","200 Mariposa","100 Libre","50 Espalda"]}]},
+ {id:"fan4",n:"4ª Jornada Federada",f:"2027-01-16",cat:["infantil","junior","absoluta"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"16:30",cal:"15:15",reg:"fan",ins:"fed",
+  dias:[{pr:["200 Estilos","50 Espalda","200 Braza","100 Mariposa","100 Libre","400 Libre","200 Mariposa","100 Braza","200 Espalda","50 Libre"]}]},
+ /* ---- Trofeos y campeonatos de Álava (calendario FAN) ---- */
+ {id:"zadi",n:"Trofeo Invierno CN Zadorra",f:"2026-12-13",cat:["alevin","infantil","junior","absoluta"],lugar:"Piscinas de Iparralde, Vitoria-Gasteiz",h:"10:00",cal:"9:00"},
+ {id:"olen",n:"Trofeo Olentzero Menditxo",f:"2026-12-20",cat:["alevin","infantil","junior","absoluta"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"10:00",cal:"8:30",
+  nota:"XXXVI edición. Relevos a las 13:30. En 2025 se nadaron los 50 de los cuatro estilos."},
+ {id:"albe",n:"39 Memorial Javier Alberdi",d:"2027-01-09",f:"2027-01-10",cat:["alevin","infantil","junior","absoluta"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:50,h:"Sáb 17:00 y dom 10:00",nota:"Organiza el CN Judizmendi."},
+ {id:"alai",n:"Cto Álava Invierno",f:"2027-01-23",cat:["alevin"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"10:00 y 17:00",cal:"9:00",nota:"Campeonato escolar alevín-infantil-cadete. Cierra la Liga Alevín junto a las siete jornadas."},
+ {id:"alao",n:"Cto Álava Invierno Open",d:"2027-01-30",f:"2027-01-31",cat:["infantil","junior","absoluta"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:50,h:"Sáb 10:00 y 17:00, dom 10:00"},
+ {id:"ncom",n:"Nadador Completo",f:"2027-04-17",cat:["infantil","junior","absoluta"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"10:00 y 17:00",cal:"8:45",nota:"En 2026 se nadaron los 50 y los 100 de los cuatro estilos."},
+ {id:"spru",n:"Trofeo San Prudencio",f:"2027-05-08",cat:["infantil","junior","absoluta"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:50,h:"10:00 y 17:00",cal:"8:45"},
+ {id:"zadv",n:"Trofeo Verano CN Zadorra",f:"2027-06-06",cat:["alevin","infantil","junior","absoluta"],lugar:"Piscinas de Iparralde, Vitoria-Gasteiz",h:"10:00",cal:"9:00"},
+ {id:"alav",n:"Cto Álava Verano",d:"2027-06-12",f:"2027-06-13",cat:["alevin","infantil"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"Sáb 10:00 y 17:00, dom 10:00",nota:"Alevín e infantil, escolar y federado."},
+ {id:"alaj",n:"Cto Álava Verano Jun/Sub20/Sen",d:"2027-06-19",f:"2027-06-20",cat:["junior","absoluta"],lugar:"CD Mendizorroza, Vitoria-Gasteiz",pis:25,h:"Sáb 10:00 y 17:00, dom 10:00"},
+ /* ---- Euskal Herria (fechas del calendario FNN-NIF 26/27; programas sin publicar) ---- */
+ {id:"ehld",n:"Cto EH Larga Distancia",f:"2026-12-12",cat:["infantil","junior","absoluta"],lugar:"Piscina Guelbenzu, Pamplona"},
+ {id:"ehji",n:"Cto EH Junior-Abs Invierno",d:"2027-02-06",f:"2027-02-07",cat:["junior","absoluta"],lugar:"CD Amaya, Pamplona"},
+ {id:"ehii",n:"Cto EH Infantil Invierno",d:"2027-02-20",f:"2027-02-21",cat:["infantil"],lugar:"CD Amaya, Pamplona"},
+ {id:"ehal",n:"Cto Euskal Herria Alevín",d:"2027-06-19",f:"2027-06-20",cat:["alevin"],lugar:"Sede por confirmar"},
+ {id:"ehiv",n:"Cto EH Infantil Verano",d:"2027-06-26",f:"2027-06-27",cat:["infantil"],lugar:"Sede por confirmar"},
+ {id:"ehjv",n:"Cto EH Junior-Abs Verano",d:"2027-07-03",f:"2027-07-04",cat:["junior","absoluta"],lugar:"Sede por confirmar"},
+ /* ---- España (normativas RFEN 26/27) ---- */
+ {id:"espp",n:"Cto España Absoluto Open P25",d:"2026-11-12",f:"2026-11-15",cat:["junior","absoluta"],lugar:"Centro de Natación M-86, Madrid",pis:25,acc:"Con marca mínima.",
+  dias:[{f:"2026-11-12",pr:["100 Espalda","400 Libre","50 Libre","200 Estilos"]},
+        {f:"2026-11-13",pr:["200 Mariposa","100 Estilos","100 Libre","200 Braza","1500 Libre"]},
+        {f:"2026-11-14",pr:["400 Estilos","50 Braza","100 Mariposa","200 Espalda"]},
+        {f:"2026-11-15",pr:["100 Braza","50 Espalda","200 Libre","50 Mariposa","800 Libre"]}]},
+ {id:"espf",n:"Cto España FFAA Infantil-Junior",d:"2027-02-12",f:"2027-02-14",cat:["infantil","junior"],lugar:"CD Rías do Sur, Pontevedra",pis:50,acc:"Por selecciones autonómicas.",
+  dias:[{f:"2027-02-12",pr:[{p:"200 Estilos",s:"F"},{p:"400 Estilos",s:"M"},"100 Mariposa","50 Espalda",{p:"1500 Libre",s:"F",x:"solo júnior"},"200 Libre","100 Braza",{p:"200 Estilos",s:"M"},{p:"400 Estilos",s:"F"},{p:"1500 Libre",s:"M",x:"solo júnior"}]},
+        {f:"2027-02-13",pr:["100 Libre","200 Braza","50 Mariposa",{p:"800 Libre",s:"M",x:"solo infantil"},"200 Mariposa","50 Libre","100 Espalda",{p:"800 Libre",s:"F",x:"solo infantil"}]},
+        {f:"2027-02-14",pr:["200 Espalda","50 Braza","400 Libre"]}]},
+ {id:"esca",n:"Cto España CCAA Alevín",d:"2027-02-19",f:"2027-02-21",cat:["alevin"],lugar:"Málaga",acc:"Por selecciones autonómicas."},
+ {id:"espa",n:"Cto España Absoluto-Junior",d:"2027-03-03",f:"2027-03-07",cat:["junior","absoluta"],lugar:"Sede por determinar",pis:50,acc:"Con marca mínima.",
+  dias:[{f:"2027-03-03",pr:["50 Mariposa","200 Braza","50 Espalda","400 Libre"]},
+        {f:"2027-03-04",pr:[{p:"400 Estilos",s:"M"},"50 Libre","200 Espalda",{p:"1500 Libre",s:"F"}]},
+        {f:"2027-03-05",pr:["100 Mariposa",{p:"400 Estilos",s:"F"},{p:"200 Estilos",s:"M"},"50 Braza",{p:"1500 Libre",s:"M"}]},
+        {f:"2027-03-06",pr:[{p:"200 Libre",s:"M"},{p:"100 Libre",s:"F"},"200 Mariposa","100 Espalda",{p:"800 Libre",s:"F"}]},
+        {f:"2027-03-07",pr:[{p:"200 Libre",s:"F"},{p:"100 Libre",s:"M"},"100 Braza",{p:"200 Estilos",s:"F"},{p:"800 Libre",s:"M"}]}]},
+ {id:"espi",n:"Cto España Infantil Invierno",d:"2027-03-12",f:"2027-03-14",cat:["infantil"],lugar:"Sede por determinar",pis:50,acc:"Con marca mínima.",
+  dias:[{f:"2027-03-12",pr:[{p:"100 Libre",s:"M"},{p:"200 Libre",s:"F"},{p:"400 Estilos",s:"M"},{p:"200 Estilos",s:"F"},"50 Mariposa","100 Braza","200 Espalda",{p:"800 Libre",s:"M"}]},
+        {f:"2027-03-13",pr:[{p:"100 Libre",s:"F"},{p:"200 Libre",s:"M"},{p:"400 Estilos",s:"F"},{p:"200 Estilos",s:"M"},"50 Braza","100 Mariposa","50 Espalda",{p:"800 Libre",s:"F"}]},
+        {f:"2027-03-14",pr:["200 Mariposa","50 Libre","200 Braza","100 Espalda","400 Libre"]}]},
+ {id:"espt",n:"Cto España Open Trials",d:"2027-05-27",f:"2027-05-30",cat:["junior","absoluta"],lugar:"Piscina Son Hugo, Palma",pis:50,acc:"Con marca mínima.",
+  dias:[{f:"2027-05-27",pr:["100 Espalda","400 Libre","50 Libre","200 Estilos"]},
+        {f:"2027-05-28",pr:["200 Mariposa","100 Libre","200 Braza","1500 Libre"]},
+        {f:"2027-05-29",pr:["400 Estilos","50 Braza","100 Mariposa","200 Espalda"]},
+        {f:"2027-05-30",pr:["100 Braza","50 Espalda","200 Libre","50 Mariposa","800 Libre"]}]},
+ {id:"espl",n:"Cto España Alevín",d:"2027-07-08",f:"2027-07-11",cat:["alevin"],lugar:"Sede por determinar",pis:50,acc:"Con marca mínima o por ranking.",
+  dias:[{f:"2027-07-08",pr:["100 Espalda","50 Libre","100 Braza","800 Libre"]},
+        {f:"2027-07-09",pr:[{p:"100 Libre",s:"F"},{p:"200 Libre",s:"M"},"50 Braza","100 Mariposa",{p:"200 Estilos",s:"F"},{p:"400 Estilos",s:"M"}]},
+        {f:"2027-07-10",pr:[{p:"100 Libre",s:"M"},{p:"200 Libre",s:"F"},"200 Espalda","50 Mariposa",{p:"200 Estilos",s:"M"},{p:"400 Estilos",s:"F"}]},
+        {f:"2027-07-11",pr:["200 Mariposa","50 Espalda","200 Braza","400 Libre"]}]},
+ {id:"espv",n:"Cto España Infantil Verano",d:"2027-07-15",f:"2027-07-18",cat:["infantil"],lugar:"Sede por determinar",pis:50,acc:"Con marca mínima.",
+  dias:[{f:"2027-07-15",pr:[{p:"400 Libre",s:"M"},"50 Braza","200 Mariposa","50 Libre","200 Espalda",{p:"800 Libre",s:"F"}]},
+        {f:"2027-07-16",pr:[{p:"100 Libre",s:"F"},{p:"200 Libre",s:"M"},"100 Braza","50 Mariposa",{p:"400 Estilos",s:"F"},{p:"1500 Libre",s:"M"}]},
+        {f:"2027-07-17",pr:[{p:"100 Libre",s:"M"},{p:"200 Libre",s:"F"},"200 Braza","100 Espalda",{p:"400 Estilos",s:"M"},{p:"1500 Libre",s:"F"}]},
+        {f:"2027-07-18",pr:["200 Estilos","50 Espalda","100 Mariposa",{p:"400 Libre",s:"F"},{p:"800 Libre",s:"M"}]}]},
+ {id:"espj",n:"Cto España Junior Verano",d:"2027-07-22",f:"2027-07-25",cat:["junior"],lugar:"Sede por determinar",pis:50,acc:"Con marca mínima.",
+  dias:[{f:"2027-07-22",pr:[{p:"200 Libre",s:"M"},{p:"100 Libre",s:"F"},{p:"200 Estilos",s:"M"},{p:"400 Estilos",s:"F"},"50 Mariposa","200 Espalda",{p:"800 Libre",s:"M"}]},
+        {f:"2027-07-23",pr:[{p:"200 Libre",s:"F"},{p:"100 Libre",s:"M"},{p:"200 Estilos",s:"F"},{p:"400 Estilos",s:"M"},"100 Espalda","50 Braza",{p:"800 Libre",s:"F"}]},
+        {f:"2027-07-24",pr:["200 Mariposa","50 Libre","100 Braza",{p:"400 Libre",s:"F"},{p:"1500 Libre",s:"M"}]},
+        {f:"2027-07-25",pr:["50 Espalda","200 Braza","100 Mariposa",{p:"400 Libre",s:"M"},{p:"1500 Libre",s:"F"}]}]}
+]};
 function es50(c){return /\(50 m\)/.test(c||"");}
 /* Herencia acumulativa: una temporada solo declara lo que cambia y arrastra el resto de las
    anteriores. Evita duplicar el bloque BASE entero cada año. Con caché porque `fina()` la consulta
@@ -3110,10 +3235,93 @@ function renderFichSummary(box){
     :`<div class="fPills"><button class="cmpBtn" data-n="${esc(name)}">Comparar</button><button class="badgeBtn" data-n="${esc(name)}">🏅 Insignias</button><button class="compBtn" data-n="${esc(name)}">Competiciones</button></div>`;
   box.innerHTML=`<div class="profile fTitleCard"><div class="pTop fTop"><div class="pHead fHead">${logoImg(rec0.club)}<div class="fNameWrap"><div class="pName fName">${esc(name)}</div><div class="pClub">${esc(rec0.club||"")} · ${esc(rec0.anio||"")}</div></div></div>${pills}</div></div>`;
 }
+/* ===== PRÓXIMAS COMPETICIONES EN LA BANDA (2-nov-2026, DIARIO §4.72) ==========================
+   ⚠️ «Hoy» sale de hoyISO() y de NADIE MÁS: el arnés fija window.__HOY para que el volcado no
+   cambie cada día. Un `new Date()` suelto en esta parte haría que dos pasadas idénticas difirieran. */
+function hoyISO(){if(typeof window!=="undefined"&&window.__HOY)return window.__HOY;
+  const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function calNorm(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\(50 m\)/i,"").replace(/\s+/g," ").trim().toLowerCase();}
+/* Disputada = hay ALGUNA fila (marca, DSQ o no oficial, de cualquier sexo y categoría) con esa fecha
+   y ese nombre. Si nadó gente de otra categoría, la competición ya se celebró: no puede seguir
+   saliendo como «próxima» en esta. */
+let _CALJ=null,_CALJN="";
+function calDisputada(e){
+  const n=ALLRECS.length+"|"+(typeof ALLDSQ!=="undefined"?ALLDSQ.length:0)+"|"+(typeof ALLNOOF!=="undefined"?ALLNOOF.length:0);
+  if(n!==_CALJN){_CALJ=new Set();[ALLRECS,(typeof ALLDSQ!=="undefined"?ALLDSQ:[]),(typeof ALLNOOF!=="undefined"?ALLNOOF:[])].forEach(L=>L.forEach(r=>_CALJ.add(r.fecha+"|"+calNorm(r.competi))));_CALJN=n;}
+  return _CALJ.has(e.f+"|"+calNorm(e.n));}
+/* Solo la temporada que se está viendo y nunca en Histórico; filtrado por el GRUPO de categoría. */
+function calScope(){if(isHist())return [];const L=CALENDARIO[season]||[];return L.filter(e=>e.cat.indexOf(catFilter)>=0&&!calDisputada(e));}
+/* El botón de cerrar lo usan el resumen y la tarjeta de próxima: un solo sitio, un solo id. */
+const SUM_CLOSE='<button class="sumClose" id="sumClose">✕ Cerrar competi</button>';
+const CAL_DS=["dom","lun","mar","mié","jue","vie","sáb"],CAL_MS=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],CAL_VIS=4;
+function calD(f){const p=String(f).split("-");return new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));}
+function calIso(d){return d.toISOString().slice(0,10);}
+function calDia(f){const d=calD(f);return CAL_DS[d.getUTCDay()]+" "+d.getUTCDate()+" "+CAL_MS[d.getUTCMonth()];}
+function calCap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function calRango(e){const a=e.d||e.f,b=e.f,y=b.slice(0,4);if(a===b)return calCap(calDia(a))+" "+y;
+  const da=calD(a),db=calD(b);
+  if(da.getUTCMonth()===db.getUTCMonth())return "Del "+CAL_DS[da.getUTCDay()]+" "+da.getUTCDate()+" al "+calDia(b)+" "+y;
+  return "Del "+calDia(a)+" al "+calDia(b)+" "+y;}
+function calCuenta(e,hoy){const ini=e.d||e.f;
+  if(hoy>e.f)return "sin resultados";
+  if(hoy>=ini)return ini===e.f?"hoy":"en curso";
+  const n=Math.round((calD(ini)-calD(hoy))/864e5);
+  if(n===1)return "mañana";if(n<=60)return "en "+n+" días";return "en "+Math.round(n/30.4)+" meses";}
+/* Plazo FEDERATIO de las dos ligas de Álava (los dos reglamentos 26/27 lo escriben igual): abre el
+   martes de la semana anterior a las 17:00, cierra el lunes de la semana de competición a las 17:00
+   y admite cambios hasta el miércoles a las 17:00. */
+function calIns(e,hoy){if(e.ins!=="fed")return "";
+  const d=calD(e.d||e.f),dow=(d.getUTCDay()+6)%7,lun=new Date(d-dow*864e5),abre=new Date(lun-6*864e5),mie=new Date(+lun+2*864e5);
+  if(hoy>calIso(mie))return "Cerrada.";
+  return "Abre el "+calDia(calIso(abre))+" a las 17:00 y cierra el "+calDia(calIso(lun))+" a las 17:00. Cambios hasta el "+calDia(calIso(mie))+" a las 17:00.";}
+/* Una prueba del programa para el sexo que se está viendo: null si no es de ese sexo. */
+function calItem(x,sx){if(typeof x==="string")return {t:x,ps:[x]};
+  if(x.s&&x.s!==sx)return null;
+  if(x.o)return {t:x.o[0].split(" ")[0]+" o "+x.o[1],ps:x.o,par:true};
+  return {t:x.p,ps:[x.p],x:x.x};}
+function calChip(it){const no=it.ps.some(esNoof);
+  return `<span class="chip calChip ${stKlass(it.ps[0])}${no?" noof":""}">${esc(it.t)}${it.par?"<i>elige una</i>":""}${it.x?"<i>"+esc(it.x)+"</i>":""}</span>`;}
+function calCard(e){
+  const sx=sexFilter,hoy=hoyISO();
+  let h=`<div class="sumcard calcard"><div class="sumhead">📅 <b>${esc(e.n)}</b></div>`;
+  h+=`<div class="calWhen">${esc(calRango(e))}<span class="calCnt">${esc(calCuenta(e,hoy))}</span></div>`;
+  const info=[["Lugar",e.lugar||"Por confirmar"]];
+  if(e.pis)info.push(["Piscina",e.pis+" m"]);
+  if(e.h)info.push(["Hora",e.h+(e.cal?" · calentamiento "+e.cal:"")]);
+  if(e.acc)info.push(["Acceso",e.acc]);
+  const ins=calIns(e,hoy);if(ins)info.push(["Inscripción",ins]);
+  h+=`<dl class="calInfo">`+info.map(p=>`<dt>${esc(p[0])}</dt><dd>${esc(p[1])}</dd>`).join("")+`</dl>`;
+  const lbl=sx==="M"?"Pruebas individuales masculinas":"Pruebas individuales femeninas";
+  let par=false;
+  if(e.dias&&e.dias.length){
+    const multi=e.dias.length>1;
+    h+=`<div class="sumline"><span class="lbl">${lbl}</span>`+e.dias.map(dd=>{
+      const its=dd.pr.map(x=>calItem(x,sx)).filter(Boolean);if(its.some(i=>i.par))par=true;
+      return (multi?`<div class="calDay">${esc(calCap(calDia(dd.f)))}</div>`:"")+`<div class="calChips">${its.map(calChip).join("")}</div>`;
+    }).join("")+`</div>`;
+  }else h+=`<div class="sumline"><span class="lbl">Pruebas</span><div class="sitem calNone">Programa aún no publicado.</div></div>`;
+  const nor=[];
+  if(e.reg==="esc")nor.push("Máximo 3 pruebas individuales; como mucho 2 de ellas no convencionales (las de borde discontinuo).");
+  if(e.reg==="fan")nor.push("Máximo 3 pruebas; 2 si una es 400 libre, 800 libre, 1500 libre o 400 estilos.","800 y 1500 libre: tres series como máximo por sexo, por mejor marca acreditada.");
+  if(par)nor.push("De cada par con «o» solo se puede nadar una prueba.");
+  if(e.nota)nor.push(e.nota);
+  if(nor.length)h+=`<div class="sumline"><span class="lbl">A tener en cuenta</span>`+nor.map(t=>`<div class="sitem">${esc(t)}</div>`).join("")+`</div>`;
+  h+=`<div class="calSrc">Calendario actualizado el ${esc(CAL_ACT)}. Las fechas y los programas pueden cambiar.</div>`;
+  h+=SUM_CLOSE+`</div>`;
+  return h;}
+function calRow(e,FE,hoy,next){const k="CAL|"+e.id,on=k===FE;
+  return `<button class="sumOpt calOpt${next?" next":""}${on?" on":""}" data-f="${esc(k)}"><span class="soDate">${fmtDate(e.d||e.f)}</span><span class="soName">${esc(e.n)}${e.pis===50?" "+pisPill():""}</span><span class="calCnt">${esc(calCuenta(e,hoy))}</span>${on?'<span class="soChk">✓</span>':""}</button>`;}
+function calLeg(){const ch=sexFilter==="M"?"chicos":"chicas";
+  return `<div class="lgH">Próximas competiciones</div><div>Arriba, en «Próximas», las competiciones del calendario de esta categoría que aún no tienen resultados en la app, de la más cercana a la más lejana. Al tocar una se ve su programa: fecha, lugar, horario y pruebas individuales de ${ch} (los relevos no se listan).</div>`
+   +`<div class="lgH">Las pastillas</div><div>Van coloreadas por estilo, como en el ranking. Las de borde discontinuo son pruebas no convencionales (25, 75, 150, 300 y 600 m). «Elige una»: de ese par solo se puede nadar una.</div>`
+   +`<div class="lgH">Cuándo cambian</div><div>En cuanto se cargan sus resultados, la competición pasa a «Disputadas» con su resumen. Si ya se ha celebrado y aún no hay resultados, sigue en la lista marcada «sin resultados». El plazo de inscripción de las ligas de Álava se calcula con la regla de sus reglamentos.</div>`
+   +`<div class="lgF">Fuentes: calendario y reglamentos 26/27 de la Federación Alavesa, normativas 26/27 de la RFEN, calendario 26/27 de la Federación Navarra (fechas de los Ctos. de Euskal Herria) y web del CN Menditxo. Actualizado el ${esc(CAL_ACT)}; las fechas pueden cambiar.</div><div style="border-top:1px solid var(--line);margin:12px 0 4px"></div>`;}
 function renderSummary(fecha){
   const box=el("summary");if(!box)return;
   if(mode==="fichas"){renderFichSummary(box);return;}
-  if(!RECORDS.length){box.innerHTML="";return;}
+  /* Con el calendario (§4.72) una categoría puede tener próximas aunque aún no tenga ni una fila. */
+  const CALS=calScope();
+  if(!RECORDS.length&&!CALS.length){box.innerHTML="";return;}
   /* ⚠️ LA JORNADA ELEGIDA PUEDE DEJAR DE EXISTIR AL CAMBIAR DE ÁMBITO (21-ago-2026).
      Categoría, sexo, temporada e Histórico rehacen `RECORDS`, y la competición que estabas viendo
      puede no tener ni una fila en el ámbito nuevo: medido sobre el `data.csv` real, el 50,9 % de
@@ -3127,7 +3335,14 @@ function renderSummary(fecha){
      Es el guardarraíl único: cubre también el cambio de sexo y —importante para septiembre— el de
      temporada, donde la jornada vieja NUNCA existe en la nueva. */
   let FE=fecha||MAXJOR;
-  if(FE&&!RECORDS.some(r=>jorK(r)===FE)){FE=MAXJOR;sumFecha=null;sumShown=false;sumOpen=false;}
+  /* Una próxima se elige con la clave «CAL|id». Si deja de estar en el ámbito (otra categoría, otra
+     temporada, o ya entró su acta) se repliega igual que una jornada huérfana. */
+  let calE=null;
+  if(String(FE).indexOf("CAL|")===0){calE=CALS.find(e=>"CAL|"+e.id===FE)||null;if(!calE){FE=MAXJOR;sumFecha=null;sumShown=false;sumOpen=false;}}
+  if(!calE&&FE&&!RECORDS.some(r=>jorK(r)===FE)){FE=MAXJOR;sumFecha=null;sumShown=false;sumOpen=false;}
+  let h="";
+  if(calE)h=calCard(calE);
+  else if(FE){
   const FD=jorD(FE);
   const latest=RECORDS.filter(r=>jorK(r)===FE);
   if(!latest.length){box.innerHTML="";return;}
@@ -3155,7 +3370,7 @@ function renderSummary(fecha){
       if(!rt||!rt.got)newmin.push({n:shortName(r.nadadora),p:r.prueba,t:pair[0]});});
   });
   bests.sort((a,b)=>b.f-a.f);gains.sort((a,b)=>b.g-a.g);
-  let h=`<div class="sumcard"><div class="sumhead">🏆 <b>${esc(comp)}</b><span class="sumdate">· ${fmtDate(FD)}</span></div>`;
+  h=`<div class="sumcard"><div class="sumhead">🏆 <b>${esc(comp)}</b><span class="sumdate">· ${fmtDate(FD)}</span></div>`;
   h+=`<div class="sumstats"><div class="sst"><span class="n">${swimmers.size}</span>${sexFilter==="M"?"nadadores":"nadadoras"}</div><div class="sst"><span class="n">${latest.length}</span>marcas</div><div class="sst"><span class="n">${mejoras}</span>mejoras ⭐</div><div class="sst"><span class="n">${newmin.length}</span>mínimas nuevas</div></div>`;
   const md=["🥇","🥈","🥉"];
   // Mejor nadador/a del día: suma de FINA de todas sus pruebas (sin relevos), por año
@@ -3180,13 +3395,27 @@ function renderSummary(fecha){
      del Histórico es la PESTAÑA Mínimas del ranking (`minsOn()`), que mide distancia a un listón
      mezclando edades y temporadas y ahí sí que no significa nada. */
   if(newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>`+newmin.map(x=>`<div class="sitem"><span class="mb ${x.t==="ESP"?"mbESP":"mbEH"}" style="margin-left:0">${esc(x.t)}</span> ${esc(x.n)} · ${esc(x.p)}</div>`).join("")+`</div>`;
-  h+=`<button class="sumClose" id="sumClose">✕ Cerrar competi</button>`;
+  h+=SUM_CLOSE;
   h+=`</div>`;  // cierra .sumcard
+  }
   const fechas=summaryFechas();
-  const rows=fechas.map(f=>{const c=(RECORDS.find(r=>jorK(r)===f)||{}).competi||"";return `<button class="sumOpt${f===FE?" on":""}" data-f="${esc(f)}"><span class="soDate">${fmtDate(jorD(f))}</span><span class="soName">${esc(c)}</span>${f===FE?'<span class="soChk">✓</span>':""}</button>`;}).join("");
+  /* Disputadas: las jornadas con filas y, entre ellas por fecha, las del calendario que ya pasaron
+     sin acta cargada. Próximas: arriba, de la más cercana a la más lejana; se ven CAL_VIS y el resto
+     tras «Ver N más». */
+  const hoy=hoyISO();
+  const disp=fechas.map(f=>{const c=(RECORDS.find(r=>jorK(r)===f)||{}).competi||"";return {d:jorD(f),h:`<button class="sumOpt${f===FE?" on":""}" data-f="${esc(f)}"><span class="soDate">${fmtDate(jorD(f))}</span><span class="soName">${esc(c)}</span>${f===FE?'<span class="soChk">✓</span>':""}</button>`};});
+  CALS.filter(e=>e.f<hoy).forEach(e=>disp.push({d:e.f,h:calRow(e,FE,hoy,false)}));
+  disp.sort((a,b)=>a.d<b.d?1:a.d>b.d?-1:0);
+  const prox=CALS.filter(e=>e.f>=hoy).sort((a,b)=>(a.d||a.f).localeCompare(b.d||b.f)||a.n.localeCompare(b.n));
+  let rows="";
+  if(prox.length){const vis=calAll?prox:prox.slice(0,CAL_VIS);
+    rows+=`<div class="calSec">Próximas</div>`+vis.map((e,i)=>calRow(e,FE,hoy,i===0)).join("")
+      +(prox.length>CAL_VIS?`<button class="calMore" id="calMore">${calAll?"Ver menos":"Ver "+(prox.length-CAL_VIS)+" más"}</button>`:"");
+    if(disp.length)rows+=`<div class="calSec">Disputadas</div>`;}
+  rows+=disp.map(x=>x.h).join("");
   const band=`<button class="sumBand${sumOpen?" open":""}" id="sumBand"><span class="sbIcon">🏆</span><span class="sbTxt">COMPETICIONES</span><span class="sbArrow">▾</span></button>`;
   const menu=`<div class="sumMenu${sumOpen?" open":""}">${rows}</div>`;
-  const cuerpo=sumShown?`<div class="sumWrap">${h}</div>`:"";
+  const cuerpo=(sumShown&&h)?`<div class="sumWrap">${h}</div>`:"";
   const PHR="No puedes poner un límite a nada. Cuanto más sueñas, más lejos llegas.",SIGN="Michael Phelps";
   let phrase;
   if(!phraseWritten){
@@ -3508,7 +3737,7 @@ function sumLeg(){const nad=sexFilter==="M"?"nadador":"nadadora";/* ⚠️ Aquí
    +"<br><b>Mínimas nuevas</b> no es un podio: son las mínimas EH / ESP conseguidas en esa competición que antes no se tenían."
    +"<br>Las cifras de arriba cuentan participantes, marcas nadadas, mejoras ⭐ (marcas que baten la mejor marca previa) y mínimas nuevas."
    +"<br><span style='color:var(--muted)'>El resumen es de la <b>competición entera</b>: no le afectan los filtros de año y club de más abajo, que solo mueven el ranking.</span><div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";}
-let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking",badgesFor=null,sumOpen=false,sumFecha=null,sumShown=false,BAND_KEY=null,compsFor=null,compFecha=null;
+let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking",badgesFor=null,sumOpen=false,sumFecha=null,sumShown=false,calAll=false,BAND_KEY=null,compsFor=null,compFecha=null;
 function fireBar(el){
   if(BAR_IO){try{BAR_IO.unobserve(el);}catch(e){}}
   BAR_PEND=BAR_PEND.filter(x=>x!==el);
@@ -4608,7 +4837,7 @@ el("backFloat").addEventListener("click",()=>{if(compFecha){compFecha=null;rende
      encadenar comparaciones sin salir), y solo el siguiente toque cierra el módulo. */
   if(cmpB){cmpB=null;render();scrollSec();return;}
   if(cmpA){cmpA=null;cmpB=null;render();scrollSec();return;}mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();window.scrollTo({top:0,behavior:"smooth"});});
-el("infoFab").addEventListener("click",()=>{const pop=el("legPop"),bd=el("legPopBody");if(pop&&bd){bd.innerHTML=(sumShown?sumLeg():"")+(LEG_HTML||"");pop.style.display="flex";}});
+el("infoFab").addEventListener("click",()=>{const pop=el("legPop"),bd=el("legPopBody");if(pop&&bd){bd.innerHTML=(sumShown?(String(sumFecha||"").indexOf("CAL|")===0?calLeg():sumLeg()):"")+(LEG_HTML||"");pop.style.display="flex";}});
 el("summary").addEventListener("click",e=>{
   const t=e.target&&e.target.closest?e.target.closest:null;if(!t)return;
   const bb=e.target.closest(".badgeBtn");if(bb){badgesFor=bb.dataset.n;cmpA=null;cmpB=null;compsFor=null;compFecha=null;render();scrollSec();return;}
@@ -4622,6 +4851,7 @@ el("summary").addEventListener("click",e=>{
     else{sumOpen=true;}                                     // todo cerrado -> desplegar
     renderSummary(sumFecha);return;
   }
+  if(e.target.closest("#calMore")){calAll=!calAll;renderSummary(sumFecha);return;}
   const opt=e.target.closest(".sumOpt");
   if(opt){sumFecha=opt.dataset.f;sumOpen=false;sumShown=true;renderSummary(sumFecha);return;}
 });
