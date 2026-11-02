@@ -970,19 +970,11 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .paBox.solo{justify-content:center}
 
 /* Pruebas no oficiales (§4.64) */
-.tag.acc{color:#7a4b00;background:#fff3d6;border-radius:6px;padding:2px 6px;font-size:11px}
 .soloNoofNote{font-size:11.5px;color:var(--muted);border:1px dashed currentColor;border-radius:999px;padding:3px 10px}
-.accEq{font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap}
-.accLns{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-top:5px}
-.accLn{font-size:11.5px;color:#8a5a00;white-space:nowrap}
-.accLn.eh{color:#7a6a3a}
-.accK{font-weight:700;font-size:10px;letter-spacing:.03em;text-transform:uppercase}
-@media (prefers-color-scheme: dark){.accLn,.accLine{color:#ffd58a}.accLn.eh{color:#e3d2a4}}
-.accEqI{font-size:11px;color:var(--muted);font-weight:400}
+.accLns{display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:8px;row-gap:2px;margin-top:4px;font-size:11px;color:var(--muted);white-space:nowrap}
+.accK{font-weight:600}
 .pRowNoof .prueba{font-size:14px;opacity:.9}
 .mb.noofMb{margin-left:6px;font-size:9px;font-weight:700;letter-spacing:.02em;border:1px dashed currentColor;border-radius:999px;padding:1px 6px;vertical-align:middle;background:none;color:var(--muted)}
-.accLine{margin-top:8px;font-size:12px;color:#8a5a00}
-@media (prefers-color-scheme: dark){.tag.acc{color:#ffd58a;background:rgba(255,190,80,.14)}}
 </style>
 </head>
 <body>
@@ -1374,8 +1366,9 @@ const PRUEBA_ORDER=["50 Libre","100 Libre","200 Libre","400 Libre","800 Libre","
    150→200, 300→400, 600→800) y, para las de 25 m, la tabla especial del anexo (ACCESO_ALEVIN.REF25).
    ⚠️ AISLADAS DEL RESTO: `parseCSV` las desvía a ALLNOOF y NUNCA entran en ALLRECS. Así no tocan
    FINA, mínimas, récords, Top FINA, resúmenes, medallero, insignias ni buscador. Solo se pintan en tres
-   sitios: las pastillas y el ranking de la pestaña Marcas, las filas de la ficha (Marcas) y la línea
-   «Acceso por ranking» de la ficha (Mínimas). Decisión de Fran, 28-oct-2026.
+   sitios: las pastillas y el ranking de la pestaña Marcas, las filas de la ficha (Marcas) y, en Mínimas,
+   dos líneas grises de equivalencia ORIENTATIVA (EH y ESP, sin %). Decisión de Fran, 28-oct-2026;
+   ⚠️ desde §4.71 (2-nov-2026) ya no hay línea «Acceso por ranking» ni % en pantalla.
    Quien SOLO tiene marcas no oficiales no existe en ALLRECS, pero desde §4.69 se le puede buscar y
    tiene ficha (con sus filas no oficiales; sin Comparar/Insignias/Competiciones). */
 const NOOF_RE=/^(25|75|150|300|600) /;
@@ -1409,8 +1402,7 @@ function accesoRef(r){const T=tablesAt(r.fecha)||{},A=T.ACCESO_ALEVIN;if(!A||r.f
   if(!NOOF_EQ[w[0]])return null;
   const t=(((T.MIN_ESP||{})[r.sexo]||{})[NOOF_EQ[w[0]]+" "+w[1]]||{})[r.anio];
   return t?Math.round(toCs(t)*A.FACTOR):null;}
-/* % de acceso = mínima equivalente ÷ tiempo × 100. Más alto, mejor; 100 % = llega a la equivalente. */
-function accesoPct(r){const ref=accesoRef(r);if(!ref)return null;return ref/toCs(r.tiempo)*100;}
+/* ⛔ accesoPct y fmtPct RETIRADAS (§4.71): el % de acceso ya no se enseña en ningún sitio. */
 /* Puntos FINA ORIENTATIVOS de una prueba no oficial (Fran, 28-oct-2026, §4.67): base de su distancia
    oficial ajustada por REGLA DE TRES a la distancia nadada → 25 con 50 (× 1/2), 75 con 100, 150 con 200,
    300 con 400 y 600 con 800 (× 3/4). ⚠️ En 25 m NO coincide con la Liga: la RFEN da una base de 25 m
@@ -1421,35 +1413,33 @@ function finaNoof(r){const T=tablesAt(r.fecha)||{};const w=r.prueba.split(" "),e
   const cs=toCs(r.tiempo);if(!isFinite(cs)||cs<=0)return 0;
   const B=(es50(r.competi)?T.BASE_50:T.BASE)||{};const x=(B[r.sexo]||{})[eq+" "+w[1]];if(!x)return 0;
   const b=x*(+w[0])/(+eq);return Math.floor(1000*Math.pow(b/(cs/100),3));}
-function fmtPct(x){return x.toFixed(1).replace(".",",")+" %";}
 /* Ranking de una prueba no oficial: mejor marca de cada nadador/a, empates con el mismo puesto. */
 function noofRank(recs,p){const best={};recs.filter(r=>r.prueba===p).forEach(r=>{const c=toCs(r.tiempo);if(!best[r.nadadora]||c<best[r.nadadora].cs)best[r.nadadora]={...r,cs:c,name:r.nadadora};});
   const L=Object.values(best).sort((a,b)=>a.cs-b.cs||a.name.localeCompare(b.name));let last=null,rk=0;
   L.forEach((r,i)=>{if(r.cs!==last){rk=i+1;last=r.cs;}r.rank=rk;});return L;}
-/* Línea «Acceso por ranking» de la cabecera de la ficha (pestaña Mínimas). ⚠️ (Fran, 28-oct-2026, §4.68)
-   Solo sale si dice algo útil, con el MISMO criterio que «A tiro» del resto de la app: equivalente ESP
-   alcanzada (≥ 100 %) o a menos de un 2 % de ella. Si está lejos, nada: el dato ya está en la fila. */
-function accesoLine(name,recs){const by={};recs.forEach(r=>{const eq=accesoRef(r);if(!eq)return;const cs=toCs(r.tiempo);
-    if(!by[r.prueba]||cs<by[r.prueba].cs)by[r.prueba]={cs,eq};});
-  const ps=ordPruebas(Object.keys(by));
-  const got=ps.filter(p=>by[p].cs<=by[p].eq),tiro=ps.filter(p=>by[p].cs>by[p].eq&&(by[p].cs-by[p].eq)/by[p].eq<=0.02);
-  if(!got.length&&!tiro.length)return"";
-  const a=got.length?`equivalente alcanzada en ${got.map(p=>esc(abbrev(p))).join(", ")}`:"";
-  const b=tiro.length?`a tiro en ${tiro.map(p=>esc(abbrev(p))+" (a "+fmtClock(by[p].cs-by[p].eq)+")").join(", ")}`:"";
-  return `<div class="accLine"><b>Acceso por ranking:</b> ${a}${a&&b?" · ":""}${b}</div>`;}
+/* ⛔ accesoLine («Acceso por ranking» en la cabecera de Mínimas) RETIRADA (Fran, 2-nov-2026, §4.71):
+   las no oficiales no entran en «A tiro» ni en lo conseguido; su equivalencia es solo orientativa. */
 function noofBadge(r){const f=finaNoof(r);return f?`<span class="tag fina">${f} FINA</span>`:"";}
 /* Mínima EQUIVALENTE DE EUSKAL HERRIA, ORIENTATIVA (Fran, 28-oct-2026, §4.66): MIN_EH de la distancia
-   oficial × 3/4. ⚠️ La EIF-FVN NO usa estas pruebas ni esta equivalencia: es solo orientación y se
-   rotula así. En las de 25 m no hay: ni la RFEN ni nadie da una regla para EH (la de 25 m de ESP es una
-   tabla propia del anexo, no × 3/4), así que no se inventa. */
-function eqEH(r){const T=tablesAt(r.fecha)||{},A=T.ACCESO_ALEVIN;if(!A)return null;const w=r.prueba.split(" ");if(!NOOF_EQ[w[0]])return null;
+   oficial × 3/4. ⚠️ La EIF-FVN NO usa estas pruebas ni esta equivalencia: es solo orientación.
+   En 25 m (Fran, 2-nov-2026, §4.71) no hay regla de nadie: se toma la marca del anexo RFEN (REF25) y se
+   escala en la MISMA proporción que hay entre la mínima EH y la ESP de 50 m de ese año
+   (REF25 × MIN_EH 50 ÷ MIN_ESP 50). Así la EH queda más asequible que la ESP, como en 50 m. ⛔ × 1/2
+   descartado: daba una EH ~3 s más rápida que la ESP. */
+function eqEH(r){const T=tablesAt(r.fecha)||{},A=T.ACCESO_ALEVIN;if(!A)return null;const w=r.prueba.split(" ");
+  if(w[0]==="25"){const ref=accesoRef(r),k="50 "+w[1];if(!ref)return null;
+    const e=(((T.MIN_ESP||{})[r.sexo]||{})[k]||{})[r.anio],h=(((T.MIN_EH||{})[r.sexo]||{})[k]||{})[r.anio];
+    return e&&h?Math.round(ref*toCs(h)/toCs(e)):null;}
+  if(!NOOF_EQ[w[0]])return null;
   const t=(((T.MIN_EH||{})[r.sexo]||{})[NOOF_EQ[w[0]]+" "+w[1]]||{})[r.anio];return t?Math.round(toCs(t)*A.FACTOR):null;}
 function gapTxt(cs,eq){const d=(cs-eq)/100;return (d<=0?"−":"+")+Math.abs(d).toFixed(2);}
-/* Las líneas de la pestaña Mínimas para una no oficial: ESP (acceso, la que usa la RFEN) y EH
-   (orientativa). Ámbar y en discontinuo: se ve que no son mínimas oficiales. */
+/* Las líneas de la pestaña Mínimas para una no oficial (Fran, 2-nov-2026, §4.71): DOS líneas, EH arriba y
+   ESP abajo (el orden de toda la app), las dos rotuladas «orientativa», en gris y sin negrita: no son
+   mínimas oficiales y no deben pesar más que ellas. Sin % (la equiparación es nuestra lectura del anexo).
+   ⚠️ Dos líneas y no una: en una sola medía ~281 px y en el ranking a 360 px solo hay ~260. */
 function noofMinLines(r){const cs=toCs(r.tiempo),es=accesoRef(r),eh=eqEH(r);let o="";
-  if(es)o+=`<div class="accLn"><span class="accK">ESP · acceso</span> <b>${gapTxt(cs,es)}</b> · ${fmtPct(es/cs*100)} <span class="accEqI">equiv. ${fmtClock(es)}</span></div>`;
-  if(eh)o+=`<div class="accLn eh"><span class="accK">EH · orientativa</span> <b>${gapTxt(cs,eh)}</b> <span class="accEqI">equiv. ${fmtClock(eh)}</span></div>`;
+  if(eh)o+=`<span class="accK">EH orientativa</span><span><span class="mono">${fmtClock(eh)}</span> · <span class="mono">${gapTxt(cs,eh)}</span></span>`;
+  if(es)o+=`<span class="accK">ESP orientativa</span><span><span class="mono">${fmtClock(es)}</span> · <span class="mono">${gapTxt(cs,es)}</span></span>`;
   return o?`<div class="accLns">${o}</div>`:"";}
 // Tiempos base FINA — World Aquatics SCM 2025 (25 m), femenino (segundos)
 const SAMPLE_CSV=`Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo
@@ -4116,6 +4106,14 @@ function render(){
         +". Solo aparece quien tiene marca en las dos.";})(),topfinaFicha:"La barra muestra lo cerca que está esa marca del <b>récord de Álava de su edad</b>. Debajo, en tenue, aparecen ese mismo récord —con la edad a la que corresponde— y el <b>récord del mundo absoluto</b>.<div style='margin-top:7px'><span style='font-weight:700'>Puesto:</span><br><b>Nº 4 de 16</b> quiere decir que va "+(sexFilter==="M"?"cuarto de dieciséis nadadores":"cuarta de dieciséis nadadoras")+" en esa prueba, entre "+(sexFilter==="M"?"los":"las")+" del <b>año seleccionado arriba</b>.<br>Aquí el recuento va <b>por piscina</b>: esta pestaña solo admite marcas de la piscina que tengas elegida, así que el «de N» es el de esa piscina y no el del total. Por eso una misma prueba puede decir <b>de 17</b> en MMP/progreso y <b>de 12</b> aquí, y pasa en 1 de cada 3.</div>"};
   /* En Histórico la leyenda de la vista no basta: hay que explicar el modo entero, porque cambian
      el alcance, los filtros y lo que desaparece. Va delante y luego la de la pestaña. */
+  /* Leyenda de las líneas orientativas de las no oficiales (§4.71): la usan el ranking y la ficha. */
+  const NOOF_MIN_LEG="Estas pruebas no tienen mínimas propias: se da una <b>equivalencia orientativa</b> con la distancia oficial "
+    +"(75 con 100, 150 con 200, 300 con 400, 600 con 800): su mínima × 3/4. "
+    +"<b>EH orientativa</b> con la de Euskal Herria y <b>ESP orientativa</b> con la de España. "
+    +"En las de 25 m, la ESP es la marca que fija el anexo de la RFEN, y la EH se saca en la misma proporción que hay entre "
+    +"las mínimas EH y ESP de 50 m. <b>No son mínimas oficiales</b>: la Federación Vasca no usa estas pruebas, la RFEN no publica "
+    +"cómo equipara las distancias y está por confirmar que estas competiciones cuenten para el acceso por ranking al "
+    +"Cto. de España Alevín.";
   const HIST_LEG="<span style='font-weight:700'>Modo Histórico.</span> Aquí no se filtra por temporada: "
    +"se juntan <b>todas</b>, y cada nadador/a aparece con su <b>mejor marca de siempre</b>. Cada marca puntúa "
    +"con la tabla FINA de la temporada en que se nadó, así que los puntos de una marca antigua no cambian nunca."
@@ -4143,15 +4141,10 @@ function render(){
   if(!fo&&view==="marcas"&&esNoof(activePrueba))LEG_HTML="<span style='font-weight:700'>Prueba no oficial (Liga Alevín).</span> "
     +"Ranking por mejor marca. Los <b>puntos FINA</b> son <b>orientativos</b>: base de la distancia oficial ajustada por regla de tres "
     +"(25 m con 50 m, × 1/2; 75, 150, 300 y 600 con 100, 200, 400 y 800, × 3/4). No cuentan para Top FINA. "
-    +"Sus mínimas equivalentes están en la pestaña <b>Mínimas</b>.";
-  if(!fo&&view==="minimas"&&esNoof(activePrueba))LEG_HTML="<span style='font-weight:700'>Prueba no oficial (Liga Alevín).</span> "
-    +"No tiene mínimas propias: se compara con <b>mínimas equivalentes</b> = mínima de la distancia oficial × 3/4 "
-    +"(150 m con 200, 75 con 100, 300 con 400, 600 con 800). "
-    +"<b>ESP · acceso</b>: la que usa la RFEN para el <b>acceso por ranking al Cto. de España Alevín</b> "
-    +"(en las de 25 m, la marca que fija el anexo). <b>%</b> = equivalente ÷ tiempo: 100 % es llegar, y cuanto más alto, mejor. "
-    +"No asegura plaza: la RFEN ordena a todos los alevines de España por ese % y entran los primeros hasta llenar el cupo. "
-    +"Solo valen las marcas del 1 de octubre al 20 de junio. "
-    +"<b>EH · orientativa</b>: la mínima de Euskal Herria × 3/4. La Federación Vasca no la usa: es solo orientación (en 25 m no hay).";
+    +"Su equivalencia orientativa con las mínimas está en la pestaña <b>Mínimas</b>.";
+  if(!fo&&view==="minimas"&&esNoof(activePrueba))LEG_HTML="<span style='font-weight:700'>Prueba no oficial (Liga Alevín).</span> "+NOOF_MIN_LEG;
+  if(fo&&view==="minimas"&&!badgesFor&&!compsFor&&noofScopeAll().some(r=>r.nadadora===query))
+    LEG_HTML+="<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Pruebas no oficiales.</span> "+NOOF_MIN_LEG+"</div>";
   if(isHist()&&!fo&&!badgesFor)LEG_HTML=HIST_LEG+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'></div>"+LEG_HTML;
   if(badgesFor){const bsx=((ALLRECS.find(r=>r.nadadora===badgesFor)||{}).sexo)||sexFilter;const nb=bsx==="M"?"nadador":"nadadora";LEG_HTML="🏅 <span style='font-weight:700'>Recuento de insignias.</span> Todas las insignias que ha conseguido en los resúmenes de las competiciones "+legAmbito()+". Se gana una por cada podio (🥇🥈🥉) en estos cuatro apartados del resumen:<br>"+legPodios(nb,false)+"<br>"+legOlimpico();}
   if(compsFor)LEG_HTML=legComps();
@@ -4432,7 +4425,7 @@ function renderProfile(vw){
     const ordFicha=(view==="marcas"||view==="minimas")?ordPruebas([...PRUEBA_ORDER,...new Set(NOFR.map(r=>r.prueba))]):PRUEBA_ORDER;
     const rows=ordFicha.map(p=>{
       if(esNoof(p)){const L=noofRank(noofScope(),p),me=L.find(x=>x.name===name);if(!me)return"";
-        const pc=accesoPct(me),fN=finaNoof(me),eq=accesoRef(me);const anim3=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
+        const fN=finaNoof(me);const anim3=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
         return `<div class="pRow pRowNoof" style="${anim3}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="mb noofMb">no oficial</span></div><div class="puesto">Nº ${me.rank} de ${L.length}${fN?` · ${fN} pts`:""}</div>${view==="minimas"?noofMinLines(me):""}</div><div class="right"><div class="time mono"><span class="tdate">${fmtDate(me.fecha)}</span>${esc(me.tiempo)}</div></div></div>`;}
       const b=bestOf(RECORDS,name,p);
       if(!b){
@@ -4556,7 +4549,7 @@ function renderProfile(vw){
     /* Lo conseguido y el objetivo comparten UNA caja: son la misma historia (lo que ya tiene y lo
        que le falta), y hasta hoy iban en recuadros distintos y ni siquiera alineados entre sí. */
     const mhSt=view==="minimas"?profileStat(name):"";
-    const mh=view==="minimas"?(mhSt+goalPill(name,!mhSt)+accesoLine(name,NOFR)):"";
+    const mh=view==="minimas"?(mhSt+goalPill(name,!mhSt)):"";
     /* Sin esto, quien no haya nadado nunca en largo veria un panel en blanco sin explicacion. */
     if(_P50&&!rows)return `<div class="profile"><div class="pRow"><div class="mid"><div class="puesto">Sin marcas en piscina de 50 m.</div></div></div></div>`;
     if(!rows.trim()&&soloNoof(name))return `<div class="profile"><div class="pRow"><div class="mid"><div class="puesto">Solo tiene marcas en pruebas no oficiales: están en <b>Marcas</b> y <b>Mínimas</b>.</div></div></div></div>`;
