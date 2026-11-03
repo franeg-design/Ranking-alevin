@@ -502,6 +502,11 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .cmpRow .cP{flex:1.15;text-align:center;font-size:11px;color:var(--muted)}
 .cmpRow.wa .cA .mono{color:var(--good);font-weight:700}
 .cmpRow.wb .cB .mono{color:var(--good);font-weight:700}
+/* No convencionales en el comparador (§4.75): bloque aparte, discontinuo = no oficial */
+.cmpSec{display:flex;justify-content:space-between;align-items:baseline;padding:14px 13px 6px;border-top:1px dashed #a9c9d4;font-size:11px;font-weight:700;color:var(--brand-deep)}
+.cmpSecSc{font-family:'Space Grotesk',sans-serif;font-size:13px}
+.cmpRow.noof{border-top:1px dashed var(--line)}
+.cPn{display:inline-block;border:1px dashed currentColor;border-radius:999px;padding:1px 7px}
 .cmpRow .cpos{display:block;font-size:11px;font-weight:700;color:var(--brand-deep)}
 .cd{display:block;font-size:9px;color:var(--muted);font-weight:400}
 .cmpList{max-height:330px;overflow:auto;border-top:1px solid var(--line)}
@@ -3891,7 +3896,24 @@ function renderCompareInner(vw){
     (a&&b?rowsB:rowsO).push(`<div class="cmpRow${cls}"><span class="cA">${cell(a,rkA)}</span><span class="cP">${esc(p)}</span><span class="cB">${cell(b,rkB)}</span></div>`);
   });
   const rows=rowsB.concat(rowsO);
-  vw.innerHTML=`<div class="cmpCard"><div class="cmpTop"><div class="cmpNames"><div class="cn">${logoImg(recA.club,"sm")}<b>${esc(shortName(cmpA))}</b><span>${esc(recA.club)} · ${esc(recA.anio)}</span></div><div class="cmpScore">${wA} – ${wB}</div><div class="cn">${logoImg(recB.club,"sm")}<b>${esc(shortName(cmpB))}</b><span>${esc(recB.club)} · ${esc(recB.anio)}</span></div></div><div class="cmpFina">FINA en pruebas comunes: <b>${fA}</b> · <b>${fB}</b></div></div><div class="cmpBody">${rows.join("")||'<div class="empty">Sin pruebas que comparar.</div>'}</div><div class="cmpNote">El marcador cuenta solo las pruebas nadadas por ambos. — = prueba no nadada.</div></div>`;
+  /* NO CONVENCIONALES (Fran, 2-nov-2026, §4.75): bloque aparte al final, con su propio marcador y SIN
+     tocar el principal ni la suma de FINA (no son homologables). Mismo formato de filas; el puesto es el
+     del ranking no oficial de la categoría (noofRank sobre noofScope, como en la ficha). Borde y pastilla
+     discontinuos = «no oficial», igual que en el resto de la app. */
+  let nA=0,nB=0,secNo="";
+  {const NS=typeof noofScope==="function"?noofScope():[];
+   const ps=ordPruebas([...new Set(NS.filter(r=>r.nadadora===cmpA||r.nadadora===cmpB).map(r=>r.prueba))]);
+   const nb=[],no=[];
+   ps.forEach(p=>{
+     const a=bestOf(NS,cmpA,p),b=bestOf(NS,cmpB,p);if(!a&&!b)return;
+     const ca=a?toCs(a.tiempo):null,cb=b?toCs(b.tiempo):null,rl=noofRank(NS,p);
+     const rkA=a?(rl.find(x=>x.name===cmpA)||{}).rank:null,rkB=b?(rl.find(x=>x.name===cmpB)||{}).rank:null;
+     let cls="";
+     if(a&&b){if(ca<cb){nA++;cls=" wa";}else if(cb<ca){nB++;cls=" wb";}}
+     (a&&b?nb:no).push(`<div class="cmpRow noof${cls}"><span class="cA">${cell(a,rkA)}</span><span class="cP"><span class="cPn">${esc(p)}</span></span><span class="cB">${cell(b,rkB)}</span></div>`);
+   });
+   if(ps.length)secNo=`<div class="cmpSec"><span>No convencionales</span><span class="cmpSecSc">${nA} – ${nB}</span></div>`+nb.concat(no).join("");}
+  vw.innerHTML=`<div class="cmpCard"><div class="cmpTop"><div class="cmpNames"><div class="cn">${logoImg(recA.club,"sm")}<b>${esc(shortName(cmpA))}</b><span>${esc(recA.club)} · ${esc(recA.anio)}</span></div><div class="cmpScore">${wA} – ${wB}</div><div class="cn">${logoImg(recB.club,"sm")}<b>${esc(shortName(cmpB))}</b><span>${esc(recB.club)} · ${esc(recB.anio)}</span></div></div><div class="cmpFina">FINA en pruebas comunes: <b>${fA}</b> · <b>${fB}</b></div></div><div class="cmpBody">${rows.join("")||(secNo?"":'<div class="empty">Sin pruebas que comparar.</div>')}${secNo}</div><div class="cmpNote">El marcador cuenta solo las pruebas nadadas por ambos. — = prueba no nadada.${secNo?" Las no convencionales llevan su propio marcador y no suman FINA.":""}</div></div>`;
 }
 function scrollSec(){
   try{
