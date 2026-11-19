@@ -4401,21 +4401,21 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 100 Braza,"CAUBILLA MARTIN, Eider",2008,CN Menditxo,1:22.56,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,39.33;43.23,,
 100 Braza,"DIAZ DE CERIO ABASOLO, Laida",2009,CN Judizmendi,1:25.05,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,40.13;44.92,,
 100 Braza,"ABAITUA PIPAON, Benat",2008,CN Judizmendi,1:12.65,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.46;40.19,,
-100 Braza,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,1:05.30,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,30.25;35.05,,
+100 Braza,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,1:05.30,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,30.25;35.05,,,Oro Absoluto
 100 Braza,"GARCIA LUKE, Unai",2010,CN Judizmendi,1:14.77,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,34.76;40.01,,
-100 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,1:06.72,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,31.02;35.70,,
+100 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,1:06.72,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,31.02;35.70,,,Bronce Absoluto;Oro Júnior;Oro Júnior 2
 100 Braza,"NANCLARES IBARGUTXI, Xabier",2003,CN Judizmendi,1:10.31,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.36;37.95,,
-100 Braza,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,1:13.85,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,35.03;38.82,,
+100 Braza,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,1:13.85,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,35.03;38.82,,,Plata Júnior 1
 100 Braza,"RITUERTO PEREZ DEL NOTARIO, Iker",2007,CN Menditxo,1:11.21,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,33.08;38.13,,
 100 Espalda,"FERNANDEZ JORGE, Eider",2008,CN Menditxo,1:13.88,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,35.48;38.40,,
 100 Espalda,"FERNANDEZ NISO, June",2010,CN Judizmendi,1:17.25,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,37.88;39.37,,
 100 Espalda,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,1:13.73,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,35.67;38.06,,
-100 Espalda,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,1:07.02,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,32.68;34.34,,
+100 Espalda,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,1:07.02,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,32.68;34.34,,,Bronce Absoluto
 100 Espalda,"MONJE OZAETA, Maialen",2007,CN Menditxo,1:16.86,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,36.60;40.26,,
 100 Espalda,"URIGOITIA SAN ROMAN, Uxue",2006,CN Menditxo,1:14.86,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,36.32;38.54,,
 100 Espalda,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,1:01.57,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,29.69;31.88,,
-100 Espalda,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,1:03.40,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
-100 Espalda,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,1:04.57,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,30.55;34.02,,
+100 Espalda,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,1:03.40,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,,Plata Júnior 1
+100 Espalda,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,1:04.57,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,30.55;34.02,,,Bronce Júnior 1
 100 Libre,"BAZTAN ARANA, Maddi",2008,CN Judizmendi,1:06.92,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,32.56;34.36,,
 100 Libre,"FERNANDEZ NISO, June",2010,CN Judizmendi,1:08.56,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,32.52;36.04,,
 100 Libre,"GUZMAN BREDA, Uxue",2010,CN Judizmendi,1:05.43,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,31.40;34.03,,
@@ -4432,35 +4432,35 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 100 Libre,"ZUGAZAGA GARAGALZA, Urko",2005,CN Judizmendi,53.77,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,26.02;27.75,,
 100 Mariposa,"DIAZ DE CERIO ABASOLO, Laida",2009,CN Judizmendi,1:15.48,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 100 Mariposa,"FERNANDEZ JORGE, Eider",2008,CN Menditxo,1:13.32,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,34.05;39.27,,
-100 Mariposa,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,1:05.04,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,30.89;34.15,,
-100 Mariposa,"RUIZ GARITANO, Izaro",2008,CN Menditxo,1:11.62,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,32.18;39.44,,
+100 Mariposa,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,1:05.04,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,30.89;34.15,,,Bronce Júnior;Plata Júnior 2
+100 Mariposa,"RUIZ GARITANO, Izaro",2008,CN Menditxo,1:11.62,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,32.18;39.44,,,Bronce Júnior 2
 100 Mariposa,"GIL ALLAFLOR, Inigo",2006,CN Judizmendi,58.00,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,26.75;31.25,,
 100 Mariposa,"HERVIAS FERNANDEZ, Saul",1999,CN Menditxo,1:00.80,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,28.47;32.33,,
-100 Mariposa,"MARIMON ANZOLA, Aritz",2005,CN Judizmendi,56.83,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,25.79;31.04,,
+100 Mariposa,"MARIMON ANZOLA, Aritz",2005,CN Judizmendi,56.83,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,25.79;31.04,,,Plata Absoluto
 100 Mariposa,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,1:01.35,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,28.88;32.47,,
 100 Mariposa,"URIARTE ORTIZ DE MENDIVIL, Galder",2010,CN Judizmendi,1:05.58,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,30.16;35.42,,
-1500 Libre,"CASTELLANO LOPEZ, Maialen",2006,CN Menditxo,19:10.21,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,34.52;36.85;37.20;37.26;37.88;37.58;38.02;37.77;38.31;38.35;38.55;37.97;38.67;38.45;38.25;37.66;38.59;38.44;39.08;39.02;39.17;39.08;39.68;38.72;39.41;39.02;39.79;38.78;39.53;38.61,,
-1500 Libre,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,20:00.45,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,36.21;38.76;40.07;39.30;40.56;39.57;40.38;39.48;40.08;39.19;40.91;39.69;40.41;39.80;40.40;40.30;40.36;39.66;40.87;40.47;40.58;40.19;40.74;40.32;41.09;40.88;40.53;40.18;40.32;39.15,,
-1500 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,19:02.77,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,35.51;37.92;38.32;38.27;38.49;38.40;38.59;39.07;38.03;38.63;38.07;38.25;37.73;38.42;38.20;38.53;38.23;38.35;38.88;38.62;38.76;38.29;38.23;38.07;38.27;37.83;38.01;38.12;37.73;34.95,,
-1500 Libre,"RUIZ GARITANO, Izaro",2008,CN Menditxo,19:20.26,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,34.72;37.88;38.41;38.59;38.50;38.58;38.47;38.18;38.62;38.65;39.10;38.70;39.06;38.97;39.04;38.65;38.72;38.75;38.76;38.86;38.69;39.30;39.16;39.52;39.18;39.18;39.58;38.89;38.92;38.63,,
+1500 Libre,"CASTELLANO LOPEZ, Maialen",2006,CN Menditxo,19:10.21,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,34.52;36.85;37.20;37.26;37.88;37.58;38.02;37.77;38.31;38.35;38.55;37.97;38.67;38.45;38.25;37.66;38.59;38.44;39.08;39.02;39.17;39.08;39.68;38.72;39.41;39.02;39.79;38.78;39.53;38.61,,,Bronce Absoluto
+1500 Libre,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,20:00.45,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,36.21;38.76;40.07;39.30;40.56;39.57;40.38;39.48;40.08;39.19;40.91;39.69;40.41;39.80;40.40;40.30;40.36;39.66;40.87;40.47;40.58;40.19;40.74;40.32;41.09;40.88;40.53;40.18;40.32;39.15,,,Bronce Júnior 1
+1500 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,19:02.77,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,35.51;37.92;38.32;38.27;38.49;38.40;38.59;39.07;38.03;38.63;38.07;38.25;37.73;38.42;38.20;38.53;38.23;38.35;38.88;38.62;38.76;38.29;38.23;38.07;38.27;37.83;38.01;38.12;37.73;34.95,,,Plata Absoluto;Oro Júnior;Oro Júnior 1
+1500 Libre,"RUIZ GARITANO, Izaro",2008,CN Menditxo,19:20.26,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,34.72;37.88;38.41;38.59;38.50;38.58;38.47;38.18;38.62;38.65;39.10;38.70;39.06;38.97;39.04;38.65;38.72;38.75;38.76;38.86;38.69;39.30;39.16;39.52;39.18;39.18;39.58;38.89;38.92;38.63,,,Bronce Júnior;Oro Júnior 2
 1500 Libre,"HERNANDEZ CAÑO, Gonzalo",2010,CN Judizmendi,19:07.07,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,34.16;36.32;37.79;37.46;38.56;37.74;38.59;37.82;38.94;38.09;39.32;38.66;39.07;38.65;39.22;38.62;39.48;38.24;38.74;38.68;38.42;38.83;37.75;38.74;39.54;38.90;39.08;37.49;37.21;36.96,,
-1500 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,18:28.74,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,33.16;36.95;36.79;36.87;36.79;37.69;37.01;37.72;37.44;37.94;37.45;38.21;37.06;37.58;37.09;37.70;36.91;37.56;36.59;37.25;36.61;37.01;36.97;37.25;36.95;37.22;36.55;37.19;36.29;34.94,,
+1500 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,18:28.74,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,33.16;36.95;36.79;36.87;36.79;37.69;37.01;37.72;37.44;37.94;37.45;38.21;37.06;37.58;37.09;37.70;36.91;37.56;36.59;37.25;36.61;37.01;36.97;37.25;36.95;37.22;36.55;37.19;36.29;34.94,,,Bronce Júnior;Plata Júnior 1
 200 Braza,"LIZARDUY CASTILLO, Sergio",2006,CN Menditxo,2:39.27,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,36.88;40.07;41.19;41.13,,
 200 Braza,"MZ DE SAN VICENTE LLANA, Markel",2009,CN Judizmendi,2:51.70,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,39.56;43.33;45.28;43.53,,
-200 Braza,"NANCLARES IBARGUTXI, Xabier",2003,CN Judizmendi,2:31.39,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,34.21;37.79;38.94;40.45,,
-200 Espalda,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,2:34.77,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
+200 Braza,"NANCLARES IBARGUTXI, Xabier",2003,CN Judizmendi,2:31.39,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,34.21;37.79;38.94;40.45,,,Plata Absoluto
+200 Espalda,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,2:34.77,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,,Plata Júnior 1
 200 Espalda,"ABAITUA PIPAON, Benat",2008,CN Judizmendi,2:31.45,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,34.20;38.59;39.77;38.89,,
-200 Espalda,"ESPEJO MARTIN, Markel",2009,CN Judizmendi,2:19.18,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,31.99;35.48;36.21;35.50,,
-200 Espalda,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,2:20.46,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,;1:07.67;;1:12.79,,
-200 Espalda,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,2:15.25,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,31.20;35.03;35.20;33.82,,
-200 Espalda,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,2:21.57,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
+200 Espalda,"ESPEJO MARTIN, Markel",2009,CN Judizmendi,2:19.18,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,31.99;35.48;36.21;35.50,,,Bronce Júnior;Bronce Júnior 2
+200 Espalda,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,2:20.46,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,;1:07.67;;1:12.79,,,Oro Júnior 1
+200 Espalda,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,2:15.25,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,31.20;35.03;35.20;33.82,,,Oro Júnior;Oro Júnior 2
+200 Espalda,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,2:21.57,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,,Bronce Júnior 1
 200 Estilos,"ANDRES HERNANDO, Nahia",2010,CN Judizmendi,2:52.93,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,36.81;46.19;51.59;38.34,,
 200 Estilos,"CASTELLANO LOPEZ, Maialen",2006,CN Menditxo,2:34.59,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,31.55;39.87;45.86;37.31,,
-200 Estilos,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,2:26.47,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,30.87;37.26;43.39;34.95,,
+200 Estilos,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,2:26.47,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,30.87;37.26;43.39;34.95,,,Plata Absoluto;Plata Júnior;Plata Júnior 2
 200 Estilos,"RUIZ GARITANO, Izaro",2008,CN Menditxo,2:31.64,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,32.11;39.37;44.94;35.22,,
 200 Estilos,"HERVIAS FERNANDEZ, Saul",1999,CN Menditxo,2:15.37,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,28.52;34.03;41.44;31.38,,
 200 Estilos,"LIZARDUY CASTILLO, Sergio",2006,CN Menditxo,2:14.92,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,28.34;35.60;40.39;30.59,,
-200 Estilos,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,2:24.37,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,29.38;37.15;44.15;33.69,,
+200 Estilos,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,2:24.37,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,29.38;37.15;44.15;33.69,,,Bronce Júnior 2
 200 Libre,"AGUIRREGOMEZCORTA ALIAS, Johana",2007,CN Menditxo,2:20.70,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,32.67;35.29;36.38;36.36,,
 200 Libre,"ANDRES HERNANDO, Nahia",2010,CN Judizmendi,2:33.25,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,35.69;38.46;38.85;40.25,,
 200 Libre,"BAZTAN ARANA, Maddi",2008,CN Judizmendi,2:24.01,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,33.95;36.69;37.31;36.06,,
@@ -4470,31 +4470,31 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 200 Libre,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,2:00.36,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,28.16;30.90;31.30;30.00,,
 200 Libre,"HERNANDEZ CAÑO, Gonzalo",2010,CN Judizmendi,2:15.09,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,30.96;33.70;35.47;34.96,,
 200 Libre,"ZUGAZAGA GARAGALZA, Urko",2005,CN Judizmendi,2:00.14,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,28.03;30.22;31.22;30.67,,
-200 Mariposa,"FERNANDEZ JORGE, Eider",2008,CN Menditxo,2:43.51,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,35.90;40.65;44.18;42.78,,
-200 Mariposa,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,2:28.50,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,33.12;37.65;38.78;38.95,,
-200 Mariposa,"HERVIAS FERNANDEZ, Saul",1999,CN Menditxo,2:15.92,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,30.28;34.79;35.86;34.99,,
-200 Mariposa,"LIZARDUY CASTILLO, Sergio",2006,CN Menditxo,2:19.84,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,31.10;35.64;36.38;36.72,,
-200 Mariposa,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,2:35.85,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.06;37.96;42.82;43.01,,
-200 Mariposa,"URIARTE ORTIZ DE MENDIVIL, Galder",2010,CN Judizmendi,2:33.25,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,33.20;38.52;41.36;40.17,,
-400 Estilos,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,5:11.27,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,32.72;36.84;40.54;40.08;44.36;44.40;36.03;36.30,,
-400 Estilos,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,5:41.55,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,36.66;43.10;45.79;43.67;47.61;49.48;39.06;36.18,,
-400 Estilos,"RUIZ GARITANO, Izaro",2008,CN Menditxo,5:23.64,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,34.64;39.77;42.16;40.36;46.18;46.06;37.59;36.88,,
-400 Estilos,"HERVIAS FERNANDEZ, Saul",1999,CN Menditxo,4:52.02,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,30.80;35.12;38.94;37.30;43.34;41.83;32.98;31.71,,
+200 Mariposa,"FERNANDEZ JORGE, Eider",2008,CN Menditxo,2:43.51,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,35.90;40.65;44.18;42.78,,,Plata Júnior 2
+200 Mariposa,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,2:28.50,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,33.12;37.65;38.78;38.95,,,Oro Absoluto;Oro Júnior;Oro Júnior 2
+200 Mariposa,"HERVIAS FERNANDEZ, Saul",1999,CN Menditxo,2:15.92,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,30.28;34.79;35.86;34.99,,,Oro Absoluto
+200 Mariposa,"LIZARDUY CASTILLO, Sergio",2006,CN Menditxo,2:19.84,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,31.10;35.64;36.38;36.72,,,Plata Absoluto
+200 Mariposa,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,2:35.85,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.06;37.96;42.82;43.01,,,Bronce Júnior 2
+200 Mariposa,"URIARTE ORTIZ DE MENDIVIL, Galder",2010,CN Judizmendi,2:33.25,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,33.20;38.52;41.36;40.17,,,Plata Júnior 1
+400 Estilos,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,5:11.27,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,32.72;36.84;40.54;40.08;44.36;44.40;36.03;36.30,,,Oro Absoluto;Oro Júnior;Oro Júnior 2
+400 Estilos,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,5:41.55,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,36.66;43.10;45.79;43.67;47.61;49.48;39.06;36.18,,,Bronce Júnior;Oro Júnior 1
+400 Estilos,"RUIZ GARITANO, Izaro",2008,CN Menditxo,5:23.64,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,34.64;39.77;42.16;40.36;46.18;46.06;37.59;36.88,,,Bronce Absoluto;Plata Júnior;Plata Júnior 2
+400 Estilos,"HERVIAS FERNANDEZ, Saul",1999,CN Menditxo,4:52.02,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,30.80;35.12;38.94;37.30;43.34;41.83;32.98;31.71,,,Bronce Absoluto
 400 Estilos,"LIZARDUY CASTILLO, Sergio",2006,CN Menditxo,5:01.06,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,31.12;36.22;40.42;38.89;43.56;43.98;33.28;33.59,,
-400 Estilos,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,5:21.08,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.36;38.57;42.12;39.87;46.20;46.76;38.28;36.92,,
+400 Estilos,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,5:21.08,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.36;38.57;42.12;39.87;46.20;46.76;38.28;36.92,,,Bronce Júnior 2
 400 Estilos,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,5:25.12,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,34.27;40.18;44.00;42.11;47.81;48.05;35.31;33.39,,
 400 Libre,"AGUIRREGOMEZCORTA ALIAS, Johana",2007,CN Menditxo,4:58.07,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,34.27;36.57;37.14;38.17;38.16;38.97;38.62;36.17,,
-400 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,4:55.05,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,34.24;36.97;37.15;37.53;37.26;38.13;37.61;36.16,,
+400 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,4:55.05,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,34.24;36.97;37.15;37.53;37.26;38.13;37.61;36.16,,,Bronce Júnior;Plata Júnior 1
 400 Libre,"ESPEJO MARTIN, Markel",2009,CN Judizmendi,4:37.23,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 400 Libre,"FZ RETANA GZ HEREDIA, Oier",2009,CN Judizmendi,4:49.35,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.35;36.10;36.70;37.06;37.31;37.20;36.76;35.87,,
 400 Libre,"HERNANDEZ CAÑO, Gonzalo",2010,CN Judizmendi,4:45.74,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.21;35.42;36.33;36.54;36.76;36.99;36.46;35.03,,
 400 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,4:41.29,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.37;35.55;35.70;35.91;35.74;35.97;35.61;34.44,,
 400 Libre,"ZUGAZAGA GARAGALZA, Urko",2005,CN Judizmendi,4:21.03,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,29.21;32.14;32.50;33.04;33.35;33.98;33.55;33.26,,
-50 Braza,"CAUBILLA MARTIN, Eider",2008,CN Menditxo,35.74,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
+50 Braza,"CAUBILLA MARTIN, Eider",2008,CN Menditxo,35.74,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,,Bronce Júnior;Plata Júnior 2
 50 Braza,"DIAZ DE CERIO ABASOLO, Laida",2009,CN Judizmendi,37.51,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Braza,"ABAITUA PIPAON, Benat",2008,CN Judizmendi,32.09,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
-50 Braza,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,29.30,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
-50 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,30.17,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
+50 Braza,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,29.30,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,,Oro Absoluto
+50 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,30.17,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,,Bronce Absoluto;Oro Júnior;Oro Júnior 2
 50 Braza,"MZ DE SAN VICENTE LLANA, Markel",2009,CN Judizmendi,35.78,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Braza,"RITUERTO PEREZ DEL NOTARIO, Iker",2007,CN Menditxo,31.80,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Espalda,"CASTELLANO LOPEZ, Maialen",2006,CN Menditxo,34.30,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
@@ -4504,27 +4504,27 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 50 Espalda,"GUZMAN BREDA, Uxue",2010,CN Judizmendi,34.23,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Espalda,"LOPEZ DE JUAN ABAD, Carla",2009,CN Menditxo,36.07,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Espalda,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,34.47,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
-50 Espalda,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,30.34,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
+50 Espalda,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,30.34,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,,Oro Absoluto
 50 Espalda,"MONJE OZAETA, Maialen",2007,CN Menditxo,34.57,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Espalda,"URIGOITIA SAN ROMAN, Uxue",2006,CN Menditxo,34.38,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Espalda,"ABAITUA PIPAON, Benat",2008,CN Judizmendi,30.39,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
-50 Espalda,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,27.61,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
+50 Espalda,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,27.61,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,,Plata Absoluto
 50 Espalda,"ESPEJO MARTIN, Markel",2009,CN Judizmendi,29.89,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Espalda,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,27.92,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Espalda,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,28.07,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
-50 Espalda,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,29.25,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
-50 Espalda,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,27.67,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
+50 Espalda,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,29.25,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,,Oro Júnior 1
+50 Espalda,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,27.67,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,,Bronce Absoluto;Oro Júnior;Oro Júnior 2
 50 Espalda,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,29.71,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Libre,"CAUBILLA MARTIN, Eider",2008,CN Menditxo,30.26,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Libre,"GOTXIKOA TORRECILLA, Ainhoa",2005,CN Menditxo,29.19,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Libre,"GUZMAN BREDA, Uxue",2010,CN Judizmendi,30.07,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Libre,"LOPEZ DE JUAN ABAD, Carla",2009,CN Menditxo,30.13,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
-50 Libre,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,26.84,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
+50 Libre,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,26.84,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,,Plata Absoluto
 50 Libre,"ORTEGA ENRIQUE, Nayra",2008,CN Menditxo,28.63,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Libre,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,24.05,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Libre,"BARREDO LANSAC, Mikel",1996,CN Urgain,25.43,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Libre,"CANTERO RISQUE, Danel",2002,CN Menditxo,25.86,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
-50 Libre,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,23.98,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
+50 Libre,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,23.98,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,,Bronce Absoluto
 50 Libre,"GIL ALLAFLOR, Inigo",2006,CN Judizmendi,24.45,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Libre,"GONZALEZ BERNARDO, Aimar",2009,CN Menditxo,28.14,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Libre,"MARIMON ANZOLA, Aritz",2005,CN Judizmendi,25.01,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
@@ -4533,23 +4533,23 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 50 Mariposa,"CIRRE MARTINEZ DE ALBENIZ, Irati",2010,CN Zadorra,35.49,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Mariposa,"DIAZ DE CERIO ABASOLO, Laida",2009,CN Judizmendi,31.12,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
 50 Mariposa,"GUZMAN BREDA, Uxue",2010,CN Judizmendi,33.56,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
-50 Mariposa,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,27.96,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
+50 Mariposa,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,27.96,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,,Plata Absoluto
 50 Mariposa,"ORTEGA ENRIQUE, Nayra",2008,CN Menditxo,32.58,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,,,
-50 Mariposa,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,25.37,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
+50 Mariposa,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,25.37,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,,Oro Absoluto
 50 Mariposa,"BARREDO LANSAC, Mikel",1996,CN Urgain,28.25,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Mariposa,"CANTERO RISQUE, Danel",2002,CN Menditxo,27.88,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Mariposa,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,26.56,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Mariposa,"GARCIA LUKE, Unai",2010,CN Judizmendi,29.82,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
-50 Mariposa,"GIL ALLAFLOR, Inigo",2006,CN Judizmendi,25.58,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
+50 Mariposa,"GIL ALLAFLOR, Inigo",2006,CN Judizmendi,25.58,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,,Plata Absoluto
 50 Mariposa,"GONZALEZ BERNARDO, Aimar",2009,CN Menditxo,30.43,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Mariposa,"MARIMON ANZOLA, Aritz",2005,CN Judizmendi,25.70,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Mariposa,"MENESES ARRIZABALAGA, Xabier",2003,CN Judizmendi,29.26,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Mariposa,"RITUERTO PEREZ DEL NOTARIO, Iker",2007,CN Menditxo,27.25,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
 50 Mariposa,"URIARTE ORTIZ DE MENDIVIL, Galder",2010,CN Judizmendi,28.69,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
-800 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,10:02.70,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,35.87;37.97;38.17;37.99;38.04;37.85;38.58;38.37;38.09;38.13;38.66;37.65;37.53;37.58;37.48;34.74,,
+800 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,10:02.70,2026-02-22,Cto EH Junior-Abs Invierno (50 m),F,35.87;37.97;38.17;37.99;38.04;37.85;38.58;38.37;38.09;38.13;38.66;37.65;37.53;37.58;37.48;34.74,,,Bronce Absoluto;Plata Júnior;Plata Júnior 1
 800 Libre,"FZ RETANA GZ HEREDIA, Oier",2009,CN Judizmendi,10:02.57,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,,,
-800 Libre,"HERNANDEZ CAÑO, Gonzalo",2010,CN Judizmendi,9:52.35,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,33.46;36.55;37.15;37.60;37.76;37.57;37.64;37.54;37.83;37.32;37.02;37.14;37.65;36.92;37.23;35.97,,
-800 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,9:44.14,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.78;35.33;36.68;36.75;36.81;37.09;37.39;37.37;37.45;36.91;36.94;36.83;37.06;36.72;36.62;35.41,,
+800 Libre,"HERNANDEZ CAÑO, Gonzalo",2010,CN Judizmendi,9:52.35,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,33.46;36.55;37.15;37.60;37.76;37.57;37.64;37.54;37.83;37.32;37.02;37.14;37.65;36.92;37.23;35.97,,,Bronce Júnior 1
+800 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,9:44.14,2026-02-22,Cto EH Junior-Abs Invierno (50 m),M,32.78;35.33;36.68;36.75;36.81;37.09;37.39;37.37;37.45;36.91;36.94;36.83;37.06;36.72;36.62;35.41,,,Bronce Júnior;Plata Júnior 1
 100 Braza,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,1:12.65,2026-03-15,Cto España Absoluto-Junior (50 m),F,33.63;39.02,,
 100 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,1:08.21,2026-03-15,Cto España Absoluto-Junior (50 m),M,31.67;36.54,,
 100 Libre,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,58.70,2026-03-15,Cto España Absoluto-Junior (50 m),F,27.72;30.98,,
@@ -4600,25 +4600,25 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 100 Braza,"CAUBILLA MARTIN, Eider",2008,CN Menditxo,1:20.74,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,38.14;42.60,,
 100 Braza,"DIAZ DE CERIO ABASOLO, Laida",2009,CN Judizmendi,1:24.08,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,39.63;44.45,,
 100 Braza,"GOTXIKOA TORRECILLA, Ainhoa",2005,CN Menditxo,1:17.53,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,37.25;40.28,,
-100 Braza,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,1:12.71,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,34.20;38.51,,
-100 Braza,"ORTIZ DE PINEDO ARRIETA, Uxue",2007,CN Judizmendi,1:14.04,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.61;38.43,,
-100 Braza,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,1:05.12,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.90;34.22,,
+100 Braza,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,1:12.71,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,34.20;38.51,,,Oro Absoluto
+100 Braza,"ORTIZ DE PINEDO ARRIETA, Uxue",2007,CN Judizmendi,1:14.04,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.61;38.43,,,Plata Absoluto
+100 Braza,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,1:05.12,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.90;34.22,,,Oro Absoluto
 100 Braza,"GARCIA LUKE, Unai",2010,CN Judizmendi,1:17.63,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,36.81;40.82,,
 100 Braza,"HERNANDEZ CAÑO, Gonzalo",2010,CN Judizmendi,1:16.91,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,35.74;41.17,,
-100 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,1:08.41,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,31.86;36.55,,
+100 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,1:08.41,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,31.86;36.55,,,Bronce Absoluto;Oro Júnior;Oro 17-18 años
 100 Braza,"NANCLARES IBARGUTXI, Xabier",2003,CN Judizmendi,1:11.11,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,32.97;38.14,,
 100 Braza,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,1:12.71,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,34.91;37.80,,
 100 Braza,"RITUERTO PEREZ DEL NOTARIO, Iker",2007,CN Menditxo,1:10.03,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,32.32;37.71,,
-100 Espalda,"AGUIRRE SANCHEZ, Eider",2011,CN Judizmendi,1:08.11,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.76;35.35,,
+100 Espalda,"AGUIRRE SANCHEZ, Eider",2011,CN Judizmendi,1:08.11,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.76;35.35,,,Bronce Absoluto
 100 Espalda,"FERNANDEZ JORGE, Eider",2008,CN Menditxo,1:14.72,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.96;38.76,,
 100 Espalda,"FERNANDEZ NISO, June",2010,CN Judizmendi,1:16.08,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
 100 Espalda,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,1:13.36,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.65;37.71,,
 100 Espalda,"URIGOITIA SAN ROMAN, Uxue",2006,CN Menditxo,1:14.31,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
-100 Espalda,"ESPEJO MARTIN, Markel",2009,CN Judizmendi,1:02.56,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
-100 Espalda,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,1:02.72,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.99;31.73,,
+100 Espalda,"ESPEJO MARTIN, Markel",2009,CN Judizmendi,1:02.56,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,,Bronce Júnior;Bronce 17-18 años
+100 Espalda,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,1:02.72,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.99;31.73,,,Oro 16 años
 100 Espalda,"LIZARDUY CASTILLO, Sergio",2006,CN Menditxo,1:02.58,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.84;31.74,,
 100 Espalda,"ORTEGA ENRIQUE, Yeray",2012,CN Menditxo,1:05.49,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
-100 Espalda,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,1:03.41,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
+100 Espalda,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,1:03.41,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,,Bronce 16 años
 100 Libre,"BAZTAN ARANA, Maddi",2008,CN Judizmendi,1:07.12,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.82;34.30,,
 100 Libre,"CASTELLANO LOPEZ, Maialen",2006,CN Menditxo,1:03.41,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,29.93;33.48,,
 100 Libre,"FERNANDEZ NISO, June",2010,CN Judizmendi,1:08.12,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.73;35.39,,
@@ -4627,69 +4627,69 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 100 Libre,"GUZMAN BREDA, Uxue",2010,CN Judizmendi,1:04.99,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,31.27;33.72,,
 100 Libre,"SANZ URRETAVIZCAYA, Maddi",2010,CN Judizmendi,1:02.71,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,31.04;31.67,,
 100 Libre,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,53.18,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,25.31;27.87,,
-100 Libre,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,52.59,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,25.68;26.91,,
+100 Libre,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,52.59,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,25.68;26.91,,,Bronce Absoluto
 100 Libre,"LOPEZ DE SABANDO GONZALEZ, Uztaritz",2006,CN Menditxo,55.52,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,25.98;29.54,,
 100 Libre,"MARIMON ANZOLA, Aritz",2005,CN Judizmendi,55.48,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,26.36;29.12,,
 100 Libre,"MENESES ARRIZABALAGA, Xabier",2003,CN Judizmendi,58.19,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,28.00;30.19,,
 100 Libre,"URIARTE MARQUEZ, Bruno",2010,CN Menditxo,1:03.12,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,29.95;33.17,,
 100 Libre,"URIARTE ORTIZ DE MENDIVIL, Galder",2010,CN Judizmendi,59.91,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,28.78;31.13,,
 100 Libre,"ZUGAZAGA GARAGALZA, Urko",2005,CN Judizmendi,53.49,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,25.87;27.62,,
-100 Mariposa,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,1:05.44,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,30.41;35.03,,
-100 Mariposa,"RUIZ GARITANO, Izaro",2008,CN Menditxo,1:11.49,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.68;38.81,,
+100 Mariposa,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,1:05.44,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,30.41;35.03,,,Oro Absoluto;Oro Júnior;Oro 17-18 años
+100 Mariposa,"RUIZ GARITANO, Izaro",2008,CN Menditxo,1:11.49,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.68;38.81,,,Bronce 17-18 años
 100 Mariposa,"GIL ALLAFLOR, Inigo",2006,CN Judizmendi,58.41,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,27.26;31.15,,
 100 Mariposa,"LIZARDUY CASTILLO, Sergio",2006,CN Menditxo,57.94,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,27.38;30.56,,
 100 Mariposa,"LOPEZ DE SABANDO GONZALEZ, Uztaritz",2006,CN Menditxo,59.43,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,27.73;31.70,,
 100 Mariposa,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,1:02.24,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,29.25;32.99,,
 100 Mariposa,"URIARTE ORTIZ DE MENDIVIL, Galder",2010,CN Judizmendi,1:04.74,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.71;34.03,,
-1500 Libre,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,19:38.57,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.63;39.31;38.99;39.48;39.74;39.33;39.24;38.94;39.16;38.94;38.87;38.83;38.73;38.82;38.85;38.83;39.47;39.17;39.49;39.37;39.72;40.17;40.51;39.92;39.90;39.98;40.27;39.90;39.68;39.33,,
-1500 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,19:00.15,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.61;37.69;38.12;37.68;38.08;37.92;38.43;37.81;37.76;37.79;38.63;37.43;38.27;37.81;38.60;38.12;38.70;38.19;38.56;38.32;38.88;38.25;38.51;38.36;38.86;38.35;38.73;37.65;38.35;34.69,,
-1500 Libre,"RUIZ GARITANO, Izaro",2008,CN Menditxo,19:47.91,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.51;38.59;38.97;39.05;39.47;39.26;39.40;39.26;39.63;39.42;39.03;39.12;39.46;39.38;40.07;39.67;40.12;39.69;39.78;39.78;40.75;40.07;40.45;40.02;40.55;39.79;40.59;40.25;40.85;39.93,,
+1500 Libre,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,19:38.57,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.63;39.31;38.99;39.48;39.74;39.33;39.24;38.94;39.16;38.94;38.87;38.83;38.73;38.82;38.85;38.83;39.47;39.17;39.49;39.37;39.72;40.17;40.51;39.92;39.90;39.98;40.27;39.90;39.68;39.33,,,Bronce Júnior;Bronce 16 años
+1500 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,19:00.15,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.61;37.69;38.12;37.68;38.08;37.92;38.43;37.81;37.76;37.79;38.63;37.43;38.27;37.81;38.60;38.12;38.70;38.19;38.56;38.32;38.88;38.25;38.51;38.36;38.86;38.35;38.73;37.65;38.35;34.69,,,Plata Absoluto;Oro Júnior;Oro 16 años
+1500 Libre,"RUIZ GARITANO, Izaro",2008,CN Menditxo,19:47.91,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.51;38.59;38.97;39.05;39.47;39.26;39.40;39.26;39.63;39.42;39.03;39.12;39.46;39.38;40.07;39.67;40.12;39.69;39.78;39.78;40.75;40.07;40.45;40.02;40.55;39.79;40.59;40.25;40.85;39.93,,,Oro 17-18 años
 1500 Libre,"HERNANDEZ CAÑO, Gonzalo",2010,CN Judizmendi,19:11.67,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,33.97;36.39;36.87;37.46;37.84;38.07;38.61;38.55;38.50;38.47;38.96;38.75;38.61;38.82;39.26;38.34;39.22;39.10;39.23;39.60;38.96;38.85;39.25;39.23;39.02;39.07;39.14;38.72;37.47;37.34,,
-1500 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,18:00.27,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,31.96;35.10;36.23;36.14;36.59;36.81;36.77;36.01;36.71;35.93;35.46;35.89;36.12;36.03;36.59;36.38;36.71;36.01;36.59;36.17;35.97;36.23;36.53;36.16;36.49;36.07;36.61;35.90;36.05;34.06,,
-200 Braza,"ORTIZ DE PINEDO ARRIETA, Uxue",2007,CN Judizmendi,2:40.83,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,36.68;40.50;41.61;42.04,,
-200 Braza,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,2:28.11,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,33.66;38.30;39.37;36.78,,
+1500 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,18:00.27,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,31.96;35.10;36.23;36.14;36.59;36.81;36.77;36.01;36.71;35.93;35.46;35.89;36.12;36.03;36.59;36.38;36.71;36.01;36.59;36.17;35.97;36.23;36.53;36.16;36.49;36.07;36.61;35.90;36.05;34.06,,,Bronce Absoluto;Oro Júnior;Oro 16 años
+200 Braza,"ORTIZ DE PINEDO ARRIETA, Uxue",2007,CN Judizmendi,2:40.83,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,36.68;40.50;41.61;42.04,,,Oro Absoluto
+200 Braza,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,2:28.11,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,33.66;38.30;39.37;36.78,,,Oro Absoluto
 200 Braza,"GARCIA LUKE, Unai",2010,CN Judizmendi,2:52.85,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,37.89;43.16;45.84;45.96,,
-200 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,2:29.15,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,32.77;37.17;39.12;40.09,,
+200 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,2:29.15,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,32.77;37.17;39.12;40.09,,,Plata Absoluto;Oro Júnior;Oro 17-18 años
 200 Braza,"NANCLARES IBARGUTXI, Xabier",2003,CN Judizmendi,2:33.95,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,33.91;38.67;39.95;41.42,,
 200 Espalda,"ABAITUA PIPAON, Malen",2011,CN Judizmendi,2:36.30,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,;1:17.05;;1:19.25,,
-200 Espalda,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,2:34.84,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,37.37;39.59;39.93;37.95,,
+200 Espalda,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,2:34.84,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,37.37;39.59;39.93;37.95,,,Oro 16 años
 200 Espalda,"RUIZ GARITANO, Izaro",2008,CN Menditxo,2:37.91,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,37.31;39.42;40.75;40.43,,
 200 Espalda,"ESPEJO MARTIN, Markel",2009,CN Judizmendi,2:19.03,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,;1:05.94;;1:13.09,,
-200 Espalda,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,2:18.06,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,;1:08.92;;1:09.14,,
-200 Espalda,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,2:18.86,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,;1:06.14;;1:12.72,,
+200 Espalda,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,2:18.06,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,;1:08.92;;1:09.14,,,Oro 16 años
+200 Espalda,"PUERTAS RIVAS, Urtzi",2010,CN Judizmendi,2:18.86,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,;1:06.14;;1:12.72,,,Plata 16 años
 200 Estilos,"ABAITUA PIPAON, Malen",2011,CN Judizmendi,2:39.48,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.08;40.41;47.27;36.72,,
 200 Estilos,"CASTELLANO LOPEZ, Maialen",2006,CN Menditxo,2:33.53,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,31.18;40.71;45.78;35.86,,
 200 Estilos,"GARAY SAENZ, Ixone",2011,CN Judizmendi,2:42.81,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.43;40.56;50.03;36.79,,
-200 Estilos,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,2:25.18,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,31.02;36.81;43.24;34.11,,
-200 Estilos,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,2:25.68,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,30.14;39.29;41.86;34.39,,
+200 Estilos,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,2:25.18,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,31.02;36.81;43.24;34.11,,,Plata Absoluto;Plata Júnior;Plata 17-18 años
+200 Estilos,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,2:25.68,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,30.14;39.29;41.86;34.39,,,Bronce Absoluto
 200 Estilos,"RUIZ GARITANO, Izaro",2008,CN Menditxo,2:36.48,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.55;40.17;46.53;37.23,,
 200 Estilos,"SANZ URRETAVIZCAYA, Maddi",2010,CN Judizmendi,2:45.17,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,33.76;44.44;49.01;37.96,,
-200 Estilos,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,2:14.94,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,28.04;36.32;37.97;32.61,,
-200 Estilos,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,2:22.50,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.08;35.45;43.96;33.01,,
+200 Estilos,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,2:14.94,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,28.04;36.32;37.97;32.61,,,Bronce Absoluto;Oro Júnior;Oro 17-18 años
+200 Estilos,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,2:22.50,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.08;35.45;43.96;33.01,,,Plata 17-18 años
 200 Libre,"ANDRES HERNANDO, Nahia",2010,CN Judizmendi,2:29.99,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.41;38.39;38.34;37.85,,
 200 Libre,"BAZTAN ARANA, Maddi",2008,CN Judizmendi,2:25.80,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,33.76;37.51;37.77;36.76,,
 200 Libre,"ZUGAZAGA GARAGALZA, Urko",2005,CN Judizmendi,1:59.66,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,27.33;29.54;31.22;31.57,,
-200 Mariposa,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,2:22.95,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.54;36.40;37.48;36.53,,
-200 Mariposa,"LOPEZ DE SABANDO GONZALEZ, Uztaritz",2006,CN Menditxo,2:19.11,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.60;34.90;35.86;37.75,,
+200 Mariposa,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,2:22.95,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.54;36.40;37.48;36.53,,,Oro Absoluto;Oro Júnior;Oro 17-18 años
+200 Mariposa,"LOPEZ DE SABANDO GONZALEZ, Uztaritz",2006,CN Menditxo,2:19.11,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.60;34.90;35.86;37.75,,,Bronce Absoluto
 200 Mariposa,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,2:31.81,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,32.81;37.96;40.69;40.35,,
-200 Mariposa,"URIARTE ORTIZ DE MENDIVIL, Galder",2010,CN Judizmendi,2:29.34,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,32.72;37.27;39.72;39.63,,
-400 Estilos,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,5:12.92,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.56;35.87;40.76;40.00;44.83;45.40;36.46;37.04,,
-400 Estilos,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,5:43.40,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.89;41.76;47.22;43.81;49.13;49.97;39.30;36.32,,
-400 Estilos,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,5:14.69,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,31.54;37.90;39.52;39.18;45.68;46.56;38.93;35.38,,
-400 Estilos,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,5:23.52,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,33.39;40.27;42.94;42.00;47.73;48.16;35.26;33.77,,
+200 Mariposa,"URIARTE ORTIZ DE MENDIVIL, Galder",2010,CN Judizmendi,2:29.34,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,32.72;37.27;39.72;39.63,,,Bronce 16 años
+400 Estilos,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,5:12.92,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,32.56;35.87;40.76;40.00;44.83;45.40;36.46;37.04,,,Oro Absoluto;Oro Júnior;Oro 17-18 años
+400 Estilos,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,5:43.40,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,35.89;41.76;47.22;43.81;49.13;49.97;39.30;36.32,,,Bronce Absoluto;Bronce Júnior;Plata 16 años
+400 Estilos,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,5:14.69,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,31.54;37.90;39.52;39.18;45.68;46.56;38.93;35.38,,,Bronce Júnior;Plata 17-18 años
+400 Estilos,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,5:23.52,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,33.39;40.27;42.94;42.00;47.73;48.16;35.26;33.77,,,Bronce 16 años
 400 Libre,"AGUIRREGOMEZCORTA ALIAS, Johana",2007,CN Menditxo,4:58.67,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,33.63;36.02;36.63;38.01;38.83;39.06;38.46;38.03,,
-400 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,4:55.31,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,34.27;37.05;37.77;38.24;38.08;37.57;37.34;34.99,,
+400 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,4:55.31,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,34.27;37.05;37.77;38.24;38.08;37.57;37.34;34.99,,,Bronce Júnior;Oro 16 años
 400 Libre,"FZ RETANA GZ HEREDIA, Oier",2009,CN Judizmendi,4:46.27,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,31.71;34.91;35.65;36.65;36.36;37.16;37.31;36.52,,
-400 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,4:34.96,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.61;33.99;34.71;35.42;35.26;35.62;34.97;34.38,,
-50 Braza,"CAUBILLA MARTIN, Eider",2008,CN Menditxo,34.94,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
+400 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,4:34.96,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,30.61;33.99;34.71;35.42;35.26;35.62;34.97;34.38,,,Bronce 16 años
+50 Braza,"CAUBILLA MARTIN, Eider",2008,CN Menditxo,34.94,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,,Bronce Absoluto;Oro Júnior;Oro 17-18 años
 50 Braza,"DIAZ DE CERIO ABASOLO, Laida",2009,CN Judizmendi,36.56,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
-50 Braza,"GOTXIKOA TORRECILLA, Ainhoa",2005,CN Menditxo,34.46,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
-50 Braza,"ORTIZ DE PINEDO ARRIETA, Uxue",2007,CN Judizmendi,34.35,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
+50 Braza,"GOTXIKOA TORRECILLA, Ainhoa",2005,CN Menditxo,34.46,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,,Plata Absoluto
+50 Braza,"ORTIZ DE PINEDO ARRIETA, Uxue",2007,CN Judizmendi,34.35,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,,Oro Absoluto
 50 Braza,"ABAITUA PIPAON, Benat",2008,CN Judizmendi,32.06,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
-50 Braza,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,29.15,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
+50 Braza,"ESPEJO MARTIN, Pablo",2005,CN Judizmendi,29.15,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,,Oro Absoluto
 50 Braza,"GARCIA LUKE, Unai",2010,CN Judizmendi,35.44,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Braza,"HERNANDEZ CAÑO, Gonzalo",2010,CN Judizmendi,34.84,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
-50 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,30.58,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
+50 Braza,"LOPEZ DE OCARIZ DE ALAVA, Sergio",2009,CN Judizmendi,30.58,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,,Bronce Absoluto;Oro Júnior;Oro 17-18 años
 50 Braza,"OIARTZABAL GOIA, Beñat",1998,CN Urgain,31.58,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Braza,"RITUERTO PEREZ DEL NOTARIO, Iker",2007,CN Menditxo,31.37,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Espalda,"ABAITUA PIPAON, Malen",2011,CN Judizmendi,34.21,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
@@ -4701,11 +4701,11 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 50 Espalda,"GUZMAN BREDA, Uxue",2010,CN Judizmendi,33.93,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
 50 Espalda,"LOPEZ DE JUAN ABAD, Carla",2009,CN Menditxo,34.74,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
 50 Espalda,"LZ LUZURIAGA FZ RETANA, Maddi",2010,CN Judizmendi,34.67,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
-50 Espalda,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,30.30,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
-50 Espalda,"SANZ URRETAVIZCAYA, Maddi",2010,CN Judizmendi,32.01,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
+50 Espalda,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,30.30,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,,Plata Absoluto
+50 Espalda,"SANZ URRETAVIZCAYA, Maddi",2010,CN Judizmendi,32.01,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,,Bronce Júnior;Oro 16 años
 50 Espalda,"URIGOITIA SAN ROMAN, Uxue",2006,CN Menditxo,34.11,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
 50 Espalda,"ABAITUA PIPAON, Benat",2008,CN Judizmendi,30.31,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
-50 Espalda,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,27.29,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
+50 Espalda,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,27.29,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,,Plata Absoluto
 50 Espalda,"ESPEJO MARTIN, Markel",2009,CN Judizmendi,29.06,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Espalda,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,27.61,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Espalda,"ORTEGA ENRIQUE, Yeray",2012,CN Menditxo,30.19,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
@@ -4714,10 +4714,10 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 50 Libre,"GUZMAN BREDA, Uxue",2010,CN Judizmendi,30.14,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
 50 Libre,"LOPEZ DE JUAN ABAD, Carla",2009,CN Menditxo,30.07,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
 50 Libre,"SANZ URRETAVIZCAYA, Maddi",2010,CN Judizmendi,28.54,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
-50 Libre,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,23.91,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
+50 Libre,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,23.91,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,,Bronce Absoluto
 50 Libre,"ESPEJO MARTIN, Markel",2009,CN Judizmendi,26.23,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
-50 Libre,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,23.73,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
-50 Libre,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,25.49,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
+50 Libre,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,23.73,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,,Plata Absoluto
+50 Libre,"GARCIA DE LOMANA VESGA, Nacho",2010,CN Menditxo,25.49,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,,Bronce 16 años
 50 Libre,"GIL ALLAFLOR, Inigo",2006,CN Judizmendi,24.97,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Libre,"LIZARDUY CASTILLO, Sergio",2006,CN Menditxo,24.10,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Libre,"MARIMON ANZOLA, Aritz",2005,CN Judizmendi,24.99,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
@@ -4731,7 +4731,7 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 50 Mariposa,"FERNANDEZ NISO, June",2010,CN Judizmendi,34.41,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
 50 Mariposa,"GUZMAN BREDA, Uxue",2010,CN Judizmendi,33.26,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
 50 Mariposa,"LOPEZ DE JUAN ABAD, Carla",2009,CN Menditxo,33.32,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
-50 Mariposa,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,27.70,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
+50 Mariposa,"MONDEJAR MOYA, Ekine",2007,CN Menditxo,27.70,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,,Oro Absoluto
 50 Mariposa,"URIGOITIA SAN ROMAN, Uxue",2006,CN Menditxo,32.62,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,,,
 50 Mariposa,"ABAITUA PIPAON, Benat",2008,CN Judizmendi,28.53,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Mariposa,"AGIRREBALTZATEGI DURANA, Beñat",2002,CN Judizmendi,25.44,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
@@ -4740,17 +4740,17 @@ Prueba,Nadadora,Año,Club,Tiempo,Fecha,Competicion,Sexo,Parciales,Estado,Motivo,
 50 Mariposa,"FERNANDEZ HUARTE, Asier",2007,CN Menditxo,26.59,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Mariposa,"GARCIA LUKE, Unai",2010,CN Judizmendi,30.23,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Mariposa,"GIL ALLAFLOR, Inigo",2006,CN Judizmendi,25.56,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
-50 Mariposa,"LIZARDUY CASTILLO, Sergio",2006,CN Menditxo,25.31,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
+50 Mariposa,"LIZARDUY CASTILLO, Sergio",2006,CN Menditxo,25.31,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,,Bronce Absoluto
 50 Mariposa,"MARIMON ANZOLA, Aritz",2005,CN Judizmendi,25.53,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Mariposa,"MENESES ARRIZABALAGA, Xabier",2003,CN Judizmendi,29.02,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Mariposa,"OIARTZABAL GOIA, Beñat",1998,CN Urgain,27.33,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Mariposa,"SAINZ MONGE, Iker",2009,CN Menditxo,29.55,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Mariposa,"URIARTE MARQUEZ, Bruno",2010,CN Menditxo,31.70,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
 50 Mariposa,"URIARTE ORTIZ DE MENDIVIL, Galder",2010,CN Judizmendi,28.44,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,,,
-800 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,10:03.51,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,34.59;38.04;38.14;38.78;38.54;38.11;38.68;37.71;38.38;38.41;37.77;37.59;37.62;37.76;38.50;34.89,,
+800 Libre,"RODRIGUEZ DE YURRE BUESA, Amaia",2010,CN Judizmendi,10:03.51,2026-07-05,Cto EH Junior-Abs Verano (50 m),F,34.59;38.04;38.14;38.78;38.54;38.11;38.68;37.71;38.38;38.41;37.77;37.59;37.62;37.76;38.50;34.89,,,Plata Absoluto;Oro Júnior;Oro 16 años
 800 Libre,"FZ RETANA GZ HEREDIA, Oier",2009,CN Judizmendi,10:15.66,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,33.45;37.39;37.77;38.19;38.12;39.03;38.44;38.89;38.93;39.80;39.05;39.10;39.59;39.94;39.28;38.69,,
 800 Libre,"HERNANDEZ CAÑO, Gonzalo",2010,CN Judizmendi,10:06.87,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,32.25;35.59;35.98;36.75;36.87;36.97;38.01;38.45;39.20;39.02;39.92;40.39;39.93;40.11;40.05;37.38,,
-800 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,9:33.67,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,31.84;35.26;35.89;35.68;35.96;37.06;36.38;36.98;36.49;36.95;37.36;36.64;36.64;35.40;35.61;33.53,,
+800 Libre,"RODRIGUEZ LÓPEZ DE VICUÑA, Jokin",2010,CN Judizmendi,9:33.67,2026-07-05,Cto EH Junior-Abs Verano (50 m),M,31.84;35.26;35.89;35.68;35.96;37.06;36.38;36.98;36.49;36.95;37.36;36.64;36.64;35.40;35.61;33.53,,,Plata 16 años
 200 Mariposa,"PEÑA BARCENA, Alvaro",2009,CN Menditxo,2:32.56,2026-02-01,Cto Álava Invierno Open,M,32.59;38.22;42.53;39.22,,
 200 Mariposa,"VALDERRAMA MARTIN, Oscar",2000,CN Judizmendi,3:44.24,2026-02-01,Cto Álava Invierno Open,M,47.47;1:00.07;1:01.85;54.85,,
 200 Mariposa,"LIZARDUY CASTILLO, Iris",2008,CN Menditxo,2:22.92,2026-02-01,Cto Álava Invierno Open,F,32.50;35.61;37.16;37.65,,
