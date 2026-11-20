@@ -462,6 +462,14 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .insComp b{font-family:'Space Grotesk',sans-serif;font-weight:700}
 .insRows{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px 10px;margin-top:6px;font-size:13px}
 .insRows .calChip{justify-self:start}
+.insTg{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.insT .pchev{display:inline-block;margin-left:6px;font-size:12px;color:var(--muted);transition:transform .2s}
+.insT.open .pchev{transform:rotate(180deg)}
+.insHeat{grid-column:1/-1;display:none;margin:2px 0 4px;padding:6px 10px;background:#fff;border:1px solid var(--line);border-radius:10px}
+.insHeat.open{display:block}
+.insNad.yo{font-weight:700;color:var(--brand-deep)}
+.insNad.otra{color:var(--muted)}
+.insAn{font-size:11px;color:var(--muted);font-weight:400}
 .insSC{color:var(--ink)}
 .insT{font-weight:700;color:var(--brand-deep);font-variant-numeric:tabular-nums;white-space:nowrap}
 .pHead{display:flex;align-items:center;gap:11px;padding-right:80px}
@@ -3410,7 +3418,7 @@ function parseIns(t){const L=String(t||"").replace(/\r/g,"").split("\n").filter(
   const H=splitLine(L[0]).map(h=>h.trim());if(["Serie","Calle","Hora","Nadadora","Prueba","Fecha"].some(c=>H.indexOf(c)<0))return[];
   const out=[];for(let i=1;i<L.length;i++){const c=splitLine(L[i]);const o={};H.forEach((h,k)=>o[h]=(c[k]??"").trim());
     if(!o.Nadadora||!o.Prueba||!o.Fecha)continue;
-    out.push({competi:o.Competicion||"",fecha:o.Fecha,prueba:o.Prueba,nadadora:o.Nadadora,anio:o["Año"]||"",club:o.Club||"",
+    out.push({competi:o.Competicion||"",fecha:o.Fecha,num:o.NumPrueba||o.Prueba,prueba:o.Prueba,nadadora:o.Nadadora,anio:o["Año"]||"",club:o.Club||"",
       sexo:String(o.Sexo).trim().toUpperCase()==="M"?"M":"F",serie:+o.Serie||0,series:+o.Series||0,calle:+o.Calle||0,hora:o.Hora||""});}
   return out;}
 function insDe(e){return INSCRITOS.filter(r=>r.fecha===e.f&&calNorm(r.competi)===calNorm(e.n));}
@@ -3418,24 +3426,32 @@ function insDe(e){return INSCRITOS.filter(r=>r.fecha===e.f&&calNorm(r.competi)==
    temporada que se ve y nunca en Histórico. */
 function insVivas(){if(isHist())return [];const hoy=hoyISO();
   return (CALENDARIO[season]||[]).filter(e=>hoy<=e.f&&!calDisputada(e)&&insDe(e).length).sort((a,b)=>a.f.localeCompare(b.f));}
+let INS_OPEN=new Set();
 function insChip(p){return `<span class="chip calChip ${stKlass(p)}${esNoof(p)?" noof":""}">${esc(p)}</span>`;}
 /* Tarjeta de la próxima: quién de Álava nada cada prueba, por series y calles. Mismo ámbito que el
    resto de la app: el sexo elegido y el GRUPO de categoría (catFilter), por año de nacimiento. */
 function insBloque(e,sx){
   /* Pasada la fecha (queda en «Disputadas» como «sin resultados») ya no se enseña: igual que en la ficha. */
   if(hoyISO()>e.f)return "";
-  const L=insDe(e).filter(r=>r.sexo===sx&&grupoDe(r.anio,e.f)===catFilter);
-  if(!L.length)return "";
+  /* LAS SERIES VAN COMPLETAS (Fran, 20-nov-2026): en las no convencionales la federación junta en una
+     misma serie de 2011 a 2016. Se enseña cada serie en la que nada ALGUIEN de la categoría elegida,
+     con TODAS sus calles; las series y pruebas de solo benjamines (sin categoría en la app) no salen. */
+  const A=insDe(e).filter(r=>r.sexo===sx);
+  const enCat=r=>grupoDe(r.anio,e.f)===catFilter;
+  const L=A.filter(enCat);if(!L.length)return "";
   const np=new Set(L.map(r=>r.nadadora)).size;
   const quien=sx==="M"?(np===1?"nadador":"nadadores"):(np===1?"nadadora":"nadadoras");
-  let h=`<div class="sumline insLine"><span class="lbl">Inscritos de Álava · ${np} ${quien}</span>`;
-  [...new Set(L.map(r=>r.prueba))].forEach(p=>{const P=L.filter(r=>r.prueba===p);
-    h+=`<div class="insPr">${insChip(p)}</div>`;
-    [...new Set(P.map(r=>r.serie))].sort((a,b)=>a-b).forEach(s=>{
-      const S=P.filter(r=>r.serie===s).sort((a,b)=>a.calle-b.calle);
+  let h=`<div class="sumline insLine"><span class="lbl">Lista de salida · ${np} ${quien} ${esc(((np===1?{alevin:"alevín",infantil:"infantil",junior:"júnior",absoluta:"de absoluta"}:{alevin:"alevines",infantil:"infantiles",junior:"júnior",absoluta:"de absoluta"})[catFilter])||"")}</span>`;
+  /* Por NÚMERO de prueba, no por nombre: un mismo día puede haber dos «25 Braza» (benjamín y 11-16). */
+  [...new Set(L.map(r=>r.num))].forEach(n=>{
+    const ser=[...new Set(L.filter(r=>r.num===n).map(r=>r.serie))].sort((a,b)=>a-b);
+    h+=`<div class="insPr">${insChip(L.find(r=>r.num===n).prueba)}</div>`;
+    ser.forEach(s=>{const S=A.filter(r=>r.num===n&&r.serie===s).sort((a,b)=>a.calle-b.calle);
       h+=`<div class="insSer">Serie ${s}${S[0].series?" de "+S[0].series:""}${S[0].hora?` · <span class="insH">~${esc(S[0].hora)}</span>`:""}</div>`
-        +S.map(r=>`<div class="insNad"><span class="insCa">Calle ${r.calle}</span><span>${esc(shortName(r.nadadora))}</span><span class="insClub">${esc(String(r.club).replace(/^C[NI] /,""))}</span></div>`).join("");});});
-  return h+`<div class="insNota">~ = hora estimada de la serie. Es orientativa: conviene estar con margen.</div></div>`;}
+        +S.map(r=>insNad(r,!enCat(r))).join("");});});
+  return h+`<div class="insNota">Series completas: si en una serie nadan también de otras edades, salen en gris. ~ = hora estimada de la serie; es orientativa, conviene estar con margen.</div></div>`;}
+/* Un renglón de serie: calle, nombre, año y club. `otra` = de otra edad (gris); `yo` = la de la ficha. */
+function insNad(r,otra,yo){return `<div class="insNad${otra?" otra":""}${yo?" yo":""}"><span class="insCa">Calle ${r.calle}</span><span class="insNm">${esc(shortName(r.nadadora))} <span class="insAn">${esc(String(r.anio).slice(-2))}</span></span><span class="insClub">${esc(String(r.club).replace(/^C[NI] /,""))}</span></div>`;}
 /* Ficha: arriba de las pestañas, solo si esa persona está en la lista de una próxima. */
 function insFicha(name){const hoy=hoyISO();let h="";
   insVivas().forEach(e=>{const L=insDe(e).filter(r=>r.nadadora===name);if(!L.length)return;
@@ -3443,11 +3459,17 @@ function insFicha(name){const hoy=hoyISO();let h="";
       +`<div class="insComp"><b>${esc(e.n)}</b> · ${esc(calCap(calDia(e.f)))}</div>`
       /* Las tres piezas de cada prueba son hijas DIRECTAS de una sola rejilla: así la serie y la
          hora quedan en columna aunque las pastillas midan distinto (como .pmin en Mínimas). */
-      +`<div class="insRows">`+L.map(r=>`${insChip(r.prueba)}<span class="insSC">Serie ${r.serie}${r.series?" de "+r.series:""} · Calle ${r.calle}</span><span class="insT">${r.hora?"~"+esc(r.hora):""}</span>`).join("")
+      /* Cada prueba se DESPLIEGA (Fran, 20-nov-2026) con su serie entera, todas las calles y edades.
+         Las tres celdas llevan .insTg y la misma data-ik; el panel va a lo ancho de la rejilla. El
+         estado vive en INS_OPEN para que un repintado no lo cierre. */
+      +`<div class="insRows">`+L.map(r=>{const k=e.id+"|"+r.num+"|"+r.serie,o=INS_OPEN.has(k)?" open":"",ka=esc(k);
+        const S=insDe(e).filter(x=>x.num===r.num&&x.serie===r.serie).sort((a,b)=>a.calle-b.calle);
+        return `<span class="insTg${o}" data-ik="${ka}">${insChip(r.prueba)}</span><span class="insSC insTg${o}" data-ik="${ka}">Serie ${r.serie}${r.series?" de "+r.series:""} · Calle ${r.calle}</span><span class="insT insTg${o}" data-ik="${ka}">${r.hora?"~"+esc(r.hora):""}<span class="pchev">▾</span></span>`
+          +`<div class="insHeat${o}" data-ik="${ka}">`+S.map(x=>insNad(x,false,x.nadadora===name)).join("")+`</div>`;}).join("")
       +`</div></div>`;});
   return h;}
 function insLeg(nb){const el1=nb==="nadador"?"el más lento":"la más lenta";
-  return `<div class="lgH">Inscritos, serie y calle</div><div>Cuando la federación publica la lista de salida, la tarjeta de la próxima competición enseña quién de Álava nada cada prueba, con su <b>serie</b> y su <b>calle</b>, y la ficha de cada ${nb} lo repite arriba. Desaparece sola en cuanto se cargan los resultados.</div>`
+  return `<div class="lgH">Inscritos, serie y calle</div><div>Cuando la federación publica la lista de salida, la tarjeta de la próxima competición enseña las series en las que nada alguien de la categoría, <b>completas</b>: cada calle con su nombre, año y club. Si en la serie nadan también de otras edades (en las no convencionales se juntan), salen en gris; las series solo de benjamines no salen. La ficha de cada ${nb} lo repite arriba con su <b>serie</b> y su <b>calle</b>, y al tocar una prueba se despliega su serie entera. Desaparece sola en cuanto se cargan los resultados.</div>`
    +`<div class="lgH">La hora (~)</div><div>Es una <b>estimación</b> de cuándo sale su serie: desde la hora de inicio se suma, serie a serie, lo que tardaría ${el1} de cada una más 40 segundos de cambio. Va redondeada a 5 minutos hacia antes. Al principio de la sesión acierta casi al minuto; al final puede desviarse varios minutos. Conviene estar con margen.</div>`;}
 function calLeg(){const ch=sexFilter==="M"?"chicos":"chicas";
   return `<div class="lgH">Próximas competiciones</div><div>Debajo de las disputadas, en «Próximas», las competiciones del calendario de esta categoría que aún no tienen resultados en la app, de la más cercana a la más lejana. Al tocar una se ve su programa: fecha, lugar, horario y pruebas individuales de ${ch} (los relevos no se listan).</div>`
@@ -5036,6 +5058,8 @@ el("summary").addEventListener("click",e=>{
   const t=e.target&&e.target.closest?e.target.closest:null;if(!t)return;
   const bb=e.target.closest(".badgeBtn");if(bb){badgesFor=bb.dataset.n;cmpA=null;cmpB=null;compsFor=null;compFecha=null;render();scrollSec();return;}
   const cb=e.target.closest(".cmpBtn");if(cb){cmpA=cb.dataset.n;cmpB=null;badgesFor=null;compsFor=null;compFecha=null;render();scrollSec();return;}
+  const itg=e.target.closest(".insTg");if(itg){const k=itg.dataset.ik;const on=!INS_OPEN.has(k);on?INS_OPEN.add(k):INS_OPEN.delete(k);
+    el("summary").querySelectorAll(".insTg,.insHeat").forEach(x=>{if(x.dataset.ik===k)x.classList.toggle("open",on);});return;}
   const cpb=e.target.closest(".compBtn");if(cpb){compsFor=cpb.dataset.n;compFecha=null;badgesFor=null;cmpA=null;cmpB=null;render();scrollSec();return;}
   const cl=e.target.closest("#sumClose");
   /* (§4.74) Cierra la competición y DEJA LA LISTA ABIERTA; la banda, después, lo cierra todo. */
