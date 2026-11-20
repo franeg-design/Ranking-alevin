@@ -447,6 +447,23 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .chip.calChip i{font-style:normal;font-weight:700;font-size:9px;letter-spacing:.02em;opacity:.85;margin-left:5px}
 .calNone{color:var(--muted)}
 .calSrc{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.4}
+/* Inscritos de la próxima (20-nov-2026, §4.82): en la tarjeta de la próxima y en la ficha */
+.insPr{margin-top:9px}.insPr:first-of-type{margin-top:5px}
+.insSer{font-size:11px;font-weight:600;color:var(--muted);margin:6px 0 1px}
+.insSer .insH{color:var(--brand-deep);font-weight:700}
+.insNad{display:flex;gap:8px;align-items:baseline;font-size:13px;line-height:1.5}
+.insCa{flex:0 0 50px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.insClub{margin-left:auto;font-size:11px;color:var(--muted);white-space:nowrap}
+.insNota{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.4}
+.insCard{background:#fbfdfe;border:1px dashed #a9c9d4;border-radius:16px;padding:11px 13px;margin:-4px 0 16px}
+.insHead{display:flex;align-items:center;gap:8px;font-size:9px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+.insHead .calCnt{text-transform:none;letter-spacing:0}
+.insComp{font-size:13px;color:var(--ink);margin:4px 0 2px;line-height:1.4}
+.insComp b{font-family:'Space Grotesk',sans-serif;font-weight:700}
+.insRows{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px 10px;margin-top:6px;font-size:13px}
+.insRows .calChip{justify-self:start}
+.insSC{color:var(--ink)}
+.insT{font-weight:700;color:var(--brand-deep);font-variant-numeric:tabular-nums;white-space:nowrap}
 .pHead{display:flex;align-items:center;gap:11px;padding-right:80px}
 .clubLogo{width:46px;height:46px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(11,42,58,.35))}
 .clubLogo.sm{width:34px;height:34px;margin-bottom:4px}
@@ -3298,7 +3315,7 @@ function renderFichSummary(box){
      (todo eso sale de ALLRECS): sin esos botones, que abrirían pantallas vacías. */
   const pills=soloNoof(name)?`<div class="fPills"><span class="soloNoofNote">Solo marcas en pruebas no oficiales</span></div>`
     :`<div class="fPills"><button class="cmpBtn" data-n="${esc(name)}">Comparar</button><button class="badgeBtn" data-n="${esc(name)}">🏅 Insignias</button><button class="compBtn" data-n="${esc(name)}">Competiciones</button></div>`;
-  box.innerHTML=`<div class="profile fTitleCard"><div class="pTop fTop"><div class="pHead fHead">${logoImg(rec0.club)}<div class="fNameWrap"><div class="pName fName">${esc(name)}</div><div class="pClub">${esc(rec0.club||"")} · ${esc(rec0.anio||"")}</div></div></div>${pills}</div></div>`;
+  box.innerHTML=`<div class="profile fTitleCard"><div class="pTop fTop"><div class="pHead fHead">${logoImg(rec0.club)}<div class="fNameWrap"><div class="pName fName">${esc(name)}</div><div class="pClub">${esc(rec0.club||"")} · ${esc(rec0.anio||"")}</div></div></div>${pills}</div></div>`+insFicha(name);
 }
 /* ===== PRÓXIMAS COMPETICIONES EN LA BANDA (2-nov-2026, DIARIO §4.72) ==========================
    ⚠️ «Hoy» sale de hoyISO() y de NADIE MÁS: el arnés fija window.__HOY para que el volcado no
@@ -3370,16 +3387,73 @@ function calCard(e){
   if(e.reg==="fan")nor.push("Máximo 3 pruebas; 2 si una es 400 libre, 800 libre, 1500 libre o 400 estilos.","800 y 1500 libre: tres series como máximo por sexo, por mejor marca acreditada.");
   if(par)nor.push("De cada par con «o» solo se puede nadar una prueba.");
   if(e.nota)nor.push(e.nota);
+  h+=insBloque(e,sx);
   if(nor.length)h+=`<div class="sumline"><span class="lbl">A tener en cuenta</span>`+nor.map(t=>`<div class="sitem">${esc(t)}</div>`).join("")+`</div>`;
   h+=`<div class="calSrc">Calendario actualizado el ${esc(CAL_ACT)}. Las fechas y los programas pueden cambiar.</div>`;
   h+=SUM_CLOSE+`</div>`;
   return h;}
 function calRow(e,hoy,next){const k="CAL|"+e.id;
   return `<button class="sumOpt calOpt${next?" next":""}" data-f="${esc(k)}"><span class="soDate">${fmtDate(e.d||e.f)}</span><span class="soName">${esc(e.n)}${e.pis===50?" "+pisPill():""}</span><span class="calCnt">${esc(calCuenta(e,hoy))}</span></button>`;}
+/* ===== INSCRITOS DE LAS PRÓXIMAS (20-nov-2026, DIARIO §4.82) =====================================
+   `inscritos.csv` va APARTE de data.csv —una inscripción no es una marca— y trae la lista de salida
+   de una próxima: prueba, nadador/a, serie, calle y HORA ESTIMADA de su serie. La hora NO se calcula
+   aquí: viene hecha de la extracción (inicio de la sesión + serie a serie, lo que tarda quien vaya
+   más lento + 40 s de cambio; Fran, 20-nov-2026) y redondeada a 5 min hacia antes.
+   · Se sustituye entero en cada competición. Si no está, la app sigue igual (fetch que falla = []).
+   · Una fila vale mientras su competición siga como próxima en el CALENDARIO (sin acta y con fecha
+     ≥ hoy): al cargar el acta desaparece sola, igual que la próxima. Se casa por fecha `f` + nombre
+     `n`, como el acta (regla A6).
+   · `parseIns` exige las columnas Serie, Calle y Hora: si llega otro CSV (el arnés sirve data.csv a
+     cualquier fetch), no se traga nada. */
+let INSCRITOS=[];
+function parseIns(t){const L=String(t||"").replace(/\r/g,"").split("\n").filter(x=>x.trim());if(!L.length)return[];
+  const H=splitLine(L[0]).map(h=>h.trim());if(["Serie","Calle","Hora","Nadadora","Prueba","Fecha"].some(c=>H.indexOf(c)<0))return[];
+  const out=[];for(let i=1;i<L.length;i++){const c=splitLine(L[i]);const o={};H.forEach((h,k)=>o[h]=(c[k]??"").trim());
+    if(!o.Nadadora||!o.Prueba||!o.Fecha)continue;
+    out.push({competi:o.Competicion||"",fecha:o.Fecha,prueba:o.Prueba,nadadora:o.Nadadora,anio:o["Año"]||"",club:o.Club||"",
+      sexo:String(o.Sexo).trim().toUpperCase()==="M"?"M":"F",serie:+o.Serie||0,series:+o.Series||0,calle:+o.Calle||0,hora:o.Hora||""});}
+  return out;}
+function insDe(e){return INSCRITOS.filter(r=>r.fecha===e.f&&calNorm(r.competi)===calNorm(e.n));}
+/* Próximas con lista de salida: sin acta y sin haber pasado. Como el calendario (D-CAL): solo en la
+   temporada que se ve y nunca en Histórico. */
+function insVivas(){if(isHist())return [];const hoy=hoyISO();
+  return (CALENDARIO[season]||[]).filter(e=>hoy<=e.f&&!calDisputada(e)&&insDe(e).length).sort((a,b)=>a.f.localeCompare(b.f));}
+function insChip(p){return `<span class="chip calChip ${stKlass(p)}${esNoof(p)?" noof":""}">${esc(p)}</span>`;}
+/* Tarjeta de la próxima: quién de Álava nada cada prueba, por series y calles. Mismo ámbito que el
+   resto de la app: el sexo elegido y el GRUPO de categoría (catFilter), por año de nacimiento. */
+function insBloque(e,sx){
+  /* Pasada la fecha (queda en «Disputadas» como «sin resultados») ya no se enseña: igual que en la ficha. */
+  if(hoyISO()>e.f)return "";
+  const L=insDe(e).filter(r=>r.sexo===sx&&grupoDe(r.anio,e.f)===catFilter);
+  if(!L.length)return "";
+  const np=new Set(L.map(r=>r.nadadora)).size;
+  const quien=sx==="M"?(np===1?"nadador":"nadadores"):(np===1?"nadadora":"nadadoras");
+  let h=`<div class="sumline insLine"><span class="lbl">Inscritos de Álava · ${np} ${quien}</span>`;
+  [...new Set(L.map(r=>r.prueba))].forEach(p=>{const P=L.filter(r=>r.prueba===p);
+    h+=`<div class="insPr">${insChip(p)}</div>`;
+    [...new Set(P.map(r=>r.serie))].sort((a,b)=>a-b).forEach(s=>{
+      const S=P.filter(r=>r.serie===s).sort((a,b)=>a.calle-b.calle);
+      h+=`<div class="insSer">Serie ${s}${S[0].series?" de "+S[0].series:""}${S[0].hora?` · <span class="insH">~${esc(S[0].hora)}</span>`:""}</div>`
+        +S.map(r=>`<div class="insNad"><span class="insCa">Calle ${r.calle}</span><span>${esc(shortName(r.nadadora))}</span><span class="insClub">${esc(String(r.club).replace(/^C[NI] /,""))}</span></div>`).join("");});});
+  return h+`<div class="insNota">~ = hora estimada de la serie. Es orientativa: conviene estar con margen.</div></div>`;}
+/* Ficha: arriba de las pestañas, solo si esa persona está en la lista de una próxima. */
+function insFicha(name){const hoy=hoyISO();let h="";
+  insVivas().forEach(e=>{const L=insDe(e).filter(r=>r.nadadora===name);if(!L.length)return;
+    h+=`<div class="insCard"><div class="insHead">📅 Próxima competición<span class="calCnt">${esc(calCuenta(e,hoy))}</span></div>`
+      +`<div class="insComp"><b>${esc(e.n)}</b> · ${esc(calCap(calDia(e.f)))}</div>`
+      /* Las tres piezas de cada prueba son hijas DIRECTAS de una sola rejilla: así la serie y la
+         hora quedan en columna aunque las pastillas midan distinto (como .pmin en Mínimas). */
+      +`<div class="insRows">`+L.map(r=>`${insChip(r.prueba)}<span class="insSC">Serie ${r.serie}${r.series?" de "+r.series:""} · Calle ${r.calle}</span><span class="insT">${r.hora?"~"+esc(r.hora):""}</span>`).join("")
+      +`</div></div>`;});
+  return h;}
+function insLeg(nb){const el1=nb==="nadador"?"el más lento":"la más lenta";
+  return `<div class="lgH">Inscritos, serie y calle</div><div>Cuando la federación publica la lista de salida, la tarjeta de la próxima competición enseña quién de Álava nada cada prueba, con su <b>serie</b> y su <b>calle</b>, y la ficha de cada ${nb} lo repite arriba. Desaparece sola en cuanto se cargan los resultados.</div>`
+   +`<div class="lgH">La hora (~)</div><div>Es una <b>estimación</b> de cuándo sale su serie: desde la hora de inicio se suma, serie a serie, lo que tardaría ${el1} de cada una más 40 segundos de cambio. Va redondeada a 5 minutos hacia antes. Al principio de la sesión acierta casi al minuto; al final puede desviarse varios minutos. Conviene estar con margen.</div>`;}
 function calLeg(){const ch=sexFilter==="M"?"chicos":"chicas";
   return `<div class="lgH">Próximas competiciones</div><div>Debajo de las disputadas, en «Próximas», las competiciones del calendario de esta categoría que aún no tienen resultados en la app, de la más cercana a la más lejana. Al tocar una se ve su programa: fecha, lugar, horario y pruebas individuales de ${ch} (los relevos no se listan).</div>`
    +`<div class="lgH">Las pastillas</div><div>Van coloreadas por estilo, como en el ranking. Las de borde discontinuo son pruebas no convencionales (25, 75, 150, 300 y 600 m). «Elige una»: de ese par solo se puede nadar una.</div>`
    +`<div class="lgH">Cuándo cambian</div><div>En cuanto se cargan sus resultados, la competición pasa a «Disputadas» con su resumen. Si ya se ha celebrado y aún no hay resultados, sigue en la lista marcada «sin resultados». El plazo de inscripción de las ligas de Álava se calcula con la regla de sus reglamentos.</div>`
+   +(INSCRITOS.length?insLeg(sexFilter==="M"?"nadador":"nadadora"):"")
    +`<div class="lgF">Fuentes: calendario y reglamentos 26/27 de la Federación Alavesa, normativas 26/27 de la RFEN, calendario 26/27 de la Federación Navarra (fechas de los Ctos. de Euskal Herria) y web del CN Menditxo. Actualizado el ${esc(CAL_ACT)}; las fechas pueden cambiar.</div><div style="border-top:1px solid var(--line);margin:12px 0 4px"></div>`;}
 function renderSummary(fecha){
   const box=el("summary");if(!box)return;
@@ -4493,6 +4567,9 @@ function render(){
   if(isHist()&&!fo&&!badgesFor)LEG_HTML=HIST_LEG+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'></div>"+LEG_HTML;
   if(badgesFor){const bsx=((ALLRECS.find(r=>r.nadadora===badgesFor)||{}).sexo)||sexFilter;const nb=bsx==="M"?"nadador":"nadadora";LEG_HTML="🏅 <span style='font-weight:700'>Recuento de insignias.</span> Todas las insignias que ha conseguido en los resúmenes de las competiciones "+legAmbito()+". Se gana una por cada podio (🥇🥈🥉) en estos cuatro apartados del resumen:<br>"+legPodios(nb,false)+"<br>"+legOlimpico();}
   if(compsFor)LEG_HTML=legComps();
+  if(fo&&!badgesFor&&!compsFor&&INSCRITOS.length){const fs=query.trim()?foundSwimmers():[];
+    if(fs.length&&insFicha(fs[0].name)){const sx0=((ALLRECS.find(r=>r.nadadora===fs[0].name)||ALLNOOF.find(r=>r.nadadora===fs[0].name)||{}).sexo)||sexFilter;
+      LEG_HTML+="<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'></div>"+insLeg(sx0==="M"?"nadador":"nadadora");}}
 
   const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":(isHist()?"Ranking histórico":"Ranking de la temporada");
   const sc=el("secdiv");if(sc&&sc.classList)sc.classList.toggle("fmode",fo);
@@ -4908,7 +4985,8 @@ function renderProfile(vw){
   animateBars(vw);
 }
 
-async function boot(){let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
+async function boot(){const pIns=fetch("inscritos.csv",{cache:"no-store"}).then(r=>r&&r.ok?r.text():"").catch(()=>"");let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
+  INSCRITOS=parseIns(await pIns);
   ALLRECS=parseCSV(txt);_B50=null;_TPL=null;_T1=null;_PREVB=null;_PMMP=null;_ANIO=null;
   applySex();}
 /* ⚠️ LA CATEGORÍA ES ÁMBITO, NO FILTRO DE TABLA (ago-2026). Fran: "cuando entras en alevines estás
