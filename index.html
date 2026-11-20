@@ -448,6 +448,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .calNone{color:var(--muted)}
 .calSrc{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.4}
 /* Inscritos de la próxima (20-nov-2026, §4.82): en la tarjeta de la próxima y en la ficha */
+.calSer{flex:0 0 auto;font-size:11px;font-weight:700;color:var(--good);background:#e3f4ec;border:1px solid #bfe3d0;border-radius:999px;padding:2px 8px;white-space:nowrap}
 .insPr{margin-top:9px}.insPr:first-of-type{margin-top:5px}
 .insSer{font-size:11px;font-weight:600;color:var(--muted);margin:6px 0 1px}
 .insSer .insH{color:var(--brand-deep);font-weight:700}
@@ -3403,8 +3404,11 @@ function calCard(e){
   h+=`<div class="calSrc">Calendario actualizado el ${esc(CAL_ACT)}. Las fechas y los programas pueden cambiar.</div>`;
   h+=SUM_CLOSE+`</div>`;
   return h;}
+/* Pastilla verde «Series» (Fran, 20-nov-2026, §4.84): ya está la lista de salida de esa próxima y hay en
+   ella alguien del ámbito que se está viendo (sexo y grupo de categoría). Mismo criterio que insBloque. */
+function insHay(e,hoy){return hoy<=e.f&&insDe(e).some(r=>r.sexo===sexFilter&&grupoDe(r.anio,e.f)===catFilter);}
 function calRow(e,hoy,next){const k="CAL|"+e.id;
-  return `<button class="sumOpt calOpt${next?" next":""}" data-f="${esc(k)}"><span class="soDate">${fmtDate(e.d||e.f)}</span><span class="soName">${esc(e.n)}${e.pis===50?" "+pisPill():""}</span><span class="calCnt">${esc(calCuenta(e,hoy))}</span></button>`;}
+  return `<button class="sumOpt calOpt${next?" next":""}" data-f="${esc(k)}"><span class="soDate">${fmtDate(e.d||e.f)}</span><span class="soName">${esc(e.n)}${e.pis===50?" "+pisPill():""}</span>${insHay(e,hoy)?'<span class="calSer">Series</span>':""}<span class="calCnt">${esc(calCuenta(e,hoy))}</span></button>`;}
 /* ===== INSCRITOS DE LAS PRÓXIMAS (20-nov-2026, DIARIO §4.82) =====================================
    `inscritos.csv` va APARTE de data.csv —una inscripción no es una marca— y trae la lista de salida
    de una próxima: prueba, nadador/a, serie, calle y HORA ESTIMADA de su serie. La hora NO se calcula
@@ -3472,7 +3476,7 @@ function insFicha(name){const hoy=hoyISO();let h="";
       +`</div></div>`;});
   return h;}
 function insLeg(nb){const el1=nb==="nadador"?"el más lento":"la más lenta";
-  return `<div class="lgH">Inscritos, serie y calle</div><div>Cuando la federación publica la lista de salida, la tarjeta de la próxima competición enseña las series en las que nada alguien de la categoría, <b>completas</b>: cada calle con su nombre, año y club. Si en la serie nadan también de otras edades (en las no convencionales se juntan), salen en gris; las series solo de benjamines no salen. La ficha de cada ${nb} lo repite arriba con su <b>serie</b> y su <b>calle</b>, y al tocar una prueba se despliega su serie entera. Desaparece sola en cuanto se cargan los resultados.</div>`
+  return `<div class="lgH">Inscritos, serie y calle</div><div>Cuando la federación publica la lista de salida, la tarjeta de la próxima competición enseña las series en las que nada alguien de la categoría, <b>completas</b>: cada calle con su nombre, año y club. Si en la serie nadan también de otras edades (en las no convencionales se juntan), salen en gris; las series solo de benjamines no salen. La ficha de cada ${nb} lo repite arriba con su <b>serie</b> y su <b>calle</b>, y al tocar una prueba se despliega su serie entera. En la lista de próximas, esas competiciones llevan la pastilla verde <span class="calSer">Series</span>. Todo desaparece solo en cuanto se cargan los resultados.</div>`
    +`<div class="lgH">La hora (~)</div><div>Es una <b>estimación</b> de cuándo sale su serie: desde la hora de inicio se suma, serie a serie, lo que tardaría ${el1} de cada una más 40 segundos de cambio. Va redondeada a 5 minutos hacia antes. Al principio de la sesión acierta casi al minuto; al final puede desviarse varios minutos. Conviene estar con margen.</div>`;}
 function calLeg(){const ch=sexFilter==="M"?"chicos":"chicas";
   return `<div class="lgH">Próximas competiciones</div><div>Debajo de las disputadas, en «Próximas», las competiciones del calendario de esta categoría que aún no tienen resultados en la app, de la más cercana a la más lejana. Al tocar una se ve su programa: fecha, lugar, horario y pruebas individuales de ${ch} (los relevos no se listan).</div>`
