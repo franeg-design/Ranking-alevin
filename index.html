@@ -460,12 +460,15 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .insHead .calCnt{text-transform:none;letter-spacing:0}
 .insComp{font-size:13px;color:var(--ink);margin:4px 0 2px;line-height:1.4}
 .insComp b{font-family:'Space Grotesk',sans-serif;font-weight:700}
-.insRows{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px 10px;margin-top:6px;font-size:13px}
-.insRows .calChip{justify-self:start}
+/* ⚠️ La pastilla va DENTRO de un span (.insTg): sin inline-block su relleno vertical no cuenta en la
+   altura de la fila y las pastillas se montan unas sobre otras (lo vio Fran en el iPhone, 20-nov-2026). */
+.insRows{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px 12px;margin-top:10px;font-size:13px}
+.insRows>.insTg:first-child,.insRows>.insHeat+.insTg{justify-self:start}
+.insRows .calChip,.insPr .calChip{display:inline-block;vertical-align:middle;line-height:1.3}
 .insTg{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .insT .pchev{display:inline-block;margin-left:6px;font-size:12px;color:var(--muted);transition:transform .2s}
 .insT.open .pchev{transform:rotate(180deg)}
-.insHeat{grid-column:1/-1;display:none;margin:2px 0 4px;padding:6px 10px;background:#fff;border:1px solid var(--line);border-radius:10px}
+.insHeat{grid-column:1/-1;display:none;margin:0 0 2px;padding:6px 10px;background:#fff;border:1px solid var(--line);border-radius:10px}
 .insHeat.open{display:block}
 .insNad.yo{font-weight:700;color:var(--brand-deep)}
 .insNad.otra{color:var(--muted)}
