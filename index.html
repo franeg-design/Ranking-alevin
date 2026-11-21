@@ -3524,22 +3524,25 @@ function insBloque(e,sx){
   /* Pasada la fecha (queda en «Disputadas» como «sin resultados») ya no se enseña: igual que en la ficha. */
   if(hoyISO()>e.f)return "";
   /* LAS SERIES VAN COMPLETAS (Fran, 20-nov-2026): en las no convencionales la federación junta en una
-     misma serie de 2011 a 2016. Se enseña cada serie en la que nada ALGUIEN de la categoría elegida,
-     con TODAS sus calles; las series y pruebas de solo benjamines (sin categoría en la app) no salen. */
+     misma serie de 2011 a 2016. TODAS LAS PRUEBAS Y TODAS LAS SERIES DEL SEXO (Fran, 21-nov-2026), también
+     las de solo benjamines, para saber por dónde va la competición; quien no es de la categoría, en gris.
+     La tarjeta solo sale si en la lista hay alguien de la categoría elegida. */
   const A=insDe(e).filter(r=>r.sexo===sx);
   const enCat=r=>grupoDe(r.anio,e.f)===catFilter;
   const L=A.filter(enCat);if(!L.length)return "";
   const np=new Set(L.map(r=>r.nadadora)).size;
   const quien=sx==="M"?(np===1?"nadador":"nadadores"):(np===1?"nadadora":"nadadoras");
   let h=`<div class="sumline insLine"><span class="lbl">Lista de salida · ${np} ${quien} ${esc(((np===1?{alevin:"alevín",infantil:"infantil",junior:"júnior",absoluta:"de absoluta"}:{alevin:"alevines",infantil:"infantiles",junior:"júnior",absoluta:"de absoluta"})[catFilter])||"")}</span>`;
-  /* Por NÚMERO de prueba, no por nombre: un mismo día puede haber dos «25 Braza» (benjamín y 11-16). */
-  [...new Set(L.map(r=>r.num))].forEach(n=>{
-    const ser=[...new Set(L.filter(r=>r.num===n).map(r=>r.serie))].sort((a,b)=>a-b);
-    h+=`<div class="insPr">${insChip(L.find(r=>r.num===n).prueba)}</div>`;
+  /* Por NÚMERO de prueba, no por nombre: un mismo día puede haber dos «25 Braza» (benjamín y 11-16).
+     En el orden del programa (número de prueba); un número no numérico queda donde venía. */
+  const nums=[...new Set(A.map(r=>r.num))],pos=n=>{const v=parseFloat(n);return isNaN(v)?Infinity:v;};
+  nums.map((n,i)=>[n,i]).sort((a,b)=>(pos(a[0])-pos(b[0]))||(a[1]-b[1])).map(x=>x[0]).forEach(n=>{
+    const ser=[...new Set(A.filter(r=>r.num===n).map(r=>r.serie))].sort((a,b)=>a-b);
+    h+=`<div class="insPr">${insChip(A.find(r=>r.num===n).prueba)}</div>`;
     ser.forEach(s=>{const S=A.filter(r=>r.num===n&&r.serie===s).sort((a,b)=>a.calle-b.calle);
       h+=`<div class="insSer">Serie ${s}${S[0].series?" de "+S[0].series:""}${S[0].hora?` · <span class="insH">~${esc(S[0].hora)}</span>`:""}</div>`
         +S.map(r=>insNad(r,!enCat(r))).join("");});});
-  return h+`<div class="insNota">Series completas: si en una serie nadan también de otras edades, salen en gris. ~ = hora estimada de la serie; es orientativa, conviene estar con margen.</div></div>`;}
+  return h+`<div class="insNota">Todas las pruebas y series, en el orden del programa; quien no es de la categoría sale en gris. ~ = hora estimada de la serie; es orientativa, conviene estar con margen.</div></div>`;}
 /* Un renglón de serie: calle, nombre, año y club. `otra` = de otra edad (gris); `yo` = la de la ficha. */
 function insNad(r,otra,yo){return `<div class="insNad${otra?" otra":""}${yo?" yo":""}"><span class="insCa">Calle ${r.calle}</span><span class="insNm">${esc(shortName(r.nadadora))} <span class="insAn">${esc(String(r.anio).slice(-2))}</span></span><span class="insClub">${esc(String(r.club).replace(/^C[NI] /,""))}</span></div>`;}
 /* Ficha: arriba de las pestañas, solo si esa persona está en la lista de una próxima. */
@@ -3559,7 +3562,7 @@ function insFicha(name){const hoy=hoyISO();let h="";
       +`</div></div>`;});
   return h;}
 function insLeg(nb){const el1=nb==="nadador"?"el más lento":"la más lenta";
-  return `<div class="lgH">Inscritos, serie y calle</div><div>Cuando la federación publica la lista de salida, la tarjeta de la próxima competición enseña las series en las que nada alguien de la categoría, <b>completas</b>: cada calle con su nombre, año y club. Si en la serie nadan también de otras edades (en las no convencionales se juntan), salen en gris; las series solo de benjamines no salen. La ficha de cada ${nb} lo repite arriba con su <b>serie</b> y su <b>calle</b>, y al tocar una prueba se despliega su serie entera. En la lista de próximas, esas competiciones llevan la pastilla verde <span class="calSer">Series</span>. Todo desaparece solo en cuanto se cargan los resultados.</div>`
+  return `<div class="lgH">Inscritos, serie y calle</div><div>Cuando la federación publica la lista de salida, la tarjeta de la próxima competición enseña la lista entera, serie a serie: cada calle con su nombre, año y club. Salen <b>todas</b> las pruebas y series del programa, también las de solo benjamines, para que se vea por dónde va la competición; quien no es de la categoría, en gris. La ficha de cada ${nb} lo repite arriba con su <b>serie</b> y su <b>calle</b>, y al tocar una prueba se despliega su serie entera. En la lista de próximas, esas competiciones llevan la pastilla verde <span class="calSer">Series</span>. Todo desaparece solo en cuanto se cargan los resultados.</div>`
    +`<div class="lgH">La hora (~)</div><div>Es una <b>estimación</b> de cuándo sale su serie: desde la hora de inicio se suma, serie a serie, lo que tardaría ${el1} de cada una más 40 segundos de cambio. Va redondeada a 5 minutos hacia antes. Al principio de la sesión acierta casi al minuto; al final puede desviarse varios minutos. Conviene estar con margen.</div>`;}
 function calLeg(){const ch=sexFilter==="M"?"chicos":"chicas";
   return `<div class="lgH">Próximas competiciones</div><div>Debajo de las disputadas, en «Próximas», las competiciones del calendario de esta categoría que aún no tienen resultados en la app, de la más cercana a la más lejana. Al tocar una se ve su programa: fecha, lugar, horario y pruebas individuales de ${ch} (los relevos no se listan).</div>`
