@@ -449,7 +449,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .calSrc{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.4}
 /* Inscritos de la próxima (20-nov-2026, §4.82): en la tarjeta de la próxima y en la ficha */
 .calSer{flex:0 0 auto;font-size:11px;font-weight:700;color:var(--good);background:#e3f4ec;border:1px solid #bfe3d0;border-radius:999px;padding:2px 8px;white-space:nowrap}
-.insPr{margin-top:9px}.insPr:first-of-type{margin-top:5px}
+.insPr{margin-top:9px}.insPr:first-of-type{margin-top:5px}.insSx{margin-left:7px;font-size:11px;font-weight:700;color:var(--muted);vertical-align:middle}
 .insSer{font-size:11px;font-weight:600;color:var(--muted);margin:6px 0 1px}
 .insSer .insH{color:var(--brand-deep);font-weight:700}
 .insNad{display:flex;gap:8px;align-items:baseline;font-size:13px;line-height:1.5}
@@ -3524,11 +3524,12 @@ function insBloque(e,sx){
   /* Pasada la fecha (queda en «Disputadas» como «sin resultados») ya no se enseña: igual que en la ficha. */
   if(hoyISO()>e.f)return "";
   /* LAS SERIES VAN COMPLETAS (Fran, 20-nov-2026): en las no convencionales la federación junta en una
-     misma serie de 2011 a 2016. TODAS LAS PRUEBAS Y TODAS LAS SERIES DEL SEXO (Fran, 21-nov-2026), también
-     las de solo benjamines, para saber por dónde va la competición; quien no es de la categoría, en gris.
-     La tarjeta solo sale si en la lista hay alguien de la categoría elegida. */
-  const A=insDe(e).filter(r=>r.sexo===sx);
-  const enCat=r=>grupoDe(r.anio,e.f)===catFilter;
+     misma serie de 2011 a 2016. TODAS LAS PRUEBAS Y TODAS LAS SERIES, DE LOS DOS SEXOS (Fran, 21-nov-2026),
+     también las de solo benjamines, para saber por dónde va la competición: el programa alterna chicas y
+     chicos. En negro, quien es del sexo y la categoría elegidos; el resto, en gris, y las pruebas del otro
+     sexo llevan su rótulo. La tarjeta solo sale si en la lista hay alguien del sexo y la categoría. */
+  const A=insDe(e);
+  const enCat=r=>r.sexo===sx&&grupoDe(r.anio,e.f)===catFilter;
   const L=A.filter(enCat);if(!L.length)return "";
   const np=new Set(L.map(r=>r.nadadora)).size;
   const quien=sx==="M"?(np===1?"nadador":"nadadores"):(np===1?"nadadora":"nadadoras");
@@ -3538,11 +3539,12 @@ function insBloque(e,sx){
   const nums=[...new Set(A.map(r=>r.num))],pos=n=>{const v=parseFloat(n);return isNaN(v)?Infinity:v;};
   nums.map((n,i)=>[n,i]).sort((a,b)=>(pos(a[0])-pos(b[0]))||(a[1]-b[1])).map(x=>x[0]).forEach(n=>{
     const ser=[...new Set(A.filter(r=>r.num===n).map(r=>r.serie))].sort((a,b)=>a-b);
-    h+=`<div class="insPr">${insChip(A.find(r=>r.num===n).prueba)}</div>`;
+    const r0=A.find(r=>r.num===n);
+    h+=`<div class="insPr${r0.sexo!==sx?" otro":""}">${insChip(r0.prueba)}${r0.sexo!==sx?`<span class="insSx">${r0.sexo==="M"?"Masc.":"Fem."}</span>`:""}</div>`;
     ser.forEach(s=>{const S=A.filter(r=>r.num===n&&r.serie===s).sort((a,b)=>a.calle-b.calle);
       h+=`<div class="insSer">Serie ${s}${S[0].series?" de "+S[0].series:""}${S[0].hora?` · <span class="insH">~${esc(S[0].hora)}</span>`:""}</div>`
         +S.map(r=>insNad(r,!enCat(r))).join("");});});
-  return h+`<div class="insNota">Todas las pruebas y series, en el orden del programa; quien no es de la categoría sale en gris. ~ = hora estimada de la serie; es orientativa, conviene estar con margen.</div></div>`;}
+  return h+`<div class="insNota">Todas las pruebas y series de chicas y chicos, en el orden del programa; en gris, quien no es del sexo o la categoría elegidos. ~ = hora estimada de la serie; es orientativa, conviene estar con margen.</div></div>`;}
 /* Un renglón de serie: calle, nombre, año y club. `otra` = de otra edad (gris); `yo` = la de la ficha. */
 function insNad(r,otra,yo){return `<div class="insNad${otra?" otra":""}${yo?" yo":""}"><span class="insCa">Calle ${r.calle}</span><span class="insNm">${esc(shortName(r.nadadora))} <span class="insAn">${esc(String(r.anio).slice(-2))}</span></span><span class="insClub">${esc(String(r.club).replace(/^C[NI] /,""))}</span></div>`;}
 /* Ficha: arriba de las pestañas, solo si esa persona está en la lista de una próxima. */
@@ -3562,7 +3564,7 @@ function insFicha(name){const hoy=hoyISO();let h="";
       +`</div></div>`;});
   return h;}
 function insLeg(nb){const el1=nb==="nadador"?"el más lento":"la más lenta";
-  return `<div class="lgH">Inscritos, serie y calle</div><div>Cuando la federación publica la lista de salida, la tarjeta de la próxima competición enseña la lista entera, serie a serie: cada calle con su nombre, año y club. Salen <b>todas</b> las pruebas y series del programa, también las de solo benjamines, para que se vea por dónde va la competición; quien no es de la categoría, en gris. La ficha de cada ${nb} lo repite arriba con su <b>serie</b> y su <b>calle</b>, y al tocar una prueba se despliega su serie entera. En la lista de próximas, esas competiciones llevan la pastilla verde <span class="calSer">Series</span>. Todo desaparece solo en cuanto se cargan los resultados.</div>`
+  return `<div class="lgH">Inscritos, serie y calle</div><div>Cuando la federación publica la lista de salida, la tarjeta de la próxima competición enseña la lista entera, serie a serie: cada calle con su nombre, año y club. Salen <b>todas</b> las pruebas y series del programa, de chicas y de chicos y también las de solo benjamines, para que se vea por dónde va la competición; quien no es del sexo o la categoría elegidos, en gris, y las pruebas del otro sexo llevan su rótulo (Fem./Masc.). La ficha de cada ${nb} lo repite arriba con su <b>serie</b> y su <b>calle</b>, y al tocar una prueba se despliega su serie entera. En la lista de próximas, esas competiciones llevan la pastilla verde <span class="calSer">Series</span>. Todo desaparece solo en cuanto se cargan los resultados.</div>`
    +`<div class="lgH">La hora (~)</div><div>Es una <b>estimación</b> de cuándo sale su serie: desde la hora de inicio se suma, serie a serie, lo que tardaría ${el1} de cada una más 40 segundos de cambio. Va redondeada a 5 minutos hacia antes. Al principio de la sesión acierta casi al minuto; al final puede desviarse varios minutos. Conviene estar con margen.</div>`;}
 function calLeg(){const ch=sexFilter==="M"?"chicos":"chicas";
   return `<div class="lgH">Próximas competiciones</div><div>Debajo de las disputadas, en «Próximas», las competiciones del calendario de esta categoría que aún no tienen resultados en la app, de la más cercana a la más lejana. Al tocar una se ve su programa: fecha, lugar, horario y pruebas individuales de ${ch} (los relevos no se listan).</div>`
