@@ -1055,6 +1055,32 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .accK{font-weight:600}
 .pRowNoof .prueba{font-size:14px;opacity:.9}
 .mb.noofMb{margin-left:6px;font-size:9px;font-weight:700;letter-spacing:.02em;border:1px dashed currentColor;border-radius:999px;padding:1px 6px;vertical-align:middle;background:none;color:var(--muted)}
+/* RESULTADOS (clasificación completa del acta, §4.86): variante B elegida por Fran; los de fuera de
+   Álava en gris. Pestañas Resumen / Resultados dentro de la tarjeta de la competición. */
+.rsTabs{display:flex;gap:6px;margin:10px 0 2px}
+.rsTab{flex:1;text-align:center;padding:7px 0;border-radius:999px;font-size:13px;font-weight:700;border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer;font-family:inherit}
+.rsTab.on{background:var(--brand-deep);color:#fff;border-color:var(--brand-deep)}
+.rsChips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:10px -2px 2px;padding:3px 2px 5px}
+.rsChips::-webkit-scrollbar{display:none}
+.rsChips .chip{padding:6px 11px;font-size:12px;flex:0 0 auto;font-family:inherit}
+.rsChips .chip.on{transform:none}
+.rB,.rBh{display:grid;grid-template-columns:20px minmax(0,1fr) 24px 64px 56px;gap:6px}
+.rBh{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-top:4px}
+.rBh span:last-child{text-align:right}
+.rB{align-items:baseline;padding:6px 0;border-top:1px solid var(--line);font-size:12.5px}
+.rBh+.rB{border-top:0}
+.rB .ps{font-weight:800;color:var(--brand-deep);text-align:right}
+.rB .nm2{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rB .rsN{cursor:pointer}
+.rB .an,.rB .cl{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rB .tm{font-weight:700;text-align:right}
+.rB .ex{grid-column:2/6;font-size:11px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:-2px}
+.rB .ex .mb{margin-left:0}
+.rB.ext .nm2,.rB.ext .tm,.rB.ext .ps,.rB.ext .an,.rB.ext .cl,.rB.ext .ex{color:#93a7b1}
+.rB.ext .nm2,.rB.ext .tm{font-weight:500}
+.rsMej{color:var(--good);font-weight:700}
+.rsEst{font-size:10px;font-weight:800;padding:1px 5px;border-radius:6px;background:#e7edf1;color:#5b7384}
+.rB .dsq{color:#a25510;font-weight:800;font-size:12px}
 </style>
 </head>
 <body>
@@ -3420,6 +3446,63 @@ function calRow(e,hoy,next){const k="CAL|"+e.id;
      `n`, como el acta (regla A6).
    · `parseIns` exige las columnas Serie, Calle y Hora: si llega otro CSV (el arnés sirve data.csv a
      cualquier fetch), no se traga nada. */
+/* ===== RESULTADOS: LA CLASIFICACIÓN COMPLETA DEL ACTA (Fran, 21-nov-2026, §4.86) =====================
+   `clasificaciones.csv` guarda el acta de cada competición tal cual: TODOS los clubes, con su puesto y
+   su clasificación (Infantil, Júnior, Sub20…). Va aparte de data.csv porque no son marcas de la app, y
+   se carga sin bloquear el arranque. Los de Álava llevan la grafía de data.csv: así se unen con sus
+   marcas (⭐, Estreno, mínimas nuevas) y con su ficha. */
+let CLAS=null,SUM_TAB="sum",RES_PR=null;
+function parseCla(t){const L=String(t||"").replace(/\r/g,"").split("\n").filter(x=>x.trim());if(!L.length)return[];
+  const H=splitLine(L[0]).map(h=>h.trim());if(["Clasificacion","Puesto","Nadadora","Prueba","Fecha"].some(c=>H.indexOf(c)<0))return[];
+  const out=[];for(let i=1;i<L.length;i++){const c=splitLine(L[i]);const o={};H.forEach((h,k)=>o[h]=(c[k]??"").trim());
+    if(!o.Nadadora||!o.Prueba||!o.Fecha)continue;
+    out.push({competi:o.Competicion||"",fecha:o.Fecha,num:+o.NumPrueba||0,prueba:o.Prueba,sexo:String(o.Sexo).trim().toUpperCase()==="M"?"M":"F",
+      sec:o.Clasificacion||"",pos:o.Puesto||"",nadadora:o.Nadadora,anio:o["Año"]||"",club:o.Club||"",tiempo:o.Tiempo||"",dsq:o.Estado==="DSQ",motivo:o.Motivo||""});}
+  return out;}
+/* Lo que se ve: la competición, el sexo del ámbito y SOLO las clasificaciones en las que nada alguien
+   del grupo de categoría del ámbito (la de Infantil sale en Infantil; una mixta, en todas las suyas). */
+function claVista(comp,fd){if(!CLAS||!CLAS.length)return[];
+  const R=CLAS.filter(r=>r.fecha===fd&&r.sexo===sexFilter&&calNorm(r.competi)===calNorm(comp));
+  const ok=new Set();R.forEach(r=>{if(grupoDe(r.anio,fd)===catFilter)ok.add(r.num+"|"+r.sec);});
+  return R.filter(r=>ok.has(r.num+"|"+r.sec));}
+function clubCorto(c){return String(c||"").replace(/^(C\.\s*Igeriketa|C\.?\s*N\.?|C\.?\s*D\.?|C\.?\s*I\.?)\s+/i,"").trim()||c;}
+function resTabs(){return `<div class="rsTabs"><button class="rsTab${SUM_TAB==="res"?"":" on"}" data-t="sum">Resumen</button><button class="rsTab${SUM_TAB==="res"?" on":""}" data-t="res">Resultados</button></div>`;}
+/* Panel «Resultados». ⭐, Estreno y mínimas nuevas salen de las MISMAS cuentas que el resumen
+   (`pb` = prevBest y minNuevas), y solo para las marcas del ámbito (`latest`): un dato, un dueño. */
+function resPanel(CL,comp,FD,latest,pb,TBS){
+  const prs=[];CL.slice().sort((a,b)=>a.num-b.num).forEach(r=>{if(prs.indexOf(r.prueba)<0)prs.push(r.prueba);});
+  if(prs.indexOf(RES_PR)<0)RES_PR=prs[0];
+  let h=`<div class="rsChips">`+prs.map(p=>`<button class="chip rsPr ${stKlass(p)}${esNoof(p)?" noof":""}${p===RES_PR?" on":""}" data-p="${esc(p)}">${esc(p)}</button>`).join("")+`</div>`;
+  const R=CL.filter(r=>r.prueba===RES_PR);
+  const secs=[];R.forEach(r=>{const k=r.num+"|"+r.sec;if(secs.indexOf(k)<0)secs.push(k);});
+  const fichas=new Set(ALLRECS.map(x=>x.nadadora));ALLNOOF.forEach(x=>fichas.add(x.nadadora));
+  secs.forEach(k=>{const rows=R.filter(r=>r.num+"|"+r.sec===k);
+    h+=`<div class="sumline"><span class="lbl">${esc(rows[0].sec)}</span><div class="rBh"><span>#</span><span>Nombre</span><span>Año</span><span>Club</span><span>Tiempo</span></div>`;
+    rows.forEach(r=>{const ala=!!CLUB_LOGOS[r.club];let ex="";
+      if(r.dsq)ex=esc(r.motivo||"");
+      else{const pts=esNoof(r.prueba)?0:fina(r.prueba,toCs(r.tiempo),FD,es50(comp));
+        if(pts)ex+=`<span>${pts}&nbsp;<span class="pts">FINA</span></span>`;
+        const rec=ala?latest.find(x=>x.nadadora===r.nadadora&&x.prueba===r.prueba&&x.tiempo===r.tiempo):null;
+        if(rec){const prev=pb[rec.nadadora+"|"+rec.prueba],cs=toCs(rec.tiempo);
+          if(prev===undefined)ex+=`<span class="rsEst">Estreno</span>`;
+          else if(cs<prev.cs)ex+=`<span class="rsMej">⭐ −${fmtClock(prev.cs-cs)}</span>`;
+          minNuevas(rec,FD,TBS).forEach(t=>{ex+=`<span class="mb ${t==="ESP"?"mbESP":"mbEH"}">${t}</span>`;});}}
+      const link=ala&&fichas.has(r.nadadora);
+      h+=`<div class="rB${ala?"":" ext"}"><span class="ps">${r.dsq?"—":esc(r.pos)}</span><span class="nm2${link?" rsN":""}"${link?` data-n="${esc(r.nadadora)}"`:""}>${esc(shortName(r.nadadora))}</span><span class="an">${esc(String(r.anio).slice(2))}</span><span class="cl">${esc(clubCorto(r.club))}</span><span class="tm mono">${r.dsq?'<span class="dsq">DSQ</span>':esc(r.tiempo)}</span>${ex?`<span class="ex">${ex}</span>`:""}</div>`;});
+    h+=`</div>`;});
+  h+=`<div class="sumNote">Clasificación del acta oficial. En gris, ${sexFilter==="M"?"nadadores":"nadadoras"} de clubes de fuera de Álava. Toca un nombre para ver su ficha.${esCtoEsp(comp)||/^cto (eh|euskal)/i.test(comp)?" Solo las clasificaciones en las que nada alguien de Álava.":""}</div>`;
+  return h;}
+/* Mínimas nuevas de una marca en SU competición (se rehacen con las marcas anteriores a esa fecha,
+   como newMin). Era un bloque dentro de renderSummary; sale a función para que «Resultados» use la
+   misma cuenta. */
+function minNuevas(r,FD,TBS){const cs=toCs(r.tiempo),o=[];
+  [["ESP",[TBS.MIN_ESP,TBS.MIN_ESP_50]],["EH",[TBS.MIN_EH,TBS.MIN_EH_50]]].forEach(pair=>{
+    const m=minDe(pair[1],r);if(!m)return;
+    if(cs>toCs(m))return;
+    const antes=RECORDS.filter(x=>x.nadadora===r.nadadora&&x.prueba===r.prueba&&x.fecha<FD);
+    const rt=antes.length?minRow(pair[1],marcaFila(r.nadadora,r.prueba,antes)):null;
+    if(!rt||!rt.got)o.push(pair[0]);});
+  return o;}
 let INSCRITOS=[];
 function parseIns(t){const L=String(t||"").replace(/\r/g,"").split("\n").filter(x=>x.trim());if(!L.length)return[];
   const H=splitLine(L[0]).map(h=>h.trim());if(["Serie","Calle","Hora","Nadadora","Prueba","Fecha"].some(c=>H.indexOf(c)<0))return[];
@@ -3530,15 +3613,15 @@ function renderSummary(fecha){
     if(prev!==undefined&&cs<prev.cs){mejoras++;gains.push({g:f-fina(r.prueba,prev.cs,r.fecha,prev.largo),name:r.nadadora,prueba:r.prueba,d:prev.cs-cs});}
     /* Mínima nueva por piscina: se rehace con las marcas anteriores a esta jornada, igual que en
        newMin(). No vale mirar solo `prev`, que es una marca suelta. */
-    [["ESP",[TBS.MIN_ESP,TBS.MIN_ESP_50]],["EH",[TBS.MIN_EH,TBS.MIN_EH_50]]].forEach(pair=>{
-      const m=minDe(pair[1],r);if(!m)return;
-      if(cs>toCs(m))return;
-      const antes=RECORDS.filter(x=>x.nadadora===r.nadadora&&x.prueba===r.prueba&&x.fecha<FD);
-      const rt=antes.length?minRow(pair[1],marcaFila(r.nadadora,r.prueba,antes)):null;
-      if(!rt||!rt.got)newmin.push({n:shortName(r.nadadora),p:r.prueba,t:pair[0]});});
+    minNuevas(r,FD,TBS).forEach(t=>newmin.push({n:shortName(r.nadadora),p:r.prueba,t:t}));
   });
   bests.sort((a,b)=>b.f-a.f);gains.sort((a,b)=>b.g-a.g);
   h=`<div class="sumcard"><div class="sumhead">🏆 <b>${esc(comp)}</b><span class="sumdate">· ${fmtDate(FD)}</span></div>`;
+  /* (§4.86) Pestañas Resumen / Resultados, solo si hay clasificación de esta competición en el ámbito. */
+  const CLV=claVista(comp,FD);
+  if(CLV.length)h+=resTabs();
+  if(CLV.length&&SUM_TAB==="res"){h+=resPanel(CLV,comp,FD,latest,pb,TBS)+SUM_CLOSE+`</div>`;}
+  else{
   h+=`<div class="sumstats"><div class="sst"><span class="n">${swimmers.size}</span>${sexFilter==="M"?"nadadores":"nadadoras"}</div><div class="sst"><span class="n">${latest.length}</span>marcas</div><div class="sst"><span class="n">${mejoras}</span>mejoras ⭐</div><div class="sst"><span class="n">${newmin.length}</span>mínimas nuevas</div></div>`;
   /* Ctos. de España (§4.78): sin insignias. Los podios se siguen enseñando como lista (1.º, 2.º,
      3.º), sin emoji, y «En forma» no sale. */
@@ -3576,6 +3659,7 @@ function renderSummary(fecha){
   if(newmin.length)h+=`<div class="sumline"><span class="lbl">Mínimas nuevas</span>`+newmin.map(x=>`<div class="sitem"><span class="mb ${x.t==="ESP"?"mbESP":"mbEH"}" style="margin-left:0">${esc(x.t)}</span> ${esc(x.n)} · ${esc(x.p)}</div>`).join("")+`</div>`;
   h+=SUM_CLOSE;
   h+=`</div>`;  // cierra .sumcard
+  }
   }
   const fechas=summaryFechas();
   /* Disputadas: las jornadas con filas y, entre ellas por fecha, las del calendario que ya pasaron
@@ -3619,6 +3703,7 @@ function renderSummary(fecha){
     box.classList.toggle("upd",!!box.innerHTML);
     box.innerHTML=_h;
   }
+  try{const ch=box.querySelector(".rsChips"),on=ch&&ch.querySelector(".rsPr.on");if(on)ch.scrollLeft=Math.max(0,on.offsetLeft-ch.offsetLeft-60);}catch(e){}
 }
 
 function poolRecs(recs){let out=recs;if(!yearAll())out=out.filter(r=>yearOn(claveEdad(r)));if(clubFilter!=="all")out=out.filter(r=>r.club===clubFilter);return out;}
@@ -3922,6 +4007,7 @@ function sumLeg(){const nad=sexFilter==="M"?"nadador":"nadadora";/* ⚠️ Aquí
    +"<br><b>Medallas del campeonato</b> "+rmPill("oro")+" "+rmPill("plata")+" "+rmPill("bronce")+": medallas <b>oficiales</b> de un Cto. de España o de Euskal Herria, con su clasificación (Absoluto, Júnior, por edad…). Un mismo nado puede llevar varias. No son insignias del juego ni cuentan en el medallero."
    +"<br>Los <b>Ctos. de España</b> no reparten insignias: van muy pocos de Álava y el podio saldría casi solo. Su resumen enseña los mejores como lista (1.º, 2.º, 3.º)."
    +"<br>Las cifras de arriba cuentan participantes, marcas nadadas, mejoras ⭐ (marcas que baten la mejor marca previa) y mínimas nuevas."
+   +"<br><b>Resultados</b>: la clasificación completa del acta, prueba a prueba y con sus puestos oficiales, de todos los clubes. Los de fuera de Álava van en gris. Junto a cada marca de Álava, sus puntos FINA, ⭐ y los segundos que bajó su mejor marca, <span class='rsEst'>Estreno</span> si era la primera vez que nadaba esa prueba, y las mínimas EH / ESP nuevas. Solo salen las clasificaciones en las que nada alguien de la categoría elegida arriba; en los Ctos. de España y de Euskal Herria, solo aquellas en las que nada alguien de Álava."
    +"<br><span style='color:var(--muted)'>El resumen es de la <b>competición entera</b>: no le afectan los filtros de año y club de más abajo, que solo mueven el ranking.</span><div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";}
 let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking",badgesFor=null,sumOpen=false,sumFecha=null,sumShown=false,calAll=false,dispAll=false,BAND_KEY=null,compsFor=null,compFecha=null;
 function fireBar(el){
@@ -5014,10 +5100,12 @@ function renderProfile(vw){
   animateBars(vw);
 }
 
-async function boot(){const pIns=fetch("inscritos.csv",{cache:"no-store"}).then(r=>r&&r.ok?r.text():"").catch(()=>"");let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
+async function boot(){const pIns=fetch("inscritos.csv",{cache:"no-store"}).then(r=>r&&r.ok?r.text():"").catch(()=>"");const pCla=fetch("clasificaciones.csv",{cache:"no-store"}).then(r=>r&&r.ok?r.text():"").catch(()=>"");let txt=null;try{const res=await fetch("data.csv",{cache:"no-store"});if(res.ok){const t=await res.text();if(parseCSV(t).length)txt=t;}}catch(e){}if(txt===null)txt=SAMPLE_CSV;
   INSCRITOS=parseIns(await pIns);
   ALLRECS=parseCSV(txt);_B50=null;_TPL=null;_T1=null;_PREVB=null;_PMMP=null;_ANIO=null;
-  applySex();}
+  applySex();
+  /* (§4.86) La clasificación completa llega después, sin hacer esperar a la app. */
+  window.__claP=pCla.then(t=>{CLAS=parseCla(t);if(sumShown)renderSummary(sumFecha);});}
 /* ⚠️ LA CATEGORÍA ES ÁMBITO, NO FILTRO DE TABLA (ago-2026). Fran: "cuando entras en alevines estás
    en alevines, con sus propios resúmenes; ninguno está afectado por el otro". Por eso `catFilter` se
    aplica AQUÍ, junto al sexo, y no en `poolRecs` como el año o el club: así todo lo que cuelga de
@@ -5068,6 +5156,9 @@ el("summary").addEventListener("click",e=>{
   const itg=e.target.closest(".insTg");if(itg){const k=itg.dataset.ik;const on=!INS_OPEN.has(k);on?INS_OPEN.add(k):INS_OPEN.delete(k);
     el("summary").querySelectorAll(".insTg,.insHeat").forEach(x=>{if(x.dataset.ik===k)x.classList.toggle("open",on);});return;}
   const cpb=e.target.closest(".compBtn");if(cpb){compsFor=cpb.dataset.n;compFecha=null;badgesFor=null;cmpA=null;cmpB=null;render();scrollSec();return;}
+  const rt=e.target.closest(".rsTab");if(rt){SUM_TAB=rt.dataset.t;renderSummary(sumFecha);return;}
+  const rp=e.target.closest(".rsPr");if(rp){RES_PR=rp.dataset.p;renderSummary(sumFecha);return;}
+  const rn=e.target.closest(".rsN");if(rn){goProfile(rn.dataset.n);return;}
   const cl=e.target.closest("#sumClose");
   /* (§4.74) Cierra la competición y DEJA LA LISTA ABIERTA; la banda, después, lo cierra todo. */
   if(cl){sumShown=false;sumOpen=true;renderSummary(sumFecha);try{window.scrollTo({top:0,behavior:"smooth"});}catch(e){window.scrollTo(0,0);}return;}
