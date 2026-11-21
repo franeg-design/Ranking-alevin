@@ -4202,6 +4202,20 @@ function renderCompareInner(vw){
    if(ps.length)secNo=`<div class="cmpSec"><span>No convencionales</span><span class="cmpSecSc">${nA} – ${nB}</span></div>`+nb.concat(no).join("");}
   vw.innerHTML=`<div class="cmpCard"><div class="cmpTop"><div class="cmpNames"><div class="cn">${logoImg(recA.club,"sm")}<b>${esc(shortName(cmpA))}</b><span>${esc(recA.club)} · ${esc(recA.anio)}</span></div><div class="cmpScore">${wA} – ${wB}</div><div class="cn">${logoImg(recB.club,"sm")}<b>${esc(shortName(cmpB))}</b><span>${esc(recB.club)} · ${esc(recB.anio)}</span></div></div><div class="cmpFina">FINA en pruebas comunes: <b>${fA}</b> · <b>${fB}</b></div></div><div class="cmpBody">${rows.join("")||(secNo?"":'<div class="empty">Sin pruebas que comparar.</div>')}${secNo}</div><div class="cmpNote">El marcador cuenta solo las pruebas nadadas por ambos. — = prueba no nadada.${secNo?" Las no convencionales llevan su propio marcador y no suman FINA.":""}</div></div>`;
 }
+/* (21-nov-2026, §4.88) AL ABRIR UNA COMPETICIÓN DE LA LISTA, QUE SE VEA. La lista se cierra y la tarjeta
+   aparece en su sitio, pero la pantalla no se movía: si se había tocado una de las de abajo (p. ej. el
+   Cto. Euskal Herria Alevín, tras «Ver N más») y su tarjeta es corta, la pantalla se quedaba en el ranking.
+   Si la banda ha quedado por encima de la pantalla —o tan abajo que la tarjeta no asoma—, se sube hasta
+   dejarla arriba, con 6 px de aire (como scrollSec). Si la banda ya se ve, no se mueve nada. */
+function verBanda(){
+  try{
+    const b=el("sumBand");if(!b||!b.getBoundingClientRect)return;
+    const t=b.getBoundingClientRect().top,alto=window.innerHeight||0;
+    if(t>=0&&(!alto||t<=alto-160))return;
+    const y=(window.scrollY||window.pageYOffset||0)+t-6;
+    window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
+  }catch(e){}
+}
 function scrollSec(){
   try{
     if(mode==="fichas"){window.scrollTo({top:0,behavior:"smooth"});return;}
@@ -5176,7 +5190,7 @@ el("summary").addEventListener("click",e=>{
   if(e.target.closest("#calMore")){calAll=!calAll;renderSummary(sumFecha);return;}
   if(e.target.closest("#dispMore")){dispAll=!dispAll;renderSummary(sumFecha);return;}
   const opt=e.target.closest(".sumOpt");
-  if(opt){sumFecha=opt.dataset.f;sumOpen=false;sumShown=true;renderSummary(sumFecha);return;}
+  if(opt){sumFecha=opt.dataset.f;sumOpen=false;sumShown=true;renderSummary(sumFecha);verBanda();return;}
 });
 el("legPop").addEventListener("click",e=>{if(e.target===el("legPop")||e.target.closest("#legPopX"))el("legPop").style.display="none";});
 el("view").addEventListener("click",e=>{
