@@ -434,7 +434,7 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .sumOpt.calOpt.next{border-style:dashed dashed dashed solid;border-left-color:var(--brand)}
 .calCnt{flex:0 0 auto;font-size:11px;font-weight:600;color:var(--muted);background:var(--chip);border-radius:999px;padding:2px 8px;white-space:nowrap}
 .sumOpt.calOpt.next .calCnt{background:var(--brand);color:#fff}
-.calMore{align-self:center;margin:4px 0 2px;border:1px solid var(--line);background:#fff;color:var(--brand-deep);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.calMore{align-self:center;margin:12px 0 2px;border:1px solid var(--line);background:#fff;color:var(--brand-deep);border-radius:999px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .sumcard.calcard{background:#fbfdfe;border:1px dashed #a9c9d4;box-shadow:none}
 .calcard .sumline{box-shadow:none}
 .calWhen{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--ink);margin-top:4px}
@@ -508,6 +508,13 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .histRow .ht{font-weight:400}
 .histRow.hbest .ht{font-weight:700;color:var(--brand-deep)}
 .pRowDsq{opacity:.72}
+.mmSin .pmin{margin-top:4px}
+.pSinH+.pRow{border-top:0}
+.calCerrar{align-self:center;margin:14px auto 2px}
+.mmOtra{font-size:12px;font-weight:700;color:var(--good);margin-top:2px}
+.pPoolH{padding:9px 13px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--brand-deep);background:#e3f1f5}
+.pPoolH.p50{color:#fff;background:var(--brand-deep)}
+.pSinH{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.02em;padding:14px 13px 6px;border-top:1px solid var(--line)}
 .pRowDsq .dsqT{font-weight:700;font-size:12px;letter-spacing:.03em;color:#a25510}
 .histRow.hdsq .ht{font-weight:700;font-size:11px;letter-spacing:.03em;color:#a25510}
 .histRow.hdsq .hc,.histRow.hdsq .hd{color:var(--muted)}
@@ -3373,7 +3380,7 @@ function calDisputada(e){
 function calScope(){if(isHist())return [];const L=CALENDARIO[season]||[];return L.filter(e=>e.cat.indexOf(catFilter)>=0&&!calDisputada(e));}
 /* El botón de cerrar lo usan el resumen y la tarjeta de próxima: un solo sitio, un solo id. */
 const SUM_CLOSE='<button class="sumClose" id="sumClose">← Volver a la lista</button>';
-const CAL_DS=["dom","lun","mar","mié","jue","vie","sáb"],CAL_MS=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"],CAL_VIS=4;
+const CAL_DS=["dom","lun","mar","mié","jue","vie","sáb"],CAL_MS=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 function calD(f){const p=String(f).split("-");return new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));}
 function calIso(d){return d.toISOString().slice(0,10);}
 function calDia(f){const d=calD(f);return CAL_DS[d.getUTCDay()]+" "+d.getUTCDate()+" "+CAL_MS[d.getUTCMonth()];}
@@ -3668,24 +3675,30 @@ function renderSummary(fecha){
   }
   const fechas=summaryFechas();
   /* Disputadas: las jornadas con filas y, entre ellas por fecha, las del calendario que ya pasaron
-     sin acta cargada. Próximas: arriba, de la más cercana a la más lejana; se ven CAL_VIS y el resto
-     tras «Ver N más». */
+     sin acta cargada. Próximas: arriba, de la más cercana a la más lejana. Cuántas se ven: §4.89, más abajo. */
   const hoy=hoyISO();
   const disp=fechas.map(f=>{const c=(RECORDS.find(r=>jorK(r)===f)||{}).competi||"";return {d:jorD(f),h:`<button class="sumOpt" data-f="${esc(f)}"><span class="soDate">${fmtDate(jorD(f))}</span><span class="soName">${esc(c)}</span></button>`};});
   CALS.filter(e=>e.f<hoy).forEach(e=>disp.push({d:e.f,h:calRow(e,hoy,false)}));
   disp.sort((a,b)=>a.d<b.d?1:a.d>b.d?-1:0);
   const prox=CALS.filter(e=>e.f>=hoy).sort((a,b)=>(a.d||a.f).localeCompare(b.d||b.f)||a.n.localeCompare(b.n));
   /* ORDEN (Fran, 2-nov-2026, §4.74): DISPUTADAS ARRIBA (la más reciente primero) y PRÓXIMAS DEBAJO
-     (la más cercana primero). Cada bloque enseña CAL_VIS filas y un «Ver N más», para que la lista mida
-     lo mismo en octubre que en junio. Sin ✓ ni filo dorado: al elegir, la lista se cierra y la marca
+     (la más cercana primero). ⛔ «Cada bloque enseña 4 filas y un Ver N más»: SUPERADO por §4.89. Sin ✓ ni filo dorado: al elegir, la lista se cierra y la marca
      solo se veía cuando ya no servía. */
+  /* (22-nov-2026, §4.89) AL ABRIR, SOLO LA ÚLTIMA Y LA PRÓXIMA (Fran). «Ver todas» despliega las dos
+     listas enteras y abajo sale «✕ Cerrar», que lo cierra todo. ⛔ SUPERA el «4 por bloque y Ver N más»
+     de §4.74: el «Ver menos» dejaba la pantalla en el ranking. `calAll` es ahora el estado de la lista
+     entera (desplegada o no); al cerrar, vuelve a la vista corta. */
   let rows="";
-  if(disp.length){const vis=dispAll?disp:disp.slice(0,CAL_VIS);
-    rows+=`<div class="calSec">🏆 Disputadas</div>`+vis.map(x=>x.h).join("")
-      +(disp.length>CAL_VIS?`<button class="calMore" id="dispMore">${dispAll?"Ver menos":"Ver "+(disp.length-CAL_VIS)+" más"}</button>`:"");}
-  if(prox.length){const vis=calAll?prox:prox.slice(0,CAL_VIS);
-    rows+=`<div class="calSec${disp.length?" sep":""}">📅 Próximas</div>`+vis.map((e,i)=>calRow(e,hoy,i===0)).join("")
-      +(prox.length>CAL_VIS?`<button class="calMore" id="calMore">${calAll?"Ver menos":"Ver "+(prox.length-CAL_VIS)+" más"}</button>`:"");}
+  const resto=Math.max(0,disp.length-1)+Math.max(0,prox.length-1);
+  if(!calAll){
+    if(disp.length)rows+=`<div class="calSec">🏆 Última</div>`+disp[0].h;
+    if(prox.length)rows+=`<div class="calSec${disp.length?" sep":""}">📅 Próxima</div>`+calRow(prox[0],hoy,true);
+    if(resto)rows+=`<button class="calMore" id="calMore">Ver todas · ${resto} más</button>`;
+  }else{
+    if(disp.length)rows+=`<div class="calSec">🏆 Disputadas</div>`+disp.map(x=>x.h).join("");
+    if(prox.length)rows+=`<div class="calSec${disp.length?" sep":""}">📅 Próximas</div>`+prox.map((e,i)=>calRow(e,hoy,i===0)).join("");
+    rows+=`<button class="sumClose calCerrar" id="calCerrar">✕ Cerrar</button>`;
+  }
   const band=`<button class="sumBand${sumOpen?" open":""}" id="sumBand"><span class="sbIcon">🏆</span><span class="sbTxt">COMPETICIONES</span><span class="sbArrow">▾</span></button>`;
   const menu=`<div class="sumMenu${sumOpen?" open":""}">${rows}</div>`;
   const cuerpo=(sumShown&&h)?`<div class="sumWrap">${h}</div>`:"";
@@ -3787,7 +3800,7 @@ function hasMin(rec,par){const nm=rec.name||rec.nadadora;
    a inventarnos un "sin minima" donde solo falta el dato. */
 let PAR_EH=null,PAR_ESP=null,RUTA_CACHE=null;
 function parOf(par){return Array.isArray(par)?par:[par,null];}
-function minTbl(par,rec){const p=parOf(par);if(!p[1]||!es50(rec.competi))return p[0];
+function minTbl(par,rec){const p=parOf(par);if(_MINSTRICT&&es50(rec.competi))return p[1]||{};if(!p[1]||!es50(rec.competi))return p[0];
   const tb=p[1][sexFilter]||{};const ky=keyAnio(rec.anio,rec.fecha);return (tb[rec.prueba]&&tb[rec.prueba][ky])?p[1]:p[0];}
 function minDe(par,rec){const tb=minTbl(par,rec)[sexFilter]||{};const ky=keyAnio(rec.anio,rec.fecha);
   return (tb[rec.prueba]&&tb[rec.prueba][ky])||null;}
@@ -3830,6 +3843,31 @@ function minRow(par,rec){
    ⚠️ El texto es `Piscina 50m`, con la M PEGADA: es una decisión de ancho medida, no una errata.
    Con el espacio, la pastilla se salía en `100 Mariposa` y `200 Mariposa` y caía a una segunda
    línea (§4.30). La pastilla corta `.mb50` sigue viva SOLO para los puntos FINA del ranking. */
+/* (22-nov-2026, §4.89) PRUEBAS SIN TIEMPO EN LA PESTAÑA MÍNIMAS DE LA FICHA (Fran): «aunque todavía no
+   tengan tiempos, deberían aparecer los tiempos de las mínimas para tener la referencia». Se enseña la
+   mínima de 25 m (la tabla de la piscina habitual) de su año y sexo, sin barra ni diferencia: no hay
+   marca contra la que medir. Si no hay mínima ni EH ni ESP para su año, no hay fila. */
+let _MINSTRICT=false,_RALL=null;
+/* Sello de la fila en Mínimas por piscina: ESP antes que EH; de la misma, la de esta piscina antes que
+   la de la otra. Si es de la otra, lo dice («EN 50 m») y sale ya puesto: la barra de esta fila no llega
+   al 100 % y es la que lo haría caer. */
+function minGotPool(name,p,par,recs,l50){let b=null;for(const r of recs)if(r.nadadora===name&&r.prueba===p&&es50(r.competi)===l50&&(!b||toCs(r.tiempo)<toCs(b.tiempo)))b=r;
+  if(!b)return false;const tb=(parOf(par)[l50?1:0]||{})[sexFilter]||{};const m=tb[p]&&tb[p][keyAnio(b.anio,b.fecha)];return !!(m&&toCs(b.tiempo)<=toCs(m));}
+function selloPool(name,p,recs,linea){
+  for(const [lab,par] of [["ESP",PAR_ESP],["EH",PAR_EH]]){
+    const aqui=minGotPool(name,p,par,recs,_P50),otra=minGotPool(name,p,par,recs,!_P50);
+    const cl=sexFilter==="M"?"CLASIFICADO":"CLASIFICADA";
+    if(aqui){const cel=pendingKey("sh:"+sexFilter+"|"+name+"|"+p+"|"+lab);return `<div class="stamp${cel?" pre":""}">${cl} ${lab}</div>`;}
+    /* En las filas sin tiempo el sello no cabe (fila baja y recortada): va como línea verde. */
+    if(otra)return linea?`<div class="mmOtra">${sexFilter==="M"?"Clasificado":"Clasificada"} ${lab} en ${_P50?"25":"50"} m</div>`:`<div class="stamp otra">${cl} ${lab} EN ${_P50?"25":"50"} m</div>`;
+  }
+  return "";}
+function minRef(par,p,anio){if(!minsOn())return null;const tb=(parOf(par)[_MINSTRICT&&_P50?1:0]||{})[sexFilter]||{};
+  const ky=keyAnio(anio,MAXFECHA||hoyISO());return (tb[p]&&tb[p][ky])||null;}
+function sinTiempoRow(p,anio,anim,stamp){
+  const eh=minRef(PAR_EH,p,anio),es=minRef(PAR_ESP,p,anio);if(!eh&&!es)return"";
+  const ln=(m,lab)=>`<span class="mlab">${lab}</span>`+(m?`<span class="mmin"><i>mín.</i><span class="mono">${esc(m)}</span></span>`:`<span class="tag na">sin mínima</span>`)+`<span></span>`;
+  return `<div class="pRow mmRow mmSin" style="${anim}"><div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}</div>${stamp||""}</div></div><div class="pmin">${ln(eh,"EH")}${ln(es,"ESP")}</div></div>`;}
 function p50Pill(){return '<span class="mb mb50">50m</span>';}
 function pisPill(){return '<span class="pis50">Piscina 50m</span>';}
 function hasMinCs(cs,prueba,anio,tbl,fecha){const tb=tbl[sexFilter]||{};const m=tb[prueba]&&tb[prueba][keyAnio(anio,fecha)];if(!m)return false;return cs-toCs(m)<=0;}
@@ -3845,7 +3883,10 @@ function goalPill(name,vacio){
   const cand=[];
   PRUEBA_ORDER.forEach(p=>{if(!bestOf(RECORDS,name,p))return;
     const mf=marcaFila(name,p);
-    [["EH",PAR_EH],["ESP",PAR_ESP]].forEach(pair=>{const rt=minRow(pair[1],mf);
+    [["EH",PAR_EH],["ESP",PAR_ESP]].forEach(pair=>{
+      /* (§4.89) Por piscina: la que ya está conseguida en la OTRA piscina no está «a tiro», está hecha. */
+      if(_MINSTRICT&&_RALL&&minGotPool(name,p,pair[1],_RALL,!_P50))return;
+      const rt=minRow(pair[1],mf);
       if(rt&&!rt.got)cand.push({t:pair[0],p:p,d:rt.cs-rt.mc,rel:(rt.cs-rt.mc)/rt.mc,largo:rt.largo});});
   });
   if(!cand.length)return"";
@@ -3859,7 +3900,7 @@ function goalPill(name,vacio){
      con nada.
      ⚠️ `gp` lo comparten «A tiro» y «Objetivo más cercano», así que este cambio vale para los dos.
      ⚠️ Esto NO afecta a la pastilla `Piscina 50m`, que es deliberada y no se toca (CANON). */
-  const gp=x=>x.t+" "+abbrev(x.p)+" (a "+fmtClock(x.d)+(x.largo?" en piscina larga":"")+")";
+  const gp=x=>x.t+" "+abbrev(x.p)+" (a "+fmtClock(x.d)+((x.largo&&!_MINSTRICT)?" en piscina larga":"")+")";
   /* `solo` = no hay nada conseguido encima, así que esta línea no lleva raya ni hueco de separación.
      El rótulo va en negrita y el contenido no: es la misma jerarquía que usan las demás líneas. */
   const solo=arg=>arg?" solo":"";
@@ -4014,7 +4055,7 @@ function sumLeg(){const nad=sexFilter==="M"?"nadador":"nadadora";/* ⚠️ Aquí
    +"<br>Las cifras de arriba cuentan participantes, marcas nadadas, mejoras ⭐ (marcas que baten la mejor marca previa) y mínimas nuevas."
    +"<br><b>Resultados</b>: la clasificación completa del acta, prueba a prueba y con sus puestos oficiales, de todos los clubes. Los de fuera de Álava van en gris. Junto a cada marca de Álava, sus puntos FINA, ⭐ y los segundos que bajó su mejor marca, <span class='rsEst'>Estreno</span> si era la primera vez que nadaba esa prueba, y las mínimas EH / ESP nuevas. Solo salen las clasificaciones en las que nada alguien de la categoría elegida arriba; en los Ctos. de España y de Euskal Herria, solo aquellas en las que nada alguien de Álava."
    +"<br><span style='color:var(--muted)'>El resumen es de la <b>competición entera</b>: no le afectan los filtros de año y club de más abajo, que solo mueven el ranking.</span><div style='margin:9px 0 8px;border-top:1px solid var(--line)'></div>";}
-let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking",badgesFor=null,sumOpen=false,sumFecha=null,sumShown=false,calAll=false,dispAll=false,BAND_KEY=null,compsFor=null,compFecha=null;
+let BAR_T=0,BAR_IO=null,BAR_PEND=[],BAR_HOOK=false,PREV_FO=null,PREV_YRS=false,mode="ranking",badgesFor=null,sumOpen=false,sumFecha=null,sumShown=false,calAll=false,BAND_KEY=null,compsFor=null,compFecha=null;
 function fireBar(el){
   if(BAR_IO){try{BAR_IO.unobserve(el);}catch(e){}}
   BAR_PEND=BAR_PEND.filter(x=>x!==el);
@@ -4600,7 +4641,7 @@ function render(){
     {const tb=el("tabs");if(tb)tb.style.display=sub?"none":"";}
     el("segYear").style.display=(sinAnios||cmpA||compsFor)?"none":"flex";
     /* Solo en la ficha y solo en Top FINA: es donde viven los records. */
-    {const sp=el("segPool");if(sp)sp.style.display=(view==="topfina"&&!cmpA&&!compsFor&&!badgesFor)?"flex":"none";}
+    {const sp=el("segPool");if(sp)sp.style.display=((view==="topfina"||(view==="minimas"&&minsOn()))&&!cmpA&&!compsFor&&!badgesFor)?"flex":"none";}
     /* ⚠️ Los botones tienen que hablar el MISMO idioma que el ranking (`claveEdad`): en Histórico
        dentro de una categoría son "1.º año"/"2.º año", no años de nacimiento. Antes se pasaban
        siempre años y el botón resultante no casaba con nada: al pulsarlo, todas las pruebas de la
@@ -4643,13 +4684,14 @@ function render(){
      +"<b style='color:var(--brand)'>Euskal Herria</b> (EH) o el de <b style='color:var(--brand)'>España</b> (ESP) de su edad. "
      +"Cada prueba lleva una barra por cada una: <b style='color:#0c7c55'>−</b> en verde, ya conseguida · "
      +"<b style='color:#c0392b'>+</b> en rojo, lo que le falta."
-     +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 50 m.</span><br>"
-     +"La pastilla "+pisPill()+" junto al nombre de la prueba avisa de que esa fila <b>habla de una marca de piscina larga</b>, "
-     +"que se compara con la tabla de 50 m: pide otros tiempos.</div>"
-     +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Una sola marca por fila.</span><br>"
-     +"El tiempo, la fecha, los puntos y las dos barras salen <b>todos de la misma marca</b>. Normalmente es su mejor marca. "
-     +"Si esa no llega a la mínima pero tiene otra de 50 m que sí, la fila entera pasa a esa marca y se rotula.<br>"
-     +"El <b>Nº</b> es la excepción: <b>Nº 4 de 16</b> es su puesto en el ranking y cuántos hay en él, y no depende de qué marca enseñe la fila.</div>",
+     +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Piscina de 25 m y de 50 m.</span><br>"
+     +"Cada piscina tiene sus mínimas, y el selector de arriba elige cuál se ve (lo dice también la franja de la tarjeta). "
+     +"Cada prueba enseña su <b>mejor marca de esa piscina</b> comparada con la mínima de esa piscina, y "
+     +"<b>Nº 4 de 16</b> es su puesto entre quienes la han nadado en esa piscina.<br>"
+     +"<b>A tiro</b> y <b>Objetivo</b> hablan de la piscina elegida. <b>Mínimas conseguidas</b> cuenta las dos: una mínima vale se haga donde se haga. "
+     +"Por eso, si una mínima está conseguida en la otra piscina, el sello lo dice («CLASIFICADA EH EN 50 m»).</div>"
+     +"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Sin tiempo esta temporada.</span><br>"
+     +"Al final salen las pruebas que aún no ha nadado en esa piscina, con sus mínimas EH y ESP como referencia.</div>",
     topfina:"<span style='font-weight:700'>Ranking por puntos <span style='color:var(--brand)'>FINA</span>.</span> Los puntos sirven para comparar marcas de pruebas distintas: cuantos más puntos, mejor la marca. Aquí se suman los puntos de sus "+finaN+" mejores marcas, así que aparecen "+(sexFilter==="M"?"los":"las")+" que tienen al menos "+finaN+" pruebas.",topfinaRey:(function(){const ra={Libre:"del",Espalda:"de la",Braza:"de la",Mariposa:"de la",Estilos:"de los"};const st=ra[finaSel]?finaSel:"";return "<span style='font-weight:700'>👑 "+(sexFilter==="M"?"Rey":"Reina")+" "+(st?ra[st]+" "+st.toLowerCase():"de cada estilo")+".</span> Suma de los puntos FINA de su mejor marca en cada distancia nadada "+(st?"en "+st.toLowerCase():"de ese estilo")+". No exige un número mínimo de pruebas."})(),topfinaMed:"🏅 <span style='font-weight:700'>Medallero de insignias.</span> Recuento de las insignias ganadas en los resúmenes de las competiciones "+legAmbito()+": se gana una por cada podio (🥇🥈🥉) en los cuatro apartados del resumen.<br>"+legPodios(sexFilter==="M"?"nadador":"nadadora",true)+"<br>La lista se filtra con los selectores de arriba.<br>"+legOlimpico(),topfinaSpec:(function(){/* Se genera desde SPEC_FINA/SPEC_LAB: si mañana aparece un perfil nuevo, o
       Gran fondo deja de ofrecerse porque nadie nada el 1500, la leyenda va sola. Estaba escrita a mano
       y se había quedado sin 🐋 Gran fondo desde que entró el 1500 de infantil (§4.36). */
@@ -4952,6 +4994,7 @@ function renderBadges(vw,name){
   clubFilter=savedClub;yearFilter=savedYear;sexFilter=savedSex;RECORDS=savedRec;MAXFECHA=savedMax;MAXJOR=savedJor;
 }
 function renderProfile(vw){
+  _MINSTRICT=false;_RALL=null;
   const SREC=scopeRecs();
   if(!query.trim()){vw.innerHTML=`<div class="empty tall">Escribe el nombre de ${sexFilter==="M"?"un nadador":"una nadadora"} o su club para ver su ficha, o vuelve al ranking con <b>← Volver</b>.</div>`;animateBars(vw);return;}
   const found=foundSwimmers();
@@ -4973,17 +5016,26 @@ function renderProfile(vw){
        comparado contra el récord de Álava de 25 m y contra el récord del mundo de corta, y
        cantaba "¡Récord de Álava batido!". Un tiempo largo no se compara jamás contra referencias
        de corta. Cada pestaña solo admite marcas de su piscina. */
-    _P50=(view==="topfina"&&poolSel==="50");
-    if(view==="topfina")RECORDS=RECORDS.filter(r=>es50(r.competi)===_P50);
+    /* (22-nov-2026, §4.89) Mínimas también va POR PISCINA, con el mismo selector que Récords Álava:
+       cada pestaña mide solo sus marcas contra la tabla de su piscina. La cabecera y el sello miran
+       las dos (`RALL`): una mínima vale se haga donde se haga. */
+    const RALL=RECORDS,MPOOL=(view==="minimas"&&minsOn());
+    _P50=((view==="topfina"||MPOOL)&&poolSel==="50");
+    if(view==="topfina"||MPOOL)RECORDS=RECORDS.filter(r=>es50(r.competi)===_P50);
+    _MINSTRICT=MPOOL;
     const rec0=RECORDS.find(r=>r.nadadora===name);
-    let ri=0;
+    let ri=0;const sinRows=[];
     const NOFR=noofScope().filter(r=>r.nadadora===name);
     const ordFicha=(view==="marcas"||view==="minimas")?ordPruebas([...PRUEBA_ORDER,...new Set(NOFR.map(r=>r.prueba))]):PRUEBA_ORDER;
     const rows=ordFicha.map(p=>{
-      if(esNoof(p)){const L=noofRank(noofScope(),p),me=L.find(x=>x.name===name);if(!me)return"";
+      if(esNoof(p)){if(MPOOL&&_P50)return"";const L=noofRank(noofScope(),p),me=L.find(x=>x.name===name);if(!me)return"";
         const fN=finaNoof(me);const anim3=`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`;
         return `<div class="pRow pRowNoof" style="${anim3}"><div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}<span class="mb noofMb">no oficial</span></div><div class="puesto">Nº ${me.rank} de ${L.length}${fN?` · ${fN} pts`:""}</div>${view==="minimas"?noofMinLines(me):""}</div><div class="right"><div class="time mono"><span class="tdate">${fmtDate(me.fecha)}</span>${esc(me.tiempo)}</div></div></div>`;}
       const b=bestOf(RECORDS,name,p);
+      /* (22-nov-2026, §4.89) EN MÍNIMAS, TAMBIÉN LAS PRUEBAS SIN TIEMPO EN LA TEMPORADA (Fran): sale su
+         mínima EH y ESP de 25 m como referencia y «Sin tiempo esta temporada». Solo si alguna de las dos
+         existe para su año. Ver `sinTiempoRow()`. */
+      if(!b&&view==="minimas"){sinRows.push(p);return"";}
       if(!b){
         /* PRUEBA SOLO CON DESCALIFICACIONES (jul-2026). Sin marca válida no había fila que
            desplegar, así que 19 de las 30 descalificaciones quedaban escondidas — y justo en las
@@ -5040,7 +5092,8 @@ function renderProfile(vw){
           return `${gapTag(b,tbl,lab,1)}<div class="mrow"><div class="mbar"><div class="mfill${got?" mok":""}" style="${bg}width:0%" data-pct="${pct.toFixed(1)}" data-ck="${esc(ck)}"></div></div><span class="mpct">0%</span></div>`;};
         detail=`<div class="pmin">${mline(PAR_EH,"EH")}${mline(PAR_ESP,"ESP")}</div>`;
         const gEsp=minsOn()&&hasMin(b,PAR_ESP),gEh=minsOn()&&hasMin(b,PAR_EH);
-        if(gEsp||gEh){
+        if(MPOOL){stamp=selloPool(name,p,RALL);}
+        else if(gEsp||gEh){
           const lab=gEsp?"ESP":"EH";
           const cel=pendingKey("sh:"+sexFilter+"|"+name+"|"+p+"|"+lab);
           stamp=`<div class="stamp${cel?" pre":""}">${sexFilter==="M"?"CLASIFICADO":"CLASIFICADA"} ${lab}</div>`;
@@ -5068,7 +5121,7 @@ function renderProfile(vw){
            —era su única puerta— y la clase `tog`, que ya no significa nada aquí.
            Con ella se fue la envoltura `.right` que se había metido en esta fila solo para colgarla:
            el tiempo vuelve a ser hijo directo de `.mHead`, como siempre lo fue. */
-        return `<div class="pRow mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}${es50(mf.competi)?pisPill():""}</div><div class="puesto">${puestoTxt} · ${fMF} pts</div></div><div class="time mono">${dMF}${esc(mf.tiempo)}</div></div>${detail}</div>`;}
+        return `<div class="pRow mmRow" style="${anim}">${stamp}<div class="mHead"><div><div class="prueba ${stKlass(p)}">${esc(p)}${(!MPOOL&&es50(mf.competi))?pisPill():""}</div><div class="puesto">${puestoTxt} · ${fMF} pts</div></div><div class="time mono">${dMF}${esc(mf.tiempo)}</div></div>${detail}</div>`;}
       /* Rótulo de piscina larga en MARCAS (MMP/progreso). Se pregunta por `b`, la marca que
          ESTA fila enseña (la mejor), NO por marcaFila(): mínimas puede estar enseñando otra.
          Caso real: quien tiene su mejor 100 en 25 m pero consigue la mínima por la vía larga ve
@@ -5100,18 +5153,29 @@ function renderProfile(vw){
       }
       return `<div class="pRow" style="${anim}">${stamp}<div class="mid"><div class="prueba ${stKlass(p)}">${esc(p)}</div><div class="puesto">${puestoTxt} · ${f} pts</div>${detail}</div>${der}</div>`;
     }).join("");
+    /* (§4.89) Las pruebas sin tiempo, al final y bajo su rótulo; con `_MINSTRICT` aún puesto (piscina). */
+    const sinH=sinRows.map(p=>sinTiempoRow(p,c.anio,`animation:vfade .32s ease-out ${(ri++)*38}ms backwards`,MPOOL?selloPool(name,p,RALL,1):"")).join("");
     /* La cabecera solo existe si tiene algo dentro: con la EH callada (ver profileStat) podía
        quedar un .pMinHead vacío metiendo 14 px de aire muerto encima de la primera prueba. */
     /* Lo conseguido y el objetivo comparten UNA caja: son la misma historia (lo que ya tiene y lo
        que le falta), y hasta hoy iban en recuadros distintos y ni siquiera alineados entre sí. */
-    const mhSt=view==="minimas"?profileStat(name):"";
-    const mh=view==="minimas"?(mhSt+goalPill(name,!mhSt)):"";
+    /* «A tiro» / «Objetivo» van POR PISCINA (Fran, 22-nov-2026): en 25 m, lo que falta para la de 25; en
+       50 m, para la de 50. «Mínimas conseguidas» cuenta las dos: se calcula después, con todo. */
+    let mhSt="",mh="";
+    if(view==="minimas"){
+      RECORDS=RALL;_MINSTRICT=false;mhSt=profileStat(name);
+      if(MPOOL){RECORDS=RALL.filter(r=>es50(r.competi)===_P50);_MINSTRICT=true;_RALL=RALL;}
+      mh=mhSt+goalPill(name,!mhSt);
+    }
+    _MINSTRICT=false;_RALL=null;RECORDS=RALL;
     /* Sin esto, quien no haya nadado nunca en largo veria un panel en blanco sin explicacion. */
-    if(_P50&&!rows)return `<div class="profile"><div class="pRow"><div class="mid"><div class="puesto">Sin marcas en piscina de 50 m.</div></div></div></div>`;
-    if(!rows.trim()&&soloNoof(name))return `<div class="profile"><div class="pRow"><div class="mid"><div class="puesto">Solo tiene marcas en pruebas no oficiales: están en <b>Marcas</b> y <b>Mínimas</b>.</div></div></div></div>`;
+    if(_P50&&!rows&&!sinH)return `<div class="profile"><div class="pRow"><div class="mid"><div class="puesto">Sin marcas en piscina de 50 m.</div></div></div></div>`;
+    if(!rows.trim()&&!sinH&&soloNoof(name))return `<div class="profile"><div class="pRow"><div class="mid"><div class="puesto">Solo tiene marcas en pruebas no oficiales: están en <b>Marcas</b> y <b>Mínimas</b>.</div></div></div></div>`;
     /* `pList` deja ver lo que se sale de la tarjeta: la prueba desplegada necesita pintar su
        marco JUSTO ENCIMA del borde de `.profile`, y con `overflow:hidden` quedaba recortado. */
-    return `<div class="profile pList">${mh?`<div class="pMinHead"><div class="mhBox">${mh}</div></div>`:""}${rows}</div>`;
+    const sinB=sinH?`<div class="pSinH">Sin tiempo ${MPOOL?(_P50?"en piscina de 50 m ":"en piscina de 25 m "):""}esta temporada</div>`+sinH:"";
+    const poolH=MPOOL?`<div class="pPoolH${_P50?" p50":""}">Mínimas de piscina de ${_P50?"50":"25"} m</div>`:"";
+    return `<div class="profile pList">${poolH}${mh?`<div class="pMinHead"><div class="mhBox">${mh}</div></div>`:""}${rows}${sinB}</div>`;
   }).join("");
   _P50=false;
   clubFilter=savedClub;sexFilter=savedSex;RECORDS=savedRec;MAXFECHA=savedMax;MAXJOR=savedJor;
@@ -5183,12 +5247,14 @@ el("summary").addEventListener("click",e=>{
   if(cl){sumShown=false;sumOpen=true;renderSummary(sumFecha);try{window.scrollTo({top:0,behavior:"smooth"});}catch(e){window.scrollTo(0,0);}return;}
   const band=e.target.closest("#sumBand");
   if(band){
-    if(sumShown||sumOpen){sumShown=false;sumOpen=false;}   // algo abierto -> cerrar todo
+    if(sumShown||sumOpen){sumShown=false;sumOpen=false;calAll=false;}   // algo abierto -> cerrar todo (y la lista vuelve a la vista corta)
     else{sumOpen=true;}                                     // todo cerrado -> desplegar
     renderSummary(sumFecha);return;
   }
-  if(e.target.closest("#calMore")){calAll=!calAll;renderSummary(sumFecha);return;}
-  if(e.target.closest("#dispMore")){dispAll=!dispAll;renderSummary(sumFecha);return;}
+  if(e.target.closest("#calMore")){calAll=true;renderSummary(sumFecha);return;}
+  /* (§4.89) «✕ Cerrar» lo cierra todo, como la banda, y la pantalla sube a la banda si se había quedado
+     fuera: si no, al encogerse la página se vería el ranking. */
+  if(e.target.closest("#calCerrar")){calAll=false;sumOpen=false;sumShown=false;renderSummary(sumFecha);verBanda();return;}
   const opt=e.target.closest(".sumOpt");
   if(opt){sumFecha=opt.dataset.f;sumOpen=false;sumShown=true;renderSummary(sumFecha);verBanda();return;}
 });
