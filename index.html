@@ -3952,7 +3952,52 @@ function profileStat(name){
       +`<div class="mhTit">MÍNIMAS ${x[0]} CONSEGUIDAS</div>`
       +`<div class="mhList">${x[1].join(" · ")}</div></div></div>`).join("");
 }
-let phraseWritten=false,cmpA=null,cmpB=null,chipScrollPos=0,chipAnim=false,finaSel="3",finaChipPos=0,finaChipAnim=false;
+let phraseWritten=false,cmpA=null,cmpB=null,finaSel="3";
+/* CARRUSEL DE PASTILLAS — el de pruebas (Marcas/Mínimas) y el de Top FINA (24-nov-2026, §4.90).
+   La lista se pinta CAR_COP veces seguidas para que la tira parezca no acabarse, y se arranca en la
+   copia del centro.
+   ⚠️ NUNCA SE SALTA UNA VUELTA CON LA TIRA EN MOVIMIENTO. Antes había 3 copias y, en cuanto la tira
+   pasaba de 1,7 vueltas, `onscroll` la teletransportaba una vuelta entera (~1.500 px) en plena
+   inercia: en el iPhone esa zona aún no estaba pintada y las pastillas desaparecían un instante al
+   deslizar rápido (Fran). Con 3 copias el salto llegaba a ~1.000 px del inicio: casi en cada gesto.
+   Ahora hay 7 (~4.500 px de margen a cada lado) y la vuelta al centro solo se hace con la tira QUIETA
+   (150 ms sin moverse y sin el dedo encima) y cerca de un extremo (a menos de 1,5 vueltas).
+   ⚠️ UN TEMPORIZADOR POR CARRUSEL, y cada repintado cancela el anterior. Con uno suelto por toque,
+   dos toques seguidos dejaban vivo el del primero: leía la tira vieja, ya fuera de la página (0), y
+   desbloqueaba el salto en mitad del centrado del segundo. */
+const CAR_COP=7;
+const CAR={p:{pos:0,anim:false,tA:0,tR:0,dedo:false},f:{pos:0,anim:false,tA:0,tR:0,dedo:false}};
+function carCopias(h){return Array(CAR_COP+1).join(h);}
+function carrusel(ce,n,key,idx){
+  const S=CAR[key];
+  clearTimeout(S.tA);clearTimeout(S.tR);S.anim=false;S.dedo=false;
+  const kids=ce.children||[];
+  const period=(n>0&&kids.length>=2*n&&kids[n]&&kids[n].offsetLeft!==undefined)?(kids[n].offsetLeft-kids[0].offsetLeft):0;
+  const mid=Math.floor(CAR_COP/2);
+  const norm=x=>{if(!period)return x;while(x<period*(mid-.5))x+=period;while(x>period*(mid+.5))x-=period;return x;};
+  const vivo=()=>ce.isConnected!==false;
+  const borde=()=>{
+    if(!period||S.anim||S.dedo||!vivo())return;
+    const x=ce.scrollLeft,max=(ce.scrollWidth||period*CAR_COP)-ce.clientWidth;
+    if(x<period*1.5||x>max-period*1.5){ce.scrollLeft=norm(x);S.pos=ce.scrollLeft;}
+  };
+  const espera=()=>{clearTimeout(S.tR);S.tR=setTimeout(borde,150);};
+  ce.scrollLeft=norm(S.pos);S.pos=ce.scrollLeft;
+  ce.onscroll=()=>{S.pos=ce.scrollLeft;espera();};
+  /* `passive`: el dedo solo se anota; así el navegador no espera al script para empezar a deslizar. */
+  const pas={passive:true},suelta=()=>{S.dedo=false;espera();};
+  ce.addEventListener("touchstart",()=>{S.dedo=true;clearTimeout(S.tR);},pas);
+  ce.addEventListener("touchend",suelta,pas);ce.addEventListener("touchcancel",suelta,pas);
+  if(idx<0||!period)return;
+  const centerNow=ce.scrollLeft+ce.clientWidth/2;
+  let bestT=null,bestD=Infinity;
+  for(let c=0;c<CAR_COP;c++){const el2=kids[idx+c*n];if(!el2)continue;const t=el2.offsetLeft-(ce.clientWidth-el2.clientWidth)/2;const d=Math.abs((el2.offsetLeft+el2.clientWidth/2)-centerNow);if(d<bestD){bestD=d;bestT=t;}}
+  if(bestT===null)return;
+  S.anim=true;
+  const smooth=(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)?"auto":"smooth";
+  try{ce.scrollTo({left:bestT,behavior:smooth});}catch(e){ce.scrollLeft=bestT;}
+  S.tA=setTimeout(()=>{S.anim=false;if(!vivo())return;S.pos=ce.scrollLeft;borde();},450);
+}
 function whenAwake(fn){
   try{
     const ctx=actx();if(!ctx)return;
@@ -4797,7 +4842,7 @@ function render(){
   const present=(view==="marcas"||view==="minimas")?ordPruebas([...pruebasPresent(),...noofPresent()]):pruebasPresent();
   if(present.length&&!present.includes(activePrueba))activePrueba=present[0];
   const chips1=present.map(p=>`<button class="chip ${stKlass(p)}${esNoof(p)?" noof":""} ${p===activePrueba?"on":""}" data-p="${esc(p)}">${esc(p)}</button>`).join("");
-  const chips=chips1+chips1+chips1;
+  const chips=carCopias(chips1);
   const NO=esNoof(activePrueba);
   const rk=NO?noofRank(poolRecs(noofScope()),activePrueba):rankTime(RECORDS,activePrueba);
   const prev=NO?{}:rankMap(rankTime(BEFORE,activePrueba));
@@ -4854,29 +4899,7 @@ function render(){
   vw.innerHTML=`<div class="chipwrap"><div class="chips">${chips}</div></div>${view==="minimas"?minRefCard(activePrueba):""}${body}`;
   animateTags(vw);
   const ce=vw.querySelector(".chips");
-  if(ce){
-    const n=present.length;
-    const kids=ce.children||[];
-    const period=(n>0&&kids.length>=2*n&&kids[n]&&kids[n].offsetLeft!==undefined)?(kids[n].offsetLeft-kids[0].offsetLeft):0;
-    const norm=x=>{if(!period)return x;while(x<period*0.5)x+=period;while(x>period*1.5)x-=period;return x;};
-    ce.scrollLeft=norm(chipScrollPos);
-    ce.onscroll=()=>{
-      chipScrollPos=ce.scrollLeft;
-      if(!chipAnim&&period){const x=ce.scrollLeft;if(x<period*0.3)ce.scrollLeft=x+period;else if(x>period*1.7)ce.scrollLeft=x-period;}
-    };
-    const idx=present.indexOf(activePrueba);
-    if(idx>=0&&period){
-      const centerNow=ce.scrollLeft+ce.clientWidth/2;
-      let bestT=null,bestD=Infinity;
-      [idx,idx+n,idx+2*n].forEach(k=>{const el2=kids[k];if(!el2)return;const t=el2.offsetLeft-(ce.clientWidth-el2.clientWidth)/2;const d=Math.abs((el2.offsetLeft+el2.clientWidth/2)-centerNow);if(d<bestD){bestD=d;bestT=t;}});
-      if(bestT!==null){
-        chipAnim=true;
-        const smooth=(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)?"auto":"smooth";
-        try{ce.scrollTo({left:bestT,behavior:smooth});}catch(e){ce.scrollLeft=bestT;}
-        setTimeout(()=>{chipAnim=false;ce.scrollLeft=norm(ce.scrollLeft);chipScrollPos=ce.scrollLeft;},450);
-      }
-    }
-  }
+  if(ce)carrusel(ce,present.length,"p",present.indexOf(activePrueba));
   vw.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{activePrueba=c.dataset.p;render();});
 }
 
@@ -4954,27 +4977,10 @@ function renderClass(vw,N){
     }).join("");
     body=`<div class="list">${rows}</div>`;
   }
-  vw.innerHTML=`<div class="chipwrap"><div class="chips">${chips1+chips1+chips1}</div></div>`+body;
+  vw.innerHTML=`<div class="chipwrap"><div class="chips">${carCopias(chips1)}</div></div>`+body;
   const ce=vw.querySelector(".chips");
   if(ce){
-    const n2=items.length;
-    const kids=ce.children||[];
-    const period=(n2>0&&kids.length>=2*n2&&kids[n2]&&kids[n2].offsetLeft!==undefined)?(kids[n2].offsetLeft-kids[0].offsetLeft):0;
-    const norm=x=>{if(!period)return x;while(x<period*0.5)x+=period;while(x>period*1.5)x-=period;return x;};
-    ce.scrollLeft=norm(finaChipPos);
-    ce.onscroll=()=>{finaChipPos=ce.scrollLeft;if(!finaChipAnim&&period){const x=ce.scrollLeft;if(x<period*0.3)ce.scrollLeft=x+period;else if(x>period*1.7)ce.scrollLeft=x-period;}};
-    const idx=items.findIndex(it=>it.v===finaSel);
-    if(idx>=0&&period){
-      const centerNow=ce.scrollLeft+ce.clientWidth/2;
-      let bestT=null,bestD=Infinity;
-      [idx,idx+n2,idx+2*n2].forEach(k=>{const el2=kids[k];if(!el2)return;const t=el2.offsetLeft-(ce.clientWidth-el2.clientWidth)/2;const d=Math.abs((el2.offsetLeft+el2.clientWidth/2)-centerNow);if(d<bestD){bestD=d;bestT=t;}});
-      if(bestT!==null){
-        finaChipAnim=true;
-        const smooth=(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)?"auto":"smooth";
-        try{ce.scrollTo({left:bestT,behavior:smooth});}catch(e){ce.scrollLeft=bestT;}
-        setTimeout(()=>{finaChipAnim=false;ce.scrollLeft=norm(ce.scrollLeft);finaChipPos=ce.scrollLeft;},450);
-      }
-    }
+    carrusel(ce,items.length,"f",items.findIndex(it=>it.v===finaSel));
     vw.querySelectorAll(".chip").forEach(c=>{if(c.dataset&&c.dataset.f)c.onclick=()=>{finaSel=c.dataset.f;if(/^\d+$/.test(finaSel))finaN=+finaSel;render();};});
   }
 }
