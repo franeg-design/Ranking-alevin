@@ -691,6 +691,10 @@ select.seasonSel{appearance:none;-webkit-appearance:none;padding:5px 24px 5px 12
 .secdiv span{font-family:'Space Grotesk',sans-serif;font-size:23px;font-weight:700;filter:drop-shadow(0 1px 1.5px rgba(11,42,58,.22));background:linear-gradient(120deg,var(--brand) 0%,var(--brand-deep) 90%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;white-space:nowrap}
 .secdiv.fmode span{background:linear-gradient(100deg,#101f29 0 40%,#bfefff 50%,#101f29 60% 100%);background-size:260% 100%;background-position:0 0;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 1px 0 rgba(255,255,255,.9)) drop-shadow(0 2px 2px rgba(11,42,58,.32));animation:sheen 1.15s ease-out .08s 1 both}
 @keyframes sheen{from{background-position:100% 0}to{background-position:0 0}}
+/* «RANKING CONJUNTO» (§4.93): el rótulo recorre los cuatro colores de categoría y sube, porque encima
+   no está la banda COMPETICIONES. */
+.secdiv.conj{margin-top:22px}
+.secdiv.conj span{background:linear-gradient(100deg,var(--c-alevin) 0%,var(--c-infantil) 38%,var(--c-junior) 66%,var(--c-absoluta) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
 .secdiv::before,.secdiv::after{content:"";flex:1;height:7px;border-radius:6px;border:1px solid var(--line);background:repeating-linear-gradient(90deg,#e05252 0 9px,#fff 9px 15px,#2f7fb2 15px 24px,#fff 24px 30px);opacity:.95;transform:scaleX(1)}
 .syear{font-size:11px;font-weight:800;color:var(--brand-deep);margin-top:6px;letter-spacing:.05em}
 .scat{font-size:12px;font-weight:700;color:var(--brand);margin-top:10px;padding-top:8px;border-top:1px solid var(--chip);letter-spacing:.02em}
@@ -1099,6 +1103,25 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .mRefG .sep{padding-left:6px;border-left:1px solid var(--line)}
 .mRefG .hd2.sep{border-left:0;padding-left:0}
 .mRefG .ry{font-size:12px;font-weight:700;color:var(--ink);text-align:left}
+/* ===== «TODAS»: RANKING CONJUNTO (Fran, 26-nov-2026, §4.93; variante C sobre muestra) =====
+   Un color por categoría, elegido para no chocar con la paleta de estilos (Libre teal, Espalda verde,
+   Braza ocre, Mariposa violeta, Estilos pizarra). Solo vive en esta vista: pastillas y etiquetas. */
+:root{--c-alevin:#1f78b8;--c-infantil:#c9611f;--c-junior:#a8326a;--c-absoluta:#1d3c5e}
+.segConj button{gap:6px}
+.segConj .cDot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;box-sizing:border-box}
+.segConj button:not(.on) .cDot{background:transparent!important;border:1.5px solid currentColor;opacity:.6}
+/* Las etiquetas van SIEMPRE en su propio renglón, bajo el club (Fran): en la línea del club unas cabían y
+   otras no, y la fila cambiaba de forma según el largo del club. */
+.cLine{margin-top:3px;line-height:1}
+.cTag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;border-radius:5px;padding:1px 5px;vertical-align:1px}
+.cTag.alevin{color:var(--c-alevin);background:#e4f0f9}
+.cTag.infantil{color:var(--c-infantil);background:#fbede3}
+.cTag.junior{color:var(--c-junior);background:#f7e6ee}
+.cTag.absoluta{color:var(--c-absoluta);background:#e3e9f0}
+.sxTag{display:inline-block;margin-left:4px;font-size:10px;font-weight:700;border-radius:5px;padding:1px 5px;vertical-align:1px}
+.sxTag.F{color:#8a3a62;background:#f6e8ef}
+.sxTag.M{color:#2d5a86;background:#e6eef7}
+.segSexH.tres button{padding:3px 9px}
 </style>
 </head>
 <body>
@@ -1481,7 +1504,7 @@ function fillSeasons(){const multi=SEASONS.length>1;const sel=el("seasonSel");
    es ÁMBITO, no filtro). Una sola función para que no puedan volver a divergir. */
 function scopeRecs(){
   let s=isHist()?ALLRECS.slice():ALLRECS.filter(r=>seasonOf(r.fecha)===season);
-  if(catFilter&&catFilter!=="all")s=s.filter(r=>grupoDe(r.anio,r.fecha)===catFilter);
+  if(catFilter&&catFilter!=="all")s=s.filter(r=>enCat(grupoDe(r.anio,r.fecha)));
   return s;
 }
 /* ===== «ABSOLUTA»: UNA CATEGORÍA POR FUERA, DOS TABLAS POR DENTRO (§4.45) ==================
@@ -1506,7 +1529,8 @@ function catsPresent(){
     .forEach(c=>{if(set.has(c)&&out.indexOf(c)<0)out.push(c);});
   return out;
 }
-/* ⚠️ LA CATEGORÍA ES BINARIA Y SIEMPRE HAY UNA ACTIVA: Alevín o Infantil, nunca «Todas». Fran:
+/* ⛔ SUPERADO por §4.93 (26-nov-2026): la pastilla de la cabecera ofrece también «Todas» (ranking conjunto).
+   ⚠️ LA CATEGORÍA ES BINARIA Y SIEMPRE HAY UNA ACTIVA: Alevín o Infantil, nunca «Todas». Fran:
    "es como un selector de sexo, es lo que va a segmentar todo". Va en la CABECERA junto al de
    temporada y al de Fem./Masc., porque es de la misma naturaleza: define el ámbito, no filtra una
    tabla. Sirve igual en temporada y en Histórico.
@@ -1518,6 +1542,7 @@ function catDefault(){const cs=catsPresent();return cs.indexOf("alevin")>=0?"ale
    · `catTemp` — pastilla de la CABECERA (#segCatH). SIEMPRE visible mientras haya dos categorías,
      también en Histórico. Es binaria (Alevín | Infantil, una siempre activa) y decide qué categoría
      ves al entrar en una temporada. Dentro de una temporada no cabe «Todas»: compiten por separado.
+     ⛔ SUPERADO por §4.93: «Todas» existe en temporada como vista de ranking conjunto (ver abajo).
    · `catHist` — segmentado de ABAJO (#segCat). Solo en Histórico, con Todas · Alevín · Infantil, y
      arranca en «Todas» porque elegir Histórico ya significa todas las categorías. Con «Todas» los
      botones de años son años de nacimiento; dentro de una categoría pasan a 1.º / 2.º año.
@@ -1525,9 +1550,42 @@ function catDefault(){const cs=catsPresent();return cs.indexOf("alevin")>=0?"ale
    construir RECORDS en `applySex()`.
    En Histórico la pastilla de arriba se ve atenuada: sigue estando y se puede cambiar —para dejar
    elegida la categoría con la que volverás a la temporada— pero allí no manda ella. */
+/* ===== «TODAS»: RANKING CONJUNTO (Fran, 26-nov-2026, §4.93) =====================================
+   ⛔ SUPERA «dentro de una temporada no cabe Todas: compiten por separado» (8-ago-2026, §4.6), por
+   decisión expresa de Fran. «Todas» es una opción más de la pastilla de la cabecera (`catTemp`), SOLO en
+   temporada (el Histórico sigue con su «Promoción»). Dentro:
+   · pastillas de categoría (`#segCat` con clase `segConj`) que se encienden y apagan de un toque; al
+     entrar, todas encendidas; la última no se apaga. Cada una mete TODOS sus años (`conjSel`).
+   · solo Marcas y Top FINA, sin indicadores de la última competición, sin flechas de puesto, sin MMP de
+     temporadas anteriores y sin Insignias: con categorías mezcladas, «la última competición» de una no
+     es la de otra.
+   · sexo «Mixto» (`sexMix`), solo aquí. ⚠️ `sexFilter` NUNCA vale otra cosa que F o M: los puntos FINA,
+     las mínimas y medio motor lo leen como índice de tabla. En Mixto cada fila se pinta con `sexFilter`
+     puesto a SU sexo (`conMiSexo`), y el Top FINA se calcula por sexo y se funde (`calcMix`).
+   · tocar un nombre abre su ficha EN SU CATEGORÍA (`goProfile` cambia `catTemp`) y «← Volver» devuelve
+     a «Todas» tal como estaba (`conjVuelta`). Así ninguna ficha corre nunca con `catFilter` = «todas». */
+const CONJ="todas";
+let conjSel=null, sexMix=false, conjVuelta=null, _sexTres=false;
+function conjOn(){return !isHist()&&catTemp===CONJ;}
+function mixOn(){return conjOn()&&sexMix;}
+/* ¿Entra este grupo de categoría en el ámbito? Única pregunta para todos los filtros de categoría. */
+function enCat(g){if(!catFilter||catFilter==="all")return true;if(catFilter===CONJ)return !!(conjSel&&conjSel.has(g));return g===catFilter;}
+function sexOk(sx){return mixOn()||sx===sexFilter;}
+function conMiSexo(r,fn){const sv=sexFilter;if(mixOn()&&r&&r.sexo)sexFilter=r.sexo;try{return fn();}finally{sexFilter=sv;}}
+/* Etiquetas bajo el club: categoría y, en Mixto, F/M. Fuera de «Todas» no pinta nada. */
+function conjLine(r){if(!conjOn())return "";const g=grupoDe(r.anio,r.fecha),sx=r.sexo||sexFilter;
+  return `<div class="cLine"><span class="cTag ${g}">${esc(CAT_LAB[g]||g)}</span>${mixOn()?`<span class="sxTag ${sx}">${sx}</span>`:""}</div>`;}
+function conjLeg(){return "<span style='font-weight:700'>Ranking conjunto.</span> Junta en una sola lista las categorías encendidas en las pastillas, cada una con todos sus años. Un toque enciende o apaga una categoría; la última encendida no se puede apagar."
+  +"<br>Debajo del club va la <b>categoría</b> de cada "+(mixOn()?"nadador/a y su sexo (<b>F</b>/<b>M</b>)":(sexFilter==="M"?"nadador":"nadadora"))+"."
+  +"<br>Aquí no hay indicadores de la última competición ni flechas de puesto: con categorías mezcladas, la última competición de una no es la de otra."
+  +(mixOn()?"<br>En <b>Mixto</b> los puntos FINA se calculan con la tabla de cada sexo, así que sirven para comparar chicas y chicos; los tiempos, no.":"")
+  +"<br>Al tocar un nombre se abre su ficha en su categoría; <b>← Volver</b> trae de vuelta aquí.";}
 function catSync(){
   const cs=catsPresent();
-  if(cs.indexOf(catTemp)<0)catTemp=catDefault();
+  if(catTemp===CONJ){if(cs.length<2)catTemp=catDefault();}
+  else if(cs.indexOf(catTemp)<0)catTemp=catDefault();
+  if(catTemp===CONJ){if(conjSel)conjSel=new Set([...conjSel].filter(c=>cs.indexOf(c)>=0));if(!conjSel||!conjSel.size)conjSel=new Set(cs);}
+  else sexMix=false;
   if(catHist!=="all"&&cs.indexOf(catHist)<0)catHist="all";
   catFilter=isHist()?catHist:catTemp;
 }
@@ -1538,10 +1596,14 @@ function fillCats(){
   if(arr){
     if(!hay){arr.style.display="none";arr.innerHTML="";}
     else{arr.style.display="";arr.style.opacity=isHist()?".45":"";
-      arr.innerHTML=cs.map(c=>`<option value="${c}"${c===catTemp?" selected":""}>${CAT_LAB[c]}</option>`).join("");}
+      arr.innerHTML=cs.map(c=>`<option value="${c}"${c===catTemp?" selected":""}>${CAT_LAB[c]}</option>`).join("")
+        +`<option value="${CONJ}"${catTemp===CONJ?" selected":""}>Todas</option>`;}
   }
   if(ab){
-    if(!hay||!isHist()){ab.style.display="none";ab.innerHTML="";}
+    if(ab.classList)ab.classList.toggle("segConj",conjOn());
+    if(!hay||(!isHist()&&!conjOn())){ab.style.display="none";ab.innerHTML="";}
+    else if(conjOn()){ab.style.display="flex";if(ab.classList)ab.classList.toggle("scr",false);
+      ab.innerHTML=cs.map(c=>{const on=conjSel.has(c);return `<button data-c="${c}"${on?` class="on" style="color:var(--c-${c})"`:""}><i class="cDot" style="background:var(--c-${c})"></i>${CAT_LAB[c]}</button>`;}).join("");}
     else{ab.style.display="flex";
       /* Con cinco categorías más «Promoción» la fila pide ~437px y no cabe ni en un móvil de 390:
          se desliza en horizontal, igual que ya hacen los botones de año. */
@@ -1549,10 +1611,16 @@ function fillCats(){
       ab.innerHTML=`<button data-c="all"${catHist==="all"?' class="on"':''}>Promoción</button><i class="segSep"></i>`
         +cs.map(c=>`<button data-c="${c}"${c===catHist?' class="on"':''}>${CAT_LAB[c]}</button>`).join("");}
   }
+  /* «Mixto» solo existe dentro de «Todas». El selector se rehace solo cuando entra o sale el tercer botón:
+     fuera de «Todas» queda el HTML de siempre. */
+  const sxs=el("segSex");
+  if(sxs&&(conjOn()||_sexTres)){_sexTres=conjOn();const act=mixOn()?"X":sexFilter;
+    sxs.innerHTML=[["F","Fem."],["M","Masc."]].concat(_sexTres?[["X","Mixto"]]:[]).map(([v,t])=>`<button data-s="${v}"${v===act?' class="on"':""}>${t}</button>`).join("");
+    if(sxs.classList)sxs.classList.toggle("tres",_sexTres);}
 }
 /* Las claves de año (o cohorte) del ámbito: las que pinta el selector de año. La usan `fillYears` y la
    cabecera de mínimas del ranking (`minRefCard`, §4.90), para que las dos digan siempre lo mismo (§0.7). */
-function clavesAmbito(){return [...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||grupoDe(r.anio,r.fecha)===catFilter)).map(claveEdad).filter(Boolean))].sort();}
+function clavesAmbito(){return [...new Set(ALLRECS.filter(r=>(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||enCat(grupoDe(r.anio,r.fecha)))).map(claveEdad).filter(Boolean))].sort();}
 function fillYears(only){const seg=el("segYear");if(!seg)return;const all=clavesAmbito();const ys=(only&&only.length)?only.slice().sort():all;
   /* ⚠️ `0607` NO es una clave de fila —ninguna nadadora tiene `claveEdad()==="0607"`—, así que esta
      criba la habría borrado en el primer repintado y «Abs joven» se habría apagado solo. Sobrevive
@@ -1608,12 +1676,12 @@ function esNoof(p){return NOOF_RE.test(p||"");}
 const ESTILO_ORD={Libre:0,Espalda:1,Braza:2,Mariposa:3,Estilos:4};
 function ordPruebas(ps){return ps.slice().sort((a,b)=>{const x=a.split(" "),y=b.split(" ");return ((ESTILO_ORD[x[1]]??9)-(ESTILO_ORD[y[1]]??9))||(+x[0]-+y[0])||a.localeCompare(b);});}
 function noofScope(sx){let s=isHist()?ALLNOOF.slice():ALLNOOF.filter(r=>seasonOf(r.fecha)===season);
-  if(catFilter&&catFilter!=="all")s=s.filter(r=>grupoDe(r.anio,r.fecha)===catFilter);
-  return s.filter(r=>r.sexo===(sx||sexFilter));}
+  if(catFilter&&catFilter!=="all")s=s.filter(r=>enCat(grupoDe(r.anio,r.fecha)));
+  return s.filter(r=>sx?r.sexo===sx:sexOk(r.sexo));}
 /* Ámbito de las no oficiales SIN filtro de sexo, para buscador y fichas (§4.69): quien solo tiene
    marcas no oficiales también debe poder buscarse y abrir su ficha. */
 function noofScopeAll(){let s=isHist()?ALLNOOF.slice():ALLNOOF.filter(r=>seasonOf(r.fecha)===season);
-  if(catFilter&&catFilter!=="all")s=s.filter(r=>grupoDe(r.anio,r.fecha)===catFilter);return s;}
+  if(catFilter&&catFilter!=="all")s=s.filter(r=>enCat(grupoDe(r.anio,r.fecha)));return s;}
 function soloNoof(name){return !ALLRECS.some(r=>r.nadadora===name)&&ALLNOOF.some(r=>r.nadadora===name);}
 function noofPresent(){return [...new Set(poolRecs(noofScope()).map(r=>r.prueba))];}
 const NOOF_EQ={"75":"100","150":"200","300":"400","600":"800"};
@@ -3596,6 +3664,8 @@ function calLeg(){const ch=sexFilter==="M"?"chicos":"chicas";
 function renderSummary(fecha){
   const box=el("summary");if(!box)return;
   if(mode==="fichas"){renderFichSummary(box);return;}
+  /* «Todas» (§4.93): sin banda COMPETICIONES ni resumen; solo el rótulo. */
+  if(conjOn()){const _c=`<div class="secdiv conj" id="secdiv"><span id="secTitle">Ranking conjunto</span></div>`;if(box.innerHTML!==_c)box.innerHTML=_c;return;}
   /* Con el calendario (§4.72) una categoría puede tener próximas aunque aún no tenga ni una fila. */
   const CALS=calScope();
   if(!RECORDS.length&&!CALS.length){box.innerHTML="";return;}
@@ -3750,10 +3820,11 @@ let RT_CACHE=new WeakMap();
 function rankTime(recs,prueba){
   /* ⚠️ La lista se ORDENA para la clave: marcar 2014 y luego 2013 da el mismo ranking que al revés,
      y sin ordenar se guardarían dos entradas distintas para lo mismo. */
-  const k=sexFilter+"|"+catFilter+"|"+yearFilter.slice().sort().join("+")+"|"+clubFilter+"|"+season+"|"+(_P50?"50":"25")+"|"+prueba;
+  const k=sexFilter+"|"+catFilter+"|"+yearFilter.slice().sort().join("+")+"|"+clubFilter+"|"+season+"|"+(_P50?"50":"25")+"|"+prueba
+    +(catFilter===CONJ&&conjSel?"|"+[...conjSel].sort().join("+")+(mixOn()?"|X":""):"");
   let m=RT_CACHE.get(recs);if(!m){m=new Map();RT_CACHE.set(recs,m);}
   const hit=m.get(k);if(hit)return hit;
-  const val=(function(){const rr=poolRecs(recs).filter(r=>r.prueba===prueba);const names=[...new Set(rr.map(r=>r.nadadora))];const arr=names.map(n=>{const b=bestOf(rr,n,prueba);return{name:n,prueba:prueba,club:b.club,anio:b.anio,cs:toCs(b.tiempo),tiempo:b.tiempo,fecha:b.fecha,competi:b.competi};});arr.sort((a,b)=>a.cs-b.cs||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.cs===arr[i-1].cs)?arr[i-1].rank:i+1;});return arr;})();
+  const val=(function(){const rr=poolRecs(recs).filter(r=>r.prueba===prueba);const names=[...new Set(rr.map(r=>r.nadadora))];const arr=names.map(n=>{const b=bestOf(rr,n,prueba);return{name:n,prueba:prueba,club:b.club,anio:b.anio,sexo:b.sexo,cs:toCs(b.tiempo),tiempo:b.tiempo,fecha:b.fecha,competi:b.competi};});arr.sort((a,b)=>a.cs-b.cs||a.name.localeCompare(b.name));arr.forEach((x,i)=>{x.rank=(i>0&&x.cs===arr[i-1].cs)?arr[i-1].rank:i+1;});return arr;})();
   m.set(k,val);return val;
 }
 function rankMap(arr){const m={};arr.forEach(x=>m[x.name]=x.rank);return m;}
@@ -4214,7 +4285,7 @@ function dsqOf(name,prueba){
   return ALLDSQ.filter(r=>r.nadadora===name&&r.prueba===prueba&&r.sexo===sexFilter
     &&(!_P50||es50(r.competi))
     &&(isHist()||seasonOf(r.fecha)===season)
-    &&(!catFilter||catFilter==="all"||grupoDe(r.anio,r.fecha)===catFilter));
+    &&(!catFilter||catFilter==="all"||enCat(grupoDe(r.anio,r.fecha))));
 }
 /* CONTENIDO DEL DESPLEGABLE, EN UN SOLO SITIO (21-ago-2026). Lo piden DOS funciones: `histBox`
    para pintarlo y `histPill` para saber si hay algo que abrir y cuántas filas tiene. Si cada una
@@ -4341,7 +4412,14 @@ function scrollSec(){
     window.scrollTo({top:Math.max(0,y),behavior:"smooth"});
   }catch(e){try{window.scrollTo(0,0);}catch(e2){}}
 }
-function goProfile(n){if(!n)return;mode="fichas";query=n;badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s){s.value=n;}const sg=el("searchSug");if(sg){sg.style.display="none";sg.innerHTML="";}render();scrollSec();}
+function goProfile(n){if(!n)return;
+  /* Desde «Todas» la ficha se abre EN SU CATEGORÍA y con su sexo (§4.93): ninguna ficha corre con el ámbito
+     conjunto. Se apunta cómo estaba «Todas» para que «← Volver» lo deje igual. */
+  let viaConj=false;
+  if(conjOn()){const r0=ALLRECS.find(r=>r.nadadora===n&&seasonOf(r.fecha)===season)||ALLNOOF.find(r=>r.nadadora===n&&seasonOf(r.fecha)===season);
+    if(r0&&grupoDe(r0.anio,r0.fecha)){conjVuelta={sex:sexFilter,mix:sexMix};catTemp=grupoDe(r0.anio,r0.fecha);sexMix=false;sexFilter=r0.sexo||sexFilter;yearFilter=[];viaConj=true;}}
+  mode="fichas";query=n;badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s=el("search");if(s){s.value=n;}const sg=el("searchSug");if(sg){sg.style.display="none";sg.innerHTML="";}
+  if(viaConj)applySex();else render();scrollSec();}
 function deltaTag(ev,pop,corto){if(!ev)return"";
   const c=ev.dir==="up"?"up":"down",sg=ev.dir==="up"?"−":"+";
   if(corto)return`<span class="tagO ${c}">ÚLT. COMP.</span><span class="tag ${c} mono">${sg}${fmtClock(ev.d)}</span>`;
@@ -4694,7 +4772,7 @@ function render(){
   try{document.body.classList.toggle("mfich",fo);}catch(e){}
   {const fn=fo?((query.trim()&&foundSwimmers()[0]||{}).name||""):"";const bk=fo?("f|"+fn):"r";if(bk!==BAND_KEY){BAND_KEY=bk;if(fo){sumOpen=false;sumShown=false;}renderSummary(sumFecha);}}
   el("tabs").querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset.v===view));
-  if(isHist()&&view==="minimas")view="marcas";
+  if((isHist()||(conjOn()&&!fo))&&view==="minimas")view="marcas";
   const perPrueba=(view==="marcas"||view==="minimas");
   /* ⚠️ En ABSOLUTO no hay selector de años: la fila entera se oculta (decisión de Fran,
      20-ago-2026). La categoría es abierta —«2005 y anterior»— y su cohorte es tan corta y tan
@@ -4706,7 +4784,7 @@ function render(){
      vuelve, con cinco botones con nombre, que es lo que faltaba. No queda ninguna categoría sin
      cohorte, así que la excepción desaparece. */
   const sinAnios=false;
-  el("segYear").style.display=(!sinAnios&&(perPrueba||view==="topfina"))?"flex":"none";
+  el("segYear").style.display=(!sinAnios&&!conjOn()&&(perPrueba||view==="topfina"))?"flex":"none";
   el("segFina").style.display="none";
   {const sp=el("segPool");if(sp)sp.style.display="none";}
   const q=query.trim().toLowerCase();
@@ -4816,6 +4894,7 @@ function render(){
     +"(25 m con 50 m, × 1/2; 75, 150, 300 y 600 con 100, 200, 400 y 800, × 3/4). No cuentan para Top FINA. "
     +"Su equivalencia orientativa con las mínimas está en la pestaña <b>Mínimas</b>.";
   if(!fo&&view==="minimas"&&esNoof(activePrueba))LEG_HTML="<span style='font-weight:700'>Prueba no oficial (Liga Alevín).</span> "+NOOF_MIN_LEG;
+  if(!fo&&conjOn())LEG_HTML=conjLeg()+((view==="topfina"||esNoof(activePrueba))?"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'></div>"+LEG_HTML:"");
   if(fo&&view==="minimas"&&!badgesFor&&!compsFor&&noofScopeAll().some(r=>r.nadadora===query))
     LEG_HTML+="<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'><span style='font-weight:700'>Pruebas no oficiales.</span> "+NOOF_MIN_LEG+"</div>";
   if(isHist()&&!fo&&!badgesFor)LEG_HTML=HIST_LEG+"<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'></div>"+LEG_HTML;
@@ -4825,12 +4904,12 @@ function render(){
     if(fs.length&&insFicha(fs[0].name)){const sx0=((ALLRECS.find(r=>r.nadadora===fs[0].name)||ALLNOOF.find(r=>r.nadadora===fs[0].name)||{}).sexo)||sexFilter;
       LEG_HTML+="<div style='margin-top:9px;padding-top:9px;border-top:1px solid var(--line)'></div>"+insLeg(sx0==="M"?"nadador":"nadadora");}}
 
-  const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":(isHist()?"Ranking histórico":"Ranking de la temporada");
-  const sc=el("secdiv");if(sc&&sc.classList)sc.classList.toggle("fmode",fo);
+  const st=el("secTitle");if(st)st.textContent=fo?"Fichas individuales":(isHist()?"Ranking histórico":(conjOn()?"Ranking conjunto":"Ranking de la temporada"));
+  const sc=el("secdiv");if(sc&&sc.classList){sc.classList.toggle("fmode",fo);sc.classList.toggle("conj",!fo&&conjOn());}
   const tbs=el("tabs");
-  if(tbs&&tbs.querySelectorAll){const bm=tbs.querySelector('button[data-v="minimas"]');if(bm)bm.style.display=isHist()?"none":"";const fo2=fo;const lbl=fo2?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
+  if(tbs&&tbs.querySelectorAll){const bm=tbs.querySelector('button[data-v="minimas"]');if(bm)bm.style.display=(isHist()||(conjOn()&&!fo))?"none":"";const fo2=fo;const lbl=fo2?{marcas:"MMP/progreso",minimas:"Mínimas",topfina:"Récords Álava"}:{marcas:"Marcas (MMP)",minimas:"Mínimas",topfina:"Top FINA"};tbs.querySelectorAll("button").forEach(bt=>{const v=bt.dataset?bt.dataset.v:null;if(v&&lbl[v])bt.textContent=lbl[v];});}
   const bf=el("backFloat");if(bf)bf.style.display=(fo||cmpA||badgesFor||compsFor)?"inline-flex":"none";
-  const sIn=el("search");if(sIn)sIn.placeholder=(sexFilter==="M"?"Busca un nadador…":"Busca una nadadora…");
+  const sIn=el("search");if(sIn)sIn.placeholder=mixOn()?"Busca a alguien…":(sexFilter==="M"?"Busca un nadador…":"Busca una nadadora…");
   const vw=el("view");
   if(compsFor){renderComps(vw,compsFor);return;}
   if(badgesFor){renderBadges(vw,badgesFor);return;}
@@ -4845,12 +4924,12 @@ function render(){
   const chips=carCopias(chips1);
   const NO=esNoof(activePrueba);
   const rk=NO?noofRank(poolRecs(noofScope()),activePrueba):rankTime(RECORDS,activePrueba);
-  const prev=NO?{}:rankMap(rankTime(BEFORE,activePrueba));
-  const rows=rk.map(r=>{
+  const prev=(NO||conjOn())?{}:rankMap(rankTime(BEFORE,activePrueba));
+  const filaRk=r=>{
     if(NO){const m=medal(r.rank);const dstr=`<span class="tdate">${fmtDate(r.fecha)}</span>`;
       const nm=`<div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div>`;
       const minV=view==="minimas";
-      return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div></div><div class="mid">${nm}<div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${minV?noofMinLines(r):""}</div><div class="right"><div class="time mono">${dstr}${esc(r.tiempo)}</div>${minV?"":`<div>${noofBadge(r)}</div>`}</div></div>`;}
+      return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div></div><div class="mid">${nm}<div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${conjLine(r)}${minV?noofMinLines(r):""}</div><div class="right"><div class="time mono">${dstr}${esc(r.tiempo)}</div>${minV?"":`<div>${noofBadge(r)}</div>`}</div></div>`;}
     const m=medal(r.rank);
     let right,badges="",sub="";
     if(view==="marcas"){
@@ -4858,12 +4937,12 @@ function render(){
          la mejor de siempre y la línea sería la misma marca repetida. Solo si la de esta temporada
          es más lenta, así que desaparece sola en cuanto la superan. No toca puesto, percentil ni
          FINA: el ranking sigue siendo íntegramente de la temporada. */
-      const pm=isHist()?null:prevSeasonBest(r.name,r.prueba,season);
+      const pm=(isHist()||conjOn())?null:prevSeasonBest(r.name,r.prueba,season);
       if(pm&&pm.cs<r.cs)sub=`<div class="mmpPrev"><span class="lb">MMP</span><span class="mono">${esc(pm.t)}</span> · ${fmtDate(pm.f)}</div>`;
-      const f=fina(r.prueba,r.cs,r.fecha,es50(r.competi));const ev=evolution(r.name,r.prueba);const dt=deltaTag(ev,1);
+      const f=fina(r.prueba,r.cs,r.fecha,es50(r.competi));const ev=conjOn()?null:evolution(r.name,r.prueba);const dt=deltaTag(ev,1);
       const dstr=!/^Ranking /.test(r.competi||"")?`<span class="tdate">${fmtDate(r.fecha)}</span>`:"";
-      if(newMin(r,PAR_EH))badges+='<span class="mb mbEH" style="margin-right:4px">EH</span>';
-      if(newMin(r,PAR_ESP))badges+='<span class="mb mbESP" style="margin-right:4px">ESP</span>';
+      if(!conjOn()&&newMin(r,PAR_EH))badges+='<span class="mb mbEH" style="margin-right:4px">EH</span>';
+      if(!conjOn()&&newMin(r,PAR_ESP))badges+='<span class="mb mbESP" style="margin-right:4px">ESP</span>';
       right=`<div class="time mono">${dstr}${esc(r.tiempo)}</div><div><span class="tag fina">${es50(r.competi)?p50Pill()+" ":""}${f} FINA</span></div>${(dt||badges)?("<div>"+badges+dt+"</div>"):""}`;
       badges="";
     }else{
@@ -4893,9 +4972,11 @@ function render(){
       }
       right=`<div class="time mono">${preT}${esc(r.tiempo)}</div><div>${gapTag(r,PAR_EH,"EH")}</div><div>${gapTag(r,PAR_ESP,"ESP")}</div>`;
     }
-    return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}${badges}</div>${sub}</div><div class="right">${right}</div></div>`;
-  }).join("");
-  const body=rk.length?`<div class="list">${rows}</div>`:`<div class="empty">Sin ${sexFilter==="M"?"nadadores":"nadadoras"} para esta selección.</div>`;
+    return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${conjOn()?"":posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}${badges}</div>${conjLine(r)}${sub}</div><div class="right">${right}</div></div>`;
+  };
+  /* En Mixto cada fila se pinta con SU sexo: puntos FINA y no oficiales leen `sexFilter` (§4.93). */
+  const rows=rk.map(r=>conMiSexo(r,()=>filaRk(r))).join("");
+  const body=rk.length?`<div class="list">${rows}</div>`:`<div class="empty">Sin ${mixOn()?"marcas":(sexFilter==="M"?"nadadores":"nadadoras")} para esta selección.</div>`;
   vw.innerHTML=`<div class="chipwrap"><div class="chips">${chips}</div></div>${view==="minimas"?minRefCard(activePrueba):""}${body}`;
   animateTags(vw);
   const ce=vw.querySelector(".chips");
@@ -4919,21 +5000,28 @@ function finaSelOk(){
   /* Al cambiar de categoría o de sexo el perfil elegido puede dejar de existir. Sin esto, quien
      estuviera en Gran fondo y saltara a alevín se quedaba mirando una lista vacía sin chip marcado. */
   if(finaSel==="gfo"&&!hayGF())finaSel="3";
+  if(finaSel==="med"&&conjOn())finaSel="3";   /* «Todas» no tiene Insignias (§4.93) */
 }
 function renderClass(vw,N){
   finaSelOk();
   const strokes=["Libre","Espalda","Braza","Mariposa","Estilos"];
-  const royal=sexFilter==="M"?"Rey":"Reina";
+  const royal=mixOn()?"Rey/Reina":(sexFilter==="M"?"Rey":"Reina");
   const art={Libre:"del",Espalda:"de la",Braza:"de la",Mariposa:"de la",Estilos:"de los"};
   const items=[{v:"3",t:"3 mejores",c:"st-n"},{v:"6",t:"6 mejores",c:"st-n"},{v:"9",t:"9 mejores",c:"st-n"}].concat(strokes.map(s=>({v:s,t:"👑 "+royal+" "+art[s]+" "+s,c:stKlass(s)}))).concat([{v:"spr",t:SPEC_LAB.spr,c:"st-sp"},{v:"mid",t:SPEC_LAB.mid,c:"st-sp"},{v:"fon",t:SPEC_LAB.fon,c:"st-sp"}])
-    .concat(hayGF()?[{v:"gfo",t:SPEC_LAB.gfo,c:"st-sp"}]:[]).concat([{v:"med",t:"🏅 Insignias",c:"st-med"}]);
+    .concat(hayGF()?[{v:"gfo",t:SPEC_LAB.gfo,c:"st-sp"}]:[]).concat(conjOn()?[]:[{v:"med",t:"🏅 Insignias",c:"st-med"}]);
   const SPEC=SPEC_FINA;
   const chips1=items.map(it=>`<button class="chip ${it.c} ${it.v===finaSel?"on":""}" data-f="${esc(it.v)}">${it.t}</button>`).join("");
   const isNum=/^\d+$/.test(finaSel);
   const isSpec=!!SPEC[finaSel];
-  const calc=recs=>isNum?finaClass(recs,N):(isSpec?finaSpec(recs,SPEC[finaSel][0],SPEC[finaSel][1]):finaStyle(recs,finaSel));
+  const calc0=recs=>isNum?finaClass(recs,N):(isSpec?finaSpec(recs,SPEC[finaSel][0],SPEC[finaSel][1]):finaStyle(recs,finaSel));
+  /* MIXTO (§4.93): los puntos salen de la tabla de cada sexo, así que se calcula cada sexo con SU
+     `sexFilter` y luego se funden las dos listas por puntos, con el mismo ex aequo de siempre. */
+  const calcMix=recs=>{const sv=sexFilter,all=[];
+    try{for(const sx of ["F","M"]){sexFilter=sx;calc0(recs.filter(r=>r.sexo===sx)).forEach(x=>{x.sexo=sx;all.push(x);});}}finally{sexFilter=sv;}
+    all.sort((a,b)=>b.sum-a.sum||a.name.localeCompare(b.name));all.forEach((x,i)=>{x.rank=(i>0&&x.sum===all[i-1].sum)?all[i-1].rank:i+1;});return all;};
+  const calc=recs=>mixOn()?calcMix(recs):calc0(recs);
   const cur=finaSel==="med"?[]:calc(RECORDS);
-  const prev=finaSel==="med"?{}:rankMap(calc(BEFORE));
+  const prev=(finaSel==="med"||conjOn())?{}:rankMap(calc(BEFORE));
   let body;
   if(finaSel==="med"){
     let t=medalTable();
@@ -4968,12 +5056,12 @@ function renderClass(vw,N){
       }).join("")+`</div>`;
   }
   else if(!cur.length){
-    body=`<div class="empty">${isNum?(clubFilter==="all"?("Aún no hay "+(sexFilter==="M"?"nadadores":"nadadoras")+" con <b>"+N+" pruebas</b>."):("Sin "+(sexFilter==="M"?"nadadores":"nadadoras")+" de <b>"+esc(clubFilter)+"</b> con "+N+" pruebas.")):(isSpec?("Aún nadie tiene marcas en <b>"+SPEC[finaSel][0]+" y "+SPEC[finaSel][1]+"</b>."):("Aún nadie ha nadado <b>"+esc(finaSel)+"</b>"+(clubFilter==="all"?"":" en "+esc(clubFilter))+"."))}</div>`;
+    body=`<div class="empty">${isNum?(clubFilter==="all"?("Aún no hay "+(mixOn()?"nadadores ni nadadoras":(sexFilter==="M"?"nadadores":"nadadoras"))+" con <b>"+N+" pruebas</b>."):("Sin "+(sexFilter==="M"?"nadadores":"nadadoras")+" de <b>"+esc(clubFilter)+"</b> con "+N+" pruebas.")):(isSpec?("Aún nadie tiene marcas en <b>"+SPEC[finaSel][0]+" y "+SPEC[finaSel][1]+"</b>."):("Aún nadie ha nadado <b>"+esc(finaSel)+"</b>"+(clubFilter==="all"?"":" en "+esc(clubFilter))+"."))}</div>`;
   }else{
     const rows=cur.map(r=>{const m=medal(r.rank);
       const abKl={L:"st-l",E:"st-e",B:"st-b",M:"st-m",Est:"st-x"};
       const chips=`<div class="pchips">${r.pruebas.map(p=>`<span class="pc ${abKl[p.split(" ")[1]]||"st-x"}">${esc(p)}</span>`).join("")}</div>`;
-      return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${chips}</div><div class="right"><div class="big">${r.sum}<span class="pts">pts</span></div></div></div>`;
+      return `<div class="row" style="border-left-color:${m.rail}"><div class="rkwrap"><div class="rk" style="background:${m.bg};color:${m.ink}">${r.rank}</div>${conjOn()?"":posTag(r,prev)}</div><div class="mid"><div class="name" data-n="${esc(r.name)}">${esc(r.name)}</div><div class="club">${esc(r.club)} · ${esc(r.anio)}</div>${conjLine(Object.assign({fecha:MAXFECHA},r))}${chips}</div><div class="right"><div class="big">${r.sum}<span class="pts">pts</span></div></div></div>`;
     }).join("");
     body=`<div class="list">${rows}</div>`;
   }
@@ -5238,11 +5326,11 @@ async function boot(){const pIns=fetch("inscritos.csv",{cache:"no-store"}).then(
 function applySex(){
   initSeasons();applySeasonTables();catSync();
   const SREC=scopeRecs();
-  setRecs(SREC.filter(r=>r.sexo===sexFilter));
+  setRecs(SREC.filter(r=>sexOk(r.sexo)));
   MINFECHA=SREC.reduce((m,r)=>r.fecha<m?r.fecha:m,SREC[0]?SREC[0].fecha:"");
   BEFORE=RECORDS.filter(r=>r.fecha<ultDesde());
   const fem=sexFilter!=="M";
-  const s=el("search");if(s)s.placeholder=fem?"Busca una nadadora…":"Busca un nadador…";
+  const s=el("search");if(s)s.placeholder=mixOn()?"Busca a alguien…":(fem?"Busca una nadadora…":"Busca un nadador…");
   fillCats();fillYears();fillClubs();fillSeasons();
   renderSummary(sumFecha);
   render();}
@@ -5269,7 +5357,10 @@ el("backFloat").addEventListener("click",()=>{if(compFecha){compFecha=null;rende
   /* Comparaciones en dos pasos: desde el cara a cara se vuelve al buscador de rival (para
      encadenar comparaciones sin salir), y solo el siguiente toque cierra el módulo. */
   if(cmpB){cmpB=null;render();scrollSec();return;}
-  if(cmpA){cmpA=null;cmpB=null;render();scrollSec();return;}mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";render();window.scrollTo({top:0,behavior:"smooth"});});
+  if(cmpA){cmpA=null;cmpB=null;render();scrollSec();return;}mode="ranking";query="";cmpA=null;cmpB=null;const s=el("search");if(s)s.value="";
+  /* Si la ficha se abrió desde «Todas», se vuelve a «Todas» con sus pastillas y su sexo (§4.93). */
+  if(conjVuelta){catTemp=CONJ;sexFilter=conjVuelta.sex;sexMix=conjVuelta.mix;conjVuelta=null;yearFilter=[];sumShown=false;sumOpen=false;applySex();}else render();
+  window.scrollTo({top:0,behavior:"smooth"});});
 el("infoFab").addEventListener("click",()=>{const pop=el("legPop"),bd=el("legPopBody");if(pop&&bd){bd.innerHTML=(sumShown?(String(sumFecha||"").indexOf("CAL|")===0?calLeg():sumLeg()):"")+(LEG_HTML||"");pop.style.display="flex";}});
 el("summary").addEventListener("click",e=>{
   const t=e.target&&e.target.closest?e.target.closest:null;if(!t)return;
@@ -5412,9 +5503,14 @@ el("view").addEventListener("mousedown",e=>{
 window.addEventListener("mousemove",e=>{if(SCRUB)scrubMover(SCRUB,e.clientX);});
 window.addEventListener("mouseup",scrubSoltar);
 el("tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;view=b.dataset.v;render();});
-el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;sexFilter=b.dataset.s;el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
+el("segSex").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  /* «X» = Mixto, solo dentro de «Todas» (§4.93). `sexFilter` se queda en F o M: al salir de Mixto, o de
+     «Todas», vuelve el sexo que había. */
+  if(b.dataset.s==="X"){if(!conjOn())return;sexMix=true;}else{sexMix=false;sexFilter=b.dataset.s;}
+  el("segSex").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));applySex();});
 function cambiarCat(c,hist){
   if(hist){if(c===catHist)return;catHist=c;}else{if(c===catTemp)return;catTemp=c;}
+  if(!hist){conjVuelta=null;if(c===CONJ)conjSel=null;else sexMix=false;}   /* al entrar en «Todas», todas encendidas (§4.93) */
   if(hist!==isHist()){fillCats();return;}   /* tocar el de arriba estando en Histórico: solo se anota
                                                para cuando vuelvas a la temporada, no recarga nada */
   /* ⚠️ CAUSA DEL PARPADEO, encontrada tras cuatro intentos fallidos: aquí se hacía
@@ -5435,6 +5531,8 @@ function cambiarCat(c,hist){
      la suelta el guardarraíl de `renderSummary`. Ponerlo a `null` aquí era, además, la mitad de la
      causa del parpadeo que se cazó en su día (ver el aviso de abajo). */
   sumShown=false;sumOpen=false;
+  /* «Todas» es una vista de ranking: si se elige con una ficha abierta, se sale de la ficha (§4.93). */
+  if(!hist&&c===CONJ&&mode==="fichas"){mode="ranking";query="";badgesFor=null;cmpA=null;cmpB=null;compsFor=null;compFecha=null;const s0=el("search");if(s0)s0.value="";}
   const compPrev=compsFor;
   applySex();
   /* Aquí había un `if(fechaPrev&&summaryFechas().indexOf(fechaPrev)<0){sumFecha=null;render();}`.
@@ -5442,10 +5540,13 @@ function cambiarCat(c,hist){
      `renderSummary` con ella —o sea, después del estropicio— y encima forzaba un segundo `render()`.
      El guardarraíl vive ahora dentro de `renderSummary`, que es el único sitio donde se sabe si la
      jornada tiene filas, y desde allí cubre también el cambio de sexo y el de temporada. */
-  if(compPrev&&!ALLRECS.some(r=>r.nadadora===compPrev&&r.sexo===sexFilter&&(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||grupoDe(r.anio,r.fecha)===catFilter))){compsFor=null;badgesFor=null;cmpA=null;cmpB=null;render();}
+  if(compPrev&&!ALLRECS.some(r=>r.nadadora===compPrev&&r.sexo===sexFilter&&(isHist()||seasonOf(r.fecha)===season)&&(!catFilter||catFilter==="all"||enCat(grupoDe(r.anio,r.fecha))))){compsFor=null;badgesFor=null;cmpA=null;cmpB=null;render();}
 }
 el("segCatH").addEventListener("change",e=>{cambiarCat(e.target.value,false);});
-el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(b)cambiarCat(b.dataset.c,true);});
+el("segCat").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  /* En «Todas» estas pastillas se encienden y apagan; la última encendida no se apaga (§4.93). */
+  if(conjOn()){const c=b.dataset.c;if(conjSel.has(c)){if(conjSel.size<2)return;conjSel.delete(c);}else conjSel.add(c);yearFilter=[];applySex();return;}
+  cambiarCat(b.dataset.c,true);});
 /* Reglas del segmentado de años (Fran, ago-2026):
    · "Todas" apaga las demás · en Histórico cada pastilla alterna (se pulsa otra vez para quitarla)
    · quitar la última equivale a "Todas": lista vacía, nunca un ranking en blanco
