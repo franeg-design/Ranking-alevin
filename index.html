@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#0e7c93" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<script>try{if(navigator.standalone===true||matchMedia("(display-mode: standalone)").matches||matchMedia("(display-mode: fullscreen)").matches)document.documentElement.classList.add("pwa");}catch(e){}</script>
 <meta name="apple-mobile-web-app-title" content="Ranking Álava" />
 <link rel="manifest" href="./manifest.json" />
 <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
@@ -1122,9 +1123,13 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .sxTag.F{color:#8a3a62;background:#f6e8ef}
 .sxTag.M{color:#2d5a86;background:#e6eef7}
 .segSexH.tres button{padding:3px 9px}
+.ios-blur-fix{display:none}
+html.pwa .ios-blur-fix{display:block;position:fixed;top:0;left:0;right:0;height:11px;z-index:999999;pointer-events:none;background-color:#ffffff;-webkit-background-clip:text;background-clip:text}
+@media (display-mode: standalone){.ios-blur-fix{display:block;position:fixed;top:0;left:0;right:0;height:11px;z-index:999999;pointer-events:none;background-color:#ffffff;-webkit-background-clip:text;background-clip:text}}
 </style>
 </head>
 <body>
+<div class="ios-blur-fix" aria-hidden="true"></div>
 <div class="shell">
   <header class="head">
     <div class="glow"></div>
