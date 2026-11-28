@@ -1126,6 +1126,11 @@ content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:transl
 .ios-blur-fix{display:none}
 html.pwa .ios-blur-fix{display:block;position:fixed;top:0;left:0;right:0;height:11px;z-index:999999;pointer-events:none;background-color:#ffffff;-webkit-background-clip:text;background-clip:text}
 @media (display-mode: standalone){.ios-blur-fix{display:block;position:fixed;top:0;left:0;right:0;height:11px;z-index:999999;pointer-events:none;background-color:#ffffff;-webkit-background-clip:text;background-clip:text}}
+.updBar{position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom));max-width:516px;margin:0 auto;z-index:58;display:none;align-items:center;gap:10px;background:var(--brand-deep,#0b3d5c);color:#fff;border-radius:16px;padding:12px 12px 12px 16px;box-shadow:0 8px 24px rgba(11,42,58,.35);font:600 13px 'Inter',system-ui,sans-serif;cursor:pointer}
+.updBar span{flex:1}.updBar small{display:block;font:400 11px 'Inter',system-ui,sans-serif;opacity:.8;margin-top:2px}
+.updBar b{background:var(--gold,#e0ad3f);color:var(--ink,#0b2a3a);border-radius:999px;padding:8px 14px;font:700 12px 'Inter',system-ui,sans-serif}
+body.updOn .updBar{display:flex}body.updOn .infoFab{display:none}
+body.updOn .backFloat{bottom:calc(92px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
@@ -5584,6 +5589,41 @@ try{
   window.addEventListener("focus",()=>{if(AC_CTX)actx();});
 }catch(e){}
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}
+/* AVISO DE RESULTADOS NUEVOS Y DE VERSION NUEVA (copiado de Ranking EH, DIARIO §12 y §14) */
+(function(){
+  var DATA_HUELLA=null,APP_HUELLA=null,UPD_ULT=Date.now(),UPD_TIPO=null;
+  var DATOS="data.csv";
+  function huellaTxt(t){var h=2166136261;for(var i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619);}return t.length+":"+(h>>>0);}
+  function urlApp(){return location.href.split("#")[0].split("?")[0];}
+  function pedirTxt(u){return fetch(u,{cache:"no-store"}).then(function(r){return r&&r.ok?r.text():null;}).catch(function(){return null;});}
+  function avisoUpd(tipo){
+    if(UPD_TIPO==="app")return;UPD_TIPO=tipo;var u=document.querySelector(".updBar");if(!u)return;
+    u.innerHTML=tipo==="app"?'<span>Nueva versión de la app<small>Refresca para actualizar</small></span><b>Refrescar</b>'
+      :'<span>Hay resultados nuevos<small>Toca para cargarlos</small></span><b>Actualizar</b>';
+    document.body.classList.add("updOn");
+  }
+  function mirarDatosNuevos(){
+    if(UPD_TIPO==="app")return;
+    var ahora=Date.now();if(ahora-UPD_ULT<120000)return;UPD_ULT=ahora;
+    if(APP_HUELLA!==null)pedirTxt(urlApp()).then(function(t){
+      if(t&&/<html/i.test(t)&&huellaTxt(t)!==APP_HUELLA)avisoUpd("app");});
+    if(DATA_HUELLA!==null&&UPD_TIPO===null)pedirTxt(DATOS).then(function(t){
+      if(t&&t.length>20&&huellaTxt(t)!==DATA_HUELLA)avisoUpd("datos");});
+  }
+  function arrancar(){
+    try{
+      var u=document.createElement("div");u.className="updBar";u.setAttribute("role","button");
+      u.addEventListener("click",function(){location.reload();});document.body.appendChild(u);
+      document.addEventListener("visibilitychange",function(){if(!document.hidden)mirarDatosNuevos();});
+      window.addEventListener("pageshow",function(e){if(e.persisted)mirarDatosNuevos();});
+      setTimeout(function(){
+        pedirTxt(urlApp()).then(function(t){if(t&&/<html/i.test(t))APP_HUELLA=huellaTxt(t);});
+        pedirTxt(DATOS).then(function(t){if(t&&t.length>20)DATA_HUELLA=huellaTxt(t);});
+      },5000);
+    }catch(e){}
+  }
+  if(document.body)arrancar();else document.addEventListener("DOMContentLoaded",arrancar);
+})();
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "27ecd68ea53c4f819a5a766a1f7730a1"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
