@@ -9,7 +9,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <script>try{if(navigator.standalone===true||matchMedia("(display-mode: standalone)").matches||matchMedia("(display-mode: fullscreen)").matches)document.documentElement.classList.add("pwa");}catch(e){}</script>
-<!-- Prueba de versión (28-nov-2026, 09:20): cambio invisible para comprobar el aviso «Nueva versión» (DIARIO §4.98) -->
 <meta name="apple-mobile-web-app-title" content="Ranking Álava" />
 <link rel="manifest" href="./manifest.json" />
 <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
@@ -5589,7 +5588,9 @@ try{
   document.addEventListener("visibilitychange",()=>{if(!document.hidden&&AC_CTX)actx();});
   window.addEventListener("focus",()=>{if(AC_CTX)actx();});
 }catch(e){}
-if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));}
+/* (28-nov-2026, DIARIO §4.99) SIN SERVICE WORKER, como Ranking EH: con él, el arreglo del difuminado (.ios-blur-fix)
+   no hacía efecto en el iPhone. Se borra el que hubiera instalado y sus copias; sw.js ya no se registra. */
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{try{navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});if(window.caches)caches.keys().then(ks=>ks.filter(k=>/^ranking-/.test(k)).forEach(k=>caches.delete(k))).catch(()=>{});}catch(e){}});}
 /* AVISO DE RESULTADOS NUEVOS Y DE VERSION NUEVA (copiado de Ranking EH, DIARIO §12 y §14) */
 (function(){
   var DATA_HUELLA=null,APP_HUELLA=null,UPD_ULT=Date.now(),UPD_TIPO=null;
